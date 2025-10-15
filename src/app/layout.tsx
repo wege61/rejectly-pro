@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import StyledComponentsRegistry from "@/lib/registry";
+import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
   title: "Rejectly.pro - Why Was I Rejected?",
@@ -14,8 +15,10 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body>
-        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+        <StyledComponentsRegistry>
+          <Providers>{children}</Providers>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );
-  }
+}

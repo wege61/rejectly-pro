@@ -1,12 +1,13 @@
 'use client';
 
 import styled from 'styled-components';
+import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
+import { Modal } from '@/components/ui/Modal';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -28,138 +29,154 @@ const SectionTitle = styled.h2`
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const Grid = styled.div`
-  display: grid;
+const ButtonGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
   gap: ${({ theme }) => theme.spacing.md};
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-`;
-
-const BadgeGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.sm};
-  align-items: center;
-`;
-
-const SpinnerGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.xl};
-  align-items: center;
-`;
-
-const SpinnerDemo = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-const SpinnerLabel = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSmallModalOpen, setIsSmallModalOpen] = useState(false);
+  const [isLargeModalOpen, setIsLargeModalOpen] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+
   return (
     <Container>
       <Title>Rejectly.pro - Component Library</Title>
       
       <Section>
+        <SectionTitle>Modals</SectionTitle>
+        <ButtonGrid>
+          <Button onClick={() => setIsModalOpen(true)}>
+            Open Default Modal
+          </Button>
+          <Button variant="secondary" onClick={() => setIsSmallModalOpen(true)}>
+            Open Small Modal
+          </Button>
+          <Button variant="secondary" onClick={() => setIsLargeModalOpen(true)}>
+            Open Large Modal
+          </Button>
+          <Button variant="secondary" onClick={() => setIsFormModalOpen(true)}>
+            Open Form Modal
+          </Button>
+        </ButtonGrid>
+
+        {/* Default Modal */}
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="Modal Title"
+          description="This is a modal description"
+        >
+          <Modal.Body>
+            <p>This is the modal content. You can put anything here!</p>
+            <p>Click outside, press ESC, or click the X button to close.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => setIsModalOpen(false)}>
+              Confirm
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Small Modal */}
+        <Modal
+          isOpen={isSmallModalOpen}
+          onClose={() => setIsSmallModalOpen(false)}
+          title="Small Modal"
+          size="sm"
+        >
+          <Modal.Body>
+            <p>This is a small modal.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button fullWidth onClick={() => setIsSmallModalOpen(false)}>
+              Got it
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Large Modal */}
+        <Modal
+          isOpen={isLargeModalOpen}
+          onClose={() => setIsLargeModalOpen(false)}
+          title="Large Modal with Long Content"
+          description="This modal has a lot of content"
+          size="lg"
+        >
+          <Modal.Body>
+            <Card variant="bordered">
+              <Card.Header>
+                <Card.Title>Analysis Report</Card.Title>
+                <Card.Description>Detailed CV analysis</Card.Description>
+              </Card.Header>
+              <Card.Content>
+                <p>This is a large modal that can contain complex content like cards, tables, and more.</p>
+                <div style={{ marginTop: '16px' }}>
+                  <Badge variant="success">85% Match</Badge>
+                  <Badge variant="info" style={{ marginLeft: '8px' }}>Senior Level</Badge>
+                </div>
+              </Card.Content>
+            </Card>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setIsLargeModalOpen(false)}>
+              Close
+            </Button>
+            <Button>Download Report</Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Form Modal */}
+        <Modal
+          isOpen={isFormModalOpen}
+          onClose={() => setIsFormModalOpen(false)}
+          title="Add Job Posting"
+          description="Enter the job details to analyze"
+        >
+          <Modal.Body>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <Input
+                label="Job Title"
+                placeholder="e.g. Senior Frontend Developer"
+                fullWidth
+              />
+              <Input
+                label="Company"
+                placeholder="e.g. TechCorp"
+                fullWidth
+              />
+              <Input
+                label="Job URL"
+                type="url"
+                placeholder="https://..."
+                fullWidth
+              />
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="ghost" onClick={() => setIsFormModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => setIsFormModalOpen(false)}>
+              Analyze
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Section>
+
+      <Section>
         <SectionTitle>Spinners</SectionTitle>
-        <SpinnerGrid>
-          <SpinnerDemo>
-            <Spinner size="sm" />
-            <SpinnerLabel>Small</SpinnerLabel>
-          </SpinnerDemo>
-          
-          <SpinnerDemo>
-            <Spinner size="md" />
-            <SpinnerLabel>Medium</SpinnerLabel>
-          </SpinnerDemo>
-          
-          <SpinnerDemo>
-            <Spinner size="lg" />
-            <SpinnerLabel>Large</SpinnerLabel>
-          </SpinnerDemo>
-          
-          <SpinnerDemo>
-            <Spinner size="xl" />
-            <SpinnerLabel>Extra Large</SpinnerLabel>
-          </SpinnerDemo>
-        </SpinnerGrid>
-
-        <div style={{ marginTop: '32px' }}>
-          <Card variant="elevated">
-            <Card.Header>
-              <Card.Title>Loading State</Card.Title>
-              <Card.Description>Spinner centered in a card</Card.Description>
-            </Card.Header>
-            <Card.Content>
-              <Spinner centered />
-            </Card.Content>
-          </Card>
+        <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+          <Spinner size="sm" />
+          <Spinner size="md" />
+          <Spinner size="lg" />
+          <Spinner size="xl" />
         </div>
-
-        <div style={{ marginTop: '16px', background: '#6366f1', padding: '24px', borderRadius: '12px' }}>
-          <SpinnerGrid>
-            <SpinnerDemo>
-              <Spinner variant="white" size="md" />
-              <SpinnerLabel style={{ color: 'white' }}>White Variant</SpinnerLabel>
-            </SpinnerDemo>
-          </SpinnerGrid>
-        </div>
-      </Section>
-
-      <Section>
-        <SectionTitle>Cards</SectionTitle>
-        <Grid>
-          <Card variant="default">
-            <Card.Header>
-              <Card.Title>Default Card</Card.Title>
-              <Card.Description>This is a default card with border</Card.Description>
-            </Card.Header>
-            <Card.Content>
-              <p>Card content goes here. You can put any content you want.</p>
-            </Card.Content>
-            <Card.Footer>
-              <Button size="sm">Action</Button>
-            </Card.Footer>
-          </Card>
-
-          <Card variant="elevated">
-            <Card.Header>
-              <Card.Title>Elevated Card</Card.Title>
-              <Card.Description>This card has a shadow</Card.Description>
-            </Card.Header>
-            <Card.Content>
-              <p>Elevated cards are great for highlighting important content.</p>
-            </Card.Content>
-          </Card>
-
-          <Card variant="bordered" onClick={() => alert('Card clicked!')}>
-            <Card.Header>
-              <Card.Title>Clickable Card</Card.Title>
-              <Card.Description>Click me!</Card.Description>
-            </Card.Header>
-            <Card.Content>
-              <p>This card has a hover effect and is clickable.</p>
-            </Card.Content>
-          </Card>
-        </Grid>
-      </Section>
-
-      <Section>
-        <SectionTitle>Badges</SectionTitle>
-        <BadgeGrid>
-          <Badge>Default</Badge>
-          <Badge variant="success">Success</Badge>
-          <Badge variant="warning">Warning</Badge>
-          <Badge variant="error">Error</Badge>
-          <Badge variant="info">Info</Badge>
-          <Badge size="sm">Small</Badge>
-          <Badge size="lg">Large</Badge>
-        </BadgeGrid>
       </Section>
     </Container>
   );

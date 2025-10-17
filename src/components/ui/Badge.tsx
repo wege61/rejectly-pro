@@ -5,11 +5,10 @@ import styled, { css } from 'styled-components';
 type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
 type BadgeSize = 'sm' | 'md' | 'lg';
 
-interface BadgeProps {
+interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
   size?: BadgeSize;
   children: React.ReactNode;
-  className?: string;
 }
 
 const StyledBadge = styled.span<BadgeProps>`

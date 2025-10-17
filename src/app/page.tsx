@@ -3,11 +3,10 @@
 import styled from 'styled-components';
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Spinner } from '@/components/ui/Spinner';
 import { Modal } from '@/components/ui/Modal';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { useToast } from '@/contexts/ToastContext';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -35,148 +34,118 @@ const ButtonGrid = styled.div`
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
+const Grid = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.lg};
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSmallModalOpen, setIsSmallModalOpen] = useState(false);
-  const [isLargeModalOpen, setIsLargeModalOpen] = useState(false);
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const toast = useToast();
 
   return (
     <Container>
       <Title>Rejectly.pro - Component Library</Title>
       
       <Section>
-        <SectionTitle>Modals</SectionTitle>
-        <ButtonGrid>
-          <Button onClick={() => setIsModalOpen(true)}>
-            Open Default Modal
-          </Button>
-          <Button variant="secondary" onClick={() => setIsSmallModalOpen(true)}>
-            Open Small Modal
-          </Button>
-          <Button variant="secondary" onClick={() => setIsLargeModalOpen(true)}>
-            Open Large Modal
-          </Button>
-          <Button variant="secondary" onClick={() => setIsFormModalOpen(true)}>
-            Open Form Modal
-          </Button>
-        </ButtonGrid>
+        <SectionTitle>Empty States</SectionTitle>
+        <Grid>
+          <Card variant="bordered">
+            <EmptyState
+              icon={<EmptyState.DocumentIcon />}
+              title="No CV uploaded"
+              description="Upload your CV to start analyzing job matches and get personalized recommendations."
+              action={{
+                label: 'Upload CV',
+                onClick: () => toast.info('Upload CV clicked'),
+              }}
+            />
+          </Card>
 
-        {/* Default Modal */}
+          <Card variant="bordered">
+            <EmptyState
+              icon={<EmptyState.FolderIcon />}
+              title="No reports yet"
+              description="Generate your first analysis report to see detailed insights."
+              action={{
+                label: 'Create Report',
+                onClick: () => toast.info('Create Report clicked'),
+              }}
+            />
+          </Card>
+
+          <Card variant="bordered">
+            <EmptyState
+              icon={<EmptyState.InboxIcon />}
+              title="No job postings"
+              description="Add job postings to compare with your CV and see match scores."
+              action={{
+                label: 'Add Job',
+                onClick: () => toast.info('Add Job clicked'),
+              }}
+            />
+          </Card>
+
+          <Card variant="bordered">
+            <EmptyState
+              icon={<EmptyState.SearchIcon />}
+              title="No results found"
+              description="Try adjusting your search criteria or filters."
+            />
+          </Card>
+        </Grid>
+      </Section>
+
+      <Section>
+        <SectionTitle>Empty State in Modal</SectionTitle>
+        <Button onClick={() => setIsModalOpen(true)}>
+          Open Modal with Empty State
+        </Button>
+
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          title="Modal Title"
-          description="This is a modal description"
-        >
-          <Modal.Body>
-            <p>This is the modal content. You can put anything here!</p>
-            <p>Click outside, press ESC, or click the X button to close.</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={() => setIsModalOpen(false)}>
-              Confirm
-            </Button>
-          </Modal.Footer>
-        </Modal>
-
-        {/* Small Modal */}
-        <Modal
-          isOpen={isSmallModalOpen}
-          onClose={() => setIsSmallModalOpen(false)}
-          title="Small Modal"
-          size="sm"
-        >
-          <Modal.Body>
-            <p>This is a small modal.</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button fullWidth onClick={() => setIsSmallModalOpen(false)}>
-              Got it
-            </Button>
-          </Modal.Footer>
-        </Modal>
-
-        {/* Large Modal */}
-        <Modal
-          isOpen={isLargeModalOpen}
-          onClose={() => setIsLargeModalOpen(false)}
-          title="Large Modal with Long Content"
-          description="This modal has a lot of content"
+          title="Your Reports"
           size="lg"
         >
           <Modal.Body>
-            <Card variant="bordered">
-              <Card.Header>
-                <Card.Title>Analysis Report</Card.Title>
-                <Card.Description>Detailed CV analysis</Card.Description>
-              </Card.Header>
-              <Card.Content>
-                <p>This is a large modal that can contain complex content like cards, tables, and more.</p>
-                <div style={{ marginTop: '16px' }}>
-                  <Badge variant="success">85% Match</Badge>
-                  <Badge variant="info" style={{ marginLeft: '8px' }}>Senior Level</Badge>
-                </div>
-              </Card.Content>
-            </Card>
+            <EmptyState
+              icon={<EmptyState.DocumentIcon />}
+              title="No reports available"
+              description="Start by uploading your CV and adding job postings to generate your first analysis report."
+              action={{
+                label: 'Get Started',
+                onClick: () => {
+                  toast.success('Let\'s get started!');
+                  setIsModalOpen(false);
+                },
+              }}
+            />
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setIsLargeModalOpen(false)}>
-              Close
-            </Button>
-            <Button>Download Report</Button>
-          </Modal.Footer>
-        </Modal>
-
-        {/* Form Modal */}
-        <Modal
-          isOpen={isFormModalOpen}
-          onClose={() => setIsFormModalOpen(false)}
-          title="Add Job Posting"
-          description="Enter the job details to analyze"
-        >
-          <Modal.Body>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <Input
-                label="Job Title"
-                placeholder="e.g. Senior Frontend Developer"
-                fullWidth
-              />
-              <Input
-                label="Company"
-                placeholder="e.g. TechCorp"
-                fullWidth
-              />
-              <Input
-                label="Job URL"
-                type="url"
-                placeholder="https://..."
-                fullWidth
-              />
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="ghost" onClick={() => setIsFormModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={() => setIsFormModalOpen(false)}>
-              Analyze
-            </Button>
-          </Modal.Footer>
         </Modal>
       </Section>
 
       <Section>
-        <SectionTitle>Spinners</SectionTitle>
-        <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-          <Spinner size="sm" />
-          <Spinner size="md" />
-          <Spinner size="lg" />
-          <Spinner size="xl" />
-        </div>
+        <SectionTitle>Toast Notifications</SectionTitle>
+        <ButtonGrid>
+          <Button onClick={() => toast.success('İşlem başarıyla tamamlandı!')}>
+            Success Toast
+          </Button>
+          <Button variant="danger" onClick={() => toast.error('Bir hata oluştu!')}>
+            Error Toast
+          </Button>
+          <Button onClick={() => toast.warning('Dikkat! Bu işlem geri alınamaz.')}>
+            Warning Toast
+          </Button>
+          <Button variant="secondary" onClick={() => toast.info('Yeni bildiriminiz var.')}>
+            Info Toast
+          </Button>
+        </ButtonGrid>
       </Section>
     </Container>
   );

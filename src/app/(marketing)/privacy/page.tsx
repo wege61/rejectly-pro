@@ -1,0 +1,1 @@
+'use client'; export default function PrivacyPage() { return <div style={{ padding: '80px 24px', textAlign: 'center' }}><h1>Privacy Policy</h1></div>; }

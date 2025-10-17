@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rejectly.pro
 
-## Getting Started
+AI-powered CV & job posting match analysis - "Why was I rejected?"
 
-First, run the development server:
+## 🚀 Quick Start
 
+### Prerequisites
+
+- Node.js 20+ (use nvm: `nvm use 20`)
+- pnpm (`npm install -g pnpm`)
+- Supabase account
+- OpenAI API key
+- Stripe account
+
+### Installation
+
+1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/YOUR_USERNAME/rejectly-pro.git
+cd rejectly-pro
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies
+```bash
+pnpm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Fill in your environment variables in `.env.local`
 
-## Learn More
+5. Run the development server
+```bash
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. Open [http://localhost:3000](http://localhost:3000)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Project Structure
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── (marketing)/       # Public marketing pages
+│   ├── (auth)/            # Authentication pages
+│   └── (app)/             # Private app pages
+├── components/            # React components
+│   └── ui/                # UI components
+├── contexts/              # React contexts
+├── lib/                   # Utility functions & configs
+├── styles/                # Global styles & theme
+└── types/                 # TypeScript types
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠️ Tech Stack
 
-## Deploy on Vercel
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Styling:** styled-components
+- **Database:** Supabase (PostgreSQL)
+- **Auth:** Supabase Auth
+- **Storage:** Supabase Storage
+- **AI:** OpenAI GPT-4o-mini
+- **Payments:** Stripe
+- **Deployment:** Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📝 Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `.env.example` for all required environment variables.
+
+## 🎯 MVP Timeline (10 Days)
+
+- **Day 1-2:** Project setup, UI components
+- **Day 3-4:** Supabase setup, database schema
+- **Day 5-6:** Auth flow, file upload
+- **Day 7-8:** AI analysis engine
+- **Day 9:** Stripe integration
+- **Day 10:** Testing & deployment
+
+## 📄 License
+
+MIT

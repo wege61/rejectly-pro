@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -31,10 +33,11 @@ const Grid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 `;
 
-const ButtonGrid = styled.div`
+const BadgeGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: ${({ theme }) => theme.spacing.sm};
+  align-items: center;
 `;
 
 export default function Home() {
@@ -43,57 +46,80 @@ export default function Home() {
       <Title>Rejectly.pro - Component Library</Title>
       
       <Section>
-        <SectionTitle>Buttons</SectionTitle>
-        <ButtonGrid>
-          <Button>Primary Button</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="danger">Danger</Button>
-          <Button size="sm">Small</Button>
-          <Button size="lg">Large</Button>
-          <Button isLoading>Loading...</Button>
-        </ButtonGrid>
-      </Section>
-
-      <Section>
-        <SectionTitle>Inputs</SectionTitle>
+        <SectionTitle>Cards</SectionTitle>
         <Grid>
-          <Input 
-            label="Email" 
-            placeholder="your@email.com" 
-            type="email"
-            helperText="We'll never share your email"
-          />
-          <Input 
-            label="Password" 
-            placeholder="Enter password" 
-            type="password"
-            error="Password is required"
-          />
-          <Input 
-            label="Full Width"
-            placeholder="This is full width"
-            fullWidth
-          />
+          <Card variant="default">
+            <Card.Header>
+              <Card.Title>Default Card</Card.Title>
+              <Card.Description>This is a default card with border</Card.Description>
+            </Card.Header>
+            <Card.Content>
+              <p>Card content goes here. You can put any content you want.</p>
+            </Card.Content>
+            <Card.Footer>
+              <Button size="sm">Action</Button>
+            </Card.Footer>
+          </Card>
+
+          <Card variant="elevated">
+            <Card.Header>
+              <Card.Title>Elevated Card</Card.Title>
+              <Card.Description>This card has a shadow</Card.Description>
+            </Card.Header>
+            <Card.Content>
+              <p>Elevated cards are great for highlighting important content.</p>
+            </Card.Content>
+          </Card>
+
+          <Card variant="bordered" onClick={() => alert('Card clicked!')}>
+            <Card.Header>
+              <Card.Title>Clickable Card</Card.Title>
+              <Card.Description>Click me!</Card.Description>
+            </Card.Header>
+            <Card.Content>
+              <p>This card has a hover effect and is clickable.</p>
+            </Card.Content>
+          </Card>
         </Grid>
       </Section>
 
       <Section>
-        <SectionTitle>Textarea</SectionTitle>
-        <Textarea 
-          label="Job Description"
-          placeholder="Paste the job description here..."
-          helperText="Maximum 5000 characters"
-          fullWidth
-        />
-        <div style={{ marginTop: '16px' }}>
-          <Textarea 
-            label="With Error"
-            placeholder="This has an error"
-            error="This field cannot be empty"
-            fullWidth
-          />
-        </div>
+        <SectionTitle>Badges</SectionTitle>
+        <BadgeGrid>
+          <Badge>Default</Badge>
+          <Badge variant="success">Success</Badge>
+          <Badge variant="warning">Warning</Badge>
+          <Badge variant="error">Error</Badge>
+          <Badge variant="info">Info</Badge>
+          <Badge size="sm">Small</Badge>
+          <Badge size="lg">Large</Badge>
+        </BadgeGrid>
+      </Section>
+
+      <Section>
+        <SectionTitle>Card with Badges</SectionTitle>
+        <Card variant="elevated">
+          <Card.Header>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+              <div>
+                <Card.Title>Senior Frontend Developer</Card.Title>
+                <Card.Description>Remote • Full-time</Card.Description>
+              </div>
+              <Badge variant="success">85% Match</Badge>
+            </div>
+          </Card.Header>
+          <Card.Content>
+            <BadgeGrid>
+              <Badge size="sm">React</Badge>
+              <Badge size="sm">TypeScript</Badge>
+              <Badge size="sm">Next.js</Badge>
+              <Badge size="sm">styled-components</Badge>
+            </BadgeGrid>
+          </Card.Content>
+          <Card.Footer>
+            <Button fullWidth>View Analysis</Button>
+          </Card.Footer>
+        </Card>
       </Section>
     </Container>
   );

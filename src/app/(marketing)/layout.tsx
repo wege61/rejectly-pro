@@ -1,6 +1,8 @@
 'use client';
 
 import styled from 'styled-components';
+import { Button } from '@/components/ui/Button';
+import { ROUTES } from '@/lib/constants';
 
 const Header = styled.header`
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
@@ -16,15 +18,21 @@ const Nav = styled.nav`
   justify-content: space-between;
 `;
 
-const Logo = styled.div`
+const Logo = styled.a`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.primary};
+  text-decoration: none;
+  
+  &:hover {
+    color: ${({ theme }) => theme.colors.primaryHover};
+  }
 `;
 
 const NavLinks = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.lg};
+  align-items: center;
   
   a {
     color: ${({ theme }) => theme.colors.textSecondary};
@@ -45,13 +53,19 @@ export default function MarketingLayout({
     <>
       <Header>
         <Nav>
-          <Logo>Rejectly.pro</Logo>
+          <Logo href={ROUTES.PUBLIC.HOME}>Rejectly.pro</Logo>
           <NavLinks>
-            <a href="/features">Features</a>
-            <a href="/how-it-works">How it Works</a>
-            <a href="/pricing">Pricing</a>
-            <a href="/faq">FAQ</a>
-            <a href="/login">Login</a>
+            <a href={ROUTES.PUBLIC.FEATURES}>Features</a>
+            <a href={ROUTES.PUBLIC.HOW_IT_WORKS}>How it Works</a>
+            <a href={ROUTES.PUBLIC.PRICING}>Pricing</a>
+            <a href={ROUTES.PUBLIC.FAQ}>FAQ</a>
+            <a href={ROUTES.AUTH.LOGIN}>Login</a>
+            <Button 
+              size="sm" 
+              onClick={() => window.location.href = ROUTES.AUTH.SIGNUP}
+            >
+              Start Free
+            </Button>
           </NavLinks>
         </Nav>
       </Header>

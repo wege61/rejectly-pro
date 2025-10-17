@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { Spinner } from '@/components/ui/Spinner';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -19,7 +20,7 @@ const Title = styled.h1`
 `;
 
 const Section = styled.section`
-  margin-top: ${({ theme }) => theme.spacing.xl};
+  margin-top: ${({ theme }) => theme.spacing['2xl']};
 `;
 
 const SectionTitle = styled.h2`
@@ -40,11 +41,76 @@ const BadgeGrid = styled.div`
   align-items: center;
 `;
 
+const SpinnerGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.xl};
+  align-items: center;
+`;
+
+const SpinnerDemo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const SpinnerLabel = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
 export default function Home() {
   return (
     <Container>
       <Title>Rejectly.pro - Component Library</Title>
       
+      <Section>
+        <SectionTitle>Spinners</SectionTitle>
+        <SpinnerGrid>
+          <SpinnerDemo>
+            <Spinner size="sm" />
+            <SpinnerLabel>Small</SpinnerLabel>
+          </SpinnerDemo>
+          
+          <SpinnerDemo>
+            <Spinner size="md" />
+            <SpinnerLabel>Medium</SpinnerLabel>
+          </SpinnerDemo>
+          
+          <SpinnerDemo>
+            <Spinner size="lg" />
+            <SpinnerLabel>Large</SpinnerLabel>
+          </SpinnerDemo>
+          
+          <SpinnerDemo>
+            <Spinner size="xl" />
+            <SpinnerLabel>Extra Large</SpinnerLabel>
+          </SpinnerDemo>
+        </SpinnerGrid>
+
+        <div style={{ marginTop: '32px' }}>
+          <Card variant="elevated">
+            <Card.Header>
+              <Card.Title>Loading State</Card.Title>
+              <Card.Description>Spinner centered in a card</Card.Description>
+            </Card.Header>
+            <Card.Content>
+              <Spinner centered />
+            </Card.Content>
+          </Card>
+        </div>
+
+        <div style={{ marginTop: '16px', background: '#6366f1', padding: '24px', borderRadius: '12px' }}>
+          <SpinnerGrid>
+            <SpinnerDemo>
+              <Spinner variant="white" size="md" />
+              <SpinnerLabel style={{ color: 'white' }}>White Variant</SpinnerLabel>
+            </SpinnerDemo>
+          </SpinnerGrid>
+        </div>
+      </Section>
+
       <Section>
         <SectionTitle>Cards</SectionTitle>
         <Grid>
@@ -94,32 +160,6 @@ export default function Home() {
           <Badge size="sm">Small</Badge>
           <Badge size="lg">Large</Badge>
         </BadgeGrid>
-      </Section>
-
-      <Section>
-        <SectionTitle>Card with Badges</SectionTitle>
-        <Card variant="elevated">
-          <Card.Header>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-              <div>
-                <Card.Title>Senior Frontend Developer</Card.Title>
-                <Card.Description>Remote • Full-time</Card.Description>
-              </div>
-              <Badge variant="success">85% Match</Badge>
-            </div>
-          </Card.Header>
-          <Card.Content>
-            <BadgeGrid>
-              <Badge size="sm">React</Badge>
-              <Badge size="sm">TypeScript</Badge>
-              <Badge size="sm">Next.js</Badge>
-              <Badge size="sm">styled-components</Badge>
-            </BadgeGrid>
-          </Card.Content>
-          <Card.Footer>
-            <Button fullWidth>View Analysis</Button>
-          </Card.Footer>
-        </Card>
       </Section>
     </Container>
   );

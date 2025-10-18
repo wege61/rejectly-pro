@@ -1,11 +1,14 @@
 'use client';
 
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { Badge } from '@/components/ui/Badge';
+import { Spinner } from '@/components/ui/Spinner';
 import { useToast } from '@/contexts/ToastContext';
+import { useAuth } from '@/hooks/useAuth';
+import { getUserDocuments, deleteDocument, type Document } from '@/lib/supabase/documents';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -69,23 +72,82 @@ const HiddenInput = styled.input`
   display: none;
 `;
 
+const CVInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const CVTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const CVDate = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const TextPreview = styled.div`
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: ${({ theme }) => theme.spacing.md};
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  white-space: pre-wrap;
+  word-wrap: break-word;
+`;
+
 export default function CVPage() {
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [cv, setCV] = useState<Document | null>(null);
   const toast = useToast();
-  const hasCV = false; // Mock - gerçek state Supabase'den gelecek
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      loadCV();
+    }
+  }, [user]);
+
+  const loadCV = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      const documents = await getUserDocuments(user.id, 'cv');
+      if (documents.length > 0) {
+        setCV(documents[0]);
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to load CV');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !user) return;
 
-    // File validation
+    // Validate file size
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       toast.error('File size must be less than 5MB');
       return;
     }
 
-    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+    ];
+
     if (!allowedTypes.includes(file.type)) {
       toast.error('Only PDF and DOCX files are allowed');
       return;
@@ -93,18 +155,57 @@ export default function CVPage() {
 
     setIsUploading(true);
     try {
-      // TODO: Upload to Supabase Storage
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload-cv', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to upload CV');
+      }
+
+      setCV(data.document);
       toast.success('CV uploaded successfully!');
     } catch (error: any) {
+      console.error('Upload error:', error);
       toast.error(error.message || 'Failed to upload CV');
     } finally {
       setIsUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!cv) return;
+
+    const confirmed = window.confirm('Are you sure you want to delete your CV?');
+    if (!confirmed) return;
+
+    try {
+      await deleteDocument(cv.id);
+      setCV(null);
+      toast.success('CV deleted successfully');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to delete CV');
     }
   };
 
   const handleUploadClick = () => {
     document.getElementById('cv-upload')?.click();
   };
+
+  if (isLoading) {
+    return (
+      <Container>
+        <Spinner centered />
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -113,7 +214,7 @@ export default function CVPage() {
         <Subtitle>Upload and manage your CV for job matching analysis</Subtitle>
       </Header>
 
-      {!hasCV ? (
+      {!cv ? (
         <Card variant="bordered">
           <UploadArea onClick={handleUploadClick}>
             <UploadIcon>
@@ -127,31 +228,57 @@ export default function CVPage() {
               PDF or DOCX (max 5MB)
             </UploadSubtitle>
             <Button disabled={isUploading}>
-              {isUploading ? 'Uploading...' : 'Select File'}
+              {isUploading ? 'Processing...' : 'Select File'}
             </Button>
           </UploadArea>
           <HiddenInput
             id="cv-upload"
             type="file"
-            accept=".pdf,.docx"
+            accept=".pdf,.docx,.doc"
             onChange={handleFileSelect}
+            disabled={isUploading}
           />
         </Card>
       ) : (
         <Card variant="elevated">
           <Card.Header>
-            <Card.Title>Current CV</Card.Title>
-            <Card.Description>Uploaded on Oct 17, 2025</Card.Description>
+            <CVInfo>
+              <div>
+                <CVTitle>{cv.title}</CVTitle>
+                <CVDate>
+                  Uploaded on {new Date(cv.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </CVDate>
+              </div>
+              <Badge variant="success">Active</Badge>
+            </CVInfo>
           </Card.Header>
           <Card.Content>
-            <p>CV details will be shown here</p>
+            <div style={{ marginBottom: '16px' }}>
+              <strong style={{ fontSize: '14px' }}>Preview:</strong>
+            </div>
+            <TextPreview>
+              {cv.text.slice(0, 500)}...
+            </TextPreview>
           </Card.Content>
           <Card.Footer>
-            <Button variant="ghost">Delete</Button>
+            <Button variant="danger" onClick={handleDelete}>
+              Delete
+            </Button>
             <Button variant="secondary" onClick={handleUploadClick}>
               Replace CV
             </Button>
           </Card.Footer>
+          <HiddenInput
+            id="cv-upload"
+            type="file"
+            accept=".docx,.doc"
+            onChange={handleFileSelect}
+            disabled={isUploading}
+          />
         </Card>
       )}
     </Container>

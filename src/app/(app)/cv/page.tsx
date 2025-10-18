@@ -232,12 +232,12 @@ export default function CVPage() {
             </Button>
           </UploadArea>
           <HiddenInput
-            id="cv-upload"
-            type="file"
-            accept=".pdf,.docx,.doc"
-            onChange={handleFileSelect}
-            disabled={isUploading}
-          />
+  id="cv-upload"
+  type="file"
+  accept=".pdf,.docx,.doc"  // ← PDF de kabul ediliyor
+  onChange={handleFileSelect}
+  disabled={isUploading}
+/>
         </Card>
       ) : (
         <Card variant="elevated">

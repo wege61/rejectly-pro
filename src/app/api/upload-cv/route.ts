@@ -1,46 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import mammoth from 'mammoth';
-import { PDFDocument } from 'pdf-lib';
+
+// pdf-parse CommonJS module - require ile import ediyoruz
+const pdfParse = require('pdf-parse');
 
 async function parsePDF(buffer: Buffer): Promise<string> {
   try {
-    const pdfDoc = await PDFDocument.load(buffer, { 
-      ignoreEncryption: true,
-      updateMetadata: false 
-    });
+    // pdf-parse options
+    const options = {
+      // Maksimum sayfa sayısı (performance için)
+      max: 0, // 0 = hepsi
+    };
     
-    let fullText = '';
-    const pages = pdfDoc.getPages();
+    const data = await pdfParse(buffer, options);
     
-    // pdf-lib doesn't extract text directly, we need another approach
-    // Let's use a simpler method - just check if PDF is valid and return placeholder
-    // In production, you'd use a proper PDF text extraction service
-    
-    // For now, let's acknowledge the limitation
-    const pageCount = pages.length;
-    
-    if (pageCount === 0) {
-      throw new Error('PDF has no pages');
+    if (!data || !data.text) {
+      throw new Error('No text content found in PDF');
     }
     
-    // Return a message asking user to paste text manually for now
-    // TODO: Integrate proper PDF text extraction service
-    return `PDF file with ${pageCount} pages uploaded. Please note: Automatic text extraction from PDF is not yet implemented. You can proceed with analysis.`;
+    const text = data.text.trim();
     
-  } catch (error) {
+    console.log('📄 PDF Info:', {
+      pages: data.numpages,
+      textLength: text.length,
+      info: data.info,
+    });
+    
+    return text;
+  } catch (error: any) {
     console.error('PDF parsing error:', error);
-    throw new Error(`Failed to parse PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(`Failed to parse PDF: ${error.message}`);
   }
 }
 
 async function parseDOCX(buffer: Buffer): Promise<string> {
   try {
     const result = await mammoth.extractRawText({ buffer });
+    
+    if (!result || !result.value) {
+      throw new Error('No text content found in DOCX');
+    }
+    
     return result.value.trim();
-  } catch (error) {
+  } catch (error: any) {
     console.error('DOCX parsing error:', error);
-    throw new Error('Failed to parse DOCX file');
+    throw new Error(`Failed to parse DOCX: ${error.message}`);
   }
 }
 
@@ -73,7 +78,7 @@ export async function POST(request: NextRequest) {
       size: file.size,
     });
 
-    // Validate file
+    // Validate file size
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       return NextResponse.json(
@@ -82,6 +87,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate file type
     const allowedTypes = [
       'application/pdf',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -101,17 +107,19 @@ export async function POST(request: NextRequest) {
     
     console.log('✅ Buffer created, size:', buffer.length);
 
-    // Parse document
+    // Parse document based on type
     let text: string;
+    let parseStartTime = Date.now();
+    
     try {
       if (file.type === 'application/pdf') {
         console.log('📖 Parsing PDF...');
         text = await parsePDF(buffer);
-        console.log('✅ PDF processed, text length:', text.length);
+        console.log(`✅ PDF parsed in ${Date.now() - parseStartTime}ms, text length: ${text.length}`);
       } else {
         console.log('📖 Parsing DOCX...');
         text = await parseDOCX(buffer);
-        console.log('✅ DOCX parsed successfully, text length:', text.length);
+        console.log(`✅ DOCX parsed in ${Date.now() - parseStartTime}ms, text length: ${text.length}`);
       }
     } catch (parseError: any) {
       console.error('❌ Parse error:', parseError);
@@ -121,13 +129,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // For PDF, we're allowing shorter text since we're not extracting yet
-    const minLength = file.type === 'application/pdf' ? 10 : 50;
-    
-    if (!text || text.length < minLength) {
+    // Validate extracted text
+    if (!text || text.length < 100) {
       console.log('⚠️ Text too short:', text.length);
       return NextResponse.json(
-        { error: `Document appears to be empty or too short (min ${minLength} characters)` },
+        { 
+          error: `Document appears to be empty or too short. Extracted ${text?.length || 0} characters (minimum 100 required). Please ensure your CV contains readable text.`
+        },
         { status: 400 }
       );
     }
@@ -154,7 +162,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('✅ File uploaded successfully');
+    console.log('✅ File uploaded to storage');
 
     // Get public URL
     const { data: { publicUrl } } = supabase.storage
@@ -172,7 +180,7 @@ export async function POST(request: NextRequest) {
         title: file.name,
         text: text,
         file_url: publicUrl,
-        lang: 'en',
+        lang: 'en', // TODO: Auto-detect language
       })
       .select()
       .single();
@@ -185,14 +193,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('✅ Document saved successfully');
+    console.log('✅ Document saved successfully, ID:', document.id);
 
     return NextResponse.json({
       success: true,
       document,
-      message: file.type === 'application/pdf' 
-        ? 'PDF uploaded successfully. Note: For best results, consider uploading a DOCX file with text content.'
-        : undefined,
+      message: `Successfully processed ${file.type === 'application/pdf' ? 'PDF' : 'DOCX'} file with ${text.length} characters.`,
     });
 
   } catch (error: any) {

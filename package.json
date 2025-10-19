@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",
+    "@supabase/storage-js": "^2.75.1",
     "@supabase/supabase-js": "^2.75.0",
     "mammoth": "^1.11.0",
     "next": "15.5.5",
+    "openai": "^6.5.0",
     "pdf-parse-fork": "^1.2.0",
     "pdf2json": "^4.0.0",
     "react": "19.1.0",

@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import styled from 'styled-components';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { ROUTES } from '@/lib/constants';
+import styled from "styled-components";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ROUTES } from "@/lib/constants";
 
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing['2xl']};
+  padding: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const Header = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
@@ -31,7 +31,7 @@ const Grid = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.spacing.lg};
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const StatCard = styled(Card)`
@@ -39,7 +39,7 @@ const StatCard = styled(Card)`
 `;
 
 const StatValue = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize['4xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.primary};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
@@ -51,7 +51,7 @@ const StatLabel = styled.div`
 `;
 
 const Section = styled.section`
-  margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const SectionHeader = styled.div`
@@ -97,10 +97,7 @@ export default function DashboardPage() {
       <Section>
         <SectionHeader>
           <SectionTitle>Recent Reports</SectionTitle>
-          <Button 
-            size="sm"
-            onClick={() => window.location.href = ROUTES.APP.CV}
-          >
+          <Button size="sm" onClick={() => (window.location.href = "/analyze")}>
             New Analysis
           </Button>
         </SectionHeader>
@@ -112,8 +109,8 @@ export default function DashboardPage() {
               title="No reports yet"
               description="Upload your CV and start analyzing job postings to see your first report here."
               action={{
-                label: 'Upload CV',
-                onClick: () => window.location.href = ROUTES.APP.CV,
+                label: "Upload CV",
+                onClick: () => (window.location.href = ROUTES.APP.CV),
               }}
             />
           </Card>

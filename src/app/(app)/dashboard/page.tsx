@@ -1,11 +1,16 @@
 "use client";
 
 import styled from "styled-components";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-
+import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Spinner } from "@/components/ui/Spinner";
 import { ROUTES } from "@/lib/constants";
+import { useAuth } from "@/hooks/useAuth";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const Container = styled.div`
   max-width: 1200px;
@@ -66,9 +71,104 @@ const SectionTitle = styled.h2`
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
 `;
 
+const ReportsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const ReportCard = styled(Card)`
+  cursor: pointer;
+  transition: transform ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+`;
+
+const ReportHeader = styled.div`
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+`;
+
+const ReportTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const ReportDate = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+interface Report {
+  id: string;
+  fit_score: number;
+  pro: boolean;
+  created_at: string;
+}
+
 export default function DashboardPage() {
-  // Mock data - gerçek data Supabase'den gelecek
-  const hasReports = false;
+  const [isLoading, setIsLoading] = useState(true);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [stats, setStats] = useState({
+    totalAnalyses: 0,
+    proReports: 0,
+    avgMatchScore: 0,
+  });
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    async function fetchData() {
+      if (!user) return;
+
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("reports")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      if (data && data.length > 0) {
+        setReports(data);
+
+        // Calculate stats
+        const totalAnalyses = data.length;
+        const proReports = data.filter((r) => r.pro).length;
+        const avgMatchScore = Math.round(
+          data.reduce((sum, r) => sum + r.fit_score, 0) / data.length
+        );
+
+        setStats({
+          totalAnalyses,
+          proReports,
+          avgMatchScore,
+        });
+      }
+
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, [user]);
+
+  const getScoreColor = (score: number): "success" | "warning" | "error" => {
+    if (score >= 75) return "success";
+    if (score >= 50) return "warning";
+    return "error";
+  };
+
+  if (isLoading) {
+    return (
+      <Container>
+        <Spinner centered size="xl" />
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -79,17 +179,19 @@ export default function DashboardPage() {
 
       <Grid>
         <StatCard variant="bordered">
-          <StatValue>0</StatValue>
+          <StatValue>{stats.totalAnalyses}</StatValue>
           <StatLabel>Total Analyses</StatLabel>
         </StatCard>
 
         <StatCard variant="bordered">
-          <StatValue>0</StatValue>
+          <StatValue>{stats.proReports}</StatValue>
           <StatLabel>Pro Reports</StatLabel>
         </StatCard>
 
         <StatCard variant="bordered">
-          <StatValue>-</StatValue>
+          <StatValue>
+            {stats.avgMatchScore > 0 ? `${stats.avgMatchScore}%` : "-"}
+          </StatValue>
           <StatLabel>Avg Match Score</StatLabel>
         </StatCard>
       </Grid>
@@ -97,12 +199,12 @@ export default function DashboardPage() {
       <Section>
         <SectionHeader>
           <SectionTitle>Recent Reports</SectionTitle>
-          <Button size="sm" onClick={() => (window.location.href = "/analyze")}>
+          <Button size="sm" onClick={() => router.push("/analyze")}>
             New Analysis
           </Button>
         </SectionHeader>
 
-        {!hasReports ? (
+        {reports.length === 0 ? (
           <Card variant="bordered">
             <EmptyState
               icon={<EmptyState.DocumentIcon />}
@@ -110,13 +212,45 @@ export default function DashboardPage() {
               description="Upload your CV and start analyzing job postings to see your first report here."
               action={{
                 label: "Upload CV",
-                onClick: () => (window.location.href = ROUTES.APP.CV),
+                onClick: () => router.push(ROUTES.APP.CV),
               }}
             />
           </Card>
         ) : (
-          // Reports list will go here
-          <div>Reports list placeholder</div>
+          <ReportsList>
+            {reports.map((report) => (
+              <ReportCard
+                key={report.id}
+                variant="elevated"
+                onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}
+              >
+                <ReportHeader>
+                  <div>
+                    <ReportTitle>CV Analysis Report</ReportTitle>
+                    <ReportDate>
+                      {new Date(report.created_at).toLocaleDateString("tr-TR")}
+                    </ReportDate>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "8px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Badge variant={getScoreColor(report.fit_score)}>
+                      {report.fit_score}% Match
+                    </Badge>
+                    {report.pro && (
+                      <Badge variant="info" size="sm">
+                        Pro
+                      </Badge>
+                    )}
+                  </div>
+                </ReportHeader>
+              </ReportCard>
+            ))}
+          </ReportsList>
         )}
       </Section>
     </Container>

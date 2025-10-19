@@ -67,7 +67,7 @@ export default function SignupPage() {
     e.preventDefault();
 
     if (password.length < 6) {
-      toast.error('Şifre en az 6 karakter olmalıdır.');
+      toast.error('Password must be at least 6 characters long.');
       return;
     }
 
@@ -75,10 +75,9 @@ export default function SignupPage() {
 
     try {
       await signUp(email, password, name);
-      toast.success('Kayıt başarılı! E-postanızı kontrol edin.');
-      // Email confirmation bekleyeceğiz
+      toast.success('Sign up successful! Please check your email.');
     } catch (error: any) {
-      toast.error(error.message || 'Kayıt yapılamadı. Lütfen tekrar deneyin.');
+      toast.error(error.message || 'Sign up failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -86,14 +85,14 @@ export default function SignupPage() {
 
   return (
     <>
-      <Title>Hesap Oluştur</Title>
-      <Subtitle>Ücretsiz hesap oluşturun ve CV analizine başlayın</Subtitle>
+      <Title>Create an Account</Title>
+      <Subtitle>Sign up for free and start your CV analysis</Subtitle>
 
       <Form onSubmit={handleSubmit}>
         <Input
-          label="Ad Soyad"
+          label="Full Name"
           type="text"
-          placeholder="Ahmet Yılmaz"
+          placeholder="John Doe"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -102,9 +101,9 @@ export default function SignupPage() {
         />
 
         <Input
-          label="E-posta"
+          label="Email"
           type="email"
-          placeholder="ornek@email.com"
+          placeholder="example@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -113,7 +112,7 @@ export default function SignupPage() {
         />
 
         <Input
-          label="Şifre"
+          label="Password"
           type="password"
           placeholder="••••••••"
           value={password}
@@ -121,29 +120,29 @@ export default function SignupPage() {
           required
           fullWidth
           autoComplete="new-password"
-          helperText="En az 6 karakter"
+          helperText="Minimum 6 characters"
         />
 
         <Button type="submit" isLoading={isLoading} fullWidth size="lg">
-          Kayıt Ol
+          Sign Up
         </Button>
       </Form>
 
       <TermsText>
-        Kayıt olarak{' '}
+        By signing up, you agree to our{' '}
         <a href={ROUTES.PUBLIC.TERMS} target="_blank">
-          Kullanım Koşulları
+          Terms of Service
         </a>{' '}
-        ve{' '}
+        and{' '}
         <a href={ROUTES.PUBLIC.PRIVACY} target="_blank">
-          Gizlilik Politikası
+          Privacy Policy
         </a>
-        'nı kabul etmiş olursunuz.
+        .
       </TermsText>
 
       <Footer>
-        Zaten hesabınız var mı?{' '}
-        <a href={ROUTES.AUTH.LOGIN}>Giriş yapın</a>
+        Already have an account?{' '}
+        <a href={ROUTES.AUTH.LOGIN}>Log in</a>
       </Footer>
     </>
   );

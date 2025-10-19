@@ -76,10 +76,10 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password);
-      toast.success('Giriş başarılı! Yönlendiriliyorsunuz...');
+      toast.success('Login successful! Redirecting...');
       router.push(ROUTES.APP.DASHBOARD);
     } catch (error: any) {
-      toast.error(error.message || 'Giriş yapılamadı. Lütfen tekrar deneyin.');
+      toast.error(error.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -87,14 +87,14 @@ export default function LoginPage() {
 
   return (
     <>
-      <Title>Giriş Yap</Title>
-      <Subtitle>Hesabınıza giriş yapın ve CV analizinize devam edin</Subtitle>
+      <Title>Log In</Title>
+      <Subtitle>Access your account and continue your CV analysis</Subtitle>
 
       <Form onSubmit={handleSubmit}>
         <Input
-          label="E-posta"
+          label="Email"
           type="email"
-          placeholder="ornek@email.com"
+          placeholder="example@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -103,7 +103,7 @@ export default function LoginPage() {
         />
 
         <Input
-          label="Şifre"
+          label="Password"
           type="password"
           placeholder="••••••••"
           value={password}
@@ -114,17 +114,17 @@ export default function LoginPage() {
         />
 
         <Button type="submit" isLoading={isLoading} fullWidth size="lg">
-          Giriş Yap
+          Log In
         </Button>
       </Form>
 
       <Divider>
-        <span>veya</span>
+        <span>or</span>
       </Divider>
 
       <Footer>
-        Hesabınız yok mu?{' '}
-        <a href={ROUTES.AUTH.SIGNUP}>Ücretsiz kayıt olun</a>
+        Don’t have an account?{' '}
+        <a href={ROUTES.AUTH.SIGNUP}>Sign up for free</a>
       </Footer>
     </>
   );

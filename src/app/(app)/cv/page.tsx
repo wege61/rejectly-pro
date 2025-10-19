@@ -253,7 +253,7 @@ export default function CVPage() {
             </p>
           </Card.Content>
           <Card.Footer>
-            <Button variant="ghost" onClick={handleDelete}>
+            <Button variant="danger" onClick={handleDelete}>
               Delete
             </Button>
             <Button variant="secondary" onClick={handleUploadClick}>

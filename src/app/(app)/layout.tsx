@@ -351,12 +351,12 @@ export default function AppLayout({
             <UserEmail>{user.email}</UserEmail>
           </UserInfo>
           <Button
-            variant="ghost"
+            variant="danger"
             size="sm"
             fullWidth
             onClick={() => signOut()}
           >
-            Çıkış Yap
+            Sign out
           </Button>
         </UserSection>
       </Sidebar>

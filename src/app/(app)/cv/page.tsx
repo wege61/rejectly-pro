@@ -231,7 +231,8 @@ export default function CVPage() {
               {isUploading ? 'Processing...' : 'Select File'}
             </Button>
           </UploadArea>
-          <HiddenInput
+        
+<HiddenInput
   id="cv-upload"
   type="file"
   accept=".pdf,.docx,.doc"  // ← PDF de kabul ediliyor

@@ -1,37 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import mammoth from 'mammoth';
-
-// pdf-parse CommonJS module - require ile import ediyoruz
-const pdfParse = require('pdf-parse');
+import PDFParser from 'pdf2json';
 
 async function parsePDF(buffer: Buffer): Promise<string> {
-  try {
-    // pdf-parse options
-    const options = {
-      // Maksimum sayfa sayısı (performance için)
-      max: 0, // 0 = hepsi
-    };
-    
-    const data = await pdfParse(buffer, options);
-    
-    if (!data || !data.text) {
-      throw new Error('No text content found in PDF');
-    }
-    
-    const text = data.text.trim();
-    
-    console.log('📄 PDF Info:', {
-      pages: data.numpages,
-      textLength: text.length,
-      info: data.info,
+  return new Promise((resolve, reject) => {
+    const pdfParser = new PDFParser();
+
+    pdfParser.on('pdfParser_dataError', (errData: any) => {
+      console.error('PDF parse error:', errData);
+      reject(new Error(`Failed to parse PDF: ${errData.parserError || 'Unknown error'}`));
     });
-    
-    return text;
-  } catch (error: any) {
-    console.error('PDF parsing error:', error);
-    throw new Error(`Failed to parse PDF: ${error.message}`);
-  }
+
+    pdfParser.on('pdfParser_dataReady', (pdfData: any) => {
+      try {
+        // Extract text from all pages
+        let fullText = '';
+        
+        if (pdfData.Pages && Array.isArray(pdfData.Pages)) {
+          pdfData.Pages.forEach((page: any) => {
+            if (page.Texts && Array.isArray(page.Texts)) {
+              page.Texts.forEach((text: any) => {
+                if (text.R && Array.isArray(text.R)) {
+                  text.R.forEach((r: any) => {
+                    if (r.T) {
+                      // Decode URI component
+                      fullText += decodeURIComponent(r.T) + ' ';
+                    }
+                  });
+                }
+              });
+            }
+            fullText += '\n';
+          });
+        }
+
+        const cleanText = fullText.trim();
+        
+        if (!cleanText) {
+          reject(new Error('No text content found in PDF'));
+          return;
+        }
+
+        console.log('✅ PDF parsed successfully:', {
+          pages: pdfData.Pages?.length || 0,
+          textLength: cleanText.length,
+        });
+
+        resolve(cleanText);
+      } catch (error: any) {
+        reject(new Error(`Error processing PDF data: ${error.message}`));
+      }
+    });
+
+    // Parse the buffer
+    pdfParser.parseBuffer(buffer);
+  });
 }
 
 async function parseDOCX(buffer: Buffer): Promise<string> {
@@ -109,7 +133,7 @@ export async function POST(request: NextRequest) {
 
     // Parse document based on type
     let text: string;
-    let parseStartTime = Date.now();
+    const parseStartTime = Date.now();
     
     try {
       if (file.type === 'application/pdf') {
@@ -134,7 +158,7 @@ export async function POST(request: NextRequest) {
       console.log('⚠️ Text too short:', text.length);
       return NextResponse.json(
         { 
-          error: `Document appears to be empty or too short. Extracted ${text?.length || 0} characters (minimum 100 required). Please ensure your CV contains readable text.`
+          error: `Document appears to be empty or too short. Extracted ${text?.length || 0} characters (minimum 100 required).`
         },
         { status: 400 }
       );
@@ -180,7 +204,7 @@ export async function POST(request: NextRequest) {
         title: file.name,
         text: text,
         file_url: publicUrl,
-        lang: 'en', // TODO: Auto-detect language
+        lang: 'en',
       })
       .select()
       .single();
@@ -198,7 +222,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       document,
-      message: `Successfully processed ${file.type === 'application/pdf' ? 'PDF' : 'DOCX'} file with ${text.length} characters.`,
     });
 
   } catch (error: any) {

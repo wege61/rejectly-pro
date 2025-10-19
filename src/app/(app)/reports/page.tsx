@@ -1,29 +1,34 @@
-'use client';
+"use client";
 
-import styled from 'styled-components';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { ROUTES } from '@/lib/constants';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Spinner } from "@/components/ui/Spinner";
+import { ROUTES } from "@/lib/constants";
+import { useAuth } from "@/hooks/useAuth";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing['2xl']};
+  padding: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const HeaderContent = styled.div``;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
@@ -41,7 +46,7 @@ const ReportsList = styled.div`
 const ReportCard = styled(Card)`
   cursor: pointer;
   transition: transform ${({ theme }) => theme.transitions.fast};
-  
+
   &:hover {
     transform: translateY(-2px);
   }
@@ -71,9 +76,62 @@ const ReportMeta = styled.div`
   flex-wrap: wrap;
 `;
 
+const ScoreBadge = styled(Badge)`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
+`;
+
+interface Report {
+  id: string;
+  fit_score: number;
+  summary_free: string;
+  keywords: {
+    missing?: string[];
+  } | null;
+  pro: boolean;
+  created_at: string;
+}
+
 export default function ReportsPage() {
-  // Mock data - gerçek data Supabase'den gelecek
-  const reports: any[] = [];
+  const [isLoading, setIsLoading] = useState(true);
+  const [reports, setReports] = useState<Report[]>([]);
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    async function fetchReports() {
+      if (!user) return;
+
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("reports")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (data) {
+        setReports(data);
+      }
+
+      setIsLoading(false);
+    }
+
+    fetchReports();
+  }, [user]);
+
+  const getScoreColor = (score: number): "success" | "warning" | "error" => {
+    if (score >= 75) return "success";
+    if (score >= 50) return "warning";
+    return "error";
+  };
+
+  if (isLoading) {
+    return (
+      <Container>
+        <Spinner centered size="xl" />
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -82,9 +140,7 @@ export default function ReportsPage() {
           <Title>My Reports</Title>
           <Subtitle>View and manage your CV analysis reports</Subtitle>
         </HeaderContent>
-        <Button onClick={() => window.location.href = ROUTES.APP.CV}>
-          New Analysis
-        </Button>
+        <Button onClick={() => router.push("/analyze")}>New Analysis</Button>
       </Header>
 
       {reports.length === 0 ? (
@@ -94,32 +150,45 @@ export default function ReportsPage() {
             title="No reports yet"
             description="Create your first analysis report by uploading your CV and adding job postings."
             action={{
-              label: 'Get Started',
-              onClick: () => window.location.href = ROUTES.APP.CV,
+              label: "Get Started",
+              onClick: () => router.push("/analyze"),
             }}
           />
         </Card>
       ) : (
         <ReportsList>
-          {/* Mock report card for UI demonstration */}
-          <ReportCard 
-            variant="elevated"
-            onClick={() => window.location.href = ROUTES.APP.REPORT_DETAIL('demo')}
-          >
-            <ReportHeader>
-              <div>
-                <ReportTitle>Senior Frontend Developer Analysis</ReportTitle>
-                <ReportDate>Created on Oct 17, 2025</ReportDate>
-              </div>
-              <Badge variant="success">85% Match</Badge>
-            </ReportHeader>
-            <ReportMeta>
-              <Badge size="sm">React</Badge>
-              <Badge size="sm">TypeScript</Badge>
-              <Badge size="sm">Next.js</Badge>
-              <Badge variant="info" size="sm">Pro Report</Badge>
-            </ReportMeta>
-          </ReportCard>
+          {reports.map((report) => (
+            <ReportCard
+              key={report.id}
+              variant="elevated"
+              onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}
+            >
+              <ReportHeader>
+                <div>
+                  <ReportTitle>CV Analysis Report</ReportTitle>
+                  <ReportDate>
+                    Created on{" "}
+                    {new Date(report.created_at).toLocaleDateString("tr-TR", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </ReportDate>
+                </div>
+                <ScoreBadge variant={getScoreColor(report.fit_score)}>
+                  {report.fit_score}% Match
+                </ScoreBadge>
+              </ReportHeader>
+              <ReportMeta>
+                <Badge size="sm">
+                  {report.keywords?.missing?.length || 0} Missing Keywords
+                </Badge>
+                <Badge variant={report.pro ? "info" : "default"} size="sm">
+                  {report.pro ? "Pro Report" : "Free Report"}
+                </Badge>
+              </ReportMeta>
+            </ReportCard>
+          ))}
         </ReportsList>
       )}
     </Container>

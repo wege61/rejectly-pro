@@ -200,7 +200,7 @@ export default function BillingPage() {
             <PricingHeader>
               <PricingName>{PRICING.PRO.name}</PricingName>
               <PricingPrice>
-                ${PRICING.PRO.price} <span>per report</span>
+                ${PRICING.PRO.price} <span>per month</span>
               </PricingPrice>
             </PricingHeader>
             <FeatureList>

@@ -1,6 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
+import { ROUTES } from '@/lib/constants';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -25,11 +26,26 @@ const Logo = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing['2xl']};
 `;
 
+const LogoLink = styled.a`
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  transition: transform ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    transform: scale(1.02);
+  }
+`;
+
 const LogoText = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.primary};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
+
+  ${LogoLink}:hover & {
+    color: ${({ theme }) => theme.colors.primaryHover};
+  }
 `;
 
 const LogoSubtext = styled.p`
@@ -46,8 +62,10 @@ export default function AuthLayout({
     <Container>
       <Card>
         <Logo>
-          <LogoText>Rejectly.pro</LogoText>
-          <LogoSubtext>AI-powered CV Analysis</LogoSubtext>
+          <LogoLink href={ROUTES.PUBLIC.HOME}>
+            <LogoText>Rejectly.pro</LogoText>
+            <LogoSubtext>AI-powered CV Analysis</LogoSubtext>
+          </LogoLink>
         </Logo>
         {children}
       </Card>

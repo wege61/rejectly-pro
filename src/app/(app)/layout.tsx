@@ -1,6 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/lib/constants';
 import { Button } from '@/components/ui/Button';
@@ -14,16 +15,88 @@ const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
-const Sidebar = styled.aside`
+const MobileHeader = styled.header`
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 0 ${({ theme }) => theme.spacing.md};
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+`;
+
+const MobileLogo = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const HamburgerButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: ${({ theme }) => theme.spacing.xs};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+const MobileOverlay = styled.div<{ $isOpen: boolean }>`
+  display: none;
+  
+  @media (max-width: 768px) {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 150;
+    opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
+    pointer-events: ${({ $isOpen }) => ($isOpen ? 'all' : 'none')};
+    transition: opacity ${({ theme }) => theme.transitions.normal};
+  }
+`;
+
+const Sidebar = styled.aside<{ $isOpen?: boolean }>`
   width: 260px;
   background-color: ${({ theme }) => theme.colors.surface};
   border-right: 1px solid ${({ theme }) => theme.colors.border};
   padding: ${({ theme }) => theme.spacing.lg};
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
   
   @media (max-width: 768px) {
-    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 200;
+    transform: translateX(${({ $isOpen }) => ($isOpen ? '0' : '-100%')});
+    transition: transform ${({ theme }) => theme.transitions.normal};
   }
 `;
 
@@ -32,6 +105,47 @@ const Logo = styled.div`
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.primary};
   margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileSidebarHeader = styled.div`
+  display: none;
+  
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: ${({ theme }) => theme.spacing.xl};
+  }
+`;
+
+const MobileSidebarLogo = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: ${({ theme }) => theme.spacing.xs};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover {
+    opacity: 0.7;
+  }
 `;
 
 const Nav = styled.nav`
@@ -97,6 +211,10 @@ const UserEmail = styled.div`
 const Main = styled.main`
   flex: 1;
   overflow-y: auto;
+
+  @media (max-width: 768px) {
+    margin-top: 60px;
+  }
 `;
 
 const LoadingContainer = styled.div`
@@ -172,6 +290,7 @@ export default function AppLayout({
 }) {
   const { user, loading } = useAuth(ROUTES.AUTH.LOGIN);
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   if (loading) {
     return (
@@ -185,9 +304,31 @@ export default function AppLayout({
     return null; // useAuth hook will redirect
   }
 
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
   return (
     <Container>
-      <Sidebar>
+      <MobileHeader>
+        <MobileLogo>Rejectly.pro</MobileLogo>
+        <HamburgerButton onClick={() => setIsMobileMenuOpen(true)}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </HamburgerButton>
+      </MobileHeader>
+
+      <MobileOverlay $isOpen={isMobileMenuOpen} onClick={closeMobileMenu} />
+
+      <Sidebar $isOpen={isMobileMenuOpen}>
+        <MobileSidebarHeader>
+          <MobileSidebarLogo>Rejectly.pro</MobileSidebarLogo>
+          <CloseButton onClick={closeMobileMenu}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </CloseButton>
+        </MobileSidebarHeader>
+
         <Logo>Rejectly.pro</Logo>
         
         <Nav>
@@ -196,6 +337,7 @@ export default function AppLayout({
               key={item.href}
               href={item.href}
               $active={pathname === item.href}
+              onClick={closeMobileMenu}
             >
               {item.icon}
               {item.label}

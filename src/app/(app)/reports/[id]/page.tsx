@@ -1,15 +1,20 @@
-'use client';
+"use client";
 
-import styled from 'styled-components';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { useParams, useRouter } from 'next/navigation';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { Spinner } from "@/components/ui/Spinner";
+import { useParams, useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
+import { useAuth } from "@/hooks/useAuth";
+import { createClient } from "@/lib/supabase/client";
 
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing['2xl']};
+  padding: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const BackButton = styled(Button)`
@@ -17,11 +22,11 @@ const BackButton = styled(Button)`
 `;
 
 const Header = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
@@ -36,7 +41,7 @@ const Grid = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.spacing.lg};
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const ScoreCard = styled(Card)`
@@ -44,7 +49,7 @@ const ScoreCard = styled(Card)`
 `;
 
 const ScoreValue = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize['5xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize["5xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.primary};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
@@ -59,12 +64,6 @@ const Section = styled.section`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
-const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-`;
-
 const KeywordList = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -74,81 +73,219 @@ const KeywordList = styled.div`
 const BulletList = styled.ul`
   list-style: disc;
   padding-left: ${({ theme }) => theme.spacing.lg};
-  
+
   li {
     margin-bottom: ${({ theme }) => theme.spacing.sm};
     color: ${({ theme }) => theme.colors.textPrimary};
   }
 `;
 
+const ProUpgradeCard = styled(Card)`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+
+  * {
+    color: white !important;
+  }
+`;
+
+const UpgradeTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const UpgradeFeatures = styled.ul`
+  text-align: left;
+  list-style: none;
+  margin: ${({ theme }) => theme.spacing.lg} 0;
+
+  li {
+    margin-bottom: ${({ theme }) => theme.spacing.sm};
+    padding-left: ${({ theme }) => theme.spacing.lg};
+    position: relative;
+
+    &:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+  }
+`;
+
+interface RoleRecommendation {
+  title: string;
+  fit: number;
+}
+
+interface Report {
+  id: string;
+  user_id: string;
+  cv_id: string;
+  job_ids: string[];
+  fit_score: number;
+  summary_free: string;
+  summary_pro: {
+    rewrittenBullets?: string[];
+    roleRecommendations?: RoleRecommendation[];
+    atsFlags?: string[];
+  } | null;
+  keywords: {
+    missing?: string[];
+  } | null;
+  role_fit: RoleRecommendation[] | null;
+  ats_flags: string[] | null;
+  pro: boolean;
+  created_at: string;
+}
+
 export default function ReportDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const toast = useToast();
+  const { user } = useAuth();
   const reportId = params.id as string;
 
-  // Mock data - gerçek data Supabase'den gelecek
-  const report = {
-    id: reportId,
-    title: 'Senior Frontend Developer Analysis',
-    fitScore: 85,
-    isPro: true,
-    createdAt: '2025-10-17',
-    missingKeywords: ['Docker', 'Kubernetes', 'AWS', 'GraphQL', 'Testing'],
-    rewrittenBullets: [
-      'Led development of 5+ large-scale React applications using TypeScript and Next.js, improving performance by 40%',
-      'Architected and implemented component library with 50+ reusable components using styled-components',
-      'Mentored team of 3 junior developers and established best practices for code quality and testing',
-    ],
-    roleRecommendations: [
-      { title: 'Senior Frontend Engineer', fit: 90 },
-      { title: 'Lead React Developer', fit: 85 },
-      { title: 'Full Stack Developer', fit: 75 },
-    ],
-    atsFlags: [
-      'Include specific years of experience (e.g., "5+ years")',
-      'Add quantifiable achievements with metrics',
-      'Include industry-standard keywords from job description',
-    ],
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpgrading, setIsUpgrading] = useState(false);
+  const [report, setReport] = useState<Report | null>(null);
+
+  useEffect(() => {
+    async function fetchReport() {
+      if (!user) return;
+
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("reports")
+        .select("*")
+        .eq("id", reportId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (error || !data) {
+        toast.error("Report not found");
+        router.push("/reports");
+        return;
+      }
+
+      setReport(data);
+      setIsLoading(false);
+    }
+
+    fetchReport();
+  }, [user, reportId, router, toast]);
+
+  const handleUpgradeToPro = async () => {
+    if (!report) return;
+
+    setIsUpgrading(true);
+    try {
+      const response = await fetch("/api/analyze/pro", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reportId: report.id,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Upgrade failed");
+      }
+
+      toast.success("Upgraded to Pro!");
+
+      // Refresh report
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("reports")
+        .select("*")
+        .eq("id", reportId)
+        .single();
+
+      if (data) {
+        setReport(data);
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Upgrade failed";
+      toast.error(errorMessage);
+    } finally {
+      setIsUpgrading(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <Container>
+        <Spinner centered size="xl" />
+      </Container>
+    );
+  }
+
+  if (!report) {
+    return null;
+  }
+
+  const missingKeywords = report.keywords?.missing || [];
+  const rewrittenBullets = report.summary_pro?.rewrittenBullets || [];
+  const roleRecommendations = report.role_fit || [];
+  const atsFlags = report.ats_flags || [];
 
   return (
     <Container>
-      <BackButton 
-        variant="ghost" 
-        size="sm"
-        onClick={() => router.back()}
-      >
+      <BackButton variant="ghost" size="sm" onClick={() => router.back()}>
         ← Back
       </BackButton>
 
       <Header>
-        <Title>{report.title}</Title>
+        <Title>CV Analysis Report</Title>
         <HeaderMeta>
-          <Badge variant={report.isPro ? 'info' : 'default'}>
-            {report.isPro ? 'Pro Report' : 'Free Report'}
+          <Badge variant={report.pro ? "info" : "default"}>
+            {report.pro ? "Pro Report" : "Free Report"}
           </Badge>
-          <span style={{ color: '#9ca3af', fontSize: '14px' }}>
-            Created on {new Date(report.createdAt).toLocaleDateString('tr-TR')}
+          <span style={{ color: "#9ca3af", fontSize: "14px" }}>
+            Created on {new Date(report.created_at).toLocaleDateString("tr-TR")}
           </span>
         </HeaderMeta>
       </Header>
 
       <Grid>
         <ScoreCard variant="elevated">
-          <ScoreValue>{report.fitScore}%</ScoreValue>
+          <ScoreValue>{report.fit_score}%</ScoreValue>
           <ScoreLabel>Match Score</ScoreLabel>
         </ScoreCard>
 
         <ScoreCard variant="elevated">
-          <ScoreValue>{report.missingKeywords.length}</ScoreValue>
+          <ScoreValue>{missingKeywords.length}</ScoreValue>
           <ScoreLabel>Missing Keywords</ScoreLabel>
         </ScoreCard>
 
-        <ScoreCard variant="elevated">
-          <ScoreValue>{report.roleRecommendations.length}</ScoreValue>
-          <ScoreLabel>Role Recommendations</ScoreLabel>
-        </ScoreCard>
+        {report.pro && (
+          <ScoreCard variant="elevated">
+            <ScoreValue>{roleRecommendations.length}</ScoreValue>
+            <ScoreLabel>Role Recommendations</ScoreLabel>
+          </ScoreCard>
+        )}
       </Grid>
+
+      <Section>
+        <Card variant="bordered">
+          <Card.Header>
+            <Card.Title>Summary</Card.Title>
+            <Card.Description>
+              AI-generated analysis of your CV match
+            </Card.Description>
+          </Card.Header>
+          <Card.Content>
+            <p>{report.summary_free}</p>
+          </Card.Content>
+        </Card>
+      </Section>
 
       <Section>
         <Card variant="bordered">
@@ -160,7 +297,7 @@ export default function ReportDetailPage() {
           </Card.Header>
           <Card.Content>
             <KeywordList>
-              {report.missingKeywords.map((keyword) => (
+              {missingKeywords.map((keyword: string) => (
                 <Badge key={keyword} variant="warning">
                   {keyword}
                 </Badge>
@@ -170,7 +307,32 @@ export default function ReportDetailPage() {
         </Card>
       </Section>
 
-      {report.isPro && (
+      {!report.pro ? (
+        <Section>
+          <ProUpgradeCard variant="elevated">
+            <Card.Content>
+              <UpgradeTitle>🚀 Upgrade to Pro Report - $9</UpgradeTitle>
+              <p style={{ marginBottom: "24px" }}>
+                Get detailed insights to dramatically improve your CV
+              </p>
+              <UpgradeFeatures>
+                <li>3 professionally rewritten bullet points</li>
+                <li>3 alternative role recommendations with match scores</li>
+                <li>ATS optimization tips for better visibility</li>
+                <li>Downloadable PDF report</li>
+              </UpgradeFeatures>
+              <Button
+                size="lg"
+                onClick={handleUpgradeToPro}
+                isLoading={isUpgrading}
+                style={{ backgroundColor: "white", color: "#667eea" }}
+              >
+                {isUpgrading ? "Upgrading..." : "Upgrade Now - $9"}
+              </Button>
+            </Card.Content>
+          </ProUpgradeCard>
+        </Section>
+      ) : (
         <>
           <Section>
             <Card variant="bordered">
@@ -182,7 +344,7 @@ export default function ReportDetailPage() {
               </Card.Header>
               <Card.Content>
                 <BulletList>
-                  {report.rewrittenBullets.map((bullet, index) => (
+                  {rewrittenBullets.map((bullet: string, index: number) => (
                     <li key={index}>{bullet}</li>
                   ))}
                 </BulletList>
@@ -199,17 +361,23 @@ export default function ReportDetailPage() {
                 </Card.Description>
               </Card.Header>
               <Card.Content>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {report.roleRecommendations.map((role) => (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px",
+                  }}
+                >
+                  {roleRecommendations.map((role: RoleRecommendation) => (
                     <div
                       key={role.title}
                       style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '12px',
-                        backgroundColor: '#f9fafb',
-                        borderRadius: '8px',
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "12px",
+                        backgroundColor: "#f9fafb",
+                        borderRadius: "8px",
                       }}
                     >
                       <span style={{ fontWeight: 500 }}>{role.title}</span>
@@ -231,7 +399,7 @@ export default function ReportDetailPage() {
               </Card.Header>
               <Card.Content>
                 <BulletList>
-                  {report.atsFlags.map((flag, index) => (
+                  {atsFlags.map((flag: string, index: number) => (
                     <li key={index}>{flag}</li>
                   ))}
                 </BulletList>
@@ -240,13 +408,6 @@ export default function ReportDetailPage() {
           </Section>
         </>
       )}
-
-      <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-        <Button variant="secondary">Download PDF</Button>
-        {!report.isPro && (
-          <Button>Upgrade to Pro Report - $9</Button>
-        )}
-      </div>
     </Container>
   );
 }

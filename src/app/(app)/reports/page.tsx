@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Spinner } from "@/components/ui/Spinner";
+import { ReportsListSkeleton } from "@/components/skeletons/ReportsListSkeleton";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
@@ -126,11 +126,7 @@ export default function ReportsPage() {
   };
 
   if (isLoading) {
-    return (
-      <Container>
-        <Spinner centered size="xl" />
-      </Container>
-    );
+    return <ReportsListSkeleton />;
   }
 
   return (
@@ -140,7 +136,9 @@ export default function ReportsPage() {
           <Title>My Reports</Title>
           <Subtitle>View and manage your CV analysis reports</Subtitle>
         </HeaderContent>
-        <Button onClick={() => router.push("/analyze")}>New Analysis</Button>
+        <Button onClick={() => router.push(ROUTES.APP.ANALYZE)}>
+          New Analysis
+        </Button>
       </Header>
 
       {reports.length === 0 ? (
@@ -151,7 +149,7 @@ export default function ReportsPage() {
             description="Create your first analysis report by uploading your CV and adding job postings."
             action={{
               label: "Get Started",
-              onClick: () => router.push("/analyze"),
+              onClick: () => router.push(ROUTES.APP.ANALYZE),
             }}
           />
         </Card>

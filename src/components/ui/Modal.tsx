@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import styled, { css, keyframes } from 'styled-components';
-import { useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import styled, { css, keyframes } from "styled-components";
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 interface ModalProps {
   isOpen: boolean;
@@ -10,7 +10,7 @@ interface ModalProps {
   title?: string;
   description?: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: "sm" | "md" | "lg" | "xl";
   showCloseButton?: boolean;
 }
 
@@ -60,18 +60,18 @@ const ModalContainer = styled.div<{ $size: string }>`
   flex-direction: column;
   animation: ${slideUp} 0.3s ease;
   z-index: ${({ theme }) => theme.zIndex.modal};
-  
+
   ${({ $size }) => {
     switch ($size) {
-      case 'sm':
+      case "sm":
         return css`
           max-width: 400px;
         `;
-      case 'lg':
+      case "lg":
         return css`
           max-width: 800px;
         `;
-      case 'xl':
+      case "xl":
         return css`
           max-width: 1200px;
         `;
@@ -119,12 +119,12 @@ const CloseButton = styled.button`
   color: ${({ theme }) => theme.colors.textSecondary};
   transition: all ${({ theme }) => theme.transitions.fast};
   flex-shrink: 0;
-  
+
   &:hover {
     background-color: ${({ theme }) => theme.colors.surfaceHover};
     color: ${({ theme }) => theme.colors.textPrimary};
   }
-  
+
   svg {
     width: 20px;
     height: 20px;
@@ -154,7 +154,11 @@ const CloseIcon = () => (
     strokeWidth={2}
     stroke="currentColor"
   >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M6 18L18 6M6 6l12 12"
+    />
   </svg>
 );
 
@@ -167,26 +171,26 @@ export const Modal: React.FC<ModalProps> & {
   title,
   description,
   children,
-  size = 'md',
+  size = "md",
   showCloseButton = true,
 }) => {
   // ESC tuşu ile kapatma
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
       // Body scroll'u engelle
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
@@ -206,7 +210,9 @@ export const Modal: React.FC<ModalProps> & {
           <ModalHeader>
             <ModalHeaderContent>
               {title && <ModalTitle>{title}</ModalTitle>}
-              {description && <ModalDescription>{description}</ModalDescription>}
+              {description && (
+                <ModalDescription>{description}</ModalDescription>
+              )}
             </ModalHeaderContent>
             {showCloseButton && (
               <CloseButton onClick={onClose} aria-label="Close modal">
@@ -221,7 +227,7 @@ export const Modal: React.FC<ModalProps> & {
   );
 
   // Portal kullanarak body'e render et
-  return typeof document !== 'undefined'
+  return typeof document !== "undefined"
     ? createPortal(modalContent, document.body)
     : null;
 };

@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/contexts/ToastContext";
 import { Spinner } from "@/components/ui/Spinner";
+import { CVListSkeleton } from "@/components/skeletons/CVListSkeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 
@@ -185,11 +186,7 @@ export default function CVPage() {
   };
 
   if (isLoading) {
-    return (
-      <Container>
-        <Spinner centered size="xl" />
-      </Container>
-    );
+    return <CVListSkeleton />;
   }
 
   return (

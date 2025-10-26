@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import styled from 'styled-components';
-import { Button } from './Button';
+import styled from "styled-components";
+import { Button } from "./Button";
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -11,7 +11,6 @@ interface EmptyStateProps {
     label: string;
     onClick: () => void;
   };
-  className?: string;
 }
 
 const Container = styled.div`
@@ -19,60 +18,72 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: ${({ theme }) => theme.spacing["3xl"]};
   text-align: center;
-  padding: ${({ theme }) => `${theme.spacing['3xl']} ${theme.spacing.xl}`};
-  min-height: 300px;
+  animation: ${({ theme }) => theme.animations.fadeIn} 0.5s ease;
 `;
 
 const IconWrapper = styled.div`
   width: 64px;
   height: 64px;
+  border-radius: ${({ theme }) => theme.radius.full};
+  background-color: ${({ theme }) => theme.colors.surfaceHover};
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: ${({ theme }) => theme.spacing.lg};
   color: ${({ theme }) => theme.colors.textTertiary};
-  
+  animation: ${({ theme }) => theme.animations.scaleIn} 0.4s ease;
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  &:hover {
+    transform: scale(1.1) rotate(5deg);
+    background-color: ${({ theme }) => theme.colors.primaryLight};
+    color: ${({ theme }) => theme.colors.primary};
+  }
+
   svg {
-    width: 100%;
-    height: 100%;
+    width: 32px;
+    height: 32px;
   }
 `;
 
 const Title = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.textPrimary};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
+  animation: ${({ theme }) => theme.animations.slideInUp} 0.5s ease;
+  animation-delay: 0.1s;
+  animation-fill-mode: both;
 `;
 
 const Description = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
   max-width: 400px;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  animation: ${({ theme }) => theme.animations.slideInUp} 0.5s ease;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
 `;
 
-// Default Icons
-const DocumentIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-    />
-  </svg>
-);
+const ActionWrapper = styled.div`
+  animation: ${({ theme }) => theme.animations.slideInUp} 0.5s ease;
+  animation-delay: 0.3s;
+  animation-fill-mode: both;
+`;
 
-const FolderIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
-    />
-  </svg>
-);
-
+// Default icons
 const InboxIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -81,8 +92,46 @@ const InboxIcon = () => (
   </svg>
 );
 
+const DocumentIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+    />
+  </svg>
+);
+
+const FolderIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
+    />
+  </svg>
+);
+
 const SearchIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -92,22 +141,26 @@ const SearchIcon = () => (
 );
 
 export const EmptyState: React.FC<EmptyStateProps> & {
+  InboxIcon: typeof InboxIcon;
   DocumentIcon: typeof DocumentIcon;
   FolderIcon: typeof FolderIcon;
-  InboxIcon: typeof InboxIcon;
   SearchIcon: typeof SearchIcon;
-} = ({ icon, title, description, action, className }) => {
+} = ({ icon, title, description, action }) => {
   return (
-    <Container className={className}>
+    <Container>
       {icon && <IconWrapper>{icon}</IconWrapper>}
       <Title>{title}</Title>
       {description && <Description>{description}</Description>}
-      {action && <Button onClick={action.onClick}>{action.label}</Button>}
+      {action && (
+        <ActionWrapper>
+          <Button onClick={action.onClick}>{action.label}</Button>
+        </ActionWrapper>
+      )}
     </Container>
   );
 };
 
+EmptyState.InboxIcon = InboxIcon;
 EmptyState.DocumentIcon = DocumentIcon;
 EmptyState.FolderIcon = FolderIcon;
-EmptyState.InboxIcon = InboxIcon;
 EmptyState.SearchIcon = SearchIcon;

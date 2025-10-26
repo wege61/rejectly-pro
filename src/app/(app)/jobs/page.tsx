@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/Badge";
-import { Spinner } from "@/components/ui/Spinner";
+import { JobsListSkeleton } from "@/components/skeletons/JobsListSkeleton";
 import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
@@ -169,11 +169,7 @@ export default function JobsPage() {
   };
 
   if (isFetchingJobs) {
-    return (
-      <Container>
-        <Spinner centered size="xl" />
-      </Container>
-    );
+    return <JobsListSkeleton />;
   }
 
   return (

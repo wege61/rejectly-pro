@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes, css } from "styled-components";
 
-type SpinnerSize = 'sm' | 'md' | 'lg' | 'xl';
-type SpinnerVariant = 'primary' | 'white' | 'current';
+type SpinnerSize = "sm" | "md" | "lg" | "xl";
+type SpinnerVariant = "primary" | "white" | "current";
 
 interface SpinnerProps {
   size?: SpinnerSize;
@@ -17,28 +17,37 @@ const spin = keyframes`
   }
 `;
 
+const pulse = keyframes`
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+`;
+
 const StyledSpinner = styled.div<SpinnerProps>`
   display: inline-block;
   border-radius: 50%;
   border-style: solid;
   animation: ${spin} 0.6s linear infinite;
-  
+
   /* Sizes */
-  ${({ size = 'md' }) => {
+  ${({ size = "md" }) => {
     switch (size) {
-      case 'sm':
+      case "sm":
         return css`
           width: 16px;
           height: 16px;
           border-width: 2px;
         `;
-      case 'lg':
+      case "lg":
         return css`
           width: 32px;
           height: 32px;
           border-width: 3px;
         `;
-      case 'xl':
+      case "xl":
         return css`
           width: 48px;
           height: 48px;
@@ -52,16 +61,16 @@ const StyledSpinner = styled.div<SpinnerProps>`
         `;
     }
   }}
-  
+
   /* Variants */
-  ${({ variant = 'primary', theme }) => {
+  ${({ variant = "primary", theme }) => {
     switch (variant) {
-      case 'white':
+      case "white":
         return css`
           border-color: rgba(255, 255, 255, 0.3);
           border-top-color: white;
         `;
-      case 'current':
+      case "current":
         return css`
           border-color: currentColor;
           border-top-color: transparent;
@@ -80,7 +89,8 @@ const SpinnerContainer = styled.div<{ $centered?: boolean }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  
+  animation: ${pulse} 1.5s ease-in-out infinite;
+
   ${({ $centered }) =>
     $centered &&
     css`

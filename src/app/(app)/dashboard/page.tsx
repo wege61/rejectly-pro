@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Spinner } from "@/components/ui/Spinner";
+import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
@@ -61,14 +61,30 @@ const Section = styled.section`
 
 const SectionHeader = styled.div`
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
 const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+`;
+
+const QuickActionsGrid = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.lg};
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+`;
+
+const ActionCard = styled(Card)`
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: ${({ theme }) => theme.shadow.lg};
+  }
 `;
 
 const ReportsList = styled.div`
@@ -79,175 +95,284 @@ const ReportsList = styled.div`
 
 const ReportCard = styled(Card)`
   cursor: pointer;
-  transition: transform ${({ theme }) => theme.transitions.fast};
+  transition: all ${({ theme }) => theme.transitions.normal};
 
   &:hover {
     transform: translateY(-2px);
+    box-shadow: ${({ theme }) => theme.shadow.md};
   }
 `;
 
 const ReportHeader = styled.div`
   display: flex;
-  align-items: start;
   justify-content: space-between;
+  align-items: start;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const ReportInfo = styled.div`
+  flex: 1;
 `;
 
 const ReportTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
-const ReportDate = styled.div`
+const ReportDate = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
+const ReportScore = styled.div`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.primaryLight};
+  color: ${({ theme }) => theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+`;
+
+const ReportMeta = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const ReportSummary = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+interface Stats {
+  totalReports: number;
+  totalCVs: number;
+  totalJobs: number;
+}
+
 interface Report {
   id: string;
-  fit_score: number;
-  pro: boolean;
   created_at: string;
+  fit_score: number;
+  summary_free: string;
+  pro: boolean;
 }
 
 export default function DashboardPage() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [reports, setReports] = useState<Report[]>([]);
-  const [stats, setStats] = useState({
-    totalAnalyses: 0,
-    proReports: 0,
-    avgMatchScore: 0,
-  });
   const { user } = useAuth();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState<Stats>({
+    totalReports: 0,
+    totalCVs: 0,
+    totalJobs: 0,
+  });
+  const [recentReports, setRecentReports] = useState<Report[]>([]);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchDashboardData() {
       if (!user) return;
 
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("reports")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(5);
+      try {
+        const supabase = createClient();
 
-      if (data && data.length > 0) {
-        setReports(data);
-
-        // Calculate stats
-        const totalAnalyses = data.length;
-        const proReports = data.filter((r) => r.pro).length;
-        const avgMatchScore = Math.round(
-          data.reduce((sum, r) => sum + r.fit_score, 0) / data.length
-        );
+        // Fetch stats
+        const [reportsRes, cvsRes, jobsRes] = await Promise.all([
+          supabase
+            .from("reports")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id),
+          supabase
+            .from("documents")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id)
+            .eq("type", "cv"),
+          supabase
+            .from("documents")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id)
+            .eq("type", "job"),
+        ]);
 
         setStats({
-          totalAnalyses,
-          proReports,
-          avgMatchScore,
+          totalReports: reportsRes.count || 0,
+          totalCVs: cvsRes.count || 0,
+          totalJobs: jobsRes.count || 0,
         });
-      }
 
-      setIsLoading(false);
+        // Fetch recent reports
+        const { data: reports } = await supabase
+          .from("reports")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(5);
+
+        setRecentReports(reports || []);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
 
-    fetchData();
+    fetchDashboardData();
   }, [user]);
 
-  const getScoreColor = (score: number): "success" | "warning" | "error" => {
-    if (score >= 75) return "success";
-    if (score >= 50) return "warning";
-    return "error";
-  };
-
   if (isLoading) {
-    return (
-      <Container>
-        <Spinner centered size="xl" />
-      </Container>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
     <Container>
       <Header>
         <Title>Dashboard</Title>
-        <Subtitle>CV analizlerinize ve raporlarınıza genel bakış</Subtitle>
+        <Subtitle>
+          Welcome back, {user?.user_metadata?.name || "User"}! Here&apos;s your
+          overview.
+        </Subtitle>
       </Header>
 
+      {/* Stats */}
       <Grid>
-        <StatCard variant="bordered">
-          <StatValue>{stats.totalAnalyses}</StatValue>
-          <StatLabel>Total Analyses</StatLabel>
+        <StatCard variant="elevated">
+          <StatValue>{stats.totalReports}</StatValue>
+          <StatLabel>Total Reports</StatLabel>
         </StatCard>
-
-        <StatCard variant="bordered">
-          <StatValue>{stats.proReports}</StatValue>
-          <StatLabel>Pro Reports</StatLabel>
+        <StatCard variant="elevated">
+          <StatValue>{stats.totalCVs}</StatValue>
+          <StatLabel>CVs Uploaded</StatLabel>
         </StatCard>
-
-        <StatCard variant="bordered">
-          <StatValue>
-            {stats.avgMatchScore > 0 ? `${stats.avgMatchScore}%` : "-"}
-          </StatValue>
-          <StatLabel>Avg Match Score</StatLabel>
+        <StatCard variant="elevated">
+          <StatValue>{stats.totalJobs}</StatValue>
+          <StatLabel>Job Postings</StatLabel>
         </StatCard>
       </Grid>
 
+      {/* Quick Actions */}
+      <Section>
+        <SectionHeader>
+          <SectionTitle>Quick Actions</SectionTitle>
+        </SectionHeader>
+        <QuickActionsGrid>
+          <ActionCard
+            variant="elevated"
+            onClick={() => router.push(ROUTES.APP.CV)}
+          >
+            <Card.Header>
+              <Card.Title>Upload CV</Card.Title>
+              <Card.Description>
+                Add a new CV to analyze against job postings
+              </Card.Description>
+            </Card.Header>
+          </ActionCard>
+          <ActionCard
+            variant="elevated"
+            onClick={() => router.push(ROUTES.APP.JOBS)}
+          >
+            <Card.Header>
+              <Card.Title>Add Job Posting</Card.Title>
+              <Card.Description>
+                Save job postings to compare with your CV
+              </Card.Description>
+            </Card.Header>
+          </ActionCard>
+          <ActionCard
+            variant="elevated"
+            onClick={() => router.push(ROUTES.APP.ANALYZE)}
+          >
+            <Card.Header>
+              <Card.Title>New Analysis</Card.Title>
+              <Card.Description>
+                Generate a new CV-job match report
+              </Card.Description>
+            </Card.Header>
+          </ActionCard>
+        </QuickActionsGrid>
+      </Section>
+
+      {/* Recent Reports */}
       <Section>
         <SectionHeader>
           <SectionTitle>Recent Reports</SectionTitle>
-          <Button size="sm" onClick={() => router.push("/analyze")}>
-            New Analysis
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => router.push(ROUTES.APP.REPORTS)}
+          >
+            View All
           </Button>
         </SectionHeader>
 
-        {reports.length === 0 ? (
+        {recentReports.length === 0 ? (
           <Card variant="bordered">
             <EmptyState
               icon={<EmptyState.DocumentIcon />}
               title="No reports yet"
-              description="Upload your CV and start analyzing job postings to see your first report here."
+              description="Create your first analysis to see results here."
               action={{
-                label: "Upload CV",
-                onClick: () => router.push(ROUTES.APP.CV),
+                label: "Create Analysis",
+                onClick: () => router.push(ROUTES.APP.ANALYZE),
               }}
             />
           </Card>
         ) : (
           <ReportsList>
-            {reports.map((report) => (
+            {recentReports.map((report) => (
               <ReportCard
                 key={report.id}
                 variant="elevated"
-                onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}
+                onClick={() =>
+                  router.push(`${ROUTES.APP.REPORTS}/${report.id}`)
+                }
               >
                 <ReportHeader>
-                  <div>
-                    <ReportTitle>CV Analysis Report</ReportTitle>
+                  <ReportInfo>
+                    <ReportTitle>Analysis Report</ReportTitle>
                     <ReportDate>
-                      {new Date(report.created_at).toLocaleDateString("tr-TR")}
+                      {new Date(report.created_at).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
                     </ReportDate>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "8px",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Badge variant={getScoreColor(report.fit_score)}>
-                      {report.fit_score}% Match
-                    </Badge>
-                    {report.pro && (
-                      <Badge variant="info" size="sm">
-                        Pro
-                      </Badge>
-                    )}
-                  </div>
+                  </ReportInfo>
+                  <ReportScore>{report.fit_score}</ReportScore>
                 </ReportHeader>
+                <ReportMeta>
+                  <Badge variant={report.pro ? "success" : "default"}>
+                    {report.pro ? "Pro" : "Free"}
+                  </Badge>
+                  <Badge
+                    variant={
+                      report.fit_score >= 70
+                        ? "success"
+                        : report.fit_score >= 50
+                        ? "warning"
+                        : "error"
+                    }
+                  >
+                    {report.fit_score >= 70
+                      ? "Strong Match"
+                      : report.fit_score >= 50
+                      ? "Moderate Match"
+                      : "Weak Match"}
+                  </Badge>
+                </ReportMeta>
+                {report.summary_free && (
+                  <ReportSummary>{report.summary_free}</ReportSummary>
+                )}
               </ReportCard>
             ))}
           </ReportsList>

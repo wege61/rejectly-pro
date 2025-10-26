@@ -1,30 +1,9 @@
-'use client';
+"use client";
 
-import styled, { keyframes, css } from 'styled-components';
-import { useToast, Toast as ToastType } from '@/contexts/ToastContext';
-import { createPortal } from 'react-dom';
-
-const slideIn = keyframes`
-  from {
-    transform: translateX(400px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-`;
-
-const slideOut = keyframes`
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(400px);
-    opacity: 0;
-  }
-`;
+import styled, { css } from "styled-components";
+import { useToast, Toast as ToastType } from "@/contexts/ToastContext";
+import { createPortal } from "react-dom";
+import { useState, useEffect } from "react";
 
 const ToastContainer = styled.div`
   position: fixed;
@@ -35,7 +14,7 @@ const ToastContainer = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.sm};
   pointer-events: none;
-  
+
   @media (max-width: 640px) {
     left: ${({ theme }) => theme.spacing.md};
     right: ${({ theme }) => theme.spacing.md};
@@ -53,26 +32,28 @@ const ToastItem = styled.div<{ $variant: string; $isExiting?: boolean }>`
   min-width: 300px;
   max-width: 400px;
   pointer-events: auto;
-  animation: ${slideIn} 0.3s ease forwards;
   border-left: 4px solid;
-  
-  ${({ $isExiting }) =>
+  animation: ${({ theme }) => theme.animations.slideInDown} 0.3s ease forwards;
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  ${({ $isExiting, theme }) =>
     $isExiting &&
     css`
-      animation: ${slideOut} 0.3s ease forwards;
+      animation: ${theme.animations.fadeOut} 0.3s ease forwards;
+      transform: translateX(400px);
     `}
-  
+
   ${({ $variant, theme }) => {
     switch ($variant) {
-      case 'success':
+      case "success":
         return css`
           border-left-color: ${theme.colors.success};
         `;
-      case 'error':
+      case "error":
         return css`
           border-left-color: ${theme.colors.error};
         `;
-      case 'warning':
+      case "warning":
         return css`
           border-left-color: ${theme.colors.warning};
         `;
@@ -83,6 +64,11 @@ const ToastItem = styled.div<{ $variant: string; $isExiting?: boolean }>`
     }
   }}
   
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: ${({ theme }) => theme.shadow.xl};
+  }
+
   @media (max-width: 640px) {
     min-width: unset;
     max-width: unset;
@@ -93,18 +79,19 @@ const IconWrapper = styled.div<{ $variant: string }>`
   flex-shrink: 0;
   width: 20px;
   height: 20px;
-  
+  animation: ${({ theme }) => theme.animations.scaleIn} 0.4s ease;
+
   ${({ $variant, theme }) => {
     switch ($variant) {
-      case 'success':
+      case "success":
         return css`
           color: ${theme.colors.success};
         `;
-      case 'error':
+      case "error":
         return css`
           color: ${theme.colors.error};
         `;
-      case 'warning':
+      case "warning":
         return css`
           color: ${theme.colors.warning};
         `;
@@ -130,12 +117,13 @@ const CloseButton = styled.button`
   height: 20px;
   padding: 0;
   color: ${({ theme }) => theme.colors.textSecondary};
-  transition: color ${({ theme }) => theme.transitions.fast};
-  
+  transition: all ${({ theme }) => theme.transitions.fast};
+
   &:hover {
     color: ${({ theme }) => theme.colors.textPrimary};
+    transform: rotate(90deg) scale(1.1);
   }
-  
+
   svg {
     width: 100%;
     height: 100%;
@@ -144,7 +132,11 @@ const CloseButton = styled.button`
 
 // Icons
 const SuccessIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
     <path
       fillRule="evenodd"
       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
@@ -154,7 +146,11 @@ const SuccessIcon = () => (
 );
 
 const ErrorIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
     <path
       fillRule="evenodd"
       d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
@@ -164,7 +160,11 @@ const ErrorIcon = () => (
 );
 
 const WarningIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
     <path
       fillRule="evenodd"
       d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
@@ -174,7 +174,11 @@ const WarningIcon = () => (
 );
 
 const InfoIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
     <path
       fillRule="evenodd"
       d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
@@ -184,18 +188,28 @@ const InfoIcon = () => (
 );
 
 const CloseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M6 18L18 6M6 6l12 12"
+    />
   </svg>
 );
 
 const getIcon = (variant: string) => {
   switch (variant) {
-    case 'success':
+    case "success":
       return <SuccessIcon />;
-    case 'error':
+    case "error":
       return <ErrorIcon />;
-    case 'warning':
+    case "warning":
       return <WarningIcon />;
     default:
       return <InfoIcon />;
@@ -204,12 +218,22 @@ const getIcon = (variant: string) => {
 
 const ToastItemComponent: React.FC<{ toast: ToastType }> = ({ toast }) => {
   const { removeToast } = useToast();
+  const [isExiting, setIsExiting] = useState(false);
+
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      removeToast(toast.id);
+    }, 300);
+  };
 
   return (
-    <ToastItem $variant={toast.variant}>
-      <IconWrapper $variant={toast.variant}>{getIcon(toast.variant)}</IconWrapper>
+    <ToastItem $variant={toast.variant} $isExiting={isExiting}>
+      <IconWrapper $variant={toast.variant}>
+        {getIcon(toast.variant)}
+      </IconWrapper>
       <ToastMessage>{toast.message}</ToastMessage>
-      <CloseButton onClick={() => removeToast(toast.id)} aria-label="Close notification">
+      <CloseButton onClick={handleClose} aria-label="Close notification">
         <CloseIcon />
       </CloseButton>
     </ToastItem>
@@ -218,8 +242,13 @@ const ToastItemComponent: React.FC<{ toast: ToastType }> = ({ toast }) => {
 
 export const ToastList: React.FC = () => {
   const { toasts } = useToast();
+  const [mounted, setMounted] = useState(false);
 
-  if (toasts.length === 0) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || toasts.length === 0) return null;
 
   const content = (
     <ToastContainer>
@@ -229,5 +258,5 @@ export const ToastList: React.FC = () => {
     </ToastContainer>
   );
 
-  return typeof document !== 'undefined' ? createPortal(content, document.body) : null;
+  return createPortal(content, document.body);
 };

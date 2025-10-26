@@ -1,9 +1,15 @@
+import { keyframes } from "styled-components";
+
 export const theme = {
   colors: {
     // Primary
     primary: "#6366f1", // indigo-500
     primaryHover: "#4f46e5", // indigo-600
     primaryLight: "rgba(99, 102, 241, 0.1)", // indigo with opacity
+
+    // Secondary (YENİ - Dark theme için)
+    secondary: "#1e293b", // slate-800
+    secondaryHover: "#334155", // slate-700
 
     // Neutral - DARK MODE
     background: "#0f172a", // slate-900
@@ -23,12 +29,19 @@ export const theme = {
     // Status
     success: "#10b981",
     successLight: "rgba(16, 185, 129, 0.1)",
+    successHover: "#059669", // YENİ
+
     warning: "#f59e0b",
     warningLight: "rgba(245, 158, 11, 0.1)",
+    warningHover: "#d97706", // YENİ
+
     error: "#ef4444",
     errorLight: "rgba(239, 68, 68, 0.1)",
+    errorHover: "#dc2626", // YENİ
+
     info: "#3b82f6",
     infoLight: "rgba(59, 130, 246, 0.1)",
+    infoHover: "#2563eb", // YENİ
   },
 
   spacing: {
@@ -107,6 +120,76 @@ export const theme = {
     fast: "150ms ease",
     normal: "250ms ease",
     slow: "350ms ease",
+  },
+
+  animations: {
+    // Fade animations
+    fadeIn: keyframes`
+      from { opacity: 0; }
+      to { opacity: 1; }
+    `,
+    fadeOut: keyframes`
+      from { opacity: 1; }
+      to { opacity: 0; }
+    `,
+
+    // Slide animations
+    slideInUp: keyframes`
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    `,
+    slideInDown: keyframes`
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    `,
+
+    // Scale animations
+    scaleIn: keyframes`
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    `,
+
+    // Bounce animation
+    bounce: keyframes`
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    `,
+
+    // Pulse animation
+    pulse: keyframes`
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    `,
+
+    // Ripple effect
+    ripple: keyframes`
+      0% {
+        transform: scale(0);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    `,
   },
 };
 

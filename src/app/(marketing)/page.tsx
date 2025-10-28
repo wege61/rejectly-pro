@@ -1235,8 +1235,42 @@ const FooterLinks = styled.div`
   }
 `;
 
+const LoadingState = styled.div`
+  text-align: center;
+  padding: 60px 32px;
+
+  h3 {
+    font-size: 24px;
+    margin: 24px 0 16px;
+  }
+`;
+
+const LoadingSteps = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+  max-width: 400px;
+  margin: 0 auto;
+`;
+
+const LoadingStep = styled.div<{ $completed?: boolean }>`
+  padding: 12px 16px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  font-size: 15px;
+  color: ${({ $completed, theme }) =>
+    $completed ? theme.colors.primary : theme.colors.textSecondary};
+  font-weight: ${({ $completed }) => ($completed ? 600 : 400)};
+`;
+
 // ==================== MAIN COMPONENT ====================
 export default function Page() {
+  const [step, setStep] = useState<"upload" | "loading" | "analyzing">("upload");
+const [detectedLocation, setDetectedLocation] = useState("");
+const [detectedJobTitle, setDetectedJobTitle] = useState("");
+const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
   const [cvText, setCvText] = useState("");
   const [jobText, setJobText] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -1289,14 +1323,39 @@ export default function Page() {
     );
   };
 
-  const handleAnalyze = async () => {
-    if (!cvText || !jobText) return;
+ const handleAnalyze = async () => {
+  if (!cvText || !jobText) {
+    alert("Please paste both CV and job description");
+    return;
+  }
 
-    setIsAnalyzing(true);
+  setStep("loading");
+  setIsAnalyzing(true);
 
-    // Simulate API call
+  try {
+    // Step 1: Fetch location + jobs
+    const jobResponse = await fetch("/api/demo/fetch-jobs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cvText }),
+    });
+
+    const jobData = await jobResponse.json();
+
+    if (jobData.success) {
+      setDetectedLocation(jobData.location);
+      setDetectedJobTitle(jobData.detectedJobTitle);
+      setFetchedJobs(jobData.jobs);
+    }
+
+    // Wait 1 second
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Step 2: Analyzing
+    setStep("analyzing");
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
+    // Step 3: Results
     setResult({
       fitScore: 67,
       summary:
@@ -1311,8 +1370,15 @@ export default function Page() {
       ],
     });
 
+    setStep("upload");
+  } catch (error) {
+    console.error("Analysis error:", error);
+    alert("Failed to analyze. Please try again.");
+    setStep("upload");
+  } finally {
     setIsAnalyzing(false);
-  };
+  }
+};
 
   return (
     <Container>
@@ -1410,91 +1476,137 @@ export default function Page() {
         </SectionHeader>
 
         <DemoCard>
-          <DemoHeader>
-            <DemoTitle>Quick Demo</DemoTitle>
-            <DemoSubtitle>
-              Try with sample data or paste your own CV
-            </DemoSubtitle>
-            <LoadSampleButton onClick={loadSample}>
-              📝 Load Sample Data
-            </LoadSampleButton>
-          </DemoHeader>
+  {step === "upload" && !result && (
+    <>
+      <DemoHeader>
+        <DemoTitle>Quick Demo</DemoTitle>
+        <DemoSubtitle>
+          Paste your CV and job description, get instant AI feedback
+        </DemoSubtitle>
+        <LoadSampleButton onClick={loadSample}>
+          📝 Load Sample Data
+        </LoadSampleButton>
+      </DemoHeader>
 
-          <DemoTextarea
-            placeholder="Paste your CV here (or load sample data)..."
-            value={cvText}
-            onChange={(e) => setCvText(e.target.value)}
-            rows={6}
-          />
+      <DemoTextarea
+        placeholder="Paste your CV here (or load sample data)..."
+        value={cvText}
+        onChange={(e) => setCvText(e.target.value)}
+        rows={6}
+      />
 
-          <DemoTextarea
-            placeholder="Paste the job description here..."
-            value={jobText}
-            onChange={(e) => setJobText(e.target.value)}
-            rows={6}
-          />
+      <DemoTextarea
+        placeholder="Paste the job description here..."
+        value={jobText}
+        onChange={(e) => setJobText(e.target.value)}
+        rows={6}
+      />
 
-          <AnalyzeButton
-            onClick={handleAnalyze}
-            disabled={!cvText || !jobText || isAnalyzing}
-            $isLoading={isAnalyzing}
-          >
-            {isAnalyzing ? (
-              <>
-                <Spinner />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <ZapIcon />
-                Analyze Now
-              </>
-            )}
-          </AnalyzeButton>
+      <AnalyzeButton
+        onClick={handleAnalyze}
+        disabled={!cvText || !jobText || isAnalyzing}
+        $isLoading={isAnalyzing}
+      >
+        {isAnalyzing ? (
+          <>
+            <Spinner />
+            Analyzing...
+          </>
+        ) : (
+          <>
+            <ZapIcon />
+            Analyze Now
+          </>
+        )}
+      </AnalyzeButton>
+    </>
+  )}
 
-          {result && (
-            <ResultsCard>
-              <ScoreDisplay>
-                <ScoreValue>{result.fitScore}%</ScoreValue>
-                <ScoreLabel>Match Score</ScoreLabel>
-              </ScoreDisplay>
+  {/* STEP 2: LOADING */}
+  {step === "loading" && (
+    <LoadingState>
+      <Spinner />
+      <h3>🔍 Analyzing Your CV...</h3>
+      <LoadingSteps>
+        <LoadingStep $completed>
+          ✅ Detected: {detectedJobTitle || "..."}
+        </LoadingStep>
+        <LoadingStep $completed>
+          ✅ Location: {detectedLocation || "Detecting..."}
+        </LoadingStep>
+        <LoadingStep $completed={false}>
+          🔄 Finding matching jobs...
+        </LoadingStep>
+      </LoadingSteps>
+    </LoadingState>
+  )}
 
-              <ResultSection>
-                <ResultTitle>
-                  <SparklesIcon />
-                  AI Summary
-                </ResultTitle>
-                <SummaryBox>
-                  <p>{result.summary}</p>
-                </SummaryBox>
-              </ResultSection>
+  {/* STEP 3: ANALYZING */}
+  {step === "analyzing" && (
+    <LoadingState>
+      <Spinner />
+      <h3>🤖 Analyzing Match...</h3>
+      <LoadingSteps>
+        <LoadingStep $completed>
+          ✅ CV and job description loaded
+        </LoadingStep>
+        <LoadingStep $completed={false}>
+          🔄 Calculating match score...
+        </LoadingStep>
+        <LoadingStep $completed={false}>
+          🔄 Identifying missing skills...
+        </LoadingStep>
+      </LoadingSteps>
+    </LoadingState>
+  )}
 
-              <ResultSection>
-                <ResultTitle>
-                  <TargetIcon />
-                  Missing Skills
-                </ResultTitle>
-                <KeywordList>
-                  {result.missingKeywords.map((keyword) => (
-                    <KeywordBadge key={keyword}>{keyword}</KeywordBadge>
-                  ))}
-                </KeywordList>
-              </ResultSection>
+  {/* STEP 4: RESULTS */}
+  {result && (
+    <ResultsCard>
+      <ScoreDisplay>
+        <ScoreValue>{result.fitScore}%</ScoreValue>
+        <ScoreLabel>Match Score</ScoreLabel>
+      </ScoreDisplay>
 
-              <CTASection>
-                <h3>🎯 Want the Full Analysis?</h3>
-                <p>
-                  Sign up for free, save your report, and perfect your CV with
-                  Pro features!
-                </p>
-                <CTAButtons>
-                  <CTAButton $variant="primary">Sign Up Free</CTAButton>
-                  <CTAButton $variant="secondary">Log In</CTAButton>
-                </CTAButtons>
-              </CTASection>
-            </ResultsCard>
-          )}
-        </DemoCard>
+      <ResultSection>
+        <ResultTitle>
+          <SparklesIcon />
+          AI Summary
+        </ResultTitle>
+        <SummaryBox>
+          <p>{result.summary}</p>
+        </SummaryBox>
+      </ResultSection>
+
+      <ResultSection>
+        <ResultTitle>
+          <TargetIcon />
+          Missing Skills
+        </ResultTitle>
+        <KeywordList>
+          {result.missingKeywords.map((keyword) => (
+            <KeywordBadge key={keyword}>{keyword}</KeywordBadge>
+          ))}
+        </KeywordList>
+      </ResultSection>
+
+      <CTASection>
+        <h3>🎯 Want the Full Analysis?</h3>
+        <p>
+          Sign up for free, save your report, and perfect your CV with Pro features!
+        </p>
+        <CTAButtons>
+          <CTAButton as="a" href="/signup" $variant="primary">
+            Sign Up Free
+          </CTAButton>
+          <CTAButton as="a" href="/login" $variant="secondary">
+            Log In
+          </CTAButton>
+        </CTAButtons>
+      </CTASection>
+    </ResultsCard>
+  )}
+</DemoCard>
       </DemoSection>
 
       <Divider />

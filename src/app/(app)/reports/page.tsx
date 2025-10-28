@@ -166,7 +166,7 @@ export default function ReportsPage() {
                   <ReportTitle>CV Analysis Report</ReportTitle>
                   <ReportDate>
                     Created on{" "}
-                    {new Date(report.created_at).toLocaleDateString("tr-TR", {
+                    {new Date(report.created_at).toLocaleDateString("en-EN", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",

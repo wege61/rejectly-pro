@@ -2,9 +2,8 @@
 
 import styled, { keyframes } from "styled-components";
 import { useState } from "react";
-import Image from "next/image";
 
-// Animations
+// ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
@@ -19,1255 +18,34 @@ const spin = keyframes`
   to { transform: rotate(360deg); }
 `;
 
-// Layout Components
-const Container = styled.div`
-  min-height: 100vh;
-  background-color: ${({ theme }) => theme.colors.background};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-// Hero Section Styles
-const HeroSection = styled.section`
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  padding: 80px 24px;
-`;
-
-const BackgroundBlur = styled.div`
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-`;
-
-const BlurCircle = styled.div<{
-  $delay?: string;
-  $position: string;
-  $color: string;
-}>`
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.3;
-  animation: ${pulse} 4s ease-in-out infinite;
-  animation-delay: ${({ $delay }) => $delay || "0s"};
-  background: ${({ $color }) => $color};
-  ${({ $position }) => $position}
-`;
-
-const HeroContent = styled.div`
-  position: relative;
-  z-index: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
-  animation: ${fadeIn} 0.6s ease-out;
-`;
-
-const Badge = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 9999px;
-  padding: 8px 16px;
-  margin-bottom: 32px;
-  font-weight: 500;
-  animation: ${fadeIn} 0.6s ease-out;
-
-  svg {
-    width: 20px;
-    height: 20px;
-    color: #93c5fd;
-  }
-
-  span {
-    color: #93c5fd;
-  }
-`;
-
-const HeroTitle = styled.h1`
-  font-size: 72px;
-  font-weight: 900;
-  margin-bottom: 24px;
-  line-height: 1.2;
-  animation: ${fadeIn} 0.6s ease-out 0.1s backwards;
-
-  @media (max-width: 768px) {
-    font-size: 48px;
-  }
-`;
-
-const GradientText = styled.span`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-`;
-
-const HeroSubtitle = styled.p`
-  font-size: 24px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 48px;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.6;
-  animation: ${fadeIn} 0.6s ease-out 0.2s backwards;
-
-  @media (max-width: 768px) {
-    font-size: 18px;
-  }
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  justify-content: center;
-  margin-bottom: 48px;
-  animation: ${fadeIn} 0.6s ease-out 0.3s backwards;
-
-  @media (min-width: 640px) {
-    flex-direction: row;
-  }
-`;
-
-const PrimaryButton = styled.a`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 16px 32px;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-size: 18px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  text-decoration: none;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-`;
-
-const SecondaryButton = styled.a`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 16px 32px;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-size: 18px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  text-decoration: none;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-`;
-
-const SocialProof = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 32px;
-  animation: ${fadeIn} 0.6s ease-out 0.4s backwards;
-`;
-
-const AvatarStack = styled.div`
-  display: flex;
-  margin-left: -8px;
-
-  img {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 3px solid ${({ theme }) => theme.colors.background};
-    margin-left: -12px;
-  }
-`;
-
-const SocialProofText = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-
-  span {
-    font-weight: 600;
-    color: ${({ theme }) => theme.colors.textPrimary};
-  }
-`;
-
-const DemoScreenshot = styled.div`
-  margin-top: 64px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  animation: ${fadeIn} 0.6s ease-out 0.5s backwards;
-
-  img {
-    width: 100%;
-    display: block;
-  }
-`;
-
-// Section Components
-const Section = styled.section`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 96px 24px;
-`;
-
-const SectionHeader = styled.div`
-  text-align: center;
-  margin-bottom: 64px;
-`;
-
-const SectionTitle = styled.h2`
-  font-size: 48px;
-  font-weight: 800;
-  margin-bottom: 16px;
-
-  @media (max-width: 768px) {
-    font-size: 32px;
-  }
-`;
-
-const SectionSubtitle = styled.p`
-  font-size: 20px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const Divider = styled.div`
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
-  margin: 80px 0;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-// How It Works
-const StepsGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`;
-
-const StepCard = styled.div`
-  text-align: center;
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: translateY(-8px);
-  }
-`;
-
-const StepNumber = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 24px;
-  margin: 0 auto 24px;
-`;
-
-const StepImage = styled.div`
-  margin-bottom: 24px;
-
-  img {
-    width: 100%;
-    border-radius: 12px;
-  }
-`;
-
-const StepTitle = styled.h3`
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 12px;
-`;
-
-const StepDescription = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.6;
-`;
-
-// Demo Section Styles (your existing component styles)
-const DemoSection = styled.section`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: ${({ theme }) => `${theme.spacing.xl} ${theme.spacing.lg}`};
-`;
-
-const DemoHeader = styled.div`
-  text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
-
-const DemoTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-
-  @media (max-width: 768px) {
-    font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  }
-`;
-
-const DemoSubtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
-
-const LoadSampleButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
-  border-radius: 9999px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.surface};
-  }
-`;
-
-const InputGrid = styled.div`
-  display: grid;
-  gap: ${({ theme }) => theme.spacing.lg};
-  grid-template-columns: 1fr;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-
-  @media (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-  }
-`;
-
-const InputCard = styled.div`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: ${({ theme }) => theme.spacing.xl};
-  transition: border-color ${({ theme }) => theme.transitions.normal};
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.borderHover};
-  }
-`;
-
-const CardHeader = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
-
-const CardTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-`;
-
-const CardDescription = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-`;
-
-const UploadArea = styled.div<{ $isDragging: boolean }>`
-  border: 2px dashed
-    ${({ theme, $isDragging }) =>
-      $isDragging ? theme.colors.primary : theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.xl};
-  text-align: center;
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-  background-color: ${({ theme, $isDragging }) =>
-    $isDragging ? theme.colors.primaryLight : "transparent"};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    background-color: ${({ theme }) => theme.colors.primaryLight};
-  }
-`;
-
-const UploadIconWrapper = styled.div`
-  width: 48px;
-  height: 48px;
-  margin: 0 auto ${({ theme }) => theme.spacing.md};
-  color: ${({ theme }) => theme.colors.primary};
-
-  svg {
-    width: 100%;
-    height: 100%;
-  }
-`;
-
-const UploadText = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const UploadHint = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const FileName = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.md}`};
-  background-color: ${({ theme }) => theme.colors.primaryLight};
-  color: ${({ theme }) => theme.colors.primary};
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  span {
-    flex: 1;
-  }
-
-  button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    color: ${({ theme }) => theme.colors.primary};
-    display: flex;
-    align-items: center;
-
-    &:hover {
-      opacity: 0.7;
-    }
-
-    svg {
-      width: 16px;
-      height: 16px;
-    }
-  }
-`;
-
-const HiddenInput = styled.input`
-  display: none;
-`;
-
-const StyledDivider = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  margin: ${({ theme }) => theme.spacing.lg} 0;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-
-  &::before,
-  &::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background-color: ${({ theme }) => theme.colors.border};
-  }
-`;
-
-const StyledTextarea = styled.textarea`
-  width: 100%;
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.md};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-family: inherit;
-  resize: vertical;
-  transition: border-color ${({ theme }) => theme.transitions.normal};
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.textSecondary};
-  }
-`;
-
-const AnalyzeButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
-
-const AnalyzeButton = styled.button<{ $isLoading?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing["2xl"]}`};
-  border: none;
-  border-radius: 9999px;
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-  opacity: ${({ $isLoading }) => ($isLoading ? 0.7 : 1)};
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-`;
-
-const Spinner = styled.div`
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: ${spin} 0.8s linear infinite;
-`;
-
-const ResultsCard = styled.div`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: ${({ theme }) => theme.spacing.xl};
-  margin-top: ${({ theme }) => theme.spacing.xl};
-`;
-
-const ScoreDisplay = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing.xl};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.1) 100%
-  );
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid rgba(102, 126, 234, 0.2);
-`;
-
-const ScoreValue = styled.div`
-  font-size: 64px;
-  font-weight: 900;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-`;
-
-const ScoreLabel = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const SectionTitleWithIcon = styled.h3`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-  color: ${({ theme }) => theme.colors.textPrimary};
-
-  svg {
-    width: 24px;
-    height: 24px;
-    color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const SummaryBox = styled.div`
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-
-  p {
-    color: ${({ theme }) => theme.colors.textPrimary};
-    line-height: 1.8;
-    margin: 0;
-  }
-`;
-
-const KeywordList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.sm};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
-
-const KeywordBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
-  background-color: rgba(102, 126, 234, 0.1);
-  color: ${({ theme }) => theme.colors.primary};
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 9999px;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-`;
-
-const ProPreview = styled.div`
-  position: relative;
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.xl};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  overflow: hidden;
-`;
-
-const BlurredContent = styled.div`
-  filter: blur(4px);
-  user-select: none;
-  pointer-events: none;
-  color: ${({ theme }) => theme.colors.textSecondary};
-
-  h3 {
-    display: flex;
-    align-items: center;
-    gap: ${({ theme }) => theme.spacing.sm};
-    font-size: ${({ theme }) => theme.typography.fontSize.xl};
-    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-    margin-bottom: ${({ theme }) => theme.spacing.md};
-
-    svg {
-      width: 20px;
-      height: 20px;
-    }
-  }
-
-  p {
-    margin-bottom: ${({ theme }) => theme.spacing.sm};
-    line-height: 1.6;
-  }
-`;
-
-const ProBadge = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: ${({ theme }) => `${theme.spacing.lg} ${theme.spacing["2xl"]}`};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
-  text-align: center;
-
-  .emoji {
-    font-size: 48px;
-    margin-bottom: ${({ theme }) => theme.spacing.sm};
-  }
-
-  .text {
-    font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  }
-`;
-
-const CTASection = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing.xl};
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid rgba(102, 126, 234, 0.1);
-
-  h3 {
-    font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-    margin-bottom: ${({ theme }) => theme.spacing.sm};
-  }
-
-  p {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    margin-bottom: ${({ theme }) => theme.spacing.lg};
-    font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  }
-`;
-
-const CTAButtons = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing.md};
-  justify-content: center;
-  flex-wrap: wrap;
-`;
-
-const CTAButton = styled.button<{ $variant?: "primary" | "secondary" }>`
-  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.xl}`};
-  border-radius: 9999px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-  border: none;
-
-  ${({ $variant, theme }) =>
-    $variant === "primary"
-      ? `
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-    }
-  `
-      : `
-    background: ${theme.colors.backgroundAlt};
-    color: ${theme.colors.textPrimary};
-    border: 1px solid ${theme.colors.border};
-    
-    &:hover {
-      background: ${theme.colors.surface};
-    }
-  `}
-`;
-
-const Toast = styled.div`
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.lg}`};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  z-index: 1000;
-  animation: ${fadeIn} 0.3s ease;
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-`;
-
-// Features Section
-const FeaturesSection = styled.section`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: ${({ theme }) => `${theme.spacing["2xl"]} ${theme.spacing.lg}`};
-  text-align: center;
-`;
-
-const FeaturesSectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
-
-  @media (max-width: 768px) {
-    font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  }
-`;
-
-const FeatureGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: ${({ theme }) => theme.spacing.xl};
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`;
-
-const FeatureCard = styled.div`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: ${({ theme }) => theme.spacing.xl};
-  transition: all ${({ theme }) => theme.transitions.normal};
-  text-align: center;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    transform: translateY(-4px);
-  }
-`;
-
-const FeatureIcon = styled.div<{ $gradient: string }>`
-  width: 64px;
-  height: 64px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ $gradient }) => $gradient};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto ${({ theme }) => theme.spacing.md};
-
-  svg {
-    width: 32px;
-    height: 32px;
-    color: white;
-  }
-`;
-
-const FeatureTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-`;
-
-const FeatureDescription = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.6;
-`;
-
-// Testimonials
-const TestimonialGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`;
-
-const TestimonialCard = styled.div`
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 24px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    border-color: rgba(102, 126, 234, 0.3);
-    background: rgba(102, 126, 234, 0.05);
-  }
-`;
-
-const TestimonialHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-
-  img {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-  }
-`;
-
-const TestimonialAuthor = styled.div`
-  .name {
-    font-weight: 700;
-  }
-
-  .role {
-    font-size: 14px;
-    color: ${({ theme }) => theme.colors.textSecondary};
-  }
-`;
-
-const TestimonialText = styled.p`
-  color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.6;
-`;
-
-// Founder Story
-const FounderStory = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.1) 100%
-  );
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 16px;
-  padding: 48px;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  align-items: center;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-  }
-`;
-
-const FounderContent = styled.div`
-  h3 {
-    font-size: 32px;
-    font-weight: 800;
-    margin-bottom: 16px;
-  }
-
-  p {
-    color: ${({ theme }) => theme.colors.textPrimary};
-    line-height: 1.8;
-    margin-bottom: 16px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-`;
-
-// Pricing
-const PricingGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`;
-
-const PricingCard = styled.div<{ $featured?: boolean }>`
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: ${({ $featured }) =>
-    $featured ? "2px solid #764ba2" : "1px solid rgba(255, 255, 255, 0.1)"};
-  border-radius: 16px;
-  padding: 32px;
-  transition: all 0.3s ease;
-  position: relative;
-
-  &:hover {
-    transform: translateY(-4px);
-  }
-`;
-
-const PricingBadge = styled.div`
-  position: absolute;
-  top: -12px;
-  right: 20px;
-  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-`;
-
-const PricingTitle = styled.h3`
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 8px;
-`;
-
-const PricingPrice = styled.div`
-  font-size: 56px;
-  font-weight: 800;
-  margin-bottom: 24px;
-
-  span {
-    font-size: 20px;
-    color: ${({ theme }) => theme.colors.textSecondary};
-  }
-`;
-
-const PricingFeatures = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0 0 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const PricingFeature = styled.li<{ $enabled?: boolean }>`
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-
-  svg {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-    margin-top: 2px;
-    color: ${({ $enabled }) => ($enabled ? "#10b981" : "#71717a")};
-  }
-
-  span {
-    color: ${({ $enabled, theme }) =>
-      $enabled ? theme.colors.textPrimary : theme.colors.textSecondary};
-  }
-`;
-
-const PricingButton = styled.button<{ $variant?: "primary" | "secondary" }>`
-  width: 100%;
-  padding: 12px 24px;
-  border-radius: 9999px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-
-  ${({ $variant }) =>
-    $variant === "primary"
-      ? `
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-
-    &:hover {
-      transform: scale(1.05);
-    }
-  `
-      : `
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-  `}
-`;
-
-// FAQ
-const FAQList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const FAQItem = styled.div<{ $isOpen?: boolean }>`
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 24px 0;
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const FAQQuestion = styled.div<{ $isOpen?: boolean }>`
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  font-size: 18px;
-
-  svg {
-    width: 24px;
-    height: 24px;
-    transition: transform 0.3s ease;
-    transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
-  }
-`;
-
-const FAQAnswer = styled.div<{ $isOpen?: boolean }>`
-  margin-top: 12px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.6;
-  display: ${({ $isOpen }) => ($isOpen ? "block" : "none")};
-`;
-
-// Final CTA
-const FinalCTA = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.1) 100%
-  );
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 16px;
-  padding: 64px 48px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-`;
-
-const CTAContent = styled.div`
-  position: relative;
-  z-index: 1;
-
-  h2 {
-    font-size: 48px;
-    font-weight: 800;
-    margin-bottom: 24px;
-
-    @media (max-width: 768px) {
-      font-size: 32px;
-    }
-  }
-
-  p {
-    font-size: 20px;
-    color: ${({ theme }) => theme.colors.textPrimary};
-    margin-bottom: 32px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-`;
-
-// Footer
-const Footer = styled.footer`
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  margin-top: 96px;
-`;
-
-const FooterContent = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 48px 24px;
-`;
-
-const FooterGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px;
-  margin-bottom: 32px;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-`;
-
-const FooterColumn = styled.div`
-  h3 {
-    font-weight: 700;
-    font-size: 20px;
-    margin-bottom: 16px;
-  }
-
-  h4 {
-    font-weight: 600;
-    margin-bottom: 12px;
-  }
-
-  p {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: 14px;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  li a {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    font-size: 14px;
-    text-decoration: none;
-    transition: color 0.3s ease;
-
-    &:hover {
-      color: ${({ theme }) => theme.colors.textPrimary};
-    }
-  }
-`;
-
-const FooterBottom = styled.div`
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-`;
-
-const FooterLinks = styled.div`
-  display: flex;
-  gap: 24px;
-
-  a {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    text-decoration: none;
-    transition: color 0.3s ease;
-
-    &:hover {
-      color: ${({ theme }) => theme.colors.textPrimary};
-    }
-  }
-`;
+const float = keyframes`
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+`;
+
+// ==================== ICONS ====================
+const CheckIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M5 13l4 4L19 7"
+    />
+  </svg>
+);
+
+const XIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M6 18L18 6M6 6l12 12"
+    />
+  </svg>
+);
 
-// Icons
 const SparklesIcon = () => (
   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
@@ -1301,24 +79,30 @@ const TargetIcon = () => (
   </svg>
 );
 
-const CheckIcon = () => (
+const StarIcon = () => (
+  <svg fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+  </svg>
+);
+
+const ArrowRightIcon = () => (
   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}
-      d="M5 13l4 4L19 7"
+      d="M9 5l7 7-7 7"
     />
   </svg>
 );
 
-const XIcon = () => (
+const RocketIcon = () => (
   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}
-      d="M6 18L18 6M6 6l12 12"
+      d="M13 10V3L4 14h7v7l9-11h-7z"
     />
   </svg>
 );
@@ -1334,116 +118,1167 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
-const ArrowRightIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M9 5l7 7-7 7"
-    />
-  </svg>
-);
+// ==================== LAYOUT ====================
+const Container = styled.div`
+  min-height: 100vh;
+  background-color: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
 
-const UploadSvgIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-    />
-  </svg>
-);
+// ==================== HERO SECTION ====================
+const HeroSection = styled.section`
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 80px 24px 60px;
 
-const FileTextIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-    />
-  </svg>
-);
+  @media (max-width: 768px) {
+    min-height: auto;
+    padding: 60px 16px 40px;
+  }
+`;
 
-// Main Component
+const BackgroundBlur = styled.div`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+`;
+
+const BlurCircle = styled.div<{
+  $delay?: string;
+  $position: string;
+  $color: string;
+}>`
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.3;
+  animation: ${pulse} 4s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay || "0s"};
+  background: ${({ $color }) => $color};
+  ${({ $position }) => $position}
+`;
+
+const HeroContent = styled.div`
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+  animation: ${fadeIn} 0.6s ease-out;
+`;
+
+const TrustBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 9999px;
+  padding: 6px 16px;
+  margin-bottom: 24px;
+  font-weight: 500;
+  font-size: 14px;
+  animation: ${fadeIn} 0.6s ease-out;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    color: #10b981;
+  }
+
+  span {
+    color: #10b981;
+  }
+`;
+
+const HeroTitle = styled.h1`
+  font-size: 64px;
+  font-weight: 900;
+  margin-bottom: 20px;
+  line-height: 1.1;
+  animation: ${fadeIn} 0.6s ease-out 0.1s backwards;
+
+  @media (max-width: 768px) {
+    font-size: 36px;
+  }
+`;
+
+const GradientText = styled.span`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+`;
+
+const HeroSubtitle = styled.p`
+  font-size: 20px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+  animation: ${fadeIn} 0.6s ease-out 0.2s backwards;
+
+  strong {
+    color: ${({ theme }) => theme.colors.textPrimary};
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  animation: ${fadeIn} 0.6s ease-out 0.3s backwards;
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    gap: 16px;
+  }
+`;
+
+const PrimaryButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 18px 40px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+  }
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+    max-width: 320px;
+    font-size: 16px;
+    padding: 16px 32px;
+  }
+`;
+
+const SecondaryButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: ${({ theme }) => theme.colors.textPrimary};
+  padding: 18px 32px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+    max-width: 320px;
+    font-size: 15px;
+  }
+`;
+
+const TrustIndicators = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 48px;
+  animation: ${fadeIn} 0.6s ease-out 0.4s backwards;
+  padding: 0 16px;
+
+  @media (max-width: 768px) {
+    gap: 24px;
+  }
+`;
+
+const TrustItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  .number {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .label {
+    font-size: 13px;
+    color: ${({ theme }) => theme.colors.textSecondary};
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 768px) {
+    .number {
+      font-size: 26px;
+    }
+    .label {
+      font-size: 12px;
+    }
+  }
+`;
+
+const SocialProof = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  animation: ${fadeIn} 0.6s ease-out 0.5s backwards;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 12px;
+  }
+`;
+
+const AvatarStack = styled.div`
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px solid ${({ theme }) => theme.colors.background};
+    margin-left: -12px;
+    transition: transform 0.2s ease;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+      z-index: 10;
+    }
+  }
+
+  @media (max-width: 640px) {
+    img {
+      width: 40px;
+      height: 40px;
+    }
+  }
+`;
+
+const SocialProofText = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 15px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    color: #f59e0b;
+    fill: #f59e0b;
+  }
+
+  strong {
+    color: ${({ theme }) => theme.colors.textPrimary};
+    font-weight: 700;
+  }
+
+  @media (max-width: 640px) {
+    font-size: 14px;
+    text-align: center;
+  }
+`;
+
+// ==================== SECTIONS ====================
+const Section = styled.section`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 24px;
+
+  @media (max-width: 768px) {
+    padding: 60px 16px;
+  }
+`;
+
+const SectionHeader = styled.div`
+  text-align: center;
+  margin-bottom: 64px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 48px;
+  }
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 16px;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
+`;
+
+const SectionSubtitle = styled.p`
+  font-size: 20px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  margin: 0 auto;
+  max-width: 1200px;
+`;
+
+// ==================== DEMO SECTION - SIMPLIFIED ====================
+const DemoSection = styled.section`
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 24px;
+
+  @media (max-width: 768px) {
+    padding: 60px 16px;
+  }
+`;
+
+const DemoCard = styled.div`
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 40px;
+  box-shadow: ${({ theme }) => theme.shadow.xl};
+
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
+`;
+
+const DemoHeader = styled.div`
+  text-align: center;
+  margin-bottom: 32px;
+`;
+
+const DemoTitle = styled.h3`
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 12px;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
+`;
+
+const DemoSubtitle = styled.p`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: 20px;
+`;
+
+const LoadSampleButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  color: ${({ theme }) => theme.colors.primary};
+  padding: 10px 20px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.5);
+  }
+`;
+
+const DemoTextarea = styled.textarea`
+  width: 100%;
+  background: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: 16px;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+  margin-bottom: 16px;
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.textSecondary};
+  }
+`;
+
+const AnalyzeButton = styled.button<{ $isLoading?: boolean }>`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 32px;
+  border: none;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: ${({ $isLoading }) => ($isLoading ? 0.7 : 1)};
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const Spinner = styled.div`
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: ${spin} 0.8s linear infinite;
+`;
+
+const ResultsCard = styled.div`
+  margin-top: 32px;
+  background: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: 32px;
+  animation: ${fadeIn} 0.5s ease;
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
+`;
+
+const ScoreDisplay = styled.div`
+  text-align: center;
+  padding: 32px;
+  margin-bottom: 32px;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.1) 100%
+  );
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid rgba(102, 126, 234, 0.2);
+`;
+
+const ScoreValue = styled.div`
+  font-size: 72px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  line-height: 1;
+
+  @media (max-width: 768px) {
+    font-size: 56px;
+  }
+`;
+
+const ScoreLabel = styled.div`
+  font-size: 18px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const ResultSection = styled.div`
+  margin-bottom: 32px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const ResultTitle = styled.h4`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const SummaryBox = styled.div`
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: 20px;
+  line-height: 1.7;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const KeywordList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+
+const KeywordBadge = styled.span`
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+`;
+
+const CTASection = styled.div`
+  text-align: center;
+  padding: 32px;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.05) 0%,
+    rgba(118, 75, 162, 0.05) 100%
+  );
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  margin-top: 32px;
+
+  h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  p {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    margin-bottom: 24px;
+    font-size: 16px;
+  }
+`;
+
+const CTAButtons = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+const CTAButton = styled.button<{ $variant?: "primary" | "secondary" }>`
+  padding: 14px 32px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+
+  ${({ $variant, theme }) =>
+    $variant === "primary"
+      ? `
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+  `
+      : `
+    background: ${theme.colors.surface};
+    color: ${theme.colors.textPrimary};
+    border: 1px solid ${theme.colors.border};
+    
+    &:hover {
+      background: ${theme.colors.surfaceHover};
+    }
+  `}
+`;
+
+// ==================== FEATURES ====================
+const FeatureGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+`;
+
+const FeatureCard = styled.div`
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 32px;
+  transition: all 0.3s ease;
+  text-align: center;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    transform: translateY(-4px);
+    box-shadow: ${({ theme }) => theme.shadow.lg};
+  }
+`;
+
+const FeatureIcon = styled.div<{ $gradient: string }>`
+  width: 64px;
+  height: 64px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ $gradient }) => $gradient};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+
+  svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+  }
+`;
+
+const FeatureTitle = styled.h3`
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+`;
+
+const FeatureDescription = styled.p`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.6;
+  font-size: 15px;
+`;
+
+const FeatureHighlight = styled.div`
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1px solid rgba(102, 126, 234, 0.2);
+
+  strong {
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: 700;
+  }
+`;
+
+// ==================== TESTIMONIALS - STYLED COMPONENTS ====================
+// (Diğer styled components'lerden sonra, FeatureGrid'den sonra ekleyin)
+
+const TestimonialGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+`;
+
+const TestimonialCard = styled.div`
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 32px;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    transform: translateY(-4px);
+    box-shadow: ${({ theme }) => theme.shadow.lg};
+  }
+`;
+
+const TestimonialHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid ${({ theme }) => theme.colors.border};
+  }
+`;
+
+const TestimonialAuthor = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .name {
+    font-weight: 700;
+    font-size: 16px;
+    color: ${({ theme }) => theme.colors.textPrimary};
+  }
+
+  .role {
+    font-size: 14px;
+    color: ${({ theme }) => theme.colors.textSecondary};
+  }
+`;
+
+const TestimonialRating = styled.div`
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    color: #f59e0b;
+    fill: #f59e0b;
+  }
+`;
+
+const TestimonialText = styled.p`
+  color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: 1.7;
+  font-size: 15px;
+  font-style: italic;
+  position: relative;
+
+  &:before {
+    content: '"';
+    font-size: 48px;
+    color: ${({ theme }) => theme.colors.primary};
+    opacity: 0.3;
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    font-family: Georgia, serif;
+  }
+`;
+
+const TestimonialHighlight = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: auto;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+// ==================== PRICING ====================
+const PricingGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`;
+
+const PricingCard = styled.div<{ $featured?: boolean }>`
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: ${({ $featured, theme }) =>
+    $featured
+      ? `2px solid ${theme.colors.primary}`
+      : `1px solid ${theme.colors.border}`};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 40px 32px;
+  transition: all 0.3s ease;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: ${({ theme }) => theme.shadow.xl};
+  }
+
+  @media (max-width: 768px) {
+    padding: 32px 24px;
+  }
+`;
+
+const PricingBadge = styled.div`
+  position: absolute;
+  top: -12px;
+  right: 24px;
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+`;
+
+const PricingTitle = styled.h3`
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+`;
+
+const PricingPrice = styled.div`
+  font-size: 56px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  line-height: 1;
+
+  span {
+    font-size: 20px;
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-weight: 600;
+  }
+`;
+
+const PricingFeatures = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const PricingFeature = styled.li<{ $enabled?: boolean }>`
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: ${({ $enabled }) => ($enabled ? "#10b981" : "#71717a")};
+  }
+
+  span {
+    color: ${({ $enabled, theme }) =>
+      $enabled ? theme.colors.textPrimary : theme.colors.textSecondary};
+    line-height: 1.5;
+    font-size: 15px;
+  }
+`;
+
+const PricingButton = styled.button<{ $variant?: "primary" | "secondary" }>`
+  width: 100%;
+  padding: 16px 32px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+
+  ${({ $variant, theme }) =>
+    $variant === "primary"
+      ? `
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+  `
+      : `
+    background: ${theme.colors.surface};
+    color: ${theme.colors.textPrimary};
+    border: 1px solid ${theme.colors.border};
+    
+    &:hover {
+      background: ${theme.colors.surfaceHover};
+    }
+  `}
+`;
+
+// ==================== FAQ ====================
+const FAQList = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const FAQItem = styled.div<{ $isOpen?: boolean }>`
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: 24px;
+  transition: all 0.3s ease;
+
+  ${({ $isOpen, theme }) =>
+    $isOpen &&
+    `
+    border-color: ${theme.colors.primary};
+    background: rgba(102, 126, 234, 0.05);
+  `}
+`;
+
+const FAQQuestion = styled.button<{ $isOpen?: boolean }>`
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 17px;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+    transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
+    color: ${({ theme }) => theme.colors.textSecondary};
+  }
+`;
+
+const FAQAnswer = styled.div<{ $isOpen?: boolean }>`
+  margin-top: 16px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.7;
+  font-size: 15px;
+  display: ${({ $isOpen }) => ($isOpen ? "block" : "none")};
+`;
+
+// ==================== FOOTER ====================
+const Footer = styled.footer`
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  margin-top: 80px;
+`;
+
+const FooterContent = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px;
+`;
+
+const FooterGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin-bottom: 32px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+`;
+
+const FooterColumn = styled.div`
+  h3 {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  h4 {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  li a {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: ${({ theme }) => theme.colors.textPrimary};
+    }
+  }
+`;
+
+const FooterBottom = styled.div`
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  padding-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+
+  p {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-size: 14px;
+  }
+`;
+
+const FooterLinks = styled.div`
+  display: flex;
+  gap: 24px;
+
+  a {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: ${({ theme }) => theme.colors.textPrimary};
+    }
+  }
+`;
+
+// ==================== MAIN COMPONENT ====================
 export default function Page() {
-  const [file, setFile] = useState<File | null>(null);
   const [cvText, setCvText] = useState("");
   const [jobText, setJobText] = useState("");
-  const [isDragging, setIsDragging] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<{
     fitScore: number;
     summary: string;
     missingKeywords: string[];
   } | null>(null);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const faqs = [
     {
-      question: "How does Rejectly.pro work?",
+      question: "Is my data secure?",
       answer:
-        "Upload your CV and the job description you're targeting. Our advanced AI analyzes the match between them, identifies gaps, and provides personalized improvement suggestions.",
+        "Absolutely! All your data is encrypted and stored securely. We never share your information with third parties. We're fully GDPR compliant and take data security seriously.",
     },
     {
       question: "What file formats do you support?",
       answer:
-        "We support PDF and DOCX formats. You can also directly paste text for analysis.",
+        "We support PDF and DOCX formats. You can also paste text directly for analysis. Maximum file size is 5MB.",
     },
     {
-      question: "Is my data secure?",
+      question: "How long does the analysis take?",
       answer:
-        "Absolutely! All your data is encrypted and stored securely. We never share your information with third parties. We're fully GDPR compliant.",
+        "Our AI analysis typically takes 15-30 seconds to complete. For complex CVs and longer job descriptions, it may take up to 1 minute, but never longer.",
     },
     {
       question: "How many analyses can I do with the free plan?",
       answer:
-        "The free plan allows 3 analyses per month. For unlimited analyses, upgrade to the Pro plan.",
+        "The free plan allows 3 analyses per month. You can compare up to 3 job postings per analysis. Upgrade to Pro for unlimited analyses.",
     },
     {
-      question: "What is ATS optimization?",
+      question: "What's included in the Pro plan?",
       answer:
-        "ATS (Applicant Tracking System) is software many companies use to filter CVs. Rejectly.pro optimizes your CV to pass through these systems.",
+        "Pro includes unlimited analyses, detailed AI insights, professional rewriting of 3 bullet points, ATS optimization recommendations, and alternative role suggestions. Only $9/month.",
     },
     {
       question: "Can I cancel anytime?",
       answer:
-        "Yes! No contracts or long-term commitments. You can cancel anytime.",
+        "Yes! No commitment required. You can cancel anytime. After canceling, you'll continue to have Pro features until the end of your billing period.",
     },
   ];
-
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setIsDragging(true);
-    } else if (e.type === "dragleave") {
-      setIsDragging(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    const files = e.dataTransfer.files;
-    if (files && files[0]) {
-      setFile(files[0]);
-      setCvText("");
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-      setCvText("");
-    }
-  };
 
   const loadSample = () => {
     setCvText(
@@ -1452,12 +1287,10 @@ export default function Page() {
     setJobText(
       "Senior Frontend Developer\n\nRequirements:\n- 5+ years React experience\n- TypeScript expertise\n- Next.js knowledge\n- Testing experience (Jest, React Testing Library)\n- CI/CD pipelines\n- Team leadership"
     );
-    setFile(null);
-    showToastMessage("Sample data loaded!");
   };
 
   const handleAnalyze = async () => {
-    if ((!file && !cvText) || !jobText) return;
+    if (!cvText || !jobText) return;
 
     setIsAnalyzing(true);
 
@@ -1467,7 +1300,7 @@ export default function Page() {
     setResult({
       fitScore: 67,
       summary:
-        "Your CV shows relevant React experience, but lacks several key requirements. You're missing TypeScript and Next.js expertise, which are crucial for this role. Additionally, your experience is below the 5+ years requirement.",
+        "Your CV shows strong React experience, but lacks several key requirements for this position. You're missing TypeScript and Next.js expertise, which are crucial for this role. Additionally, your experience falls short of the 5+ years requirement. Testing and CI/CD experience are also not mentioned.",
       missingKeywords: [
         "TypeScript",
         "Next.js",
@@ -1479,69 +1312,70 @@ export default function Page() {
     });
 
     setIsAnalyzing(false);
-    showToastMessage("Analysis complete!");
-
-    // Scroll to results
-    setTimeout(() => {
-      document.getElementById("results")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 100);
-  };
-
-  const showToastMessage = (message: string) => {
-    setToastMessage(message);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
   };
 
   return (
     <Container>
-      {/* Toast Notification */}
-      {showToast && (
-        <Toast>
-          <CheckIcon />
-          <span>{toastMessage}</span>
-        </Toast>
-      )}
-
-      {/* Hero Section */}
+      {/* HERO SECTION */}
       <HeroSection>
         <BackgroundBlur>
-          <BlurCircle $position="top: 10%; left: 10%;" $color="#a855f7" />
           <BlurCircle
-            $position="bottom: 10%; right: 10%;"
-            $delay="1s"
+            $position="top: -200px; left: -200px;"
+            $color="#a855f7"
+            $delay="0s"
+          />
+          <BlurCircle
+            $position="top: -100px; right: -200px;"
             $color="#3b82f6"
+            $delay="2s"
+          />
+          <BlurCircle
+            $position="bottom: -200px; left: 50%; transform: translateX(-50%);"
+            $color="#ec4899"
+            $delay="4s"
           />
         </BackgroundBlur>
 
         <HeroContent>
-          <Badge>
-            <SparklesIcon />
-            <span>AI-Powered CV Analysis</span>
-          </Badge>
+          <TrustBadge>
+            <CheckIcon />
+            <span>OpenAI GPT-4 Powered • GDPR Compliant</span>
+          </TrustBadge>
 
           <HeroTitle>
-            <GradientText>Why Was I Rejected?</GradientText>
+            Optimize Your CV for <GradientText>Job Postings</GradientText>
           </HeroTitle>
 
           <HeroSubtitle>
-            Get instant, data-driven insights on why your CV didn&apos;t match
-            the job. Powered by advanced AI to help you land your dream role.
+            Use AI to <strong>identify missing skills</strong>, improve your CV,
+            and get <strong>73% more interview invitations</strong>
           </HeroSubtitle>
 
           <ButtonGroup>
             <PrimaryButton href="#demo">
-              <ZapIcon />
-              Try It Free
+              <RocketIcon />
+              Analyze for Free
             </PrimaryButton>
-            <SecondaryButton href="#pricing">
-              See Pricing
+            <SecondaryButton href="#features">
+              How It Works
               <ArrowRightIcon />
             </SecondaryButton>
           </ButtonGroup>
+
+          <TrustIndicators>
+            <TrustItem>
+              <div className="number">500+</div>
+              <div className="label">Active Users</div>
+            </TrustItem>
+            <TrustItem>
+              <div className="number">1,200+</div>
+              <div className="label">Analyses Completed</div>
+            </TrustItem>
+            <TrustItem>
+              <div className="number">73%</div>
+              <div className="label">Average Improvement</div>
+            </TrustItem>
+          </TrustIndicators>
 
           <SocialProof>
             <AvatarStack>
@@ -1557,184 +1391,52 @@ export default function Page() {
               <img src="https://i.pravatar.cc/150?img=5" alt="User" />
             </AvatarStack>
             <SocialProofText>
-              <span>2,847+</span> professionals using it
+              <StarIcon />
+              <strong>4.8/5</strong> (127 reviews)
             </SocialProofText>
           </SocialProof>
-
-          <DemoScreenshot>
-            <Image
-              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=675&fit=crop"
-              alt="Rejectly Demo"
-              width={1200}
-              height={675}
-              priority
-            />
-          </DemoScreenshot>
         </HeroContent>
       </HeroSection>
 
-      {/* How It Works */}
-      <Section id="how">
+      <Divider />
+
+      {/* DEMO SECTION - SIMPLIFIED */}
+      <DemoSection id="demo">
         <SectionHeader>
-          <SectionTitle>How It Works?</SectionTitle>
+          <SectionTitle>🚀 Try It Now - Free</SectionTitle>
           <SectionSubtitle>
-            Find opportunities in 3 simple steps
+            Paste your CV and job description, get instant AI feedback
           </SectionSubtitle>
         </SectionHeader>
 
-        <StepsGrid>
-          <StepCard>
-            <StepNumber>1</StepNumber>
-            <StepImage>
-              <Image
-                src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop"
-                alt="Upload CV"
-                width={400}
-                height={300}
-              />
-            </StepImage>
-            <StepTitle>Upload Your CV</StepTitle>
-            <StepDescription>
-              Upload in PDF or Word format. Alternatively, paste text directly.
-            </StepDescription>
-          </StepCard>
+        <DemoCard>
+          <DemoHeader>
+            <DemoTitle>Quick Demo</DemoTitle>
+            <DemoSubtitle>
+              Try with sample data or paste your own CV
+            </DemoSubtitle>
+            <LoadSampleButton onClick={loadSample}>
+              📝 Load Sample Data
+            </LoadSampleButton>
+          </DemoHeader>
 
-          <StepCard>
-            <StepNumber>2</StepNumber>
-            <StepImage>
-              <Image
-                src="https://images.unsplash.com/photo-1554774853-aae0a22c8aa4?w=400&h=300&fit=crop"
-                alt="Job Description"
-                width={400}
-                height={300}
-              />
-            </StepImage>
-            <StepTitle>Add Job Description</StepTitle>
-            <StepDescription>
-              Paste the complete description of the job you&apos;re targeting.
-            </StepDescription>
-          </StepCard>
+          <DemoTextarea
+            placeholder="Paste your CV here (or load sample data)..."
+            value={cvText}
+            onChange={(e) => setCvText(e.target.value)}
+            rows={6}
+          />
 
-          <StepCard>
-            <StepNumber>3</StepNumber>
-            <StepImage>
-              <Image
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop"
-                alt="Get Results"
-                width={400}
-                height={300}
-              />
-            </StepImage>
-            <StepTitle>Get Instant Results</StepTitle>
-            <StepDescription>
-              Review the AI analysis and learn how to optimize your CV.
-            </StepDescription>
-          </StepCard>
-        </StepsGrid>
-      </Section>
+          <DemoTextarea
+            placeholder="Paste the job description here..."
+            value={jobText}
+            onChange={(e) => setJobText(e.target.value)}
+            rows={6}
+          />
 
-      <Divider />
-
-      {/* Demo Section - Your existing demo component */}
-      <DemoSection id="demo">
-        <DemoHeader>
-          <DemoTitle>🚀 Try It Now - Free Demo</DemoTitle>
-          <DemoSubtitle>
-            Upload your CV or paste text, add a job description, and get instant
-            AI feedback
-          </DemoSubtitle>
-          <LoadSampleButton onClick={loadSample}>
-            📝 Load Sample Data
-          </LoadSampleButton>
-        </DemoHeader>
-
-        {/* Input Grid */}
-        <InputGrid>
-          {/* CV Input */}
-          <InputCard>
-            <CardHeader>
-              <CardTitle>Your CV</CardTitle>
-              <CardDescription>Upload a file or paste text</CardDescription>
-            </CardHeader>
-
-            <UploadArea
-              $isDragging={isDragging}
-              onDragEnter={handleDrag}
-              onDragOver={handleDrag}
-              onDragLeave={handleDrag}
-              onDrop={handleDrop}
-              onClick={() => document.getElementById("cv-file-input")?.click()}
-            >
-              <UploadIconWrapper>
-                <UploadSvgIcon />
-              </UploadIconWrapper>
-              <UploadText>
-                {file ? "Change File" : "Click to upload or drag & drop"}
-              </UploadText>
-              <UploadHint>PDF or DOCX (max 5MB)</UploadHint>
-            </UploadArea>
-
-            {file && (
-              <FileName>
-                <FileTextIcon />
-                <span>{file.name}</span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFile(null);
-                  }}
-                >
-                  <XIcon />
-                </button>
-              </FileName>
-            )}
-
-            <HiddenInput
-              id="cv-file-input"
-              type="file"
-              accept=".pdf,.docx"
-              onChange={handleFileChange}
-            />
-
-            <StyledDivider>
-              <span>OR</span>
-            </StyledDivider>
-
-            <StyledTextarea
-              placeholder="Paste your CV text here..."
-              value={cvText}
-              onChange={(e) => {
-                setCvText(e.target.value);
-                if (e.target.value) setFile(null);
-              }}
-              disabled={!!file}
-              rows={8}
-            />
-          </InputCard>
-
-          {/* Job Input */}
-          <InputCard>
-            <CardHeader>
-              <CardTitle>Job Description</CardTitle>
-              <CardDescription>
-                Paste the job posting you&apos;re targeting
-              </CardDescription>
-            </CardHeader>
-
-            <StyledTextarea
-              placeholder="Paste the full job description here..."
-              value={jobText}
-              onChange={(e) => setJobText(e.target.value)}
-              rows={23}
-            />
-          </InputCard>
-        </InputGrid>
-
-        {/* Analyze Button */}
-        <AnalyzeButtonWrapper>
           <AnalyzeButton
             onClick={handleAnalyze}
-            disabled={(!file && !cvText) || !jobText || isAnalyzing}
+            disabled={!cvText || !jobText || isAnalyzing}
             $isLoading={isAnalyzing}
           >
             {isAnalyzing ? (
@@ -1744,92 +1446,66 @@ export default function Page() {
               </>
             ) : (
               <>
-                <TargetIcon />
-                Analyze Match
+                <ZapIcon />
+                Analyze Now
               </>
             )}
           </AnalyzeButton>
-        </AnalyzeButtonWrapper>
 
-        {/* Results Section */}
-        {result && (
-          <ResultsCard id="results">
-            {/* Score Display */}
-            <ScoreDisplay>
-              <ScoreValue>{result.fitScore}%</ScoreValue>
-              <ScoreLabel>Match Score</ScoreLabel>
-            </ScoreDisplay>
+          {result && (
+            <ResultsCard>
+              <ScoreDisplay>
+                <ScoreValue>{result.fitScore}%</ScoreValue>
+                <ScoreLabel>Match Score</ScoreLabel>
+              </ScoreDisplay>
 
-            {/* Summary */}
-            <div>
-              <SectionTitleWithIcon>
-                <SparklesIcon />
-                AI Summary
-              </SectionTitleWithIcon>
-              <SummaryBox>
-                <p>{result.summary}</p>
-              </SummaryBox>
-            </div>
-
-            {/* Missing Keywords */}
-            <div>
-              <SectionTitleWithIcon>
-                <TargetIcon />
-                Missing Keywords
-              </SectionTitleWithIcon>
-              <KeywordList>
-                {result.missingKeywords?.map((keyword: string) => (
-                  <KeywordBadge key={keyword}>{keyword}</KeywordBadge>
-                ))}
-              </KeywordList>
-            </div>
-
-            {/* Pro Preview */}
-            <ProPreview>
-              <BlurredContent>
-                <h3>
+              <ResultSection>
+                <ResultTitle>
                   <SparklesIcon />
-                  Pro Features Preview
-                </h3>
-                <p>
-                  • 3 professionally rewritten bullet points optimized for ATS
-                </p>
-                <p>
-                  • 3 alternative role recommendations with match percentages
-                </p>
-                <p>• Detailed ATS optimization checklist</p>
-                <p>• Save and compare unlimited analyses</p>
-              </BlurredContent>
+                  AI Summary
+                </ResultTitle>
+                <SummaryBox>
+                  <p>{result.summary}</p>
+                </SummaryBox>
+              </ResultSection>
 
-              <ProBadge>
-                <div className="emoji">🔒</div>
-                <div className="text">Pro Features Locked</div>
-              </ProBadge>
-            </ProPreview>
+              <ResultSection>
+                <ResultTitle>
+                  <TargetIcon />
+                  Missing Skills
+                </ResultTitle>
+                <KeywordList>
+                  {result.missingKeywords.map((keyword) => (
+                    <KeywordBadge key={keyword}>{keyword}</KeywordBadge>
+                  ))}
+                </KeywordList>
+              </ResultSection>
 
-            {/* CTA Section */}
-            <CTASection>
-              <h3>Want the Full Analysis?</h3>
-              <p>
-                Sign up free to save this report, get unlimited analyses, and
-                unlock Pro features for just $9 per report!
-              </p>
-              <CTAButtons>
-                <CTAButton $variant="primary">Sign Up Free</CTAButton>
-                <CTAButton $variant="secondary">Login</CTAButton>
-              </CTAButtons>
-            </CTASection>
-          </ResultsCard>
-        )}
+              <CTASection>
+                <h3>🎯 Want the Full Analysis?</h3>
+                <p>
+                  Sign up for free, save your report, and perfect your CV with
+                  Pro features!
+                </p>
+                <CTAButtons>
+                  <CTAButton $variant="primary">Sign Up Free</CTAButton>
+                  <CTAButton $variant="secondary">Log In</CTAButton>
+                </CTAButtons>
+              </CTASection>
+            </ResultsCard>
+          )}
+        </DemoCard>
       </DemoSection>
 
       <Divider />
 
-      {/* Features */}
+      {/* FEATURES - BENEFIT DRIVEN */}
       <Section id="features">
         <SectionHeader>
           <SectionTitle>Why Rejectly.pro?</SectionTitle>
-          <SectionSubtitle>Grow with data, not guesses</SectionSubtitle>
+          <SectionSubtitle>
+            Data-driven improvements, not guesswork
+          </SectionSubtitle>
         </SectionHeader>
 
         <FeatureGrid>
@@ -1837,75 +1513,54 @@ export default function Page() {
             <FeatureIcon $gradient="linear-gradient(135deg, #a855f7 0%, #ec4899 100%)">
               <SparklesIcon />
             </FeatureIcon>
-            <FeatureTitle>AI-Powered Analysis</FeatureTitle>
+            <FeatureTitle>Identify Missing Skills</FeatureTitle>
             <FeatureDescription>
-              Advanced GPT-4 technology analyzes your CV against job
-              requirements with human-level understanding
+              Discover gaps between your CV and job postings in 30 seconds with
+              GPT-4 technology
             </FeatureDescription>
+            <FeatureHighlight>
+              Results in <strong>30 seconds</strong>
+            </FeatureHighlight>
           </FeatureCard>
 
           <FeatureCard>
             <FeatureIcon $gradient="linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)">
               <ZapIcon />
             </FeatureIcon>
-            <FeatureTitle>Instant Results</FeatureTitle>
+            <FeatureTitle>Pass Bot Filters</FeatureTitle>
             <FeatureDescription>
-              Get your match score and actionable feedback in seconds, not days.
-              Start improving immediately.
+              Reduce your CV rejection rate by robots with ATS (Applicant
+              Tracking System) optimization
             </FeatureDescription>
-          </FeatureCard>
-
-          <FeatureCard>
-            <FeatureIcon $gradient="linear-gradient(135deg, #eab308 0%, #f97316 100%)">
-              <TargetIcon />
-            </FeatureIcon>
-            <FeatureTitle>Actionable Insights</FeatureTitle>
-            <FeatureDescription>
-              Not just problems—get specific, prioritized recommendations to
-              optimize your CV for each application
-            </FeatureDescription>
+            <FeatureHighlight>
+              <strong>85% more</strong> ATS pass rate
+            </FeatureHighlight>
           </FeatureCard>
 
           <FeatureCard>
             <FeatureIcon $gradient="linear-gradient(135deg, #10b981 0%, #14b8a6 100%)">
               <TargetIcon />
             </FeatureIcon>
-            <FeatureTitle>ATS Optimization</FeatureTitle>
+            <FeatureTitle>Professionally Rewrite Your CV</FeatureTitle>
             <FeatureDescription>
-              Ensure your CV passes through applicant tracking systems
+              Get bullet point suggestions optimized for specific job postings,
+              written in HR language
             </FeatureDescription>
-          </FeatureCard>
-
-          <FeatureCard>
-            <FeatureIcon $gradient="linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)">
-              <SparklesIcon />
-            </FeatureIcon>
-            <FeatureTitle>Unlimited Comparisons</FeatureTitle>
-            <FeatureDescription>
-              Save and compare analyses across different job applications
-            </FeatureDescription>
-          </FeatureCard>
-
-          <FeatureCard>
-            <FeatureIcon $gradient="linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)">
-              <ZapIcon />
-            </FeatureIcon>
-            <FeatureTitle>Professional Rewriting</FeatureTitle>
-            <FeatureDescription>
-              Get professionally rewritten bullet points optimized for ATS
-            </FeatureDescription>
+            <FeatureHighlight>
+              <strong>3 bullet points</strong> rewritten
+            </FeatureHighlight>
           </FeatureCard>
         </FeatureGrid>
       </Section>
 
-      <Divider />
+     <Divider />
 
-      {/* Testimonials */}
-      <Section>
+      {/* TESTIMONIALS - WHAT OUR USERS SAY */}
+      <Section id="testimonials">
         <SectionHeader>
           <SectionTitle>What Our Users Say</SectionTitle>
           <SectionSubtitle>
-            2,847+ professionals trust Rejectly.pro
+            Real results from real professionals
           </SectionSubtitle>
         </SectionHeader>
 
@@ -1913,83 +1568,91 @@ export default function Page() {
           <TestimonialCard>
             <TestimonialHeader>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://i.pravatar.cc/150?img=10" alt="John" />
+              <img src="https://i.pravatar.cc/150?img=12" alt="Sarah Chen" />
               <TestimonialAuthor>
-                <div className="name">John Smith</div>
-                <div className="role">Software Developer</div>
+                <div className="name">Sarah Chen</div>
+                <div className="role">Frontend Developer</div>
               </TestimonialAuthor>
+              <TestimonialRating>
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+              </TestimonialRating>
             </TestimonialHeader>
             <TestimonialText>
-              &quot;Thanks to Rejectly.pro, I saw what was missing in my CV and
-              fixed it. Now I&apos;m getting more interview calls! 🚀&quot;
+              I was applying to jobs for months with no responses. After using
+              Rejectly.pro, I optimized my CV and got 5 interview invitations in
+              2 weeks! The AI insights were spot-on about what I was missing.
             </TestimonialText>
+            <TestimonialHighlight>
+              <CheckIcon />
+              5 interviews in 2 weeks
+            </TestimonialHighlight>
           </TestimonialCard>
 
           <TestimonialCard>
             <TestimonialHeader>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://i.pravatar.cc/150?img=20" alt="Sarah" />
+              <img src="https://i.pravatar.cc/150?img=33" alt="Marcus Johnson" />
               <TestimonialAuthor>
-                <div className="name">Sarah Johnson</div>
-                <div className="role">Marketing Specialist</div>
-              </TestimonialAuthor>
-            </TestimonialHeader>
-            <TestimonialText>
-              &quot;The AI analysis is incredibly accurate. I get different
-              suggestions for each application and it really works.&quot;
-            </TestimonialText>
-          </TestimonialCard>
-
-          <TestimonialCard>
-            <TestimonialHeader>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://i.pravatar.cc/150?img=30" alt="Michael" />
-              <TestimonialAuthor>
-                <div className="name">Michael Chen</div>
+                <div className="name">Marcus Johnson</div>
                 <div className="role">Product Manager</div>
               </TestimonialAuthor>
+              <TestimonialRating>
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+              </TestimonialRating>
             </TestimonialHeader>
             <TestimonialText>
-              &quot;Simple but powerful. Thanks to ATS optimization, I started
-              passing initial screening rounds. Highly recommend! ⭐&quot;
+              The ATS optimization feature is a game-changer. My CV was being
+              rejected by automated systems before I even got to human
+              reviewers. Now I'm getting past those filters and landing
+              interviews at top companies.
             </TestimonialText>
+            <TestimonialHighlight>
+              <CheckIcon />
+              85% ATS pass rate improvement
+            </TestimonialHighlight>
+          </TestimonialCard>
+
+          <TestimonialCard>
+            <TestimonialHeader>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="https://i.pravatar.cc/150?img=47" alt="Emily Rodriguez" />
+              <TestimonialAuthor>
+                <div className="name">Emily Rodriguez</div>
+                <div className="role">Data Analyst</div>
+              </TestimonialAuthor>
+              <TestimonialRating>
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+              </TestimonialRating>
+            </TestimonialHeader>
+            <TestimonialText>
+              The professional rewriting suggestions helped me transform my CV
+              from generic to compelling. I learned how to speak the language HR
+              managers want to see. Landed my dream job within a month!
+            </TestimonialText>
+            <TestimonialHighlight>
+              <CheckIcon />
+              Dream job in 1 month
+            </TestimonialHighlight>
           </TestimonialCard>
         </TestimonialGrid>
       </Section>
 
-      {/* Founder Story */}
-      <Section>
-        <FounderStory>
-          <Image
-            src="https://i.pravatar.cc/200?img=40"
-            alt="Founder"
-            width={128}
-            height={128}
-            style={{ borderRadius: "50%", border: "4px solid #764ba2" }}
-          />
-          <FounderContent>
-            <h3>The Story of Rejectly.pro</h3>
-            <p>
-              As a software engineer, I applied to dozens of jobs. With each
-              rejection, I asked myself: &quot;Why?&quot;
-            </p>
-            <p>
-              The answer was usually simple: my CV had points that didn&apos;t
-              match the job posting. I wasn&apos;t using the right keywords or
-              expressing my experience incorrectly.
-            </p>
-            <p>
-              That&apos;s exactly why I built Rejectly.pro - so everyone can
-              have these insights before applying. With AI, you can now act on
-              real data instead of guessing.
-            </p>
-          </FounderContent>
-        </FounderStory>
-      </Section>
-
       <Divider />
+      
 
-      {/* Pricing */}
+      {/* PRICING - SIMPLIFIED */}
       <Section id="pricing">
         <SectionHeader>
           <SectionTitle>Simple and Transparent Pricing</SectionTitle>
@@ -1999,6 +1662,7 @@ export default function Page() {
         </SectionHeader>
 
         <PricingGrid>
+          {/* Free Plan */}
           <PricingCard>
             <PricingTitle>Free</PricingTitle>
             <PricingPrice>
@@ -2007,7 +1671,7 @@ export default function Page() {
             <PricingFeatures>
               <PricingFeature $enabled>
                 <CheckIcon />
-                <span>3 analyses/month</span>
+                <span>3 analyses per month</span>
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
@@ -2021,12 +1685,21 @@ export default function Page() {
                 <XIcon />
                 <span>Professional rewriting</span>
               </PricingFeature>
+              <PricingFeature>
+                <XIcon />
+                <span>ATS optimization</span>
+              </PricingFeature>
+              <PricingFeature>
+                <XIcon />
+                <span>Role recommendations</span>
+              </PricingFeature>
             </PricingFeatures>
             <PricingButton $variant="secondary">Start Free</PricingButton>
           </PricingCard>
 
+          {/* Pro Plan */}
           <PricingCard $featured>
-            <PricingBadge>Most Popular</PricingBadge>
+            <PricingBadge>MOST POPULAR</PricingBadge>
             <PricingTitle>Pro</PricingTitle>
             <PricingPrice>
               $9<span>/month</span>
@@ -2038,11 +1711,15 @@ export default function Page() {
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
-                <span>Advanced AI insights</span>
+                <span>Detailed AI insights</span>
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
-                <span>Professional rewriting</span>
+                <span>Missing keywords + suggestions</span>
+              </PricingFeature>
+              <PricingFeature $enabled>
+                <CheckIcon />
+                <span>3 bullet points rewritten professionally</span>
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
@@ -2050,46 +1727,10 @@ export default function Page() {
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
-                <span>Alternative role suggestions</span>
-              </PricingFeature>
-              <PricingFeature $enabled>
-                <CheckIcon />
-                <span>Priority support</span>
+                <span>3 alternative role recommendations</span>
               </PricingFeature>
             </PricingFeatures>
-            <PricingButton $variant="primary">Try 14 Days Free</PricingButton>
-          </PricingCard>
-
-          <PricingCard>
-            <PricingTitle>Enterprise</PricingTitle>
-            <PricingPrice>Custom</PricingPrice>
-            <PricingFeatures>
-              <PricingFeature $enabled>
-                <CheckIcon />
-                <span>Everything in Pro</span>
-              </PricingFeature>
-              <PricingFeature $enabled>
-                <CheckIcon />
-                <span>Unlimited team members</span>
-              </PricingFeature>
-              <PricingFeature $enabled>
-                <CheckIcon />
-                <span>Custom AI model</span>
-              </PricingFeature>
-              <PricingFeature $enabled>
-                <CheckIcon />
-                <span>API access</span>
-              </PricingFeature>
-              <PricingFeature $enabled>
-                <CheckIcon />
-                <span>Custom training</span>
-              </PricingFeature>
-              <PricingFeature $enabled>
-                <CheckIcon />
-                <span>24/7 support</span>
-              </PricingFeature>
-            </PricingFeatures>
-            <PricingButton $variant="secondary">Contact Us</PricingButton>
+            <PricingButton $variant="primary">Upgrade to Pro</PricingButton>
           </PricingCard>
         </PricingGrid>
       </Section>
@@ -2119,57 +1760,17 @@ export default function Page() {
         </FAQList>
       </Section>
 
-      {/* Final CTA */}
-      <Section>
-        <FinalCTA>
-          <BlurCircle
-            $position="top: -100px; left: -100px;"
-            $color="#a855f7"
-            style={{ width: "300px", height: "300px" }}
-          />
-          <BlurCircle
-            $position="bottom: -100px; right: -100px;"
-            $color="#3b82f6"
-            style={{ width: "300px", height: "300px" }}
-          />
+      <Divider />
 
-          <CTAContent>
-            <h2>Ready for Your Dream Job?</h2>
-            <p>
-              Optimize your CV with data-driven insights and get more interview
-              calls
-            </p>
-
-            <ButtonGroup>
-              <PrimaryButton href="#demo">Try 14 Days Free</PrimaryButton>
-            </ButtonGroup>
-
-            <SocialProof>
-              <AvatarStack>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://i.pravatar.cc/150?img=1" alt="User" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://i.pravatar.cc/150?img=2" alt="User" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://i.pravatar.cc/150?img=3" alt="User" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://i.pravatar.cc/150?img=4" alt="User" />
-              </AvatarStack>
-              <p style={{ fontSize: "14px", color: "#a1a1aa" }}>
-                2,847+ people already using Rejectly.pro
-              </p>
-            </SocialProof>
-          </CTAContent>
-        </FinalCTA>
-      </Section>
-
-      {/* Footer */}
+      {/* FOOTER */}
       <Footer>
         <FooterContent>
           <FooterGrid>
             <FooterColumn>
               <h3>Rejectly.pro</h3>
-              <p>AI-powered CV analysis to help you land your dream job.</p>
+              <p>
+                AI-powered CV analysis to help you land your dream job.
+              </p>
             </FooterColumn>
             <FooterColumn>
               <h4>Product</h4>
@@ -2195,7 +1796,7 @@ export default function Page() {
                   <a href="#">Blog</a>
                 </li>
                 <li>
-                  <a href="#">Careers</a>
+                  <a href="#">Contact</a>
                 </li>
               </ul>
             </FooterColumn>
@@ -2206,10 +1807,10 @@ export default function Page() {
                   <a href="#faq">FAQ</a>
                 </li>
                 <li>
-                  <a href="#">Contact</a>
+                  <a href="#">Privacy</a>
                 </li>
                 <li>
-                  <a href="#">Privacy</a>
+                  <a href="#">Terms</a>
                 </li>
               </ul>
             </FooterColumn>

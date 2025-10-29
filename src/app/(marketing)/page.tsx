@@ -1265,10 +1265,194 @@ const LoadingStep = styled.div<{ $completed?: boolean }>`
   font-weight: ${({ $completed }) => ($completed ? 600 : 400)};
 `;
 
+const ImprovementSection = styled.div`
+  margin-top: 32px;
+  background: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: 32px;
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
+`;
+
+const ImprovementHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  h3 {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const PotentialScoreBox = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: 16px 20px;
+  margin-bottom: 24px;
+
+  .label {
+    font-size: 15px;
+    color: ${({ theme }) => theme.colors.textSecondary};
+  }
+
+  .score {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+`;
+
+const TipsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+`;
+
+const TipItem = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: #10b981;
+  }
+
+  span {
+    color: ${({ theme }) => theme.colors.textPrimary};
+    font-size: 15px;
+    line-height: 1.5;
+  }
+`;
+
+const BlurredContent = styled.div`
+  position: relative;
+  filter: blur(5px);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.5;
+`;
+
+const UnlockOverlay = styled.div`
+  text-align: center;
+  padding: 20px;
+  background: rgba(102, 126, 234, 0.05);
+  border: 1px dashed rgba(102, 126, 234, 0.3);
+  border-radius: ${({ theme }) => theme.radius.md};
+
+  p {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  strong {
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: 600;
+  }
+`;
+
+const BetterJobsSection = styled.div`
+  margin-top: 32px;
+  background: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: 32px;
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
+`;
+
+const BetterJobCard = styled.div<{ $blurred?: boolean }>`
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  ${({ $blurred }) => $blurred && `filter: blur(3px); opacity: 0.6;`}
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const JobHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 16px;
+`;
+
+const JobInfo = styled.div`
+  flex: 1;
+
+  h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: ${({ theme }) => theme.colors.textPrimary};
+  }
+
+  p {
+    font-size: 14px;
+    color: ${({ theme }) => theme.colors.textSecondary};
+  }
+`;
+
+const MatchBadge = styled.div`
+  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+`;
+
+const JobDescription = styled.p`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.6;
+  margin-bottom: 12px;
+`;
+
 // ==================== MAIN COMPONENT ====================
 export default function Page() {
   const [step, setStep] = useState<"upload" | "loading" | "analyzing">("upload");
 const [detectedLocation, setDetectedLocation] = useState("");
+const [improvementTips, setImprovementTips] = useState<string[]>([]);
+const [potentialScore, setPotentialScore] = useState<number>(0);
+const [quickWins, setQuickWins] = useState<string[]>([]);
+const [betterJobs, setBetterJobs] = useState<any[]>([]);7
 const [detectedJobTitle, setDetectedJobTitle] = useState("");
 const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
   const [cvText, setCvText] = useState("");
@@ -1333,42 +1517,65 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
   setIsAnalyzing(true);
 
   try {
-    // Step 1: Fetch location + jobs
-    const jobResponse = await fetch("/api/demo/fetch-jobs", {
+    // Step 1: Fetch location + jobs (background)
+    const jobsPromise = fetch("/api/demo/fetch-jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cvText }),
-    });
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setDetectedLocation(data.location);
+          setDetectedJobTitle(data.detectedJobTitle);
+          setFetchedJobs(data.jobs);
+          return data.jobs;
+        }
+        return [];
+      })
+      .catch(() => []);
 
-    const jobData = await jobResponse.json();
-
-    if (jobData.success) {
-      setDetectedLocation(jobData.location);
-      setDetectedJobTitle(jobData.detectedJobTitle);
-      setFetchedJobs(jobData.jobs);
-    }
-
-    // Wait 1 second
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Step 2: Analyzing
+    // Step 2: Analyzing with REAL AI
     setStep("analyzing");
-    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Step 3: Results
-    setResult({
-      fitScore: 67,
-      summary:
-        "Your CV shows strong React experience, but lacks several key requirements for this position. You're missing TypeScript and Next.js expertise, which are crucial for this role. Additionally, your experience falls short of the 5+ years requirement. Testing and CI/CD experience are also not mentioned.",
-      missingKeywords: [
-        "TypeScript",
-        "Next.js",
-        "Jest",
-        "React Testing Library",
-        "CI/CD",
-        "Team Leadership",
-      ],
+    const analysisResponse = await fetch("/api/demo/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cvText, jobText }),
     });
+
+    const analysisData = await analysisResponse.json();
+
+    if (!analysisResponse.ok) {
+      throw new Error(analysisData.error || "Analysis failed");
+    }
+
+    // Set analysis results
+    setResult({
+      fitScore: analysisData.fitScore,
+      summary: analysisData.summary,
+      missingKeywords: analysisData.missingKeywords,
+    });
+    setImprovementTips(analysisData.improvementTips || []);
+    setPotentialScore(analysisData.potentialScore || 0);
+    setQuickWins(analysisData.quickWins || []);
+
+    // Step 3: Get better jobs (if jobs were fetched)
+    const jobs = await jobsPromise;
+    if (jobs.length > 0) {
+      const betterJobsResponse = await fetch("/api/demo/better-jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cvText, jobs }),
+      });
+
+      const betterJobsData = await betterJobsResponse.json();
+      if (betterJobsData.success) {
+        setBetterJobs(betterJobsData.jobs || []);
+      }
+    }
 
     setStep("upload");
   } catch (error) {
@@ -1561,51 +1768,139 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
   )}
 
   {/* STEP 4: RESULTS */}
-  {result && (
-    <ResultsCard>
-      <ScoreDisplay>
-        <ScoreValue>{result.fitScore}%</ScoreValue>
-        <ScoreLabel>Match Score</ScoreLabel>
-      </ScoreDisplay>
+{result && (
+  <ResultsCard>
+    <ScoreDisplay>
+      <ScoreValue>{result.fitScore}%</ScoreValue>
+      <ScoreLabel>Match Score</ScoreLabel>
+    </ScoreDisplay>
 
-      <ResultSection>
-        <ResultTitle>
+    <ResultSection>
+      <ResultTitle>
+        <SparklesIcon />
+        AI Summary
+      </ResultTitle>
+      <SummaryBox>
+        <p>{result.summary}</p>
+      </SummaryBox>
+    </ResultSection>
+
+    <ResultSection>
+      <ResultTitle>
+        <TargetIcon />
+        Missing Skills
+      </ResultTitle>
+      <KeywordList>
+        {result.missingKeywords.map((keyword) => (
+          <KeywordBadge key={keyword}>{keyword}</KeywordBadge>
+        ))}
+      </KeywordList>
+    </ResultSection>
+
+    {/* IMPROVEMENT SECTION */}
+    {improvementTips.length > 0 && (
+      <ImprovementSection>
+        <ImprovementHeader>
           <SparklesIcon />
-          AI Summary
-        </ResultTitle>
-        <SummaryBox>
-          <p>{result.summary}</p>
-        </SummaryBox>
-      </ResultSection>
+          <h3>💡 How to Improve Your Score</h3>
+        </ImprovementHeader>
 
-      <ResultSection>
-        <ResultTitle>
-          <TargetIcon />
-          Missing Skills
-        </ResultTitle>
-        <KeywordList>
-          {result.missingKeywords.map((keyword) => (
-            <KeywordBadge key={keyword}>{keyword}</KeywordBadge>
+        <PotentialScoreBox>
+          <div className="label">Potential Score After Improvements:</div>
+          <div className="score">{potentialScore}%</div>
+        </PotentialScoreBox>
+
+        <TipsList>
+          {quickWins.slice(0, 3).map((tip, idx) => (
+            <TipItem key={idx}>
+              <CheckIcon />
+              <span>{tip}</span>
+            </TipItem>
           ))}
-        </KeywordList>
-      </ResultSection>
+        </TipsList>
 
-      <CTASection>
-        <h3>🎯 Want the Full Analysis?</h3>
-        <p>
-          Sign up for free, save your report, and perfect your CV with Pro features!
+        <BlurredContent>
+          <TipsList>
+            {improvementTips.slice(3, 6).map((tip, idx) => (
+              <TipItem key={idx}>
+                <CheckIcon />
+                <span>{tip}</span>
+              </TipItem>
+            ))}
+          </TipsList>
+        </BlurredContent>
+
+        <UnlockOverlay>
+          <p>🔒 <strong>{improvementTips.length - 3} more improvement tips</strong> locked</p>
+          <p>Upgrade to see all personalized recommendations</p>
+        </UnlockOverlay>
+      </ImprovementSection>
+    )}
+
+    {/* BETTER JOBS SECTION */}
+    {betterJobs.length > 0 && (
+      <BetterJobsSection>
+        <ImprovementHeader>
+          <TargetIcon />
+          <h3>🎯 Better Matched Jobs for You</h3>
+        </ImprovementHeader>
+
+        <p style={{ marginBottom: '20px', color: 'var(--text-secondary)' }}>
+          Based on your CV, these positions might be a better fit
         </p>
-        <CTAButtons>
-          <CTAButton as="a" href="/signup" $variant="primary">
-            Sign Up Free
-          </CTAButton>
-          <CTAButton as="a" href="/login" $variant="secondary">
-            Log In
-          </CTAButton>
-        </CTAButtons>
-      </CTASection>
-    </ResultsCard>
-  )}
+
+        {betterJobs.slice(0, 2).map((job, idx) => (
+          <BetterJobCard key={idx}>
+            <JobHeader>
+              <JobInfo>
+                <h4>{job.title}</h4>
+                <p>{job.company} • {job.location}</p>
+              </JobInfo>
+              <MatchBadge>⭐ {job.matchScore}% Match</MatchBadge>
+            </JobHeader>
+            <JobDescription>{job.description}</JobDescription>
+          </BetterJobCard>
+        ))}
+
+        {betterJobs.length > 2 && (
+          <>
+            <BetterJobCard $blurred>
+              <JobHeader>
+                <JobInfo>
+                  <h4>{betterJobs[2].title}</h4>
+                  <p>{betterJobs[2].company} • {betterJobs[2].location}</p>
+                </JobInfo>
+                <MatchBadge>⭐ {betterJobs[2].matchScore}% Match</MatchBadge>
+              </JobHeader>
+              <JobDescription>{betterJobs[2].description}</JobDescription>
+            </BetterJobCard>
+
+            <UnlockOverlay>
+              <p>🔒 <strong>More perfectly matched jobs</strong> waiting for you</p>
+              <p>Upgrade to see all recommendations with detailed match analysis</p>
+            </UnlockOverlay>
+          </>
+        )}
+      </BetterJobsSection>
+    )}
+
+    <CTASection>
+      <h3>🎯 Want the Full Analysis?</h3>
+      <p>
+        Sign up for free, save your report, and perfect your CV with Pro features!
+      </p>
+      <CTAButtons>
+        <CTAButton as="a" href="/signup" $variant="primary">
+          Sign Up Free
+        </CTAButton>
+        <CTAButton as="a" href="/login" $variant="secondary">
+          Log In
+        </CTAButton>
+      </CTAButtons>
+    </CTASection>
+  </ResultsCard>
+)}
+  
 </DemoCard>
       </DemoSection>
 

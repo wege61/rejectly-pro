@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-import { ROUTES } from '@/lib/constants';
-import styled from 'styled-components';
+import { useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { ROUTES } from "@/lib/constants";
+import styled from "styled-components";
 
 const Container = styled.div`
   display: flex;
@@ -19,14 +19,15 @@ export default function AuthCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-   useEffect(() => {
+  useEffect(() => {
     const run = async () => {
       const supabase = createClient();
 
-      const code = searchParams.get('code');                 // PKCE kodu
-      const next = searchParams.get('next') || ROUTES.AUTH.RESET_PASSWORD;
+      const code = searchParams.get("code"); // PKCE kodu
+      const next = searchParams.get("next") || ROUTES.AUTH.RESET_PASSWORD;
       // bazı akışlarda token_hash veya token gelir:
-      const token_hash = searchParams.get('token_hash') || searchParams.get('token');
+      const token_hash =
+        searchParams.get("token_hash") || searchParams.get("token");
 
       try {
         if (code) {
@@ -39,7 +40,7 @@ export default function AuthCallbackPage() {
 
         if (token_hash) {
           // PKCE yoksa (başka sekme/cihaz), recovery/magic link doğrulama
-          await supabase.auth.verifyOtp({ type: 'recovery', token_hash });
+          await supabase.auth.verifyOtp({ type: "recovery", token_hash });
           router.push(next || ROUTES.APP.DASHBOARD);
           return;
         }
@@ -48,14 +49,14 @@ export default function AuthCallbackPage() {
         router.push(ROUTES.AUTH.LOGIN);
       } catch (e: any) {
         // code_verifier hatası durumunda verifyOtp fallback dene
-        if (String(e?.message || e).includes('code verifier') && token_hash) {
+        if (String(e?.message || e).includes("code verifier") && token_hash) {
           try {
-            await supabase.auth.verifyOtp({ type: 'recovery', token_hash });
+            await supabase.auth.verifyOtp({ type: "recovery", token_hash });
             router.push(next || ROUTES.APP.DASHBOARD);
             return;
           } catch {}
         }
-        console.error('Auth callback error:', e);
+        console.error("Auth callback error:", e);
         router.push(ROUTES.AUTH.LOGIN);
       }
     };
@@ -63,6 +64,9 @@ export default function AuthCallbackPage() {
     run();
   }, [router, searchParams]);
 
-
-  return <Container>Processing authentication...</Container>;
+  return (
+    <Suspense>
+      <Container>Processing authentication...</Container>
+    </Suspense>
+  );
 }

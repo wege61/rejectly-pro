@@ -850,6 +850,10 @@ const TestimonialGrid = styled.div`
   grid-template-columns: 1fr;
   gap: 32px;
 
+  @media (min-width: 768px) and (max-width: 850px) {
+  gap: 18px;
+  }
+
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -865,6 +869,11 @@ const TestimonialCard = styled.div`
   flex-direction: column;
   gap: 20px;
 
+  @media (min-width: 768px) and (max-width: 850px) {
+  gap: 16px;
+  padding: 20px;
+  }
+
   &:hover {
     border-color: ${({ theme }) => theme.colors.primary};
     transform: translateY(-4px);
@@ -876,6 +885,7 @@ const TestimonialHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-wrap: wrap; /* 🔥 Wrap eklendi */
 
   img {
     width: 56px;
@@ -912,6 +922,20 @@ const TestimonialRating = styled.div`
     height: 18px;
     color: #f59e0b;
     fill: #f59e0b;
+  }
+
+  /* 🔥 1040px altında ismin altına taşı */
+  @media (max-width: 1040px) {
+    width: 100%;
+    margin-left: 0;
+    padding-left: 72px; /* Avatar genişliği + gap */
+  }
+
+  /* 🔥 768px altında tekrar ismin yanına dön */
+  @media (max-width: 768px) {
+    width: auto;
+    margin-left: auto;
+    padding-left: 0;
   }
 `;
 

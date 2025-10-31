@@ -7,7 +7,6 @@ import { ROUTES } from "@/lib/constants";
 import styled from "styled-components";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 const Container = styled.div`
   display: flex;

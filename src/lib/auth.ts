@@ -59,3 +59,61 @@ export async function getUser() {
   if (error) throw error;
   return user;
 }
+
+export async function updateProfile(name: string) {
+  const supabase = createClient();
+  
+  const { error } = await supabase.auth.updateUser({
+    data: {
+      name: name,
+    },
+  });
+  
+  if (error) throw error;
+}
+
+export async function updatePassword(currentPassword: string, newPassword: string) {
+  const supabase = createClient();
+  
+  // Önce mevcut şifreyi doğrula
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user?.email) {
+    throw new Error('User not found');
+  }
+  
+  // Mevcut şifreyi kontrol et (yeniden giriş yaparak)
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  });
+  
+  if (signInError) {
+    throw new Error('Current password is incorrect');
+  }
+  
+  // Yeni şifreyi güncelle
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+  
+  if (error) throw error;
+}
+
+export async function deleteUserAccount(): Promise<void> {
+  // API route'u çağır
+  const response = await fetch('/api/user/delete', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to delete account');
+  }
+
+  // Başarılı silme sonrası ana sayfaya yönlendir
+  window.location.href = ROUTES.PUBLIC.HOME;
+}

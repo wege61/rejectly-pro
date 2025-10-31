@@ -370,20 +370,22 @@ export default function ReportDetailPage() {
                 >
                   {roleRecommendations.map((role: RoleRecommendation) => (
                     <div
-  key={role.title}
-  style={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "12px",
-    backgroundColor: "#1e293b", // slate-800 (theme.colors.surface)
-    border: "1px solid #334155", // slate-700 (theme.colors.border)
-    borderRadius: "8px",
-  }}
->
-  <span style={{ fontWeight: 500, color: "#f1f5f9" }}>{role.title}</span>
-  <Badge variant="success">{role.fit}% Match</Badge>
-</div>
+                      key={role.title}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "12px",
+                        backgroundColor: "#1e293b", // slate-800 (theme.colors.surface)
+                        border: "1px solid #334155", // slate-700 (theme.colors.border)
+                        borderRadius: "8px",
+                      }}
+                    >
+                      <span style={{ fontWeight: 500, color: "#f1f5f9" }}>
+                        {role.title}
+                      </span>
+                      <Badge variant="success">{role.fit}% Match</Badge>
+                    </div>
                   ))}
                 </div>
               </Card.Content>

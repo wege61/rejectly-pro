@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -49,54 +49,54 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  useEffect(() => {
-    // Check if we have a valid recovery token
-    const code = searchParams.get('code');
-    if (!code) {
-      toast.error('Invalid or expired reset link');
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!newPassword || !confirmPassword) {
+    toast.error('Please fill in all fields');
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    toast.error('Password must be at least 6 characters');
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    toast.error('Passwords do not match');
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const supabase = createClient();
+    
+    // Session kontrolü ekle
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      toast.error('Session expired. Please request a new reset link.');
       router.push(ROUTES.AUTH.FORGOT_PASSWORD);
-    }
-  }, [searchParams, router, toast]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!newPassword || !confirmPassword) {
-      toast.error('Please fill in all fields');
       return;
     }
 
-    if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
-      return;
-    }
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
 
-    if (newPassword !== confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
+    if (error) throw error;
 
-    setIsLoading(true);
-
-    try {
-      const supabase = createClient();
-      
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) throw error;
-
-      toast.success('Password reset successfully!');
-      router.push(ROUTES.AUTH.LOGIN);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to reset password. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    toast.success('Password reset successfully!');
+    router.push(ROUTES.AUTH.LOGIN);
+  } catch (error: any) {
+    toast.error(error.message || 'Failed to reset password. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <>

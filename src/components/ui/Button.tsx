@@ -17,7 +17,11 @@ interface RippleType {
   key: number;
 }
 
-const StyledButton = styled.button<ButtonProps>`
+const StyledButton = styled.button<{
+  variant: ButtonProps['variant'];
+  size: ButtonProps['size'];
+  $fullWidth: boolean;
+}>`
   position: relative;
   overflow: hidden;
   display: inline-flex;
@@ -32,8 +36,8 @@ const StyledButton = styled.button<ButtonProps>`
   white-space: nowrap;
   user-select: none;
 
-  ${({ fullWidth }) =>
-    fullWidth &&
+  ${({ $fullWidth }) =>
+    $fullWidth &&
     css`
       width: 100%;
     `}
@@ -212,7 +216,7 @@ export const Button: React.FC<ButtonProps> = ({
     <StyledButton
       variant={variant}
       size={size}
-      fullWidth={fullWidth}
+      $fullWidth={fullWidth}
       disabled={disabled || isLoading}
       onClick={handleClick}
       {...props}

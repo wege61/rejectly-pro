@@ -38,33 +38,47 @@ function AuthCallbackInner() {
       const supabase = createClient();
 
       const code = searchParams.get("code"); // PKCE kodu
-      const next = searchParams.get("next") || ROUTES.AUTH.RESET_PASSWORD;
+      const type = searchParams.get("type"); // recovery, signup, etc.
+      const next = searchParams.get("next");
       const token_hash =
         searchParams.get("token_hash") || searchParams.get("token");
+
+      // Type'a göre varsayılan yönlendirme belirle
+      const defaultRedirect = type === "recovery" 
+        ? ROUTES.AUTH.RESET_PASSWORD 
+        : ROUTES.APP.DASHBOARD;
+      
+      const redirectTo = next || defaultRedirect;
 
       try {
         // 1️⃣ PKCE oturum değişimi
         if (code) {
           await supabase.auth.exchangeCodeForSession(code);
-          router.push(next || ROUTES.APP.DASHBOARD);
+          router.push(redirectTo);
           return;
         }
 
         // 2️⃣ Recovery veya magic link fallback
         if (token_hash) {
-          await supabase.auth.verifyOtp({ type: "recovery", token_hash });
-          router.push(next || ROUTES.APP.DASHBOARD);
+          await supabase.auth.verifyOtp({ 
+            type: type as any || "recovery", 
+            token_hash 
+          });
+          router.push(redirectTo);
           return;
         }
 
-        // 3️⃣ Parametre yoksa login’e yönlendir
+        // 3️⃣ Parametre yoksa login'e yönlendir
         router.push(ROUTES.AUTH.LOGIN);
       } catch (e: any) {
         // 4️⃣ PKCE hatası durumunda fallback
         if (String(e?.message || e).includes("code verifier") && token_hash) {
           try {
-            await supabase.auth.verifyOtp({ type: "recovery", token_hash });
-            router.push(next || ROUTES.APP.DASHBOARD);
+            await supabase.auth.verifyOtp({ 
+              type: type as any || "recovery", 
+              token_hash 
+            });
+            router.push(redirectTo);
             return;
           } catch {}
         }

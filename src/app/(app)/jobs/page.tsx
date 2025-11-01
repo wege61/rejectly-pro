@@ -96,7 +96,7 @@ export default function JobsPage() {
 
   const handleAddJob = async () => {
     if (!jobTitle || (!jobUrl && !jobDescription)) {
-      toast.error("Lütfen gerekli alanları doldurun");
+      toast.error("Please fill in the required fields");
       return;
     }
 
@@ -117,10 +117,10 @@ export default function JobsPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "İş ilanı eklenemedi");
+        throw new Error(result.error || "Job posting failed");
       }
 
-      toast.success("İş ilanı eklendi!");
+      toast.success("Job posting added!");
 
       // Refresh jobs list
       const supabase = createClient();
@@ -142,7 +142,7 @@ export default function JobsPage() {
       setJobDescription("");
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "İş ilanı eklenemedi";
+        error instanceof Error ? error.message : "Job posting failed";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -159,11 +159,11 @@ export default function JobsPage() {
 
       if (deleteError) throw deleteError;
 
-      toast.success("İş ilanı silindi");
+      toast.success("Job posting deleted");
       setJobs(jobs.filter((job) => job.id !== jobId));
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "İş ilanı silinemedi";
+        err instanceof Error ? err.message : "Failed to delete job posting";
       toast.error(errorMessage);
     }
   };

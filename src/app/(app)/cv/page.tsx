@@ -137,7 +137,7 @@ export default function CVPage() {
         throw new Error(result.error || "Upload failed");
       }
 
-      toast.success("CV yüklendi! Metin başarıyla çıkarıldı.");
+      toast.success("CV uploaded! Text extracted successfully.");
 
       // Refresh CV data
       const supabase = createClient();
@@ -177,10 +177,10 @@ export default function CVPage() {
 
       if (deleteError) throw deleteError;
 
-      toast.success("CV silindi");
+      toast.success("CV deleted");
       setCvDocument(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "CV silinemedi";
+      const errorMessage = err instanceof Error ? err.message : "Failed to delete CV";
       toast.error(errorMessage);
     }
   };
@@ -215,7 +215,7 @@ export default function CVPage() {
               </svg>
             </UploadIcon>
             <UploadTitle>
-              {isUploading ? "Yükleniyor..." : "Upload Your CV"}
+              {isUploading ? "Uploading..." : "Upload Your CV"}
             </UploadTitle>
             <UploadSubtitle>
               Click to upload or drag and drop

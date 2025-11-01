@@ -241,7 +241,7 @@ export default function SettingsPage() {
           <Card.Content>
             <Input
               label="Language"
-              value="Turkish (TR)"
+              value="English (EN)"
               disabled
               helperText="More languages coming soon"
               fullWidth

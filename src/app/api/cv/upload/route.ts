@@ -2,6 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { parseFile, cleanText, validateText } from "@/lib/parsers/fileParser";
 
+// En üste, import'lardan hemen sonra bu fonksiyonu ekle:
+function sanitizeFileName(fileName: string): string {
+  return fileName
+    .normalize('NFD') // Unicode karakterleri ayır
+    .replace(/[\u0300-\u036f]/g, '') // Aksanları kaldır
+    .replace(/[ğĞ]/g, 'g')
+    .replace(/[üÜ]/g, 'u')
+    .replace(/[şŞ]/g, 's')
+    .replace(/[ıİ]/g, 'i')
+    .replace(/[öÖ]/g, 'o')
+    .replace(/[çÇ]/g, 'c')
+    .replace(/[^a-zA-Z0-9.-]/g, '_') // Diğer özel karakterleri _ yap
+    .replace(/_+/g, '_') // Birden fazla _ varsa tek yap
+    .replace(/^_|_$/g, ''); // Baştaki ve sondaki _ 'leri kaldır
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Get authenticated user
@@ -65,7 +81,8 @@ export async function POST(request: NextRequest) {
 
     // Upload file using Service Role (bypasses RLS)
     const timestamp = Date.now();
-    const fileName = `${user.id}/${timestamp}-${file.name}`;
+    const sanitizedFileName = sanitizeFileName(file.name); // ← BURASI DEĞİŞTİ
+    const fileName = `${user.id}/${timestamp}-${sanitizedFileName}`; // ← BURASI DEĞİŞTİ
 
     const { createClient: createSupabaseClient } = await import(
       "@supabase/supabase-js"
@@ -100,7 +117,7 @@ export async function POST(request: NextRequest) {
       .insert({
         user_id: user.id,
         type: "cv",
-        title: file.name,
+        title: file.name, // ← Orijinal adı database'de saklayalım (kullanıcıya göstermek için)
         text: cleanedText,
         file_url: filePath,
         lang: "tr",

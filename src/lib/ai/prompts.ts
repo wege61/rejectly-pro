@@ -217,5 +217,7 @@ Guidelines:
 - Skills section should prioritize keywords from job postings
 - Professional summary should be compelling and keyword-rich
 - All dates should be in "Month Year" format
-- Keep professional tone throughout`;
+- Keep professional tone throughout
+- Use standard ASCII characters only (avoid special Unicode symbols, emojis, or fancy characters)
+- Use simple quotes (""), not smart quotes or other variants`;
 }

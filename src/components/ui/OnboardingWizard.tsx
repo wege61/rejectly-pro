@@ -283,6 +283,7 @@ export function OnboardingWizard({
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
   const [cvList, setCvList] = useState<any[]>([]);
   const [jobList, setJobList] = useState<any[]>([]);
+  const [analysisProgress, setAnalysisProgress] = useState<string>("");
 
   // Step 4: Result Summary
   const [analysisResult, setAnalysisResult] = useState<{
@@ -485,6 +486,15 @@ export function OnboardingWizard({
 
     setIsLoading(true);
     try {
+      // Show progress messages
+      setAnalysisProgress("Preparing your documents...");
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      setAnalysisProgress("Analyzing CV content...");
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      setAnalysisProgress("Comparing with job requirements...");
+
       // Call the analyze API instead of direct insert
       const response = await fetch("/api/analyze/free", {
         method: "POST",
@@ -503,6 +513,9 @@ export function OnboardingWizard({
         throw new Error(result.error || "Analysis failed");
       }
 
+      setAnalysisProgress("Calculating match score...");
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       // Save analysis result and move to step 4
       setAnalysisResult({
         id: result.report.id,
@@ -519,6 +532,7 @@ export function OnboardingWizard({
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
+      setAnalysisProgress("");
     }
   };
 
@@ -790,7 +804,14 @@ export function OnboardingWizard({
         {isLoading ? (
           <div style={{ textAlign: "center", padding: "60px 0" }}>
             <Spinner size="xl" />
-            <p style={{ marginTop: "24px", color: "#6b7280" }}>Processing...</p>
+            <p style={{ marginTop: "24px", fontSize: "18px", fontWeight: 600 }}>
+              {analysisProgress || "Processing..."}
+            </p>
+            {analysisProgress && (
+              <p style={{ marginTop: "8px", color: "#6b7280", fontSize: "14px" }}>
+                This may take a few moments
+              </p>
+            )}
           </div>
         ) : (
           <>

@@ -102,3 +102,120 @@ Guidelines:
 - ATS tips should be specific and actionable
 - Maintain professional tone throughout`;
 }
+
+export function generateOptimizedCVPrompt(
+  cvText: string,
+  jobTexts: string[],
+  analysisResults: {
+    fitScore: number;
+    summary: string;
+    missingKeywords: string[];
+    rewrittenBullets?: string[];
+    roleRecommendations?: Array<{ title: string; fit: number }>;
+    atsFlags?: string[];
+  }
+): string {
+  return `You are an expert CV writer and ATS optimization specialist. Create a fully optimized, ATS-friendly CV based on the original CV, target job postings, and analysis results.
+
+ORIGINAL CV:
+"""
+${cvText}
+"""
+
+TARGET JOB POSTINGS:
+${jobTexts
+  .map(
+    (text, i) => `
+Job ${i + 1}:
+"""
+${text}
+"""
+`
+  )
+  .join("\n")}
+
+ANALYSIS RESULTS:
+- Match Score: ${analysisResults.fitScore}/100
+- Missing Keywords: ${analysisResults.missingKeywords.join(", ")}
+${analysisResults.rewrittenBullets ? `- Suggested Bullets: ${analysisResults.rewrittenBullets.join(" | ")}` : ""}
+${analysisResults.atsFlags ? `- ATS Tips: ${analysisResults.atsFlags.join(" | ")}` : ""}
+
+TASK: Create a complete, optimized CV that:
+1. Incorporates ALL missing keywords naturally
+2. Uses the rewritten bullets and ATS recommendations
+3. Maintains the candidate's authentic voice and achievements
+4. Is optimized for ATS scanning
+5. Follows professional CV best practices
+
+IMPORTANT INSTRUCTIONS:
+- Extract and preserve ALL personal information (name, email, phone, location, LinkedIn, portfolio)
+- Rewrite experience bullets to be achievement-focused with quantifiable results
+- Incorporate missing keywords throughout (especially in skills and experience)
+- Ensure proper ATS formatting (no tables, clear sections, standard fonts)
+- Add a compelling professional summary tailored to target jobs
+- Organize skills by relevance to target roles
+- Keep formatting clean and ATS-friendly
+
+Respond in JSON format:
+{
+  "contact": {
+    "name": "Full Name",
+    "email": "email@example.com",
+    "phone": "+1234567890",
+    "location": "City, Country",
+    "linkedin": "linkedin.com/in/username",
+    "portfolio": "portfolio.com" // optional
+  },
+  "summary": "Compelling 3-4 sentence professional summary tailored to target roles, incorporating key strengths and missing keywords...",
+  "experience": [
+    {
+      "title": "Job Title",
+      "company": "Company Name",
+      "location": "City, Country",
+      "startDate": "Month Year",
+      "endDate": "Month Year", // or "Present"
+      "bullets": [
+        "Achievement-focused bullet point with quantifiable results...",
+        "Another bullet incorporating keywords and STAR format...",
+        "Third bullet demonstrating impact and skills..."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Degree Name",
+      "institution": "University Name",
+      "location": "City, Country",
+      "graduationDate": "Month Year",
+      "details": "GPA: 3.8/4.0, Honors, relevant coursework" // optional
+    }
+  ],
+  "skills": {
+    "technical": ["Skill 1", "Skill 2", "Skill 3", "..."],
+    "soft": ["Leadership", "Communication", "Problem Solving", "..."]
+  },
+  "certifications": [ // optional, only if present in original CV
+    {
+      "name": "Certification Name",
+      "issuer": "Issuing Organization",
+      "date": "Month Year"
+    }
+  ],
+  "languages": [ // optional, only if present in original CV
+    {
+      "language": "English",
+      "proficiency": "Native/Fluent/Professional"
+    }
+  ]
+}
+
+Guidelines:
+- Preserve ALL factual information from original CV
+- Never fabricate experience, dates, or achievements
+- Enhance wording and presentation, not facts
+- Ensure every experience bullet demonstrates impact
+- Skills section should prioritize keywords from job postings
+- Professional summary should be compelling and keyword-rich
+- All dates should be in "Month Year" format
+- Keep professional tone throughout`;
+}

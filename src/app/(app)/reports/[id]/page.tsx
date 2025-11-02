@@ -10,6 +10,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useToast } from "@/contexts/ToastContext";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
+import { GeneratedCV } from "@/types/cv";
+import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 
 const Container = styled.div`
   max-width: 1200px;
@@ -137,6 +139,7 @@ interface Report {
   role_fit: RoleRecommendation[] | null;
   ats_flags: string[] | null;
   pro: boolean;
+  generated_cv: GeneratedCV | null;
   created_at: string;
 }
 
@@ -149,6 +152,7 @@ export default function ReportDetailPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isUpgrading, setIsUpgrading] = useState(false);
+  const [isGeneratingCV, setIsGeneratingCV] = useState(false);
   const [report, setReport] = useState<Report | null>(null);
 
   useEffect(() => {
@@ -216,6 +220,62 @@ export default function ReportDetailPage() {
       toast.error(errorMessage);
     } finally {
       setIsUpgrading(false);
+    }
+  };
+
+  const handleGenerateCV = async () => {
+    if (!report) return;
+
+    setIsGeneratingCV(true);
+    try {
+      const response = await fetch("/api/cv/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reportId: report.id,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "CV generation failed");
+      }
+
+      toast.success("CV generated successfully!");
+
+      // Refresh report to get generated_cv
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("reports")
+        .select("*")
+        .eq("id", reportId)
+        .single();
+
+      if (data) {
+        setReport(data);
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "CV generation failed";
+      toast.error(errorMessage);
+    } finally {
+      setIsGeneratingCV(false);
+    }
+  };
+
+  const handleDownloadCV = () => {
+    if (!report?.generated_cv) return;
+
+    try {
+      const pdf = generateCVPDF(report.generated_cv);
+      const fileName = `${report.generated_cv.contact.name.replace(/\s+/g, "_")}_CV_Optimized.pdf`;
+      pdf.save(fileName);
+      toast.success("CV downloaded!");
+    } catch {
+      toast.error("Failed to download CV");
     }
   };
 
@@ -319,6 +379,7 @@ export default function ReportDetailPage() {
                 <li>3 professionally rewritten bullet points</li>
                 <li>3 alternative role recommendations with match scores</li>
                 <li>ATS optimization tips for better visibility</li>
+                <li>AI-generated optimized CV in PDF format</li>
                 <li>Downloadable PDF report</li>
               </UpgradeFeatures>
               <Button
@@ -406,6 +467,71 @@ export default function ReportDetailPage() {
                     <li key={index}>{flag}</li>
                   ))}
                 </BulletList>
+              </Card.Content>
+            </Card>
+          </Section>
+
+          <Section>
+            <Card variant="bordered">
+              <Card.Header>
+                <Card.Title>🎯 Generate Optimized CV</Card.Title>
+                <Card.Description>
+                  Get a fully optimized, ATS-friendly CV with all improvements applied
+                </Card.Description>
+              </Card.Header>
+              <Card.Content>
+                {!report.generated_cv ? (
+                  <div>
+                    <p style={{ marginBottom: "16px", color: "#9ca3af" }}>
+                      Generate a professional CV that incorporates all the analysis insights:
+                    </p>
+                    <ul style={{ marginBottom: "24px", marginLeft: "20px", color: "#9ca3af" }}>
+                      <li>Missing keywords naturally integrated</li>
+                      <li>Rewritten bullet points with achievements</li>
+                      <li>ATS-optimized formatting</li>
+                      <li>Professional design and layout</li>
+                    </ul>
+                    <Button
+                      onClick={handleGenerateCV}
+                      isLoading={isGeneratingCV}
+                      size="lg"
+                    >
+                      {isGeneratingCV ? "Generating CV..." : "Generate Optimized CV"}
+                    </Button>
+                  </div>
+                ) : (
+                  <div>
+                    <div
+                      style={{
+                        padding: "16px",
+                        backgroundColor: "#10b981",
+                        borderRadius: "8px",
+                        marginBottom: "16px",
+                      }}
+                    >
+                      <p style={{ color: "white", fontWeight: 500 }}>
+                        ✓ Your optimized CV is ready!
+                      </p>
+                    </div>
+                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                      <Button
+                        onClick={handleDownloadCV}
+                        size="lg"
+                        variant="primary"
+                      >
+                        📥 Download CV (PDF)
+                      </Button>
+                      <Button
+                        onClick={handleGenerateCV}
+                        size="lg"
+                        variant="ghost"
+                        isLoading={isGeneratingCV}
+                      >
+                        {isGeneratingCV ? "Regenerating..." : "🔄 Regenerate CV"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </Card.Content>
             </Card>
           </Section>

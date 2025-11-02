@@ -12,6 +12,7 @@
     "@supabase/ssr": "^0.7.0",
     "@supabase/storage-js": "^2.75.1",
     "@supabase/supabase-js": "^2.75.0",
+    "jspdf": "^3.0.3",
     "mammoth": "^1.11.0",
     "next": "15.5.5",
     "openai": "^6.5.0",

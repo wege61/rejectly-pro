@@ -3,6 +3,28 @@ import { createClient } from '@/lib/supabase/server';
 import mammoth from 'mammoth';
 import PDFParser from 'pdf2json';
 
+// Sanitize text to remove problematic Unicode escape sequences
+function sanitizeText(text: string): string {
+  try {
+    // Replace problematic Unicode escape sequences
+    return text
+      // Remove null bytes
+      .replace(/\0/g, '')
+      // Replace invalid Unicode surrogates
+      .replace(/[\uD800-\uDFFF]/g, '')
+      // Normalize Unicode
+      .normalize('NFC')
+      // Replace multiple spaces with single space
+      .replace(/\s+/g, ' ')
+      // Trim
+      .trim();
+  } catch (error) {
+    console.warn('Text sanitization warning:', error);
+    // Fallback: remove non-printable ASCII characters
+    return text.replace(/[^\x20-\x7E\u00A0-\uFFFF]/g, '').trim();
+  }
+}
+
 async function parsePDF(buffer: Buffer): Promise<string> {
   return new Promise((resolve, reject) => {
     const pdfParser = new PDFParser();
@@ -16,7 +38,7 @@ async function parsePDF(buffer: Buffer): Promise<string> {
       try {
         // Extract text from all pages
         let fullText = '';
-        
+
         if (pdfData.Pages && Array.isArray(pdfData.Pages)) {
           pdfData.Pages.forEach((page: any) => {
             if (page.Texts && Array.isArray(page.Texts)) {
@@ -24,8 +46,15 @@ async function parsePDF(buffer: Buffer): Promise<string> {
                 if (text.R && Array.isArray(text.R)) {
                   text.R.forEach((r: any) => {
                     if (r.T) {
-                      // Decode URI component
-                      fullText += decodeURIComponent(r.T) + ' ';
+                      try {
+                        // Decode URI component with error handling
+                        const decoded = decodeURIComponent(r.T);
+                        fullText += sanitizeText(decoded) + ' ';
+                      } catch (e) {
+                        // If decoding fails, use the raw text
+                        console.warn('Failed to decode text, using raw:', r.T);
+                        fullText += r.T + ' ';
+                      }
                     }
                   });
                 }
@@ -35,8 +64,8 @@ async function parsePDF(buffer: Buffer): Promise<string> {
           });
         }
 
-        const cleanText = fullText.trim();
-        
+        const cleanText = sanitizeText(fullText);
+
         if (!cleanText) {
           reject(new Error('No text content found in PDF'));
           return;
@@ -61,12 +90,12 @@ async function parsePDF(buffer: Buffer): Promise<string> {
 async function parseDOCX(buffer: Buffer): Promise<string> {
   try {
     const result = await mammoth.extractRawText({ buffer });
-    
+
     if (!result || !result.value) {
       throw new Error('No text content found in DOCX');
     }
-    
-    return result.value.trim();
+
+    return sanitizeText(result.value);
   } catch (error: any) {
     console.error('DOCX parsing error:', error);
     throw new Error(`Failed to parse DOCX: ${error.message}`);
@@ -195,6 +224,9 @@ export async function POST(request: NextRequest) {
 
     console.log('💾 Saving to database...');
 
+    // Final sanitization before database insert
+    const sanitizedText = sanitizeText(text);
+
     // Save to database
     const { data: document, error: dbError } = await supabase
       .from('documents')
@@ -202,7 +234,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         type: 'cv',
         title: file.name,
-        text: text,
+        text: sanitizedText,
         file_url: publicUrl,
         lang: 'en',
       })
@@ -212,7 +244,7 @@ export async function POST(request: NextRequest) {
     if (dbError) {
       console.error('❌ Database error:', dbError);
       return NextResponse.json(
-        { error: 'Failed to save document to database' },
+        { error: `Database error: ${dbError.message}` },
         { status: 500 }
       );
     }

@@ -39,10 +39,43 @@ async function parseDOCX(buffer: ArrayBuffer): Promise<string> {
 
 // Text cleaning ve normalization (Türkçe karakterleri korur)
 export function cleanText(text: string): string {
-  return text
-    .replace(/\s+/g, " ") // Çoklu boşlukları tek boşluğa indir
-    .replace(/\n{3,}/g, "\n\n") // Çoklu satır atlamalarını azalt
-    .trim();
+  try {
+    let cleaned = text;
+
+    // Remove literal \uXXXX and \xXX escape sequences (problematic for PostgreSQL)
+    cleaned = cleaned.replace(/\\u[0-9a-fA-F]{4}/g, '');
+    cleaned = cleaned.replace(/\\x[0-9a-fA-F]{2}/g, '');
+
+    // Remove null bytes and control characters (except newline, tab, carriage return)
+    cleaned = cleaned.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+
+    // Remove invalid Unicode surrogates
+    cleaned = cleaned.replace(/[\uD800-\uDFFF]/g, '');
+
+    // Remove zero-width characters
+    cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');
+
+    // Remove any remaining backslash-escaped characters
+    cleaned = cleaned.replace(/\\[^\\nrt]/g, '');
+
+    // Normalize Unicode to NFC form
+    cleaned = cleaned.normalize('NFC');
+
+    // Clean whitespace
+    cleaned = cleaned
+      .replace(/\s+/g, " ") // Çoklu boşlukları tek boşluğa indir
+      .replace(/\n{3,}/g, "\n\n") // Çoklu satır atlamalarını azalt
+      .trim();
+
+    return cleaned;
+  } catch (error) {
+    console.warn('Text cleaning error:', error);
+    // Fallback: aggressive ASCII-safe cleaning
+    return text
+      .replace(/[^\x20-\x7E\u00A0-\u00FF\u0100-\u017F\n\r\t]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
 }
 
 // Text validation

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
-import { OnboardingProgress } from "@/components/ui/OnboardingProgress";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
@@ -17,6 +16,7 @@ const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: ${({ theme }) => theme.spacing["2xl"]};
+  padding-bottom: 100px; /* Space for FAB */
 `;
 
 const Header = styled.div`
@@ -156,6 +156,89 @@ const ReportSummary = styled.p`
   overflow: hidden;
 `;
 
+// Floating Action Button (FAB)
+const FAB = styled.button`
+  position: fixed;
+  bottom: ${({ theme }) => theme.spacing["2xl"]};
+  right: ${({ theme }) => theme.spacing["2xl"]};
+  width: 64px;
+  height: 64px;
+  border-radius: ${({ theme }) => theme.radius.full};
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.normal};
+  z-index: ${({ theme }) => theme.zIndex.fixed};
+  border: none;
+
+  &:hover {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+`;
+
+const FABTooltip = styled.div`
+  position: absolute;
+  right: 80px;
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.md}`};
+  border-radius: ${({ theme }) => theme.radius.md};
+  white-space: nowrap;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  box-shadow: ${({ theme }) => theme.shadow.lg};
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity ${({ theme }) => theme.transitions.fast};
+
+  ${FAB}:hover & {
+    opacity: 1;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid ${({ theme }) => theme.colors.surface};
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+  }
+`;
+
+const PlusIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2.5}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 4.5v15m7.5-7.5h-15"
+    />
+  </svg>
+);
+
 interface Stats {
   totalReports: number;
   totalCVs: number;
@@ -236,156 +319,132 @@ export default function DashboardPage() {
   }
 
   return (
-    <Container>
-      <Header>
-        <Title>Dashboard</Title>
-        <Subtitle>
-          Welcome back, {user?.user_metadata?.name || "User"}! Here&apos;s your
-          overview.
-        </Subtitle>
-      </Header>
+    <>
+      <Container>
+        <Header>
+          <Title>Dashboard</Title>
+          <Subtitle>
+            Welcome back, {user?.user_metadata?.name || "User"}! Here&apos;s
+            your overview.
+          </Subtitle>
+        </Header>
 
-      {/* Onboarding Progress - Show only if user hasn't completed all steps */}
-      <OnboardingProgress
-        hasCVs={stats.totalCVs > 0}
-        hasJobs={stats.totalJobs > 0}
-        hasReports={stats.totalReports > 0}
-      />
+        {/* Stats */}
+        <Grid>
+          <StatCard variant="elevated">
+            <StatValue>{stats.totalReports}</StatValue>
+            <StatLabel>Total Reports</StatLabel>
+          </StatCard>
+          <StatCard variant="elevated">
+            <StatValue>{stats.totalCVs}</StatValue>
+            <StatLabel>CVs Uploaded</StatLabel>
+          </StatCard>
+          <StatCard variant="elevated">
+            <StatValue>{stats.totalJobs}</StatValue>
+            <StatLabel>Job Postings</StatLabel>
+          </StatCard>
+        </Grid>
 
-      {/* Stats */}
-      <Grid>
-        <StatCard variant="elevated">
-          <StatValue>{stats.totalReports}</StatValue>
-          <StatLabel>Total Reports</StatLabel>
-        </StatCard>
-        <StatCard variant="elevated">
-          <StatValue>{stats.totalCVs}</StatValue>
-          <StatLabel>CVs Uploaded</StatLabel>
-        </StatCard>
-        <StatCard variant="elevated">
-          <StatValue>{stats.totalJobs}</StatValue>
-          <StatLabel>Job Postings</StatLabel>
-        </StatCard>
-      </Grid>
+        {/* Quick Actions */}
+        <Section>
+          <SectionHeader>
+            <SectionTitle>Quick Actions</SectionTitle>
+          </SectionHeader>
+          <QuickActionsGrid>
+            <ActionCard
+              variant="elevated"
+              onClick={() => router.push(ROUTES.APP.CV)}
+            >
+              <Card.Header>
+                <Card.Title>Upload CV</Card.Title>
+                <Card.Description>
+                  Add a new CV to analyze against job postings
+                </Card.Description>
+              </Card.Header>
+            </ActionCard>
+            <ActionCard
+              variant="elevated"
+              onClick={() => router.push(ROUTES.APP.JOBS)}
+            >
+              <Card.Header>
+                <Card.Title>Add Job Posting</Card.Title>
+                <Card.Description>
+                  Save job postings to compare with your CV
+                </Card.Description>
+              </Card.Header>
+            </ActionCard>
+          </QuickActionsGrid>
+        </Section>
 
-      {/* Quick Actions */}
-      <Section>
-        <SectionHeader>
-          <SectionTitle>Quick Actions</SectionTitle>
-        </SectionHeader>
-        <QuickActionsGrid>
-          <ActionCard
-            variant="elevated"
-            onClick={() => router.push(ROUTES.APP.CV)}
-          >
-            <Card.Header>
-              <Card.Title>Upload CV</Card.Title>
-              <Card.Description>
-                Add a new CV to analyze against job postings
-              </Card.Description>
-            </Card.Header>
-          </ActionCard>
-          <ActionCard
-            variant="elevated"
-            onClick={() => router.push(ROUTES.APP.JOBS)}
-          >
-            <Card.Header>
-              <Card.Title>Add Job Posting</Card.Title>
-              <Card.Description>
-                Save job postings to compare with your CV
-              </Card.Description>
-            </Card.Header>
-          </ActionCard>
-          <ActionCard
-            variant="elevated"
-            onClick={() => router.push(ROUTES.APP.ANALYZE)}
-          >
-            <Card.Header>
-              <Card.Title>New Analysis</Card.Title>
-              <Card.Description>
-                Generate a new CV-job match report
-              </Card.Description>
-            </Card.Header>
-          </ActionCard>
-        </QuickActionsGrid>
-      </Section>
+        {/* Recent Reports */}
+        <Section>
+          <SectionHeader>
+            <SectionTitle>Recent Reports</SectionTitle>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => router.push(ROUTES.APP.REPORTS)}
+            >
+              View All
+            </Button>
+          </SectionHeader>
 
-      {/* Recent Reports */}
-      <Section>
-        <SectionHeader>
-          <SectionTitle>Recent Reports</SectionTitle>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => router.push(ROUTES.APP.REPORTS)}
-          >
-            View All
-          </Button>
-        </SectionHeader>
-
-        {recentReports.length === 0 ? (
-          <Card variant="bordered">
-            <EmptyState
-              icon={<EmptyState.DocumentIcon />}
-              title="No reports yet"
-              description="Create your first analysis to see results here."
-              action={{
-                label: "Create Analysis",
-                onClick: () => router.push(ROUTES.APP.ANALYZE),
-              }}
-            />
-          </Card>
-        ) : (
-          <ReportsList>
-            {recentReports.map((report) => (
-              <ReportCard
-                key={report.id}
-                variant="elevated"
-                onClick={() =>
-                  router.push(`${ROUTES.APP.REPORTS}/${report.id}`)
-                }
-              >
-                <ReportHeader>
-                  <ReportInfo>
-                    <ReportTitle>Analysis Report</ReportTitle>
-                    <ReportDate>
-                      {new Date(report.created_at).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </ReportDate>
-                  </ReportInfo>
-                  <ReportScore>{report.fit_score}</ReportScore>
-                </ReportHeader>
-                <ReportMeta>
-                  <Badge variant={report.pro ? "success" : "default"}>
-                    {report.pro ? "Pro" : "Free"}
-                  </Badge>
-                  <Badge
-                    variant={
-                      report.fit_score >= 70
-                        ? "success"
-                        : report.fit_score >= 50
-                        ? "warning"
-                        : "error"
-                    }
-                  >
-                    {report.fit_score >= 70
-                      ? "Strong Match"
-                      : report.fit_score >= 50
-                      ? "Moderate Match"
-                      : "Weak Match"}
-                  </Badge>
-                </ReportMeta>
-                {report.summary_free && (
+          {recentReports.length === 0 ? (
+            <Card variant="bordered">
+              <EmptyState
+                icon={<EmptyState.DocumentIcon />}
+                title="No reports yet"
+                description="Create your first analysis to see results here."
+                action={{
+                  label: "Create Analysis",
+                  onClick: () => router.push(ROUTES.APP.ANALYZE),
+                }}
+              />
+            </Card>
+          ) : (
+            <ReportsList>
+              {recentReports.map((report) => (
+                <ReportCard
+                  key={report.id}
+                  variant="bordered"
+                  onClick={() =>
+                    router.push(ROUTES.APP.REPORT_DETAIL(report.id))
+                  }
+                >
+                  <ReportHeader>
+                    <ReportInfo>
+                      <ReportTitle>Analysis Report</ReportTitle>
+                      <ReportDate>
+                        {new Date(report.created_at).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}
+                      </ReportDate>
+                    </ReportInfo>
+                    <ReportScore>{report.fit_score}%</ReportScore>
+                  </ReportHeader>
+                  <ReportMeta>
+                    <Badge variant={report.pro ? "default" : "default"}>
+                      {report.pro ? "Pro" : "Free"}
+                    </Badge>
+                  </ReportMeta>
                   <ReportSummary>{report.summary_free}</ReportSummary>
-                )}
-              </ReportCard>
-            ))}
-          </ReportsList>
-        )}
-      </Section>
-    </Container>
+                </ReportCard>
+              ))}
+            </ReportsList>
+          )}
+        </Section>
+      </Container>
+
+      {/* Floating Action Button */}
+      <FAB onClick={() => router.push(ROUTES.APP.ANALYZE)}>
+        <FABTooltip>New Analysis</FABTooltip>
+        <PlusIcon />
+      </FAB>
+    </>
   );
 }

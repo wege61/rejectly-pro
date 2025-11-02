@@ -54,7 +54,7 @@ const StepContent = styled.div`
 const UploadArea = styled.div<{ $isDragging: boolean }>`
   border: 2px dashed ${({ theme, $isDragging }) =>
     $isDragging ? theme.colors.primary : theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  border-radius: ${({ theme }) => theme.radius.lg};
   padding: ${({ theme }) => theme.spacing["2xl"]};
   text-align: center;
   background-color: ${({ theme, $isDragging }) =>

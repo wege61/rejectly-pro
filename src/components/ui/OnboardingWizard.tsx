@@ -524,7 +524,7 @@ export function OnboardingWizard({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="large">
+    <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <WizardContainer>
         <ProgressBar>
           <ProgressFill $progress={progress} />

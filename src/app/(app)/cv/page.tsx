@@ -192,6 +192,20 @@ export default function CVPage() {
     setIsUploading(true);
 
     try {
+      // If replacing existing CV, delete old one first
+      if (cvDocument) {
+        const supabase = createClient();
+        const { error: deleteError } = await supabase
+          .from("documents")
+          .delete()
+          .eq("id", cvDocument.id);
+
+        if (deleteError) {
+          console.error("Failed to delete old CV:", deleteError);
+          // Continue anyway to upload new one
+        }
+      }
+
       const formData = new FormData();
       formData.append("file", file);
 
@@ -206,7 +220,10 @@ export default function CVPage() {
         throw new Error(result.error || "Upload failed");
       }
 
-      toast.success("CV uploaded successfully! Your resume has been processed. Now add job postings to analyze.");
+      const successMessage = cvDocument
+        ? "CV replaced successfully!"
+        : "CV uploaded successfully! Your resume has been processed. Now add job postings to analyze.";
+      toast.success(successMessage);
 
       // Refresh CV data
       const supabase = createClient();

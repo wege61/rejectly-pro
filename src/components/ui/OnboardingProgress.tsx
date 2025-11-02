@@ -1,8 +1,10 @@
 "use client";
 
 import styled from "styled-components";
+import { useState } from "react";
 import { Card } from "./Card";
 import { Button } from "./Button";
+import { OnboardingWizard } from "./OnboardingWizard";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
 
@@ -148,6 +150,7 @@ export function OnboardingProgress({
   hasReports,
 }: OnboardingProgressProps) {
   const router = useRouter();
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
 
   const steps: OnboardingStep[] = [
     {
@@ -186,59 +189,80 @@ export function OnboardingProgress({
   }
 
   return (
-    <ProgressContainer variant="elevated">
-      <Card.Content>
-        <ProgressHeader>
-          <ProgressTitle>🚀 Get Started with Rejectly.pro</ProgressTitle>
-          <ProgressSubtitle>
-            Complete these steps to maximize your job search success
-          </ProgressSubtitle>
-        </ProgressHeader>
+    <>
+      <ProgressContainer variant="elevated">
+        <Card.Content>
+          <ProgressHeader>
+            <ProgressTitle>🚀 Get Started with Rejectly.pro</ProgressTitle>
+            <ProgressSubtitle>
+              Complete these steps to maximize your job search success
+            </ProgressSubtitle>
+          </ProgressHeader>
 
-        <ProgressBar>
-          <ProgressFill $progress={progress} />
-        </ProgressBar>
+          <ProgressBar>
+            <ProgressFill $progress={progress} />
+          </ProgressBar>
 
-        <div style={{ marginBottom: "16px", fontSize: "14px", opacity: 0.9 }}>
-          {completedSteps} of {totalSteps} steps completed ({Math.round(progress)}%)
-        </div>
+          <div style={{ marginBottom: "16px", fontSize: "14px", opacity: 0.9 }}>
+            {completedSteps} of {totalSteps} steps completed ({Math.round(progress)}%)
+          </div>
 
-        <StepsList>
-          {steps.map((step, index) => {
-            const isActive = !step.completed && step.id === nextStep?.id;
-            return (
-              <StepItem
-                key={step.id}
-                $completed={step.completed}
-                $active={isActive}
-                onClick={() => !step.completed && router.push(step.route)}
+          <StepsList>
+            {steps.map((step, index) => {
+              const isActive = !step.completed && step.id === nextStep?.id;
+              return (
+                <StepItem
+                  key={step.id}
+                  $completed={step.completed}
+                  $active={isActive}
+                  onClick={() => !step.completed && router.push(step.route)}
+                >
+                  <StepIcon $completed={step.completed} $active={isActive}>
+                    {step.completed ? "✓" : index + 1}
+                  </StepIcon>
+                  <StepContent>
+                    <StepTitle>{step.title}</StepTitle>
+                    <StepDescription>{step.description}</StepDescription>
+                  </StepContent>
+                </StepItem>
+              );
+            })}
+          </StepsList>
+
+          <div style={{ display: "flex", gap: "12px" }}>
+            <ActionButton
+              size="lg"
+              onClick={() => setIsWizardOpen(true)}
+              style={{ flex: 1 }}
+            >
+              🚀 Start Guided Setup
+            </ActionButton>
+            {nextStep && (
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => router.push(nextStep.route)}
+                style={{ flex: 1, color: "white", borderColor: "white" }}
               >
-                <StepIcon $completed={step.completed} $active={isActive}>
-                  {step.completed ? "✓" : index + 1}
-                </StepIcon>
-                <StepContent>
-                  <StepTitle>{step.title}</StepTitle>
-                  <StepDescription>{step.description}</StepDescription>
-                </StepContent>
-              </StepItem>
-            );
-          })}
-        </StepsList>
+                {nextStep.id === "cv"
+                  ? "Or Upload Manually"
+                  : nextStep.id === "job"
+                  ? "Or Add Job"
+                  : "Or Create Analysis"}
+              </Button>
+            )}
+          </div>
+        </Card.Content>
+      </ProgressContainer>
 
-        {nextStep && (
-          <ActionButton
-            size="lg"
-            onClick={() => router.push(nextStep.route)}
-            style={{ width: "100%" }}
-          >
-            {nextStep.id === "cv"
-              ? "Upload Your First CV"
-              : nextStep.id === "job"
-              ? "Add Your First Job"
-              : "Create Your First Analysis"}
-          </ActionButton>
-        )}
-      </Card.Content>
-    </ProgressContainer>
+      <OnboardingWizard
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+        onComplete={() => {
+          setIsWizardOpen(false);
+          window.location.reload(); // Refresh to update progress
+        }}
+      />
+    </>
   );
 }

@@ -112,12 +112,15 @@ export async function POST(request: NextRequest) {
     const filePath = uploadData.path;
 
     // Save document metadata to database
+    // Sanitize title to prevent Unicode escape sequence errors
+    const sanitizedTitle = cleanText(file.name);
+
     const { data: document, error: dbError } = await supabase
       .from("documents")
       .insert({
         user_id: user.id,
         type: "cv",
-        title: file.name, // ← Orijinal adı database'de saklayalım (kullanıcıya göstermek için)
+        title: sanitizedTitle,
         text: cleanedText,
         file_url: filePath,
         lang: "tr",

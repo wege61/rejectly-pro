@@ -332,28 +332,29 @@ export function OnboardingWizard({
 
     setIsLoading(true);
     try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      // Call the analyze API instead of direct insert
+      const response = await fetch("/api/analyze/free", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cvId: selectedCV,
+          jobIds: selectedJobs,
+        }),
+      });
 
-      if (!user) throw new Error("Not authenticated");
+      const result = await response.json();
 
-      const { data: report, error } = await supabase
-        .from("reports")
-        .insert({
-          user_id: user.id,
-          cv_id: selectedCV,
-          job_ids: selectedJobs,
-        })
-        .select()
-        .single();
+      if (!response.ok) {
+        throw new Error(result.error || "Analysis failed");
+      }
 
-      if (error) throw error;
-
-      toast.success("Analysis created! Generating your report...");
+      toast.success("Analysis complete! Redirecting to your report...");
 
       // Close wizard and redirect to report
       onComplete();
-      router.push(`/reports/${report.id}`);
+      router.push(`/reports/${result.report.id}`);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to create analysis";

@@ -21,29 +21,44 @@ const CharCount = styled.div`
   margin-top: ${({ theme }) => theme.spacing.xs};
 `;
 
-const PreviewPanel = styled.div`
+const EditPanel = styled.div`
   margin-top: ${({ theme }) => theme.spacing.lg};
   padding: ${({ theme }) => theme.spacing.lg};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
   background-color: ${({ theme }) => theme.colors.surface};
-  max-height: 300px;
-  overflow-y: auto;
 `;
 
-const PreviewTitle = styled.h4`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+const EditTitle = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const PreviewContent = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+const EditableTextarea = styled.textarea`
+  width: 100%;
+  min-height: 300px;
+  padding: ${({ theme }) => theme.spacing.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.sm};
+  background-color: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  resize: vertical;
+  font-family: monospace;
   line-height: 1.6;
-  white-space: pre-wrap;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const EditActions = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.sm};
+  justify-content: flex-end;
+  margin-top: ${({ theme }) => theme.spacing.md};
 `;
 
 const Container = styled.div`
@@ -100,6 +115,9 @@ export default function JobsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingJobs, setIsFetchingJobs] = useState(true);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
+  const [editedTexts, setEditedTexts] = useState<Record<string, string>>({});
+  const [savingJobId, setSavingJobId] = useState<string | null>(null);
   const toast = useToast();
   const { user } = useAuth();
 
@@ -200,10 +218,59 @@ export default function JobsPage() {
 
       toast.success("Job posting deleted");
       setJobs(jobs.filter((job) => job.id !== jobId));
+      // Clean up expanded state
+      if (expandedJobId === jobId) setExpandedJobId(null);
+      const newEditedTexts = { ...editedTexts };
+      delete newEditedTexts[jobId];
+      setEditedTexts(newEditedTexts);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to delete job posting";
       toast.error(errorMessage);
+    }
+  };
+
+  const handleToggleExpand = (jobId: string, jobText: string) => {
+    if (expandedJobId === jobId) {
+      setExpandedJobId(null);
+    } else {
+      setExpandedJobId(jobId);
+      // Initialize edited text if not exists
+      if (!editedTexts[jobId]) {
+        setEditedTexts({ ...editedTexts, [jobId]: jobText });
+      }
+    }
+  };
+
+  const handleSaveJob = async (jobId: string) => {
+    setSavingJobId(jobId);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("documents")
+        .update({ text: editedTexts[jobId] })
+        .eq("id", jobId);
+
+      if (error) throw error;
+
+      toast.success("Job posting updated!");
+      // Update local state
+      setJobs(jobs.map(job =>
+        job.id === jobId ? { ...job, text: editedTexts[jobId] } : job
+      ));
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update job posting";
+      toast.error(errorMessage);
+    } finally {
+      setSavingJobId(null);
+    }
+  };
+
+  const handleDiscardChanges = (jobId: string) => {
+    const originalJob = jobs.find(job => job.id === jobId);
+    if (originalJob) {
+      setEditedTexts({ ...editedTexts, [jobId]: originalJob.text });
     }
   };
 
@@ -235,37 +302,83 @@ export default function JobsPage() {
         </Card>
       ) : (
         <JobsList>
-          {jobs.map((job) => (
-            <JobCard key={job.id} variant="elevated">
-              <Card.Header>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "start",
-                  }}
-                >
-                  <div>
-                    <Card.Title>{job.title}</Card.Title>
-                    <Card.Description>
-                      Added on{" "}
-                      {new Date(job.created_at).toLocaleDateString("tr-TR")}
-                    </Card.Description>
+          {jobs.map((job) => {
+            const isExpanded = expandedJobId === job.id;
+            const editedText = editedTexts[job.id] || job.text;
+            const hasChanges = editedText !== job.text;
+
+            return (
+              <JobCard key={job.id} variant="elevated">
+                <Card.Header>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "start",
+                    }}
+                  >
+                    <div>
+                      <Card.Title>{job.title}</Card.Title>
+                      <Card.Description>
+                        Added on{" "}
+                        {new Date(job.created_at).toLocaleDateString("tr-TR")}
+                      </Card.Description>
+                    </div>
+                    <Badge>{job.text.length.toLocaleString()} characters</Badge>
                   </div>
-                  <Badge>{job.text.length.toLocaleString()} characters</Badge>
-                </div>
-              </Card.Header>
-              <Card.Footer>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDelete(job.id)}
-                >
-                  Delete
-                </Button>
-              </Card.Footer>
-            </JobCard>
-          ))}
+                </Card.Header>
+
+                {isExpanded && (
+                  <EditPanel>
+                    <EditTitle>Job Description</EditTitle>
+                    <EditableTextarea
+                      value={editedText}
+                      onChange={(e) =>
+                        setEditedTexts({ ...editedTexts, [job.id]: e.target.value })
+                      }
+                      placeholder="Job description..."
+                    />
+                    <CharCount>{editedText.length} characters</CharCount>
+                    {hasChanges && (
+                      <EditActions>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDiscardChanges(job.id)}
+                        >
+                          Discard Changes
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleSaveJob(job.id)}
+                          isLoading={savingJobId === job.id}
+                        >
+                          Save Changes
+                        </Button>
+                      </EditActions>
+                    )}
+                  </EditPanel>
+                )}
+
+                <Card.Footer>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(job.id)}
+                  >
+                    Delete
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleToggleExpand(job.id, job.text)}
+                  >
+                    {isExpanded ? "Hide Details" : "View & Edit"}
+                  </Button>
+                </Card.Footer>
+              </JobCard>
+            );
+          })}
         </JobsList>
       )}
 
@@ -324,25 +437,6 @@ export default function JobsPage() {
                 {jobDetails.length} characters · {jobDetails.split('\n').length} lines
               </CharCount>
             </div>
-
-            {/* Preview */}
-            {(jobSummary || jobDetails) && (
-              <PreviewPanel>
-                <PreviewTitle>Preview</PreviewTitle>
-                {jobSummary && (
-                  <div style={{ marginBottom: "16px" }}>
-                    <strong>Summary:</strong>
-                    <PreviewContent>{jobSummary}</PreviewContent>
-                  </div>
-                )}
-                {jobDetails && (
-                  <div>
-                    <strong>Details:</strong>
-                    <PreviewContent>{jobDetails}</PreviewContent>
-                  </div>
-                )}
-              </PreviewPanel>
-            )}
           </div>
         </Modal.Body>
         <Modal.Footer>

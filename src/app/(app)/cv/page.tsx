@@ -84,10 +84,55 @@ const HiddenInput = styled.input`
   display: none;
 `;
 
+const PreviewPanel = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background-color: ${({ theme }) => theme.colors.surface};
+  max-height: 400px;
+  overflow-y: auto;
+`;
+
+const PreviewTitle = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const EditablePreview = styled.textarea`
+  width: 100%;
+  min-height: 300px;
+  padding: ${({ theme }) => theme.spacing.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.sm};
+  background-color: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  resize: vertical;
+  font-family: monospace;
+  line-height: 1.6;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const CharCount = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-align: right;
+  margin-top: ${({ theme }) => theme.spacing.xs};
+`;
+
 export default function CVPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [cvDocument, setCvDocument] = useState<CVDocument | null>(null);
+  const [editedText, setEditedText] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const toast = useToast();
   const { user } = useAuth();
 
@@ -108,6 +153,7 @@ export default function CVPage() {
 
       if (data) {
         setCvDocument(data);
+        setEditedText(data.text);
       }
 
       setIsLoading(false);
@@ -115,6 +161,29 @@ export default function CVPage() {
 
     fetchCV();
   }, [user]);
+
+  const handleSaveChanges = async () => {
+    if (!cvDocument) return;
+
+    setIsSaving(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("documents")
+        .update({ text: editedText })
+        .eq("id", cvDocument.id);
+
+      if (error) throw error;
+
+      toast.success("CV updated successfully!");
+      setCvDocument({ ...cvDocument, text: editedText });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to update CV";
+      toast.error(errorMessage);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -149,6 +218,7 @@ export default function CVPage() {
 
       if (data) {
         setCvDocument(data);
+        setEditedText(data.text);
       }
     } catch (error) {
       const errorMessage =
@@ -248,6 +318,35 @@ export default function CVPage() {
             <p style={{ color: "#6b7280", fontSize: "14px", marginTop: "8px" }}>
               Language: {cvDocument.lang === "tr" ? "Turkish" : "English"}
             </p>
+
+            {/* Preview and Edit Panel */}
+            <PreviewPanel>
+              <PreviewTitle>CV Content</PreviewTitle>
+              <EditablePreview
+                value={editedText}
+                onChange={(e) => setEditedText(e.target.value)}
+                placeholder="CV content will appear here..."
+              />
+              <CharCount>{editedText.length} characters</CharCount>
+              {editedText !== cvDocument.text && (
+                <div style={{ marginTop: "12px", display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setEditedText(cvDocument.text)}
+                  >
+                    Discard Changes
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleSaveChanges}
+                    isLoading={isSaving}
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              )}
+            </PreviewPanel>
           </Card.Content>
           <Card.Footer>
             <Button variant="danger" onClick={handleDelete}>

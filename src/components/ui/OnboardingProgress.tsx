@@ -184,18 +184,19 @@ export function OnboardingProgress({
   // Find the next step to complete
   const nextStep = steps.find((s) => !s.completed);
 
-  if (isComplete) {
-    return null; // Don't show if onboarding is complete
-  }
-
+  // Always show the card, but change the messaging if complete
   return (
     <>
       <ProgressContainer variant="elevated">
         <Card.Content>
           <ProgressHeader>
-            <ProgressTitle>🚀 Get Started with Rejectly.pro</ProgressTitle>
+            <ProgressTitle>
+              {isComplete ? "✅ Ready to Analyze!" : "🚀 Get Started with Rejectly.pro"}
+            </ProgressTitle>
             <ProgressSubtitle>
-              Complete these steps to maximize your job search success
+              {isComplete
+                ? "You're all set! Use the guided setup to create new analyses anytime"
+                : "Complete these steps to maximize your job search success"}
             </ProgressSubtitle>
           </ProgressHeader>
 
@@ -207,27 +208,29 @@ export function OnboardingProgress({
             {completedSteps} of {totalSteps} steps completed ({Math.round(progress)}%)
           </div>
 
-          <StepsList>
-            {steps.map((step, index) => {
-              const isActive = !step.completed && step.id === nextStep?.id;
-              return (
-                <StepItem
-                  key={step.id}
-                  $completed={step.completed}
-                  $active={isActive}
-                  onClick={() => !step.completed && router.push(step.route)}
-                >
-                  <StepIcon $completed={step.completed} $active={isActive}>
-                    {step.completed ? "✓" : index + 1}
-                  </StepIcon>
-                  <StepContent>
-                    <StepTitle>{step.title}</StepTitle>
-                    <StepDescription>{step.description}</StepDescription>
-                  </StepContent>
-                </StepItem>
-              );
-            })}
-          </StepsList>
+          {!isComplete && (
+            <StepsList>
+              {steps.map((step, index) => {
+                const isActive = !step.completed && step.id === nextStep?.id;
+                return (
+                  <StepItem
+                    key={step.id}
+                    $completed={step.completed}
+                    $active={isActive}
+                    onClick={() => !step.completed && router.push(step.route)}
+                  >
+                    <StepIcon $completed={step.completed} $active={isActive}>
+                      {step.completed ? "✓" : index + 1}
+                    </StepIcon>
+                    <StepContent>
+                      <StepTitle>{step.title}</StepTitle>
+                      <StepDescription>{step.description}</StepDescription>
+                    </StepContent>
+                  </StepItem>
+                );
+              })}
+            </StepsList>
+          )}
 
           <div style={{ display: "flex", gap: "12px" }}>
             <ActionButton
@@ -235,7 +238,7 @@ export function OnboardingProgress({
               onClick={() => setIsWizardOpen(true)}
               style={{ flex: 1 }}
             >
-              🚀 Start Guided Setup
+              🚀 {isComplete ? "New Guided Analysis" : "Start Guided Setup"}
             </ActionButton>
             {nextStep && (
               <Button

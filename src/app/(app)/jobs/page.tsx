@@ -14,6 +14,38 @@ import { useToast } from "@/contexts/ToastContext";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 
+const CharCount = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-align: right;
+  margin-top: ${({ theme }) => theme.spacing.xs};
+`;
+
+const PreviewPanel = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background-color: ${({ theme }) => theme.colors.surface};
+  max-height: 300px;
+  overflow-y: auto;
+`;
+
+const PreviewTitle = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  text-transform: uppercase;
+`;
+
+const PreviewContent = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: 1.6;
+  white-space: pre-wrap;
+`;
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -63,7 +95,8 @@ export default function JobsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [jobTitle, setJobTitle] = useState("");
   const [jobUrl, setJobUrl] = useState("");
-  const [jobDescription, setJobDescription] = useState("");
+  const [jobSummary, setJobSummary] = useState("");
+  const [jobDetails, setJobDetails] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingJobs, setIsFetchingJobs] = useState(true);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -95,13 +128,18 @@ export default function JobsPage() {
   }, [user]);
 
   const handleAddJob = async () => {
-    if (!jobTitle || (!jobUrl && !jobDescription)) {
+    if (!jobTitle || (!jobUrl && !jobSummary && !jobDetails)) {
       toast.error("Please fill in the required fields");
       return;
     }
 
     setIsLoading(true);
     try {
+      // Combine summary and details
+      const fullDescription = jobSummary && jobDetails
+        ? `${jobSummary}\n\n${jobDetails}`
+        : jobSummary || jobDetails;
+
       const response = await fetch("/api/jobs/add", {
         method: "POST",
         headers: {
@@ -110,7 +148,7 @@ export default function JobsPage() {
         body: JSON.stringify({
           title: jobTitle,
           url: jobUrl || null,
-          description: jobDescription || null,
+          description: fullDescription || null,
         }),
       });
 
@@ -139,7 +177,8 @@ export default function JobsPage() {
       setIsModalOpen(false);
       setJobTitle("");
       setJobUrl("");
-      setJobDescription("");
+      setJobSummary("");
+      setJobDetails("");
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Job posting failed";
@@ -257,14 +296,53 @@ export default function JobsPage() {
               helperText="We'll extract the job description automatically"
               fullWidth
             />
-            <Textarea
-              label="Or paste job description"
-              placeholder="Paste the full job description here..."
-              value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              rows={8}
-              fullWidth
-            />
+
+            <div>
+              <Textarea
+                label="Job Summary"
+                placeholder="Brief overview of the position..."
+                value={jobSummary}
+                onChange={(e) => setJobSummary(e.target.value)}
+                rows={4}
+                fullWidth
+              />
+              <CharCount>
+                {jobSummary.length} characters · {jobSummary.split('\n').length} lines
+              </CharCount>
+            </div>
+
+            <div>
+              <Textarea
+                label="Detailed Description"
+                placeholder="Full job description, requirements, responsibilities..."
+                value={jobDetails}
+                onChange={(e) => setJobDetails(e.target.value)}
+                rows={6}
+                fullWidth
+              />
+              <CharCount>
+                {jobDetails.length} characters · {jobDetails.split('\n').length} lines
+              </CharCount>
+            </div>
+
+            {/* Preview */}
+            {(jobSummary || jobDetails) && (
+              <PreviewPanel>
+                <PreviewTitle>Preview</PreviewTitle>
+                {jobSummary && (
+                  <div style={{ marginBottom: "16px" }}>
+                    <strong>Summary:</strong>
+                    <PreviewContent>{jobSummary}</PreviewContent>
+                  </div>
+                )}
+                {jobDetails && (
+                  <div>
+                    <strong>Details:</strong>
+                    <PreviewContent>{jobDetails}</PreviewContent>
+                  </div>
+                )}
+              </PreviewPanel>
+            )}
           </div>
         </Modal.Body>
         <Modal.Footer>

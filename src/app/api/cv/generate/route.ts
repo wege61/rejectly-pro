@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     const analysisResults = {
       fitScore: report.fit_score || 0,
       summary: report.summary_free || "",
-      missingKeywords: report.keywords || [],
+      missingKeywords: (report.keywords as { missing?: string[] })?.missing || [],
       rewrittenBullets: report.summary_pro?.rewrittenBullets || [],
       roleRecommendations: report.role_fit || [],
       atsFlags: report.ats_flags || [],

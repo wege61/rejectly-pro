@@ -267,6 +267,7 @@ export function OnboardingWizard({
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [hasExistingCV, setHasExistingCV] = useState(false);
 
   // Step 1: CV Upload
   const [uploadedCV, setUploadedCV] = useState<any>(null);
@@ -293,8 +294,50 @@ export function OnboardingWizard({
     missingKeywords: string[];
   } | null>(null);
 
-  const totalSteps = 4;
+  // Dynamic total steps based on whether user has CV
+  const totalSteps = hasExistingCV ? 3 : 4;
   const progress = (currentStep / totalSteps) * 100;
+
+  // Check if user has existing CV when modal opens
+  useEffect(() => {
+    async function checkExistingCV() {
+      if (!isOpen) return;
+
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) return;
+
+        const { data } = await supabase
+          .from("documents")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("type", "cv")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (data) {
+          setHasExistingCV(true);
+          setUploadedCV(data);
+          setCvText(data.text || "");
+          // Skip to step 2 if no saved state and user has CV
+          const savedState = localStorage.getItem(WIZARD_STORAGE_KEY);
+          if (!savedState) {
+            setCurrentStep(2);
+          }
+        } else {
+          setHasExistingCV(false);
+          setCurrentStep(1);
+        }
+      } catch (error) {
+        console.error("Failed to check existing CV:", error);
+      }
+    }
+
+    checkExistingCV();
+  }, [isOpen]);
 
   // Load wizard state from localStorage
   useEffect(() => {
@@ -303,7 +346,7 @@ export function OnboardingWizard({
         const savedState = localStorage.getItem(WIZARD_STORAGE_KEY);
         if (savedState) {
           const state = JSON.parse(savedState);
-          setCurrentStep(state.currentStep || 1);
+          setCurrentStep(state.currentStep || (hasExistingCV ? 2 : 1));
           setUploadedCV(state.uploadedCV || null);
           setCvText(state.cvText || "");
           setJobTitle(state.jobTitle || "");
@@ -317,7 +360,7 @@ export function OnboardingWizard({
         console.error("Failed to load wizard state:", error);
       }
     }
-  }, [isOpen]);
+  }, [isOpen, hasExistingCV]);
 
   // Save wizard state to localStorage
   useEffect(() => {
@@ -353,6 +396,20 @@ export function OnboardingWizard({
 
     setIsLoading(true);
     try {
+      // If user already has a CV, delete it first (single CV policy)
+      if (hasExistingCV && uploadedCV) {
+        const supabase = createClient();
+        const { error: deleteError } = await supabase
+          .from("documents")
+          .delete()
+          .eq("id", uploadedCV.id);
+
+        if (deleteError) {
+          console.error("Failed to delete existing CV:", deleteError);
+          // Continue anyway
+        }
+      }
+
       const formData = new FormData();
       formData.append("file", file);
 
@@ -467,8 +524,14 @@ export function OnboardingWizard({
       setCvList(cvsRes.data || []);
       setJobList(jobsRes.data || []);
 
-      // Auto-select uploaded CV and job
-      if (uploadedCV) setSelectedCV(uploadedCV.id);
+      // Auto-select uploaded/existing CV and job
+      if (uploadedCV) {
+        setSelectedCV(uploadedCV.id);
+      } else if (cvsRes.data && cvsRes.data.length > 0) {
+        // Auto-select first (most recent) CV if exists
+        setSelectedCV(cvsRes.data[0].id);
+      }
+
       if (savedJob) setSelectedJobs([savedJob.id]);
     } catch (error) {
       console.error("Failed to fetch data:", error);
@@ -537,7 +600,10 @@ export function OnboardingWizard({
   };
 
   const renderStepContent = () => {
-    switch (currentStep) {
+    // If user has CV, skip step 1
+    const effectiveStep = hasExistingCV ? currentStep + 1 : currentStep;
+
+    switch (effectiveStep) {
       case 1:
         return (
           <>
@@ -798,23 +864,26 @@ export function OnboardingWizard({
 
             <WizardActions>
               {/* Previous Button */}
-              {currentStep < 4 && (
+              {currentStep < (hasExistingCV ? 3 : 4) && (
                 <Button
                   variant="ghost"
                   onClick={() => {
-                    if (currentStep > 1) {
+                    // If has CV and on step 2, close modal (no step 1)
+                    if (hasExistingCV && currentStep === 2) {
+                      onClose();
+                    } else if (currentStep > 1) {
                       setCurrentStep(currentStep - 1);
                     } else {
                       onClose();
                     }
                   }}
                 >
-                  {currentStep === 1 ? "Cancel" : "← Previous"}
+                  {(currentStep === 1 || (hasExistingCV && currentStep === 2)) ? "Cancel" : "← Previous"}
                 </Button>
               )}
 
-              {/* Next/Action Buttons */}
-              {currentStep === 1 && uploadedCV && (
+              {/* Next/Action Buttons - adjust for hasExistingCV */}
+              {!hasExistingCV && currentStep === 1 && uploadedCV && (
                 <Button onClick={() => setCurrentStep(2)}>
                   Next Step →
                 </Button>
@@ -844,7 +913,7 @@ export function OnboardingWizard({
                 </Button>
               )}
 
-              {currentStep === 4 && analysisResult && (
+              {((!hasExistingCV && currentStep === 4) || (hasExistingCV && currentStep === 4)) && analysisResult && (
                 <Button
                   onClick={() => {
                     handleComplete();

@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Modal } from "./Modal";
 import { Button } from "./Button";
 import { Spinner } from "./Spinner";
@@ -123,6 +123,103 @@ const CharCount = styled.div`
   text-align: right;
 `;
 
+const PreviewPanel = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background-color: ${({ theme }) => theme.colors.surface};
+  max-height: 300px;
+  overflow-y: auto;
+`;
+
+const PreviewSection = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const PreviewTitle = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  text-transform: uppercase;
+`;
+
+const PreviewContent = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: 1.6;
+`;
+
+const EditablePreview = styled.textarea`
+  width: 100%;
+  min-height: 80px;
+  padding: ${({ theme }) => theme.spacing.sm};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.sm};
+  background-color: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  resize: vertical;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const ResultSummary = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.xl};
+`;
+
+const ResultScore = styled.div`
+  font-size: 64px;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const ResultDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  margin-top: ${({ theme }) => theme.spacing.xl};
+  text-align: left;
+`;
+
+const ResultItem = styled.div`
+  padding: ${({ theme }) => theme.spacing.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background-color: ${({ theme }) => theme.colors.surface};
+`;
+
+const KeywordList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: ${({ theme }) => theme.spacing.sm} 0 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const KeywordTag = styled.li`
+  display: inline-block;
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  background-color: rgba(102, 126, 234, 0.1);
+  color: ${({ theme }) => theme.colors.primary};
+  border-radius: ${({ theme }) => theme.radius.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+`;
+
 const WizardActions = styled.div`
   display: flex;
   justify-content: space-between;
@@ -158,6 +255,8 @@ interface OnboardingWizardProps {
   onComplete: () => void;
 }
 
+const WIZARD_STORAGE_KEY = "rejectly_wizard_state";
+
 export function OnboardingWizard({
   isOpen,
   onClose,
@@ -171,10 +270,12 @@ export function OnboardingWizard({
 
   // Step 1: CV Upload
   const [uploadedCV, setUploadedCV] = useState<any>(null);
+  const [cvText, setCvText] = useState("");
 
   // Step 2: Job Posting
   const [jobTitle, setJobTitle] = useState("");
-  const [jobDescription, setJobDescription] = useState("");
+  const [jobSummary, setJobSummary] = useState("");
+  const [jobDetails, setJobDetails] = useState("");
   const [savedJob, setSavedJob] = useState<any>(null);
 
   // Step 3: Analysis
@@ -183,8 +284,67 @@ export function OnboardingWizard({
   const [cvList, setCvList] = useState<any[]>([]);
   const [jobList, setJobList] = useState<any[]>([]);
 
-  const totalSteps = 3;
+  // Step 4: Result Summary
+  const [analysisResult, setAnalysisResult] = useState<{
+    id: string;
+    fitScore: number;
+    summary: string;
+    missingKeywords: string[];
+  } | null>(null);
+
+  const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
+
+  // Load wizard state from localStorage
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const savedState = localStorage.getItem(WIZARD_STORAGE_KEY);
+        if (savedState) {
+          const state = JSON.parse(savedState);
+          setCurrentStep(state.currentStep || 1);
+          setUploadedCV(state.uploadedCV || null);
+          setCvText(state.cvText || "");
+          setJobTitle(state.jobTitle || "");
+          setJobSummary(state.jobSummary || "");
+          setJobDetails(state.jobDetails || "");
+          setSavedJob(state.savedJob || null);
+          setSelectedCV(state.selectedCV || null);
+          setSelectedJobs(state.selectedJobs || []);
+        }
+      } catch (error) {
+        console.error("Failed to load wizard state:", error);
+      }
+    }
+  }, [isOpen]);
+
+  // Save wizard state to localStorage
+  useEffect(() => {
+    if (isOpen && currentStep < 4) {
+      try {
+        const state = {
+          currentStep,
+          uploadedCV,
+          cvText,
+          jobTitle,
+          jobSummary,
+          jobDetails,
+          savedJob,
+          selectedCV,
+          selectedJobs,
+        };
+        localStorage.setItem(WIZARD_STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        console.error("Failed to save wizard state:", error);
+      }
+    }
+  }, [currentStep, uploadedCV, cvText, jobTitle, jobSummary, jobDetails, savedJob, selectedCV, selectedJobs, isOpen]);
+
+  // Clear wizard state when modal is completed
+  const handleComplete = () => {
+    localStorage.removeItem(WIZARD_STORAGE_KEY);
+    onComplete();
+  };
 
   // Step 1: Handle CV Upload
   const handleFileSelect = async (file: File) => {
@@ -207,12 +367,8 @@ export function OnboardingWizard({
       }
 
       setUploadedCV(result.document);
-      toast.success("CV uploaded successfully! Moving to next step...");
-
-      // Auto-advance to next step
-      setTimeout(() => {
-        setCurrentStep(2);
-      }, 1000);
+      setCvText(result.document.text || "");
+      toast.success("CV uploaded successfully!");
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Upload failed";
@@ -243,7 +399,7 @@ export function OnboardingWizard({
 
   // Step 2: Handle Job Posting
   const handleJobSubmit = async () => {
-    if (!jobTitle || !jobDescription) {
+    if (!jobTitle || !jobSummary || !jobDetails) {
       toast.error("Please fill in all fields");
       return;
     }
@@ -257,13 +413,16 @@ export function OnboardingWizard({
         throw new Error("Not authenticated");
       }
 
+      // Combine summary and details
+      const fullJobDescription = `${jobSummary}\n\n${jobDetails}`;
+
       const { data, error } = await supabase
         .from("documents")
         .insert({
           user_id: user.id,
           type: "job",
           title: jobTitle,
-          text: jobDescription,
+          text: fullJobDescription,
           lang: "en",
         })
         .select()
@@ -272,13 +431,7 @@ export function OnboardingWizard({
       if (error) throw error;
 
       setSavedJob(data);
-      toast.success("Job posting added! Moving to analysis step...");
-
-      // Auto-advance to next step
-      setTimeout(() => {
-        setCurrentStep(3);
-        fetchDataForAnalysis();
-      }, 1000);
+      toast.success("Job posting added!");
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to add job";
@@ -350,11 +503,16 @@ export function OnboardingWizard({
         throw new Error(result.error || "Analysis failed");
       }
 
-      toast.success("Analysis complete! Redirecting to your report...");
+      // Save analysis result and move to step 4
+      setAnalysisResult({
+        id: result.report.id,
+        fitScore: result.report.fitScore,
+        summary: result.report.summary,
+        missingKeywords: result.report.missingKeywords || [],
+      });
 
-      // Close wizard and redirect to report
-      onComplete();
-      router.push(`/reports/${result.report.id}`);
+      toast.success("Analysis complete!");
+      setCurrentStep(4);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to create analysis";
@@ -377,23 +535,39 @@ export function OnboardingWizard({
             </StepHeader>
             <StepContent>
               {uploadedCV ? (
-                <div
-                  style={{
-                    padding: "24px",
-                    border: "2px solid #10b981",
-                    borderRadius: "12px",
-                    backgroundColor: "rgba(16, 185, 129, 0.1)",
-                    textAlign: "center",
-                  }}
-                >
-                  <div style={{ fontSize: "48px", marginBottom: "16px" }}>✓</div>
-                  <p style={{ fontSize: "18px", fontWeight: 600, marginBottom: "8px" }}>
-                    {uploadedCV.title}
-                  </p>
-                  <p style={{ fontSize: "14px", color: "#6b7280" }}>
-                    {uploadedCV.textLength || uploadedCV.text?.length} characters extracted
-                  </p>
-                </div>
+                <>
+                  <div
+                    style={{
+                      padding: "24px",
+                      border: "2px solid #10b981",
+                      borderRadius: "12px",
+                      backgroundColor: "rgba(16, 185, 129, 0.1)",
+                      textAlign: "center",
+                    }}
+                  >
+                    <div style={{ fontSize: "48px", marginBottom: "16px" }}>✓</div>
+                    <p style={{ fontSize: "18px", fontWeight: 600, marginBottom: "8px" }}>
+                      {uploadedCV.title}
+                    </p>
+                    <p style={{ fontSize: "14px", color: "#6b7280" }}>
+                      {cvText.length} characters extracted
+                    </p>
+                  </div>
+
+                  {cvText && (
+                    <PreviewPanel>
+                      <PreviewSection>
+                        <PreviewTitle>CV Content Preview</PreviewTitle>
+                        <EditablePreview
+                          value={cvText}
+                          onChange={(e) => setCvText(e.target.value)}
+                          placeholder="Edit your CV text here..."
+                        />
+                        <CharCount>{cvText.length} characters</CharCount>
+                      </PreviewSection>
+                    </PreviewPanel>
+                  )}
+                </>
               ) : (
                 <UploadArea
                   $isDragging={isDragging}
@@ -449,15 +623,53 @@ export function OnboardingWizard({
                 </div>
                 <div>
                   <label style={{ display: "block", marginBottom: "8px", fontWeight: 500 }}>
-                    Job Description
+                    Job Summary
                   </label>
                   <Textarea
-                    placeholder="Paste the full job description here..."
-                    value={jobDescription}
-                    onChange={(e) => setJobDescription(e.target.value)}
+                    placeholder="Brief overview of the position..."
+                    value={jobSummary}
+                    onChange={(e) => setJobSummary(e.target.value)}
+                    style={{ minHeight: "120px" }}
                   />
-                  <CharCount>{jobDescription.length} characters</CharCount>
+                  <CharCount>
+                    {jobSummary.length} characters · {jobSummary.split('\n').length} lines
+                  </CharCount>
                 </div>
+                <div>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: 500 }}>
+                    Detailed Description
+                  </label>
+                  <Textarea
+                    placeholder="Full job description, requirements, responsibilities..."
+                    value={jobDetails}
+                    onChange={(e) => setJobDetails(e.target.value)}
+                    style={{ minHeight: "200px" }}
+                  />
+                  <CharCount>
+                    {jobDetails.length} characters · {jobDetails.split('\n').length} lines
+                  </CharCount>
+                </div>
+
+                {/* Preview */}
+                {(jobSummary || jobDetails) && (
+                  <PreviewPanel>
+                    <PreviewTitle>Preview</PreviewTitle>
+                    <PreviewContent>
+                      {jobSummary && (
+                        <div style={{ marginBottom: "16px" }}>
+                          <strong>Summary:</strong>
+                          <p style={{ marginTop: "8px", whiteSpace: "pre-wrap" }}>{jobSummary}</p>
+                        </div>
+                      )}
+                      {jobDetails && (
+                        <div>
+                          <strong>Details:</strong>
+                          <p style={{ marginTop: "8px", whiteSpace: "pre-wrap" }}>{jobDetails}</p>
+                        </div>
+                      )}
+                    </PreviewContent>
+                  </PreviewPanel>
+                )}
               </JobForm>
             </StepContent>
           </>
@@ -519,6 +731,50 @@ export function OnboardingWizard({
           </>
         );
 
+      case 4:
+        return (
+          <>
+            <StepHeader>
+              <StepTitle>✨ Analysis Complete!</StepTitle>
+              <StepDescription>
+                Here's your CV match summary
+              </StepDescription>
+            </StepHeader>
+            <StepContent>
+              {analysisResult && (
+                <ResultSummary>
+                  <ResultScore>{analysisResult.fitScore}%</ResultScore>
+                  <p style={{ fontSize: "18px", color: "#6b7280", marginBottom: "16px" }}>
+                    Match Score
+                  </p>
+
+                  <ResultDetails>
+                    <ResultItem>
+                      <h4 style={{ fontWeight: 600, marginBottom: "8px" }}>Summary</h4>
+                      <p style={{ color: "#6b7280", lineHeight: "1.6" }}>
+                        {analysisResult.summary}
+                      </p>
+                    </ResultItem>
+
+                    {analysisResult.missingKeywords && analysisResult.missingKeywords.length > 0 && (
+                      <ResultItem>
+                        <h4 style={{ fontWeight: 600, marginBottom: "8px" }}>
+                          Missing Keywords ({analysisResult.missingKeywords.length})
+                        </h4>
+                        <KeywordList>
+                          {analysisResult.missingKeywords.map((keyword, index) => (
+                            <KeywordTag key={index}>{keyword}</KeywordTag>
+                          ))}
+                        </KeywordList>
+                      </ResultItem>
+                    )}
+                  </ResultDetails>
+                </ResultSummary>
+              )}
+            </StepContent>
+          </>
+        );
+
       default:
         return null;
     }
@@ -541,19 +797,23 @@ export function OnboardingWizard({
             {renderStepContent()}
 
             <WizardActions>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  if (currentStep > 1) {
-                    setCurrentStep(currentStep - 1);
-                  } else {
-                    onClose();
-                  }
-                }}
-              >
-                {currentStep === 1 ? "Cancel" : "Back"}
-              </Button>
+              {/* Previous Button */}
+              {currentStep < 4 && (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    if (currentStep > 1) {
+                      setCurrentStep(currentStep - 1);
+                    } else {
+                      onClose();
+                    }
+                  }}
+                >
+                  {currentStep === 1 ? "Cancel" : "← Previous"}
+                </Button>
+              )}
 
+              {/* Next/Action Buttons */}
               {currentStep === 1 && uploadedCV && (
                 <Button onClick={() => setCurrentStep(2)}>
                   Next Step →
@@ -562,10 +822,16 @@ export function OnboardingWizard({
 
               {currentStep === 2 && (
                 <Button
-                  onClick={handleJobSubmit}
-                  disabled={!jobTitle || !jobDescription}
+                  onClick={async () => {
+                    await handleJobSubmit();
+                    if (savedJob || jobTitle) {
+                      setCurrentStep(3);
+                      fetchDataForAnalysis();
+                    }
+                  }}
+                  disabled={!jobTitle || !jobSummary || !jobDetails}
                 >
-                  Add Job & Continue →
+                  Save & Continue →
                 </Button>
               )}
 
@@ -575,6 +841,17 @@ export function OnboardingWizard({
                   disabled={!selectedCV || selectedJobs.length === 0}
                 >
                   Generate Analysis 🎯
+                </Button>
+              )}
+
+              {currentStep === 4 && analysisResult && (
+                <Button
+                  onClick={() => {
+                    handleComplete();
+                    router.push(`/reports/${analysisResult.id}`);
+                  }}
+                >
+                  View Full Report →
                 </Button>
               )}
             </WizardActions>

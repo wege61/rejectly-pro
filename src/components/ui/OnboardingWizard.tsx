@@ -89,7 +89,7 @@ const Input = styled.input`
   width: 100%;
   padding: ${({ theme }) => theme.spacing.md};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
+  border-radius: ${({ theme }) => theme.radius.md};
   background-color: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.textPrimary};
   font-size: ${({ theme }) => theme.typography.fontSize.base};
@@ -105,7 +105,7 @@ const Textarea = styled.textarea`
   min-height: 200px;
   padding: ${({ theme }) => theme.spacing.md};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
+  border-radius: ${({ theme }) => theme.radius.md};
   background-color: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.textPrimary};
   font-size: ${({ theme }) => theme.typography.fontSize.base};
@@ -141,7 +141,7 @@ const SelectionCard = styled.div<{ $selected: boolean }>`
   padding: ${({ theme }) => theme.spacing.md};
   border: 2px solid ${({ theme, $selected }) =>
     $selected ? theme.colors.primary : theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
+  border-radius: ${({ theme }) => theme.radius.md};
   background-color: ${({ theme, $selected }) =>
     $selected ? "rgba(102, 126, 234, 0.1)" : theme.colors.surface};
   cursor: pointer;
@@ -251,16 +251,16 @@ export function OnboardingWizard({
     setIsLoading(true);
     try {
       const supabase = createClient();
-      const { data: user } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
-      if (!user.data.user) {
+      if (!user) {
         throw new Error("Not authenticated");
       }
 
       const { data, error } = await supabase
         .from("documents")
         .insert({
-          user_id: user.data.user.id,
+          user_id: user.id,
           type: "job",
           title: jobTitle,
           text: jobDescription,
@@ -293,20 +293,20 @@ export function OnboardingWizard({
     setIsLoading(true);
     try {
       const supabase = createClient();
-      const { data: user } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
-      if (!user.data.user) return;
+      if (!user) return;
 
       const [cvsRes, jobsRes] = await Promise.all([
         supabase
           .from("documents")
           .select("*")
-          .eq("user_id", user.data.user.id)
+          .eq("user_id", user.id)
           .eq("type", "cv"),
         supabase
           .from("documents")
           .select("*")
-          .eq("user_id", user.data.user.id)
+          .eq("user_id", user.id)
           .eq("type", "job"),
       ]);
 
@@ -333,14 +333,14 @@ export function OnboardingWizard({
     setIsLoading(true);
     try {
       const supabase = createClient();
-      const { data: user } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
-      if (!user.data.user) throw new Error("Not authenticated");
+      if (!user) throw new Error("Not authenticated");
 
       const { data: report, error } = await supabase
         .from("reports")
         .insert({
-          user_id: user.data.user.id,
+          user_id: user.id,
           cv_id: selectedCV,
           job_ids: selectedJobs,
         })

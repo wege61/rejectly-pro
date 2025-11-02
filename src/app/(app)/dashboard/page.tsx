@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
+import { OnboardingProgress } from "@/components/ui/OnboardingProgress";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
@@ -243,6 +244,13 @@ export default function DashboardPage() {
           overview.
         </Subtitle>
       </Header>
+
+      {/* Onboarding Progress - Show only if user hasn't completed all steps */}
+      <OnboardingProgress
+        hasCVs={stats.totalCVs > 0}
+        hasJobs={stats.totalJobs > 0}
+        hasReports={stats.totalReports > 0}
+      />
 
       {/* Stats */}
       <Grid>

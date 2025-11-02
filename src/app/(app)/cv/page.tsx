@@ -137,7 +137,7 @@ export default function CVPage() {
         throw new Error(result.error || "Upload failed");
       }
 
-      toast.success("CV uploaded! Text extracted successfully.");
+      toast.success("CV uploaded successfully! Your resume has been processed. Now add job postings to analyze.");
 
       // Refresh CV data
       const supabase = createClient();
@@ -152,7 +152,7 @@ export default function CVPage() {
       }
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Yükleme başarısız";
+        error instanceof Error ? error.message : "Upload failed";
       toast.error(errorMessage);
     } finally {
       setIsUploading(false);
@@ -177,7 +177,7 @@ export default function CVPage() {
 
       if (deleteError) throw deleteError;
 
-      toast.success("CV deleted");
+      toast.success("CV deleted successfully");
       setCvDocument(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to delete CV";

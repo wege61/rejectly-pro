@@ -6,22 +6,40 @@ import PDFParser from 'pdf2json';
 // Sanitize text to remove problematic Unicode escape sequences
 function sanitizeText(text: string): string {
   try {
-    // Replace problematic Unicode escape sequences
-    return text
-      // Remove null bytes
-      .replace(/\0/g, '')
-      // Replace invalid Unicode surrogates
-      .replace(/[\uD800-\uDFFF]/g, '')
-      // Normalize Unicode
-      .normalize('NFC')
-      // Replace multiple spaces with single space
-      .replace(/\s+/g, ' ')
-      // Trim
-      .trim();
+    let cleaned = text;
+
+    // Remove literal \uXXXX escape sequences that are in the string as text
+    cleaned = cleaned.replace(/\\u[0-9a-fA-F]{4}/g, '');
+
+    // Remove literal \xXX escape sequences
+    cleaned = cleaned.replace(/\\x[0-9a-fA-F]{2}/g, '');
+
+    // Remove null bytes and control characters
+    cleaned = cleaned.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+
+    // Replace invalid Unicode surrogates
+    cleaned = cleaned.replace(/[\uD800-\uDFFF]/g, '');
+
+    // Remove zero-width characters
+    cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');
+
+    // Normalize Unicode to NFC form
+    cleaned = cleaned.normalize('NFC');
+
+    // Replace multiple spaces/newlines with single space
+    cleaned = cleaned.replace(/\s+/g, ' ');
+
+    // Remove any remaining backslash-escaped characters
+    cleaned = cleaned.replace(/\\[^\\]/g, '');
+
+    return cleaned.trim();
   } catch (error) {
-    console.warn('Text sanitization warning:', error);
-    // Fallback: remove non-printable ASCII characters
-    return text.replace(/[^\x20-\x7E\u00A0-\uFFFF]/g, '').trim();
+    console.warn('Text sanitization error:', error);
+    // Aggressive fallback: keep only safe ASCII and basic Latin characters
+    return text
+      .replace(/[^\x20-\x7E\u00A0-\u00FF\u0100-\u017F]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 }
 

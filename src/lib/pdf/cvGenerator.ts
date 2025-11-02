@@ -117,8 +117,8 @@ export function generateCVPDF(cv: GeneratedCV): jsPDF {
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.text);
 
-      // Bullet point
-      doc.text("•", margin + 2, yPosition);
+      // Bullet point (using simple dash for better compatibility)
+      doc.text("-", margin + 2, yPosition);
 
       // Wrap bullet text
       const bulletLines = wrapText(bullet, contentWidth - 8);

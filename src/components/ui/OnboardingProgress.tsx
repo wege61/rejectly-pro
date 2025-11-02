@@ -66,7 +66,7 @@ const StepItem = styled.div<{ $completed: boolean; $active: boolean }>`
       : $active
       ? "rgba(255, 255, 255, 0.15)"
       : "rgba(255, 255, 255, 0.05)"};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  border-radius: ${({ theme }) => theme.radius.lg};
   border: 2px solid
     ${({ $completed, $active }) =>
       $completed

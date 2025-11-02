@@ -663,27 +663,6 @@ export function OnboardingWizard({
                     {jobDetails.length} characters · {jobDetails.split('\n').length} lines
                   </CharCount>
                 </div>
-
-                {/* Preview */}
-                {(jobSummary || jobDetails) && (
-                  <PreviewPanel>
-                    <PreviewTitle>Preview</PreviewTitle>
-                    <PreviewContent>
-                      {jobSummary && (
-                        <div style={{ marginBottom: "16px" }}>
-                          <strong>Summary:</strong>
-                          <p style={{ marginTop: "8px", whiteSpace: "pre-wrap" }}>{jobSummary}</p>
-                        </div>
-                      )}
-                      {jobDetails && (
-                        <div>
-                          <strong>Details:</strong>
-                          <p style={{ marginTop: "8px", whiteSpace: "pre-wrap" }}>{jobDetails}</p>
-                        </div>
-                      )}
-                    </PreviewContent>
-                  </PreviewPanel>
-                )}
               </JobForm>
             </StepContent>
           </>

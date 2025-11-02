@@ -244,7 +244,7 @@ export default function ReportDetailPage() {
         throw new Error(result.error || "CV generation failed");
       }
 
-      toast.success("CV generated successfully!");
+      toast.success("Your optimized CV has been generated successfully! You can now download it as PDF.");
 
       // Refresh report to get generated_cv
       const supabase = createClient();
@@ -273,9 +273,9 @@ export default function ReportDetailPage() {
       const pdf = generateCVPDF(report.generated_cv);
       const fileName = `${report.generated_cv.contact.name.replace(/\s+/g, "_")}_CV_Optimized.pdf`;
       pdf.save(fileName);
-      toast.success("CV downloaded!");
+      toast.success("CV downloaded successfully! Check your downloads folder.");
     } catch {
-      toast.error("Failed to download CV");
+      toast.error("Failed to download CV. Please try again.");
     }
   };
 

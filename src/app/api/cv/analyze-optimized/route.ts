@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
-import { generateFreeSummaryPrompt } from "@/lib/ai/prompts";
+import { generateFreeSummaryPrompt, generateImprovementBreakdownPrompt } from "@/lib/ai/prompts";
 import { GeneratedCV } from "@/types/cv";
 
 // Helper function to convert GeneratedCV to text format
@@ -162,11 +162,47 @@ export async function POST(request: NextRequest) {
 
     const result = JSON.parse(completion.choices[0].message.content || "{}");
 
+    // Fetch original CV for breakdown comparison
+    const { data: cvDoc, error: cvError } = await supabase
+      .from("documents")
+      .select("text")
+      .eq("id", report.cv_id)
+      .eq("user_id", user.id)
+      .eq("type", "cv")
+      .single();
+
+    let improvementBreakdown = null;
+
+    if (!cvError && cvDoc) {
+      // Generate improvement breakdown
+      const breakdownPrompt = generateImprovementBreakdownPrompt(
+        cvDoc.text,
+        optimizedCVText,
+        jobDocs.map((job) => job.text),
+        (report.keywords as { missing?: string[] })?.missing || []
+      );
+
+      const breakdownCompletion = await openai.chat.completions.create({
+        model: AI_MODEL,
+        messages: [{ role: "user", content: breakdownPrompt }],
+        temperature: 0.7,
+        max_tokens: 1500,
+        response_format: { type: "json_object" },
+      });
+
+      const breakdownResult = JSON.parse(
+        breakdownCompletion.choices[0].message.content || "{}"
+      );
+
+      improvementBreakdown = breakdownResult.improvements || [];
+    }
+
     return NextResponse.json({
       success: true,
       fitScore: result.fitScore || 0,
       summary: result.summary || "",
       missingKeywords: result.missingKeywords || [],
+      improvementBreakdown,
     });
   } catch (error) {
     console.error("Optimized CV analysis error:", error);

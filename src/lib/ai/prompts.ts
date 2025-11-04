@@ -107,8 +107,12 @@ export function generateImprovementBreakdownPrompt(
   originalCVText: string,
   optimizedCVText: string,
   jobTexts: string[],
-  missingKeywords: string[]
+  missingKeywords: string[],
+  originalScore: number,
+  optimizedScore: number
 ): string {
+  const actualDifference = optimizedScore - originalScore;
+
   return `You are an expert CV analyzer. Compare the original CV with the optimized CV and explain how each improvement contributes to the overall score increase.
 
 ORIGINAL CV:
@@ -134,6 +138,13 @@ ${text}
   .join("\n")}
 
 MISSING KEYWORDS THAT SHOULD BE ADDRESSED: ${missingKeywords.join(", ")}
+
+SCORE CHANGE:
+- Original Score: ${originalScore}%
+- Optimized Score: ${optimizedScore}%
+- Actual Difference: ${actualDifference}%
+
+CRITICAL: The total impact of all improvements MUST equal exactly ${actualDifference}%. Do not exceed this total.
 
 TASK: Analyze how the optimized CV improved compared to the original and break down the improvements into actionable categories with estimated score impact.
 
@@ -175,11 +186,13 @@ Respond in JSON format:
 
 Guidelines:
 - List 5-8 most impactful improvements (prioritize by impact)
-- Impact should be realistic score increase (1-15 points per improvement)
+- Impact values must be realistic and their SUM must equal EXACTLY ${actualDifference}%
 - Categories: "Keyword Addition", "Bullet Rewriting", "ATS Optimization", "Professional Summary", "Skills Organization", "Other"
 - Be specific about what changed
-- Total impact should approximately match the actual score difference
-- Focus on concrete, actionable improvements that were made`;
+- Distribute the ${actualDifference}% across improvements proportionally
+- Most impactful changes get higher values, smaller changes get 1-2%
+- Focus on concrete, actionable improvements that were made
+- Example: If total is 5%, you might have: [2%, 1%, 1%, 1%] = 5% total`;
 }
 
 export function generateOptimizedCVPrompt(

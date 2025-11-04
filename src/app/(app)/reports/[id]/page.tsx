@@ -353,7 +353,31 @@ export default function ReportDetailPage() {
       }
 
       setOptimizedScore(result.fitScore);
-      setImprovementBreakdown(result.improvementBreakdown || []);
+
+      // Normalize improvement breakdown to match actual score difference
+      if (result.improvementBreakdown && result.improvementBreakdown.length > 0) {
+        const actualDifference = result.fitScore - report.fit_score;
+        const totalImpact = result.improvementBreakdown.reduce(
+          (sum: number, imp: Improvement) => sum + imp.impact,
+          0
+        );
+
+        // If AI's total doesn't match actual difference, normalize it
+        if (totalImpact > 0 && Math.abs(totalImpact - actualDifference) > 0.5) {
+          const scaleFactor = actualDifference / totalImpact;
+          const normalizedBreakdown = result.improvementBreakdown.map(
+            (imp: Improvement) => ({
+              ...imp,
+              impact: Math.round(imp.impact * scaleFactor * 10) / 10, // Round to 1 decimal
+            })
+          );
+          setImprovementBreakdown(normalizedBreakdown);
+        } else {
+          setImprovementBreakdown(result.improvementBreakdown);
+        }
+      } else {
+        setImprovementBreakdown([]);
+      }
     } catch (error) {
       console.error("Failed to analyze optimized CV:", error);
       // Don't show error toast to user, just log it
@@ -590,23 +614,23 @@ export default function ReportDetailPage() {
               <BreakdownContainer>
                 {improvementBreakdown.map((improvement, index) => (
                   <BreakdownItem key={index}>
-                    <ImpactBadge>+{improvement.impact}</ImpactBadge>
+                    <ImpactBadge>+{Math.round(improvement.impact * 10) / 10}</ImpactBadge>
                     <ImpactContent>
                       <ImpactCategory>{improvement.category}</ImpactCategory>
                       <ImpactAction>{improvement.action}</ImpactAction>
                       <ImpactReason>{improvement.reason}</ImpactReason>
                     </ImpactContent>
                     <ImpactPoints>
-                      <ImpactValue>+{improvement.impact}%</ImpactValue>
+                      <ImpactValue>+{Math.round(improvement.impact * 10) / 10}%</ImpactValue>
                       <ImpactLabel>Score</ImpactLabel>
                     </ImpactPoints>
                   </BreakdownItem>
                 ))}
               </BreakdownContainer>
               <TotalImpactSummary>
-                <TotalLabel>Total Estimated Impact</TotalLabel>
+                <TotalLabel>Total Impact</TotalLabel>
                 <TotalValue>
-                  +{improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0)}%
+                  +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}%
                 </TotalValue>
               </TotalImpactSummary>
             </Card.Content>

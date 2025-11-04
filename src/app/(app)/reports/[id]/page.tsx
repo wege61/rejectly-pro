@@ -121,6 +121,112 @@ const LoadingText = styled.div`
   margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
+const BreakdownContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  margin-top: ${({ theme }) => theme.spacing.lg};
+`;
+
+const BreakdownItem = styled.div`
+  display: grid;
+  grid-template-columns: 60px 1fr 100px;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  align-items: start;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    transform: translateX(4px);
+  }
+`;
+
+const ImpactBadge = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  border-radius: ${({ theme }) => theme.radius.md};
+  flex-shrink: 0;
+`;
+
+const ImpactContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xs};
+  min-width: 0;
+`;
+
+const ImpactCategory = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+`;
+
+const ImpactAction = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  line-height: ${({ theme }) => theme.typography.lineHeight.normal};
+`;
+
+const ImpactReason = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+`;
+
+const ImpactPoints = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+`;
+
+const ImpactValue = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: #10b981;
+`;
+
+const ImpactLabel = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-transform: uppercase;
+`;
+
+const TotalImpactSummary = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: ${({ theme }) => theme.radius.lg};
+  color: white;
+  margin-top: ${({ theme }) => theme.spacing.md};
+`;
+
+const TotalLabel = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+`;
+
+const TotalValue = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+`;
+
 const Section = styled.section`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
@@ -180,6 +286,13 @@ interface RoleRecommendation {
   fit: number;
 }
 
+interface Improvement {
+  category: string;
+  action: string;
+  impact: number;
+  reason: string;
+}
+
 interface Report {
   id: string;
   user_id: string;
@@ -214,6 +327,7 @@ export default function ReportDetailPage() {
   const [isGeneratingCV, setIsGeneratingCV] = useState(false);
   const [isAnalyzingOptimized, setIsAnalyzingOptimized] = useState(false);
   const [optimizedScore, setOptimizedScore] = useState<number | null>(null);
+  const [improvementBreakdown, setImprovementBreakdown] = useState<Improvement[]>([]);
   const [report, setReport] = useState<Report | null>(null);
 
   // Define analyzeOptimizedCV before useEffect that uses it
@@ -239,6 +353,7 @@ export default function ReportDetailPage() {
       }
 
       setOptimizedScore(result.fitScore);
+      setImprovementBreakdown(result.improvementBreakdown || []);
     } catch (error) {
       console.error("Failed to analyze optimized CV:", error);
       // Don't show error toast to user, just log it
@@ -461,6 +576,43 @@ export default function ReportDetailPage() {
           </ScoreCard>
         )}
       </Grid>
+
+      {improvementBreakdown.length > 0 && optimizedScore !== null && (
+        <Section>
+          <Card variant="bordered">
+            <Card.Header>
+              <Card.Title>🎯 How We Improved Your Score</Card.Title>
+              <Card.Description>
+                Detailed breakdown of each optimization and its impact
+              </Card.Description>
+            </Card.Header>
+            <Card.Content>
+              <BreakdownContainer>
+                {improvementBreakdown.map((improvement, index) => (
+                  <BreakdownItem key={index}>
+                    <ImpactBadge>+{improvement.impact}</ImpactBadge>
+                    <ImpactContent>
+                      <ImpactCategory>{improvement.category}</ImpactCategory>
+                      <ImpactAction>{improvement.action}</ImpactAction>
+                      <ImpactReason>{improvement.reason}</ImpactReason>
+                    </ImpactContent>
+                    <ImpactPoints>
+                      <ImpactValue>+{improvement.impact}%</ImpactValue>
+                      <ImpactLabel>Score</ImpactLabel>
+                    </ImpactPoints>
+                  </BreakdownItem>
+                ))}
+              </BreakdownContainer>
+              <TotalImpactSummary>
+                <TotalLabel>Total Estimated Impact</TotalLabel>
+                <TotalValue>
+                  +{improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0)}%
+                </TotalValue>
+              </TotalImpactSummary>
+            </Card.Content>
+          </Card>
+        </Section>
+      )}
 
       <Section>
         <Card variant="bordered">

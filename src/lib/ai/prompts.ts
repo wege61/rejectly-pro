@@ -103,6 +103,85 @@ Guidelines:
 - Maintain professional tone throughout`;
 }
 
+export function generateImprovementBreakdownPrompt(
+  originalCVText: string,
+  optimizedCVText: string,
+  jobTexts: string[],
+  missingKeywords: string[]
+): string {
+  return `You are an expert CV analyzer. Compare the original CV with the optimized CV and explain how each improvement contributes to the overall score increase.
+
+ORIGINAL CV:
+"""
+${originalCVText}
+"""
+
+OPTIMIZED CV:
+"""
+${optimizedCVText}
+"""
+
+TARGET JOB POSTINGS:
+${jobTexts
+  .map(
+    (text, i) => `
+Job ${i + 1}:
+"""
+${text}
+"""
+`
+  )
+  .join("\n")}
+
+MISSING KEYWORDS THAT SHOULD BE ADDRESSED: ${missingKeywords.join(", ")}
+
+TASK: Analyze how the optimized CV improved compared to the original and break down the improvements into actionable categories with estimated score impact.
+
+Respond in JSON format:
+{
+  "improvements": [
+    {
+      "category": "Keyword Addition",
+      "action": "Added 'C#' to technical skills section",
+      "impact": 10,
+      "reason": "Critical keyword from job posting that was missing"
+    },
+    {
+      "category": "Keyword Addition",
+      "action": "Added 'SQL Server' to experience bullets",
+      "impact": 8,
+      "reason": "Required database technology mentioned in job posting"
+    },
+    {
+      "category": "Bullet Rewriting",
+      "action": "Quantified achievement in project management bullet",
+      "impact": 7,
+      "reason": "Added measurable results (30% efficiency increase)"
+    },
+    {
+      "category": "ATS Optimization",
+      "action": "Restructured experience section with clear job titles",
+      "impact": 5,
+      "reason": "Better ATS parsing and keyword matching"
+    },
+    {
+      "category": "Professional Summary",
+      "action": "Added summary incorporating target role keywords",
+      "impact": 5,
+      "reason": "Improved initial impression and keyword density"
+    }
+  ]
+}
+
+Guidelines:
+- List 5-8 most impactful improvements (prioritize by impact)
+- Impact should be realistic score increase (1-15 points per improvement)
+- Categories: "Keyword Addition", "Bullet Rewriting", "ATS Optimization", "Professional Summary", "Skills Organization", "Other"
+- Be specific about what changed
+- Total impact should approximately match the actual score difference
+- Focus on concrete, actionable improvements that were made`;
+}
+
 export function generateOptimizedCVPrompt(
   cvText: string,
   jobTexts: string[],

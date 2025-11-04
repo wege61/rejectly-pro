@@ -162,6 +162,11 @@ export async function POST(request: NextRequest) {
 
     const result = JSON.parse(completion.choices[0].message.content || "{}");
 
+    // Calculate actual score difference
+    const originalScore = report.fit_score || 0;
+    const optimizedScore = result.fitScore || 0;
+    const actualScoreDifference = optimizedScore - originalScore;
+
     // Fetch original CV for breakdown comparison
     const { data: cvDoc, error: cvError } = await supabase
       .from("documents")
@@ -173,13 +178,15 @@ export async function POST(request: NextRequest) {
 
     let improvementBreakdown = null;
 
-    if (!cvError && cvDoc) {
+    if (!cvError && cvDoc && actualScoreDifference > 0) {
       // Generate improvement breakdown
       const breakdownPrompt = generateImprovementBreakdownPrompt(
         cvDoc.text,
         optimizedCVText,
         jobDocs.map((job) => job.text),
-        (report.keywords as { missing?: string[] })?.missing || []
+        (report.keywords as { missing?: string[] })?.missing || [],
+        originalScore,
+        optimizedScore
       );
 
       const breakdownCompletion = await openai.chat.completions.create({
@@ -203,6 +210,8 @@ export async function POST(request: NextRequest) {
       summary: result.summary || "",
       missingKeywords: result.missingKeywords || [],
       improvementBreakdown,
+      originalScore,
+      actualScoreDifference,
     });
   } catch (error) {
     console.error("Optimized CV analysis error:", error);

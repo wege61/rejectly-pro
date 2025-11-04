@@ -216,6 +216,37 @@ export default function ReportDetailPage() {
   const [optimizedScore, setOptimizedScore] = useState<number | null>(null);
   const [report, setReport] = useState<Report | null>(null);
 
+  // Define analyzeOptimizedCV before useEffect that uses it
+  const analyzeOptimizedCV = useCallback(async () => {
+    if (!report) return;
+
+    setIsAnalyzingOptimized(true);
+    try {
+      const response = await fetch("/api/cv/analyze-optimized", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reportId: report.id,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Analysis failed");
+      }
+
+      setOptimizedScore(result.fitScore);
+    } catch (error) {
+      console.error("Failed to analyze optimized CV:", error);
+      // Don't show error toast to user, just log it
+    } finally {
+      setIsAnalyzingOptimized(false);
+    }
+  }, [report]);
+
   useEffect(() => {
     async function fetchReport() {
       if (!user) return;
@@ -290,36 +321,6 @@ export default function ReportDetailPage() {
       setIsUpgrading(false);
     }
   };
-
-  const analyzeOptimizedCV = useCallback(async () => {
-    if (!report) return;
-
-    setIsAnalyzingOptimized(true);
-    try {
-      const response = await fetch("/api/cv/analyze-optimized", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          reportId: report.id,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Analysis failed");
-      }
-
-      setOptimizedScore(result.fitScore);
-    } catch (error) {
-      console.error("Failed to analyze optimized CV:", error);
-      // Don't show error toast to user, just log it
-    } finally {
-      setIsAnalyzingOptimized(false);
-    }
-  }, [report]);
 
   const handleGenerateCV = async () => {
     if (!report) return;

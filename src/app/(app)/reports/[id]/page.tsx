@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -60,6 +60,65 @@ const ScoreValue = styled.div`
 const ScoreLabel = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const ComparisonScoreCard = styled(Card)`
+  text-align: center;
+`;
+
+const ScoreComparison = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const ScoreColumn = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ScoreTitle = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const ComparisonValue = styled.div<{ isOptimized?: boolean }>`
+  font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ isOptimized, theme }) =>
+    isOptimized ? "#10b981" : theme.colors.primary};
+`;
+
+const ScoreDivider = styled.div`
+  width: 1px;
+  height: 60px;
+  background-color: ${({ theme }) => theme.colors.border};
+`;
+
+const ImprovementBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  margin-top: ${({ theme }) => theme.spacing.sm};
+`;
+
+const LoadingText = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
 const Section = styled.section`
@@ -153,6 +212,8 @@ export default function ReportDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [isGeneratingCV, setIsGeneratingCV] = useState(false);
+  const [isAnalyzingOptimized, setIsAnalyzingOptimized] = useState(false);
+  const [optimizedScore, setOptimizedScore] = useState<number | null>(null);
   const [report, setReport] = useState<Report | null>(null);
 
   useEffect(() => {
@@ -179,6 +240,13 @@ export default function ReportDetailPage() {
 
     fetchReport();
   }, [user, reportId, router, toast]);
+
+  // Analyze optimized CV when report is loaded and has generated_cv
+  useEffect(() => {
+    if (report?.generated_cv && optimizedScore === null && !isAnalyzingOptimized) {
+      analyzeOptimizedCV();
+    }
+  }, [report?.generated_cv, optimizedScore, isAnalyzingOptimized, analyzeOptimizedCV]);
 
   const handleUpgradeToPro = async () => {
     if (!report) return;
@@ -223,6 +291,36 @@ export default function ReportDetailPage() {
     }
   };
 
+  const analyzeOptimizedCV = useCallback(async () => {
+    if (!report) return;
+
+    setIsAnalyzingOptimized(true);
+    try {
+      const response = await fetch("/api/cv/analyze-optimized", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reportId: report.id,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Analysis failed");
+      }
+
+      setOptimizedScore(result.fitScore);
+    } catch (error) {
+      console.error("Failed to analyze optimized CV:", error);
+      // Don't show error toast to user, just log it
+    } finally {
+      setIsAnalyzingOptimized(false);
+    }
+  }, [report]);
+
   const handleGenerateCV = async () => {
     if (!report) return;
 
@@ -257,6 +355,9 @@ export default function ReportDetailPage() {
       if (data) {
         setReport(data);
       }
+
+      // Analyze the optimized CV to get new match score
+      await analyzeOptimizedCV();
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "CV generation failed";
@@ -315,10 +416,37 @@ export default function ReportDetailPage() {
       </Header>
 
       <Grid>
-        <ScoreCard variant="elevated">
-          <ScoreValue>{report.fit_score}%</ScoreValue>
-          <ScoreLabel>Match Score</ScoreLabel>
-        </ScoreCard>
+        {optimizedScore !== null && report.generated_cv ? (
+          <ComparisonScoreCard variant="elevated">
+            <ScoreComparison>
+              <ScoreColumn>
+                <ScoreTitle>Original</ScoreTitle>
+                <ComparisonValue>{report.fit_score}%</ComparisonValue>
+              </ScoreColumn>
+              <ScoreDivider />
+              <ScoreColumn>
+                <ScoreTitle>Optimized</ScoreTitle>
+                <ComparisonValue isOptimized>{optimizedScore}%</ComparisonValue>
+              </ScoreColumn>
+            </ScoreComparison>
+            {optimizedScore > report.fit_score && (
+              <ImprovementBadge>
+                ↑ +{optimizedScore - report.fit_score}% Improvement
+              </ImprovementBadge>
+            )}
+            {isAnalyzingOptimized && (
+              <LoadingText>Analyzing optimized CV...</LoadingText>
+            )}
+          </ComparisonScoreCard>
+        ) : (
+          <ScoreCard variant="elevated">
+            <ScoreValue>{report.fit_score}%</ScoreValue>
+            <ScoreLabel>Match Score</ScoreLabel>
+            {report.generated_cv && isAnalyzingOptimized && (
+              <LoadingText>Analyzing optimized CV...</LoadingText>
+            )}
+          </ScoreCard>
+        )}
 
         <ScoreCard variant="elevated">
           <ScoreValue>{missingKeywords.length}</ScoreValue>

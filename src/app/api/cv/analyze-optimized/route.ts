@@ -220,17 +220,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Save analysis results to database for caching
-    const { error: updateError } = await supabase
-      .from("reports")
-      .update({
-        optimized_score: optimizedScore,
-        improvement_breakdown: improvementBreakdown,
-      })
-      .eq("id", reportId);
-
-    if (updateError) {
-      console.error("Failed to cache analysis results:", updateError);
-      // Don't fail the request, just log the error
+    try {
+      await supabase
+        .from("reports")
+        .update({
+          optimized_score: optimizedScore,
+          improvement_breakdown: improvementBreakdown,
+        })
+        .eq("id", reportId);
+    } catch (updateError) {
+      console.error("Failed to cache analysis results (columns may not exist yet):", updateError);
+      // Don't fail the request - caching is optional
     }
 
     return NextResponse.json({

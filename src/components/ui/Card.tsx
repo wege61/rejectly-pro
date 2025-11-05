@@ -9,7 +9,13 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
 }
 
-const StyledCard = styled.div<CardProps>`
+interface StyledCardProps {
+  variant?: "default" | "bordered" | "elevated";
+  padding?: "none" | "sm" | "md" | "lg";
+  $hoverable?: boolean;
+}
+
+const StyledCard = styled.div<StyledCardProps>`
   background-color: ${({ theme }) => theme.colors.surface};
   border-radius: ${({ theme }) => theme.radius.lg};
   transition: all ${({ theme }) => theme.transitions.normal};
@@ -53,8 +59,8 @@ const StyledCard = styled.div<CardProps>`
     }
   }}
 
-  ${({ hoverable, onClick, theme }) =>
-    (hoverable || onClick) &&
+  ${({ $hoverable, onClick, theme }) =>
+    ($hoverable || onClick) &&
     css`
       cursor: pointer;
 
@@ -119,7 +125,7 @@ export const Card: React.FC<CardProps> & {
     <StyledCard
       variant={variant}
       padding={padding}
-      hoverable={hoverable}
+      $hoverable={hoverable}
       {...props}
     >
       {children}

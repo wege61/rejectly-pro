@@ -97,13 +97,11 @@ export async function POST(request: NextRequest) {
       completion.choices[0].message.content || "{}"
     );
 
-    // Save generated CV to database and clear analysis cache
+    // Save generated CV to database
     const { error: updateError } = await supabase
       .from("reports")
       .update({
         generated_cv: generatedCV,
-        optimized_score: null,
-        improvement_breakdown: null,
       })
       .eq("id", reportId)
       .select()
@@ -111,6 +109,20 @@ export async function POST(request: NextRequest) {
 
     if (updateError) {
       throw new Error(`Failed to save generated CV: ${updateError.message}`);
+    }
+
+    // Try to clear analysis cache (optional - may not exist in older DB schemas)
+    try {
+      await supabase
+        .from("reports")
+        .update({
+          optimized_score: null,
+          improvement_breakdown: null,
+        })
+        .eq("id", reportId);
+    } catch (cacheError) {
+      // Ignore if columns don't exist yet - cache clearing is optional
+      console.log("Cache clearing skipped (columns may not exist yet):", cacheError);
     }
 
     return NextResponse.json({

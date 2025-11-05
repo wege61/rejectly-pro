@@ -97,11 +97,13 @@ export async function POST(request: NextRequest) {
       completion.choices[0].message.content || "{}"
     );
 
-    // Save generated CV to database
+    // Save generated CV to database and clear analysis cache
     const { error: updateError } = await supabase
       .from("reports")
       .update({
         generated_cv: generatedCV,
+        optimized_score: null,
+        improvement_breakdown: null,
       })
       .eq("id", reportId)
       .select()

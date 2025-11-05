@@ -130,6 +130,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if analysis is already cached in database
+    if (report.optimized_score !== null && report.improvement_breakdown) {
+      return NextResponse.json({
+        success: true,
+        fitScore: report.optimized_score,
+        summary: "",
+        missingKeywords: [],
+        improvementBreakdown: report.improvement_breakdown,
+        originalScore: report.fit_score,
+        actualScoreDifference: report.optimized_score - report.fit_score,
+        cached: true,
+      });
+    }
+
+    // If not cached, perform analysis
     // Fetch job documents
     const jobIds = report.job_ids as string[];
     const { data: jobDocs, error: jobError } = await supabase
@@ -204,14 +219,29 @@ export async function POST(request: NextRequest) {
       improvementBreakdown = breakdownResult.improvements || [];
     }
 
+    // Save analysis results to database for caching
+    const { error: updateError } = await supabase
+      .from("reports")
+      .update({
+        optimized_score: optimizedScore,
+        improvement_breakdown: improvementBreakdown,
+      })
+      .eq("id", reportId);
+
+    if (updateError) {
+      console.error("Failed to cache analysis results:", updateError);
+      // Don't fail the request, just log the error
+    }
+
     return NextResponse.json({
       success: true,
-      fitScore: result.fitScore || 0,
+      fitScore: optimizedScore,
       summary: result.summary || "",
       missingKeywords: result.missingKeywords || [],
       improvementBreakdown,
       originalScore,
       actualScoreDifference,
+      cached: false,
     });
   } catch (error) {
     console.error("Optimized CV analysis error:", error);

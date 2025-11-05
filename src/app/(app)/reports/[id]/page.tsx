@@ -312,6 +312,8 @@ interface Report {
   ats_flags: string[] | null;
   pro: boolean;
   generated_cv: GeneratedCV | null;
+  optimized_score: number | null;
+  improvement_breakdown: Improvement[] | null;
   created_at: string;
 }
 
@@ -405,18 +407,30 @@ export default function ReportDetailPage() {
       }
 
       setReport(data);
+
+      // Load cached analysis results from database if available
+      if (data.optimized_score !== null && data.improvement_breakdown) {
+        setOptimizedScore(data.optimized_score);
+        setImprovementBreakdown(data.improvement_breakdown);
+      }
+
       setIsLoading(false);
     }
 
     fetchReport();
   }, [user, reportId, router, toast]);
 
-  // Analyze optimized CV when report is loaded and has generated_cv
+  // Analyze optimized CV when report is loaded and has generated_cv but no cached analysis
   useEffect(() => {
-    if (report?.generated_cv && optimizedScore === null && !isAnalyzingOptimized) {
+    if (
+      report?.generated_cv &&
+      optimizedScore === null &&
+      !isAnalyzingOptimized &&
+      report.optimized_score === null
+    ) {
       analyzeOptimizedCV();
     }
-  }, [report?.generated_cv, optimizedScore, isAnalyzingOptimized, analyzeOptimizedCV]);
+  }, [report?.generated_cv, report?.optimized_score, optimizedScore, isAnalyzingOptimized, analyzeOptimizedCV]);
 
   const handleUpgradeToPro = async () => {
     if (!report) return;
@@ -465,6 +479,10 @@ export default function ReportDetailPage() {
     if (!report) return;
 
     setIsGeneratingCV(true);
+    // Clear previous analysis cache
+    setOptimizedScore(null);
+    setImprovementBreakdown([]);
+
     try {
       const response = await fetch("/api/cv/generate", {
         method: "POST",
@@ -484,7 +502,7 @@ export default function ReportDetailPage() {
 
       toast.success("Your optimized CV has been generated successfully! You can now download it as PDF.");
 
-      // Refresh report to get generated_cv
+      // Refresh report to get generated_cv (cache will be cleared)
       const supabase = createClient();
       const { data } = await supabase
         .from("reports")

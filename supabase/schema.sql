@@ -37,6 +37,9 @@ CREATE TABLE reports (
   role_fit JSONB,
   ats_flags JSONB,
   pro BOOLEAN DEFAULT FALSE,
+  generated_cv JSONB,
+  optimized_score INTEGER CHECK (optimized_score >= 0 AND optimized_score <= 100),
+  improvement_breakdown JSONB,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );

@@ -89,11 +89,11 @@ const ScoreTitle = styled.div`
   letter-spacing: 0.5px;
 `;
 
-const ComparisonValue = styled.div<{ isOptimized?: boolean }>`
+const ComparisonValue = styled.div<{ $isOptimized?: boolean }>`
   font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ isOptimized, theme }) =>
-    isOptimized ? "#10b981" : theme.colors.primary};
+  color: ${({ $isOptimized, theme }) =>
+    $isOptimized ? "#10b981" : theme.colors.primary};
 `;
 
 const ScoreDivider = styled.div`
@@ -356,7 +356,13 @@ export default function ReportDetailPage() {
 
       const result = await response.json();
 
-      console.log('📊 Analysis result:', result);
+      console.log('📊 Analysis result:', {
+        ...result,
+        improvementBreakdownType: typeof result.improvementBreakdown,
+        improvementBreakdownValue: result.improvementBreakdown,
+        isArray: Array.isArray(result.improvementBreakdown),
+        length: result.improvementBreakdown?.length
+      });
 
       if (!response.ok) {
         throw new Error(result.error || "Analysis failed");
@@ -365,7 +371,9 @@ export default function ReportDetailPage() {
       setOptimizedScore(result.fitScore);
 
       // Normalize improvement breakdown to match actual score difference
-      if (result.improvementBreakdown && result.improvementBreakdown.length > 0) {
+      if (result.improvementBreakdown &&
+          Array.isArray(result.improvementBreakdown) &&
+          result.improvementBreakdown.length > 0) {
         const actualDifference = result.fitScore - report.fit_score;
         const totalImpact = result.improvementBreakdown.reduce(
           (sum: number, imp: Improvement) => sum + imp.impact,
@@ -650,7 +658,7 @@ export default function ReportDetailPage() {
               <ScoreDivider />
               <ScoreColumn>
                 <ScoreTitle>Optimized</ScoreTitle>
-                <ComparisonValue isOptimized>{optimizedScore}%</ComparisonValue>
+                <ComparisonValue $isOptimized>{optimizedScore}%</ComparisonValue>
               </ScoreColumn>
             </ScoreComparison>
             {optimizedScore > report.fit_score && (

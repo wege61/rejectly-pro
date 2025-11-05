@@ -336,6 +336,12 @@ export default function ReportDetailPage() {
   const analyzeOptimizedCV = useCallback(async () => {
     if (!report) return;
 
+    console.log('🔍 Starting CV analysis...', {
+      reportId: report.id,
+      hasGeneratedCV: !!report.generated_cv,
+      currentOptimizedScore: optimizedScore
+    });
+
     setIsAnalyzingOptimized(true);
     try {
       const response = await fetch("/api/cv/analyze-optimized", {
@@ -349,6 +355,8 @@ export default function ReportDetailPage() {
       });
 
       const result = await response.json();
+
+      console.log('📊 Analysis result:', result);
 
       if (!response.ok) {
         throw new Error(result.error || "Analysis failed");
@@ -364,6 +372,12 @@ export default function ReportDetailPage() {
           0
         );
 
+        console.log('🎯 Breakdown normalization:', {
+          actualDifference,
+          totalImpact,
+          needsNormalization: Math.abs(totalImpact - actualDifference) > 0.5
+        });
+
         // If AI's total doesn't match actual difference, normalize it
         if (totalImpact > 0 && Math.abs(totalImpact - actualDifference) > 0.5) {
           const scaleFactor = actualDifference / totalImpact;
@@ -373,20 +387,23 @@ export default function ReportDetailPage() {
               impact: Math.round(imp.impact * scaleFactor * 10) / 10, // Round to 1 decimal
             })
           );
+          console.log('✅ Setting normalized breakdown:', normalizedBreakdown);
           setImprovementBreakdown(normalizedBreakdown);
         } else {
+          console.log('✅ Setting original breakdown:', result.improvementBreakdown);
           setImprovementBreakdown(result.improvementBreakdown);
         }
       } else {
+        console.log('⚠️ No breakdown data received');
         setImprovementBreakdown([]);
       }
     } catch (error) {
-      console.error("Failed to analyze optimized CV:", error);
+      console.error("❌ Failed to analyze optimized CV:", error);
       // Don't show error toast to user, just log it
     } finally {
       setIsAnalyzingOptimized(false);
     }
-  }, [report]);
+  }, [report, optimizedScore]);
 
   useEffect(() => {
     async function fetchReport() {
@@ -406,10 +423,22 @@ export default function ReportDetailPage() {
         return;
       }
 
+      console.log('📋 Report loaded:', {
+        hasGeneratedCV: !!data.generated_cv,
+        optimizedScoreType: typeof data.optimized_score,
+        optimizedScoreValue: data.optimized_score,
+        hasBreakdown: !!data.improvement_breakdown,
+        breakdownLength: data.improvement_breakdown?.length
+      });
+
       setReport(data);
 
       // Load cached analysis results from database if available
-      if (data.optimized_score !== null && data.improvement_breakdown) {
+      if (typeof data.optimized_score === 'number' && data.improvement_breakdown && data.improvement_breakdown.length > 0) {
+        console.log('💾 Loading from cache:', {
+          score: data.optimized_score,
+          breakdownCount: data.improvement_breakdown.length
+        });
         setOptimizedScore(data.optimized_score);
         setImprovementBreakdown(data.improvement_breakdown);
       }
@@ -420,17 +449,29 @@ export default function ReportDetailPage() {
     fetchReport();
   }, [user, reportId, router, toast]);
 
-  // Analyze optimized CV when report is loaded and has generated_cv but no cached analysis
+  // Auto-analyze when CV exists but no score
   useEffect(() => {
-    if (
+    const shouldAnalyze =
+      !isLoading &&
       report?.generated_cv &&
       optimizedScore === null &&
       !isAnalyzingOptimized &&
-      report.optimized_score === null
-    ) {
+      typeof report.optimized_score !== 'number';
+
+    console.log('🔍 Analysis check:', {
+      isLoading,
+      hasCV: !!report?.generated_cv,
+      currentScore: optimizedScore,
+      analyzing: isAnalyzingOptimized,
+      dbScore: report?.optimized_score,
+      shouldAnalyze
+    });
+
+    if (shouldAnalyze) {
+      console.log('🚀 Triggering analysis');
       analyzeOptimizedCV();
     }
-  }, [report?.generated_cv, report?.optimized_score, optimizedScore, isAnalyzingOptimized, analyzeOptimizedCV]);
+  }, [isLoading, report?.generated_cv, report?.optimized_score, optimizedScore, isAnalyzingOptimized, analyzeOptimizedCV]);
 
   const handleUpgradeToPro = async () => {
     if (!report) return;
@@ -619,7 +660,20 @@ export default function ReportDetailPage() {
         )}
       </Grid>
 
-      {improvementBreakdown.length > 0 && optimizedScore !== null && (
+      {report.generated_cv && isAnalyzingOptimized && (
+        <Section>
+          <Card variant="bordered">
+            <Card.Content style={{ textAlign: 'center', padding: '40px' }}>
+              <Spinner size="lg" />
+              <p style={{ marginTop: '16px', color: '#9ca3af' }}>
+                Analyzing optimized CV to calculate improvement breakdown...
+              </p>
+            </Card.Content>
+          </Card>
+        </Section>
+      )}
+
+      {improvementBreakdown.length > 0 && optimizedScore !== null && !isAnalyzingOptimized && (
         <Section>
           <Card variant="bordered">
             <Card.Header>

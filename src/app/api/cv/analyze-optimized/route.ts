@@ -182,6 +182,13 @@ export async function POST(request: NextRequest) {
     const optimizedScore = result.fitScore || 0;
     const actualScoreDifference = optimizedScore - originalScore;
 
+    console.log('📊 Score calculation:', {
+      originalScore,
+      optimizedScore,
+      actualScoreDifference,
+      shouldGenerateBreakdown: actualScoreDifference > 0
+    });
+
     // Fetch original CV for breakdown comparison
     const { data: cvDoc, error: cvError } = await supabase
       .from("documents")
@@ -191,9 +198,17 @@ export async function POST(request: NextRequest) {
       .eq("type", "cv")
       .single();
 
+    console.log('📄 Original CV fetch:', {
+      hasCvDoc: !!cvDoc,
+      hasError: !!cvError,
+      error: cvError,
+      cvId: report.cv_id
+    });
+
     let improvementBreakdown = null;
 
     if (!cvError && cvDoc && actualScoreDifference > 0) {
+      console.log('🎯 Generating improvement breakdown...');
       // Generate improvement breakdown
       const breakdownPrompt = generateImprovementBreakdownPrompt(
         cvDoc.text,

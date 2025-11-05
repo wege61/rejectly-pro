@@ -423,24 +423,49 @@ export default function ReportDetailPage() {
         return;
       }
 
-      console.log('📋 Report loaded:', {
+      console.log('📋 Report loaded from database:', {
+        reportId: data.id,
         hasGeneratedCV: !!data.generated_cv,
-        optimizedScoreType: typeof data.optimized_score,
-        optimizedScoreValue: data.optimized_score,
-        hasBreakdown: !!data.improvement_breakdown,
-        breakdownLength: data.improvement_breakdown?.length
+        optimizedScore: {
+          type: typeof data.optimized_score,
+          value: data.optimized_score,
+          isNumber: typeof data.optimized_score === 'number'
+        },
+        improvementBreakdown: {
+          exists: !!data.improvement_breakdown,
+          type: typeof data.improvement_breakdown,
+          length: data.improvement_breakdown?.length,
+          isArray: Array.isArray(data.improvement_breakdown)
+        }
       });
 
       setReport(data);
 
       // Load cached analysis results from database if available
-      if (typeof data.optimized_score === 'number' && data.improvement_breakdown && data.improvement_breakdown.length > 0) {
-        console.log('💾 Loading from cache:', {
+      const hasValidScore = typeof data.optimized_score === 'number';
+      const hasValidBreakdown = data.improvement_breakdown &&
+                                Array.isArray(data.improvement_breakdown) &&
+                                data.improvement_breakdown.length > 0;
+
+      console.log('🔍 Cache validation:', {
+        hasValidScore,
+        hasValidBreakdown,
+        willLoadFromCache: hasValidScore && hasValidBreakdown
+      });
+
+      if (hasValidScore && hasValidBreakdown) {
+        console.log('✅ Loading from cache:', {
           score: data.optimized_score,
-          breakdownCount: data.improvement_breakdown.length
+          breakdownCount: data.improvement_breakdown.length,
+          breakdown: data.improvement_breakdown
         });
         setOptimizedScore(data.optimized_score);
         setImprovementBreakdown(data.improvement_breakdown);
+      } else {
+        console.log('⚠️ Cache not available:', {
+          reason: !hasValidScore ? 'No valid score' : 'No valid breakdown',
+          willAnalyze: !!data.generated_cv
+        });
       }
 
       setIsLoading(false);

@@ -457,7 +457,7 @@ export default function DashboardPage() {
                           <span style={{ color: "#6b7280", fontWeight: "500" }}>
                             Job{report.job_ids.length > 1 ? "s" : ""}:{" "}
                           </span>
-                          <span style={{ color: "#1f2937", fontWeight: "600" }}>
+                          <span style={{ color: "#6b7280", fontWeight: "600" }}>
                             {report.job_ids
                               .map((id) => jobTitlesMap[id] || "Unknown")
                               .join(" • ")}

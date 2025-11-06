@@ -665,7 +665,7 @@ export default function ReportDetailPage() {
             <span style={{ color: "#6b7280", fontSize: "14px", fontWeight: "500" }}>
               Job Posting{jobPostingTitles.length > 1 ? "s" : ""}:{" "}
             </span>
-            <span style={{ color: "#1f2937", fontSize: "14px", fontWeight: "600" }}>
+            <span style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>
               {jobPostingTitles.join(" • ")}
             </span>
           </div>
@@ -677,12 +677,12 @@ export default function ReportDetailPage() {
           <ComparisonScoreCard variant="elevated">
             <ScoreComparison>
               <ScoreColumn>
-                <ScoreTitle>Original</ScoreTitle>
+                <ScoreTitle>ORIGINAL</ScoreTitle>
                 <ComparisonValue>{report.fit_score}%</ComparisonValue>
               </ScoreColumn>
               <ScoreDivider />
               <ScoreColumn>
-                <ScoreTitle>Optimized</ScoreTitle>
+                <ScoreTitle>OPTIMIZED</ScoreTitle>
                 <ComparisonValue $isOptimized>{optimizedScore}%</ComparisonValue>
               </ScoreColumn>
             </ScoreComparison>

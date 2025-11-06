@@ -599,15 +599,16 @@ export default function ReportDetailPage() {
     }
   };
 
-  const handleDownloadCV = () => {
+  const handleDownloadCV = async () => {
     if (!report?.generated_cv) return;
 
     try {
-      const pdf = generateCVPDF(report.generated_cv);
+      const pdf = await generateCVPDF(report.generated_cv);
       const fileName = `${report.generated_cv.contact.name.replace(/\s+/g, "_")}_CV_Optimized.pdf`;
       pdf.save(fileName);
       toast.success("CV downloaded successfully! Check your downloads folder.");
-    } catch {
+    } catch (error) {
+      console.error("CV download error:", error);
       toast.error("Failed to download CV. Please try again.");
     }
   };

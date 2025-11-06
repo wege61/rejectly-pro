@@ -331,6 +331,7 @@ export default function ReportDetailPage() {
   const [optimizedScore, setOptimizedScore] = useState<number | null>(null);
   const [improvementBreakdown, setImprovementBreakdown] = useState<Improvement[]>([]);
   const [report, setReport] = useState<Report | null>(null);
+  const [jobPostingTitles, setJobPostingTitles] = useState<string[]>([]);
 
   // Define analyzeOptimizedCV before useEffect that uses it
   const analyzeOptimizedCV = useCallback(async () => {
@@ -429,6 +430,19 @@ export default function ReportDetailPage() {
         toast.error("Report not found");
         router.push("/reports");
         return;
+      }
+
+      // Fetch job posting titles from job_ids
+      if (data.job_ids && Array.isArray(data.job_ids) && data.job_ids.length > 0) {
+        const { data: jobDocs, error: jobError } = await supabase
+          .from("documents")
+          .select("title")
+          .in("id", data.job_ids)
+          .eq("type", "job");
+
+        if (!jobError && jobDocs) {
+          setJobPostingTitles(jobDocs.map(doc => doc.title));
+        }
       }
 
       console.log('📋 Report loaded from database:', {
@@ -646,6 +660,16 @@ export default function ReportDetailPage() {
             Created on {new Date(report.created_at).toLocaleDateString("tr-TR")}
           </span>
         </HeaderMeta>
+        {jobPostingTitles.length > 0 && (
+          <div style={{ marginTop: "12px" }}>
+            <span style={{ color: "#6b7280", fontSize: "14px", fontWeight: "500" }}>
+              Job Posting{jobPostingTitles.length > 1 ? "s" : ""}:{" "}
+            </span>
+            <span style={{ color: "#1f2937", fontSize: "14px", fontWeight: "600" }}>
+              {jobPostingTitles.join(" • ")}
+            </span>
+          </div>
+        )}
       </Header>
 
       <Grid>

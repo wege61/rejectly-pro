@@ -224,7 +224,7 @@ export default function JobsPage() {
               </Card.Header>
               <Card.Footer>
                 <Button
-                  variant="ghost"
+                  variant="danger"
                   size="sm"
                   onClick={() => handleDelete(job.id)}
                 >

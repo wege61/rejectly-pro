@@ -377,7 +377,7 @@ export default function JobsPage() {
                     {isExpanded ? "Hide Details" : "View Details"}
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="danger"
                     size="sm"
                     onClick={() => handleDelete(job.id)}
                   >

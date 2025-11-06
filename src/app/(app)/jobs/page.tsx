@@ -130,6 +130,7 @@ export default function JobsPage() {
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
   const [editedTexts, setEditedTexts] = useState<Record<string, string>>({});
   const [savingJobId, setSavingJobId] = useState<string | null>(null);
+  const [deletingJobId, setDeletingJobId] = useState<string | null>(null);
   const toast = useToast();
   const { user } = useAuth();
 
@@ -212,23 +213,34 @@ export default function JobsPage() {
     }
   };
 
-  const handleDelete = async (jobId: string) => {
+  const handleDeleteClick = (jobId: string) => {
+    setDeletingJobId(jobId);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingJobId) return;
+
     try {
       const supabase = createClient();
       const { error: deleteError } = await supabase
         .from("documents")
         .delete()
-        .eq("id", jobId);
+        .eq("id", deletingJobId);
 
       if (deleteError) throw deleteError;
 
       toast.success("Job posting deleted");
-      setJobs(jobs.filter((job) => job.id !== jobId));
+      setJobs(jobs.filter((job) => job.id !== deletingJobId));
+      setDeletingJobId(null);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to delete job posting";
       toast.error(errorMessage);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeletingJobId(null);
   };
 
   const handleToggleDetails = (jobId: string, jobText: string) => {
@@ -379,7 +391,7 @@ export default function JobsPage() {
                   <Button
                     variant="danger"
                     size="sm"
-                    onClick={() => handleDelete(job.id)}
+                    onClick={() => handleDeleteClick(job.id)}
                   >
                     Delete
                   </Button>
@@ -432,6 +444,41 @@ export default function JobsPage() {
           </Button>
           <Button onClick={handleAddJob} isLoading={isLoading}>
             Add Job
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deletingJobId !== null}
+        onClose={handleCancelDelete}
+        title="Delete Job Posting"
+        description="Are you sure you want to delete this job posting?"
+      >
+        <Modal.Body>
+          <p style={{ color: "#6b7280", fontSize: "14px", lineHeight: "1.6" }}>
+            This action cannot be undone. The job posting will be permanently
+            removed from your account.
+          </p>
+          {deletingJobId && (
+            <p
+              style={{
+                marginTop: "12px",
+                fontWeight: "600",
+                color: "#1f2937",
+                fontSize: "14px",
+              }}
+            >
+              Job: {jobs.find((j) => j.id === deletingJobId)?.title}
+            </p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="ghost" onClick={handleCancelDelete}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleConfirmDelete}>
+            Delete
           </Button>
         </Modal.Footer>
       </Modal>

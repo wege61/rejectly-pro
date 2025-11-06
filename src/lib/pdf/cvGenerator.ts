@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import { GeneratedCV } from "@/types/cv";
+import { loadFontsToDocument } from "./fontLoader";
 
 const COLORS = {
   primary: "#2563eb", // Blue
@@ -15,8 +16,11 @@ const FONTS = {
   small: 9,
 };
 
-export function generateCVPDF(cv: GeneratedCV): jsPDF {
+export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
   const doc = new jsPDF();
+
+  // Load Unicode-compatible fonts (Roboto) for international character support
+  await loadFontsToDocument(doc);
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 20;
@@ -98,11 +102,11 @@ export function generateCVPDF(cv: GeneratedCV): jsPDF {
     // Job title and company
     doc.setFontSize(FONTS.body + 1);
     doc.setTextColor(COLORS.text);
-    doc.setFont("helvetica", "bold");
+    doc.setFont("Roboto", "bold");
     doc.text(exp.title, margin, yPosition);
     yPosition += 5;
 
-    doc.setFont("helvetica", "normal");
+    doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
     doc.text(
       `${exp.company} | ${exp.location} | ${exp.startDate} - ${exp.endDate}`,
@@ -147,11 +151,11 @@ export function generateCVPDF(cv: GeneratedCV): jsPDF {
     checkPageBreak(12);
     doc.setFontSize(FONTS.body + 1);
     doc.setTextColor(COLORS.text);
-    doc.setFont("helvetica", "bold");
+    doc.setFont("Roboto", "bold");
     doc.text(edu.degree, margin, yPosition);
     yPosition += 5;
 
-    doc.setFont("helvetica", "normal");
+    doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
     doc.text(
       `${edu.institution} | ${edu.location} | ${edu.graduationDate}`,
@@ -230,11 +234,11 @@ export function generateCVPDF(cv: GeneratedCV): jsPDF {
       checkPageBreak(8);
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.text);
-      doc.setFont("helvetica", "bold");
+      doc.setFont("Roboto", "bold");
       doc.text(cert.name, margin, yPosition);
       yPosition += 5;
 
-      doc.setFont("helvetica", "normal");
+      doc.setFont("Roboto", "normal");
       doc.setFontSize(FONTS.small);
       doc.text(`${cert.issuer} | ${cert.date}`, margin, yPosition);
       yPosition += 5;

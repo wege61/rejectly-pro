@@ -1,7 +1,7 @@
 "use client";
 
 import styled, { keyframes } from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 // ==================== ANIMATIONS ====================
@@ -1497,6 +1497,7 @@ const JobDescription = styled.p`
 
 // ==================== MAIN COMPONENT ====================
 export default function Page() {
+  const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState<"upload" | "loading" | "analyzing">("upload");
 const [detectedLocation, setDetectedLocation] = useState("");
 const [improvementTips, setImprovementTips] = useState<string[]>([]);
@@ -1514,6 +1515,10 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
     missingKeywords: string[];
   } | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const faqs = [
     {
@@ -1639,9 +1644,11 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
 
   return (
     <Container>
-      <FloatingThemeToggle>
-        <ThemeToggle />
-      </FloatingThemeToggle>
+      {mounted && (
+        <FloatingThemeToggle>
+          <ThemeToggle />
+        </FloatingThemeToggle>
+      )}
 
       {/* HERO SECTION */}
       <HeroSection>

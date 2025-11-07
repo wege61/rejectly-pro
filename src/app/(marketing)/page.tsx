@@ -2,13 +2,6 @@
 
 import styled, { keyframes } from "styled-components";
 import { useState } from "react";
-import dynamic from "next/dynamic";
-
-// Import ThemeToggle with SSR disabled
-const ThemeToggle = dynamic(
-  () => import("@/components/ui/ThemeToggle").then((mod) => mod.ThemeToggle),
-  { ssr: false }
-);
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -130,31 +123,6 @@ const Container = styled.div`
   min-height: 100vh;
   background-color: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const FloatingThemeToggle = styled.div`
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  z-index: 1000;
-  background: ${({ theme }) => theme.colors.surface};
-  padding: 8px;
-  border-radius: ${({ theme }) => theme.radius.full};
-  box-shadow: ${({ theme }) => theme.shadow.lg};
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all ${({ theme }) => theme.transitions.normal};
-
-  &:hover {
-    box-shadow: ${({ theme }) => theme.shadow.xl};
-  }
-
-  @media (max-width: 640px) {
-    top: 16px;
-    right: 16px;
-    padding: 6px;
-  }
 `;
 
 // ==================== HERO SECTION ====================
@@ -1645,10 +1613,6 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
 
   return (
     <Container>
-      <FloatingThemeToggle>
-        <ThemeToggle />
-      </FloatingThemeToggle>
-
       {/* HERO SECTION */}
       <HeroSection>
         <BackgroundBlur>

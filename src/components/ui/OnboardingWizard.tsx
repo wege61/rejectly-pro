@@ -9,6 +9,109 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/contexts/ToastContext";
 
+// Icons
+const DocumentIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+    />
+  </svg>
+);
+
+const UploadArrowIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{ width: '48px', height: '48px', display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+    />
+  </svg>
+);
+
+const BriefcaseIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"
+    />
+  </svg>
+);
+
+const TargetIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+const SparklesIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+    />
+  </svg>
+);
+
+const EditIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+    />
+  </svg>
+);
+
 const WizardContainer = styled.div`
   min-height: 500px;
   max-height: 85vh;
@@ -884,7 +987,7 @@ export function OnboardingWizard({
         return (
           <>
             <StepHeader>
-              <StepTitle>📄 Upload Your CV</StepTitle>
+              <StepTitle><DocumentIcon /> Upload Your CV</StepTitle>
               <StepDescription>
                 {hasExistingCV 
                   ? "Use your existing CV or upload a new one"
@@ -899,7 +1002,7 @@ export function OnboardingWizard({
                     // User clicked to use existing CV, just continue
                     setCurrentStep(2);
                   }}>
-                    <CVIcon>📄</CVIcon>
+                    <CVIcon><DocumentIcon /></CVIcon>
                     <CVTitle>{uploadedCV.title}</CVTitle>
                     <CVSubtitle>
                       {cvText.length} characters • Click to use this CV
@@ -915,7 +1018,7 @@ export function OnboardingWizard({
                     onDragLeave={handleDragLeave}
                     onClick={() => document.getElementById("wizard-cv-upload")?.click()}
                   >
-                    <UploadIcon>📤</UploadIcon>
+                    <UploadIcon><UploadArrowIcon /></UploadIcon>
                     <UploadText>
                       <strong>Upload a new CV</strong>
                     </UploadText>
@@ -966,7 +1069,7 @@ export function OnboardingWizard({
                   onDragLeave={handleDragLeave}
                   onClick={() => document.getElementById("wizard-cv-upload")?.click()}
                 >
-                  <UploadIcon>📤</UploadIcon>
+                  <UploadIcon><UploadArrowIcon /></UploadIcon>
                   <UploadText>
                     <strong>Click to upload</strong> or drag and drop
                   </UploadText>
@@ -993,7 +1096,7 @@ export function OnboardingWizard({
         return (
           <>
             <StepHeader>
-              <StepTitle>💼 Add Job Posting</StepTitle>
+              <StepTitle><BriefcaseIcon /> Add Job Posting</StepTitle>
               <StepDescription>
                 Paste the job description you want to apply to
               </StepDescription>
@@ -1030,7 +1133,7 @@ export function OnboardingWizard({
         return (
           <>
             <StepHeader>
-              <StepTitle>🎯 Create Analysis</StepTitle>
+              <StepTitle><TargetIcon /> Create Analysis</StepTitle>
               <StepDescription>
                 Review your selections and generate your match report
               </StepDescription>
@@ -1076,7 +1179,7 @@ export function OnboardingWizard({
         return (
           <>
             <StepHeader>
-              <StepTitle>✨ Analysis Complete!</StepTitle>
+              <StepTitle><SparklesIcon /> Analysis Complete!</StepTitle>
               <StepDescription>
                 Here&apos;s your CV match summary
               </StepDescription>
@@ -1187,7 +1290,7 @@ export function OnboardingWizard({
                   onClick={handleCreateAnalysis}
                   disabled={!selectedCV || !selectedJob}
                 >
-                  Generate Analysis 🎯
+                  Generate Analysis <TargetIcon />
                 </Button>
               )}
 

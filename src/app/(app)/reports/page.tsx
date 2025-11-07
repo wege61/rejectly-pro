@@ -90,11 +90,13 @@ interface Report {
   } | null;
   pro: boolean;
   created_at: string;
+  job_ids: string[];
 }
 
 export default function ReportsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [reports, setReports] = useState<Report[]>([]);
+  const [jobTitlesMap, setJobTitlesMap] = useState<Record<string, string>>({});
   const { user } = useAuth();
   const router = useRouter();
 
@@ -111,6 +113,31 @@ export default function ReportsPage() {
 
       if (data) {
         setReports(data);
+
+        // Collect all unique job IDs from all reports
+        const allJobIds = new Set<string>();
+        data.forEach((report) => {
+          if (report.job_ids && Array.isArray(report.job_ids)) {
+            report.job_ids.forEach((id) => allJobIds.add(id));
+          }
+        });
+
+        // Fetch all job titles in one query
+        if (allJobIds.size > 0) {
+          const { data: jobDocs } = await supabase
+            .from("documents")
+            .select("id, title")
+            .in("id", Array.from(allJobIds))
+            .eq("type", "job");
+
+          if (jobDocs) {
+            const titlesMap: Record<string, string> = {};
+            jobDocs.forEach((doc) => {
+              titlesMap[doc.id] = doc.title;
+            });
+            setJobTitlesMap(titlesMap);
+          }
+        }
       }
 
       setIsLoading(false);
@@ -172,6 +199,18 @@ export default function ReportsPage() {
                       day: "numeric",
                     })}
                   </ReportDate>
+                  {report.job_ids && report.job_ids.length > 0 && (
+                    <div style={{ marginTop: "4px", fontSize: "13px" }}>
+                      <span style={{ color: "#6b7280", fontWeight: "500" }}>
+                        Job{report.job_ids.length > 1 ? "s" : ""}:{" "}
+                      </span>
+                      <span style={{ color: "#6b7280", fontWeight: "600" }}>
+                        {report.job_ids
+                          .map((id) => jobTitlesMap[id] || "Unknown")
+                          .join(" • ")}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <ScoreBadge variant={getScoreColor(report.fit_score)}>
                   {report.fit_score}% Match

@@ -111,10 +111,6 @@ const ReportHeader = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const ReportInfo = styled.div`
-  flex: 1;
-`;
-
 const ReportTitle = styled.h3`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
@@ -127,22 +123,15 @@ const ReportDate = styled.p`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const ReportScore = styled.div`
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: ${({ theme }) => theme.colors.primaryLight};
-  color: ${({ theme }) => theme.colors.primary};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+const ScoreBadge = styled(Badge)`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
 `;
 
 const ReportMeta = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.sm};
+  flex-wrap: wrap;
   margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
@@ -251,6 +240,10 @@ interface Report {
   fit_score: number;
   summary_free: string;
   pro: boolean;
+  job_ids: string[];
+  keywords: {
+    missing?: string[];
+  } | null;
 }
 
 export default function DashboardPage() {
@@ -263,6 +256,7 @@ export default function DashboardPage() {
     totalJobs: 0,
   });
   const [recentReports, setRecentReports] = useState<Report[]>([]);
+  const [jobTitlesMap, setJobTitlesMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -303,7 +297,34 @@ export default function DashboardPage() {
           .order("created_at", { ascending: false })
           .limit(5);
 
-        setRecentReports(reports || []);
+        if (reports) {
+          setRecentReports(reports);
+
+          // Collect all unique job IDs from reports
+          const allJobIds = new Set<string>();
+          reports.forEach((report) => {
+            if (report.job_ids && Array.isArray(report.job_ids)) {
+              report.job_ids.forEach((id) => allJobIds.add(id));
+            }
+          });
+
+          // Fetch all job titles in one query
+          if (allJobIds.size > 0) {
+            const { data: jobDocs } = await supabase
+              .from("documents")
+              .select("id, title")
+              .in("id", Array.from(allJobIds))
+              .eq("type", "job");
+
+            if (jobDocs) {
+              const titlesMap: Record<string, string> = {};
+              jobDocs.forEach((doc) => {
+                titlesMap[doc.id] = doc.title;
+              });
+              setJobTitlesMap(titlesMap);
+            }
+          }
+        }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -313,6 +334,12 @@ export default function DashboardPage() {
 
     fetchDashboardData();
   }, [user]);
+
+  const getScoreColor = (score: number): "success" | "warning" | "error" => {
+    if (score >= 75) return "success";
+    if (score >= 50) return "warning";
+    return "error";
+  };
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -406,17 +433,18 @@ export default function DashboardPage() {
               {recentReports.map((report) => (
                 <ReportCard
                   key={report.id}
-                  variant="bordered"
+                  variant="elevated"
                   onClick={() =>
                     router.push(ROUTES.APP.REPORT_DETAIL(report.id))
                   }
                 >
                   <ReportHeader>
-                    <ReportInfo>
-                      <ReportTitle>Analysis Report</ReportTitle>
+                    <div>
+                      <ReportTitle>CV Analysis Report</ReportTitle>
                       <ReportDate>
+                        Created on{" "}
                         {new Date(report.created_at).toLocaleDateString(
-                          "en-US",
+                          "en-EN",
                           {
                             year: "numeric",
                             month: "long",
@@ -424,12 +452,29 @@ export default function DashboardPage() {
                           }
                         )}
                       </ReportDate>
-                    </ReportInfo>
-                    <ReportScore>{report.fit_score}%</ReportScore>
+                      {report.job_ids && report.job_ids.length > 0 && (
+                        <div style={{ marginTop: "4px", fontSize: "13px" }}>
+                          <span style={{ color: "#6b7280", fontWeight: "500" }}>
+                            Job{report.job_ids.length > 1 ? "s" : ""}:{" "}
+                          </span>
+                          <span style={{ color: "#6b7280", fontWeight: "600" }}>
+                            {report.job_ids
+                              .map((id) => jobTitlesMap[id] || "Unknown")
+                              .join(" • ")}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <ScoreBadge variant={getScoreColor(report.fit_score)}>
+                      {report.fit_score}% Match
+                    </ScoreBadge>
                   </ReportHeader>
                   <ReportMeta>
-                    <Badge variant={report.pro ? "default" : "default"}>
-                      {report.pro ? "Pro" : "Free"}
+                    <Badge size="sm">
+                      {report.keywords?.missing?.length || 0} Missing Keywords
+                    </Badge>
+                    <Badge variant={report.pro ? "info" : "default"} size="sm">
+                      {report.pro ? "Pro Report" : "Free Report"}
                     </Badge>
                   </ReportMeta>
                   <ReportSummary>{report.summary_free}</ReportSummary>

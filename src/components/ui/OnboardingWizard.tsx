@@ -195,6 +195,7 @@ const UploadArea = styled.div<{ $isDragging: boolean }>`
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.normal};
   min-height: 240px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -430,6 +431,12 @@ const ReplaceButton = styled(Button)`
   margin-top: ${({ theme }) => theme.spacing.md};
 `;
 
+const CVOptionWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
 const ExistingCVCard = styled.div`
   padding: ${({ theme }) => theme.spacing.xl};
   border: 2px solid ${({ theme }) => theme.colors.primary};
@@ -437,7 +444,11 @@ const ExistingCVCard = styled.div`
   background: ${({ theme }) => theme.colors.primaryLight};
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.normal};
-  
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
   &:hover {
     border-color: ${({ theme }) => theme.colors.primaryHover};
     transform: translateY(-2px);
@@ -472,11 +483,49 @@ const ButtonGroup = styled.div`
   justify-content: center;
 `;
 
+const CVOptionsContainer = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.lg};
+  align-items: stretch;
+
+  @media (max-width: 500px) {
+    flex-direction: column;
+  }
+`;
+
 const DividerText = styled.div`
-  text-align: center;
-  margin: ${({ theme }) => theme.spacing.lg} 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: ${({ theme }) => theme.colors.textSecondary};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  padding: 0 ${({ theme }) => theme.spacing.md};
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: ${({ theme }) => theme.colors.border};
+  }
+
+  &::before {
+    margin-right: ${({ theme }) => theme.spacing.md};
+  }
+
+  &::after {
+    margin-left: ${({ theme }) => theme.spacing.md};
+  }
+
+  @media (max-width: 500px) {
+    margin: ${({ theme }) => theme.spacing.lg} 0;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
 `;
 
 const FormLabel = styled.label`
@@ -987,46 +1036,50 @@ export function OnboardingWizard({
             </StepHeader>
             <StepContent>
               {hasExistingCV && uploadedCV && !isLoading ? (
-                <>
-                  <ExistingCVCard onClick={() => {
-                    // User clicked to use existing CV, just continue
-                    setCurrentStep(2);
-                  }}>
-                    <CVIcon><DocumentIcon /></CVIcon>
-                    <CVTitle>{uploadedCV.title}</CVTitle>
-                    <CVSubtitle>
-                      {cvText.length} characters • Click to use this CV
-                    </CVSubtitle>
-                  </ExistingCVCard>
-                  
+                <CVOptionsContainer>
+                  <CVOptionWrapper>
+                    <ExistingCVCard onClick={() => {
+                      // User clicked to use existing CV, just continue
+                      setCurrentStep(2);
+                    }}>
+                      <CVIcon><DocumentIcon /></CVIcon>
+                      <CVTitle>{uploadedCV.title}</CVTitle>
+                      <CVSubtitle>
+                        {cvText.length} characters • Click to use this CV
+                      </CVSubtitle>
+                    </ExistingCVCard>
+                  </CVOptionWrapper>
+
                   <DividerText>or</DividerText>
 
-                  <UploadArea
-                    $isDragging={isDragging}
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onClick={() => document.getElementById("wizard-cv-upload")?.click()}
-                  >
-                    <UploadIcon><UploadArrowIcon /></UploadIcon>
-                    <UploadText>
-                      <strong>Upload a new CV</strong>
-                    </UploadText>
-                    <UploadHint>
-                      PDF or DOCX (max 5MB)
-                    </UploadHint>
-                    <input
-                      id="wizard-cv-upload"
-                      type="file"
-                      accept=".pdf,.docx"
-                      style={{ display: "none" }}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleFileSelect(file);
-                      }}
-                    />
-                  </UploadArea>
-                </>
+                  <CVOptionWrapper>
+                    <UploadArea
+                      $isDragging={isDragging}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onClick={() => document.getElementById("wizard-cv-upload")?.click()}
+                    >
+                      <UploadIcon><UploadArrowIcon /></UploadIcon>
+                      <UploadText>
+                        <strong>Upload a new CV</strong>
+                      </UploadText>
+                      <UploadHint>
+                        PDF or DOCX (max 5MB)
+                      </UploadHint>
+                      <input
+                        id="wizard-cv-upload"
+                        type="file"
+                        accept=".pdf,.docx"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleFileSelect(file);
+                        }}
+                      />
+                    </UploadArea>
+                  </CVOptionWrapper>
+                </CVOptionsContainer>
               ) : uploadedCV ? (
                 <>
                   <SuccessBox>

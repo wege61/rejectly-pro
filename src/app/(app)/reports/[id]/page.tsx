@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Spinner } from "@/components/ui/Spinner";
+import { Modal } from "@/components/ui/Modal";
 import { useParams, useRouter } from "next/navigation";
 import { useToast } from "@/contexts/ToastContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -281,6 +282,29 @@ const UpgradeFeatures = styled.ul`
   }
 `;
 
+const PDFPreviewContainer = styled.div`
+  width: 100%;
+  height: 70vh;
+  min-height: 500px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  overflow: hidden;
+  background-color: ${({ theme }) => theme.colors.surface};
+`;
+
+const PDFViewer = styled.iframe`
+  width: 100%;
+  height: 100%;
+  border: none;
+`;
+
+const PreviewActions = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.md};
+  justify-content: flex-end;
+  margin-top: ${({ theme }) => theme.spacing.lg};
+`;
+
 interface RoleRecommendation {
   title: string;
   fit: number;
@@ -332,6 +356,8 @@ export default function ReportDetailPage() {
   const [improvementBreakdown, setImprovementBreakdown] = useState<Improvement[]>([]);
   const [report, setReport] = useState<Report | null>(null);
   const [jobPostingTitles, setJobPostingTitles] = useState<string[]>([]);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
 
   // Define analyzeOptimizedCV before useEffect that uses it
   const analyzeOptimizedCV = useCallback(async () => {
@@ -613,6 +639,21 @@ export default function ReportDetailPage() {
     }
   };
 
+  const handlePreviewCV = async () => {
+    if (!report?.generated_cv) return;
+
+    try {
+      const pdf = await generateCVPDF(report.generated_cv);
+      const pdfBlob = pdf.output("blob");
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      setPdfPreviewUrl(blobUrl);
+      setIsPreviewOpen(true);
+    } catch (error) {
+      console.error("CV preview error:", error);
+      toast.error("Failed to preview CV. Please try again.");
+    }
+  };
+
   const handleDownloadCV = async () => {
     if (!report?.generated_cv) return;
 
@@ -621,9 +662,18 @@ export default function ReportDetailPage() {
       const fileName = `${report.generated_cv.contact.name.replace(/\s+/g, "_")}_CV_Optimized.pdf`;
       pdf.save(fileName);
       toast.success("CV downloaded successfully! Check your downloads folder.");
+      handleClosePreview(); // Close modal after download
     } catch (error) {
       console.error("CV download error:", error);
       toast.error("Failed to download CV. Please try again.");
+    }
+  };
+
+  const handleClosePreview = () => {
+    setIsPreviewOpen(false);
+    if (pdfPreviewUrl) {
+      URL.revokeObjectURL(pdfPreviewUrl);
+      setPdfPreviewUrl(null);
     }
   };
 
@@ -950,11 +1000,11 @@ export default function ReportDetailPage() {
                     </div>
                     <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                       <Button
-                        onClick={handleDownloadCV}
+                        onClick={handlePreviewCV}
                         size="lg"
                         variant="primary"
                       >
-                        📥 Download CV (PDF)
+                        👁️ Preview & Download CV
                       </Button>
                       <Button
                         onClick={handleGenerateCV}
@@ -972,6 +1022,44 @@ export default function ReportDetailPage() {
           </Section>
         </>
       )}
+
+      {/* CV Preview Modal */}
+      <Modal
+        isOpen={isPreviewOpen}
+        onClose={handleClosePreview}
+        title="CV Preview"
+        description="Review your optimized CV before downloading"
+      >
+        <Modal.Body>
+          <PDFPreviewContainer>
+            {pdfPreviewUrl ? (
+              <PDFViewer
+                src={pdfPreviewUrl}
+                title="CV Preview"
+              />
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                }}
+              >
+                <Spinner size="lg" />
+              </div>
+            )}
+          </PDFPreviewContainer>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="ghost" onClick={handleClosePreview}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleDownloadCV}>
+            📥 Download PDF
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

@@ -35,9 +35,22 @@ export default function RootLayout({
               (function() {
                 try {
                   const theme = localStorage.getItem('theme') || 'dark';
-                  document.documentElement.setAttribute('data-theme', theme);
+                  const root = document.documentElement;
+                  root.setAttribute('data-theme', theme);
+
+                  // Apply theme colors immediately to prevent FOUC
+                  if (theme === 'light') {
+                    root.style.backgroundColor = '#F5F7FA';
+                    root.style.color = '#1F2937';
+                  } else {
+                    root.style.backgroundColor = '#0f172a';
+                    root.style.color = '#f1f5f9';
+                  }
                 } catch (e) {
-                  document.documentElement.setAttribute('data-theme', 'dark');
+                  const root = document.documentElement;
+                  root.setAttribute('data-theme', 'dark');
+                  root.style.backgroundColor = '#0f172a';
+                  root.style.color = '#f1f5f9';
                 }
               })();
             `,

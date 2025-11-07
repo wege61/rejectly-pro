@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/Button";
 import { ROUTES } from "@/lib/constants";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/Spinner";
+import dynamic from "next/dynamic";
+
+// Import ThemeToggle with SSR disabled
+const ThemeToggle = dynamic(
+  () => import("@/components/ui/ThemeToggle").then((mod) => mod.ThemeToggle),
+  { ssr: false }
+);
 
 const Header = styled.header`
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
@@ -61,6 +68,11 @@ const DesktopNav = styled.div`
       color: ${({ theme }) => theme.colors.textPrimary};
     }
   }
+`;
+
+const ThemeToggleWrapper = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const MobileMenuButton = styled.button`
@@ -135,6 +147,9 @@ export default function MarketingLayout({
             <a href={ROUTES.PUBLIC.HOW_IT_WORKS}>How it Works</a>
             <a href={ROUTES.PUBLIC.PRICING}>Pricing</a>
             <a href={ROUTES.PUBLIC.FAQ}>FAQ</a>
+            <ThemeToggleWrapper>
+              <ThemeToggle />
+            </ThemeToggleWrapper>
             <a href={ROUTES.AUTH.LOGIN}>Login</a>
             <Button
               size="sm"
@@ -189,6 +204,9 @@ export default function MarketingLayout({
           <a href={ROUTES.PUBLIC.FAQ} onClick={closeMobileMenu}>
             FAQ
           </a>
+          <ThemeToggleWrapper style={{ justifyContent: 'center', padding: '8px 0' }}>
+            <ThemeToggle />
+          </ThemeToggleWrapper>
           <a href={ROUTES.AUTH.LOGIN} onClick={closeMobileMenu}>
             Login
           </a>

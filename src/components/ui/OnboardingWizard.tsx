@@ -490,6 +490,7 @@ const CVOptionsContainer = styled.div`
 
   @media (max-width: 600px) {
     flex-direction: column;
+    gap: 0!important;
   }
 `;
 

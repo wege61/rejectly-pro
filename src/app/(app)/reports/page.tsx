@@ -16,6 +16,8 @@ const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: ${({ theme }) => theme.spacing["2xl"]};
+
+
 `;
 
 const Header = styled.div`
@@ -35,6 +37,9 @@ const Title = styled.h1`
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
+  @media (max-width: 410px) {
+    margin-right: 10px;
+  }
 `;
 
 const ReportsList = styled.div`
@@ -50,6 +55,8 @@ const ReportCard = styled(Card)`
   &:hover {
     transform: translateY(-2px);
   }
+
+  
 `;
 
 const ReportHeader = styled.div`
@@ -79,6 +86,9 @@ const ReportMeta = styled.div`
 const ScoreBadge = styled(Badge)`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
+  @media (max-width: 375px) {
+  font-size: 13px;
+  }
 `;
 
 interface Report {

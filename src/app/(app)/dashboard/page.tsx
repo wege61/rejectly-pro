@@ -17,6 +17,12 @@ const Container = styled.div`
   margin: 0 auto;
   padding: ${({ theme }) => theme.spacing["2xl"]};
   padding-bottom: 100px; /* Space for FAB */
+
+  
+  @media (max-width: 450px) {
+    padding: ${({ theme }) => theme.spacing["lg"]};
+    padding-top: 52px;
+  }
 `;
 
 const Header = styled.div`
@@ -446,7 +452,7 @@ export default function DashboardPage() {
                         {new Date(report.created_at).toLocaleDateString(
                           "en-EN",
                           {
-                            year: "numeric",
+                            year: "numeric", 
                             month: "long",
                             day: "numeric",
                           }

@@ -15,6 +15,11 @@ const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: ${({ theme }) => theme.spacing["2xl"]};
+  
+  @media (max-width: 450px) {
+    padding: ${({ theme }) => theme.spacing["lg"]};
+    padding-top: 52px;
+  }
 `;
 
 const Header = styled.div`

@@ -1,48 +1,94 @@
 import { keyframes } from "styled-components";
 
-export const theme = {
-  colors: {
-    // Primary
-    primary: "#6366f1", // indigo-500
-    primaryHover: "#4f46e5", // indigo-600
-    primaryLight: "rgba(99, 102, 241, 0.1)", // indigo with opacity
+// Dark Theme Colors
+const darkColors = {
+  // Primary
+  primary: "#6366f1", // indigo-500
+  primaryHover: "#4f46e5", // indigo-600
+  primaryLight: "rgba(99, 102, 241, 0.1)", // indigo with opacity
 
-    // Secondary (YENİ - Dark theme için)
-    secondary: "#1e293b", // slate-800
-    secondaryHover: "#334155", // slate-700
+  // Secondary
+  secondary: "#1e293b", // slate-800
+  secondaryHover: "#334155", // slate-700
 
-    // Neutral - DARK MODE
-    background: "#0f172a", // slate-900
-    backgroundAlt: "#1e293b", // slate-800
-    surface: "#1e293b", // slate-800
-    surfaceHover: "#334155", // slate-700
+  // Neutral - DARK MODE
+  background: "#0f172a", // slate-900
+  backgroundAlt: "#1e293b", // slate-800
+  surface: "#1e293b", // slate-800
+  surfaceHover: "#334155", // slate-700
 
-    // Text - DARK MODE
-    textPrimary: "#f1f5f9", // slate-100
-    textSecondary: "#94a3b8", // slate-400
-    textTertiary: "#64748b", // slate-500
+  // Text - DARK MODE
+  textPrimary: "#f1f5f9", // slate-100
+  textSecondary: "#94a3b8", // slate-400
+  textTertiary: "#64748b", // slate-500
 
-    // Borders - DARK MODE
-    border: "#334155", // slate-700
-    borderHover: "#475569", // slate-600
+  // Borders - DARK MODE
+  border: "#334155", // slate-700
+  borderHover: "#475569", // slate-600
 
-    // Status
-    success: "#10b981",
-    successLight: "rgba(16, 185, 129, 0.1)",
-    successHover: "#059669", // YENİ
+  // Status
+  success: "#10b981",
+  successLight: "rgba(16, 185, 129, 0.1)",
+  successHover: "#059669",
 
-    warning: "#f59e0b",
-    warningLight: "rgba(245, 158, 11, 0.1)",
-    warningHover: "#d97706", // YENİ
+  warning: "#f59e0b",
+  warningLight: "rgba(245, 158, 11, 0.1)",
+  warningHover: "#d97706",
 
-    error: "#ef4444",
-    errorLight: "rgba(239, 68, 68, 0.1)",
-    errorHover: "#dc2626", // YENİ
+  error: "#ef4444",
+  errorLight: "rgba(239, 68, 68, 0.1)",
+  errorHover: "#dc2626",
 
-    info: "#3b82f6",
-    infoLight: "rgba(59, 130, 246, 0.1)",
-    infoHover: "#2563eb", // YENİ
-  },
+  info: "#3b82f6",
+  infoLight: "rgba(59, 130, 246, 0.1)",
+  infoHover: "#2563eb",
+};
+
+// Light Theme Colors
+const lightColors = {
+  // Primary - Lighter purple for better contrast on light backgrounds
+  primary: "#5B5FCD",
+  primaryHover: "#4448B3",
+  primaryLight: "#E5E8FB",
+
+  // Secondary
+  secondary: "#F0F2F5",
+  secondaryHover: "#E5E7EB",
+
+  // Neutral - LIGHT MODE
+  background: "#F5F7FA", // Very light neutral
+  backgroundAlt: "#F0F2F5", // Slightly darker for sidebar
+  surface: "#FFFFFF", // Pure white for cards
+  surfaceHover: "#F9FAFB", // Subtle hover state
+
+  // Text - LIGHT MODE
+  textPrimary: "#1F2937", // Dark slate grey for headings
+  textSecondary: "#4B5563", // Mid-grey for body text
+  textTertiary: "#6B7280", // Lighter grey for hints
+
+  // Borders - LIGHT MODE
+  border: "#D1D5DB", // Soft grey borders
+  borderHover: "#9CA3AF", // Darker on hover
+
+  // Status - Adapted for light backgrounds
+  success: "#28A745", // Softer green
+  successLight: "#E9F7EF", // Light green background
+  successHover: "#218838",
+
+  warning: "#F39C12", // Warm amber
+  warningLight: "#FFF7E6", // Light yellow background
+  warningHover: "#E08E0B",
+
+  error: "#E74C3C", // Clear red
+  errorLight: "#FDECEA", // Light red background
+  errorHover: "#C0392B",
+
+  info: "#3b82f6",
+  infoLight: "#EFF6FF", // Light blue background
+  infoHover: "#2563eb",
+};
+
+const baseTheme = {
 
   spacing: {
     xs: "0.25rem",
@@ -91,11 +137,18 @@ export const theme = {
     full: "9999px",
   },
 
-  shadow: {
+  shadowDark: {
     sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
     md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
     lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
     xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+  },
+
+  shadowLight: {
+    sm: "0 1px 2px 0 rgb(0 0 0 / 0.03)",
+    md: "0 2px 4px -1px rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04)",
+    lg: "0 8px 12px -2px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04)",
+    xl: "0 16px 20px -4px rgb(0 0 0 / 0.08), 0 4px 8px -4px rgb(0 0 0 / 0.04)",
   },
 
   zIndex: {
@@ -193,4 +246,21 @@ export const theme = {
   },
 };
 
-export type Theme = typeof theme;
+// Create dark theme by combining base theme with dark colors
+export const darkTheme = {
+  ...baseTheme,
+  colors: darkColors,
+  shadow: baseTheme.shadowDark,
+};
+
+// Create light theme by combining base theme with light colors
+export const lightTheme = {
+  ...baseTheme,
+  colors: lightColors,
+  shadow: baseTheme.shadowLight,
+};
+
+// Default theme (dark)
+export const theme = darkTheme;
+
+export type Theme = typeof darkTheme;

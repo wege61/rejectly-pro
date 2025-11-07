@@ -9,6 +9,7 @@ import { signOut } from "@/lib/auth";
 import { Spinner } from "@/components/ui/Spinner";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const Container = styled.div`
   display: flex;
@@ -246,6 +247,22 @@ const UserSection = styled.div`
   margin-top: auto;
   padding-top: ${({ theme }) => theme.spacing.lg};
   border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const ThemeToggleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.sm};
+  background: ${({ theme }) => theme.colors.surfaceHover};
+  border-radius: ${({ theme }) => theme.radius.md};
+`;
+
+const ThemeLabel = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
 `;
 
 const UserInfo = styled.div`
@@ -496,6 +513,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </Nav>
 
         <UserSection>
+          <ThemeToggleWrapper>
+            <ThemeLabel>Theme</ThemeLabel>
+            <ThemeToggle />
+          </ThemeToggleWrapper>
           <UserInfo>
             <UserName>{user.user_metadata?.name || "User"}</UserName>
             <UserEmail>{user.email}</UserEmail>

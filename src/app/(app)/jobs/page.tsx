@@ -121,6 +121,7 @@ interface Job {
 
 export default function JobsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [jobTitle, setJobTitle] = useState("");
   const [jobUrl, setJobUrl] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -158,7 +159,38 @@ export default function JobsPage() {
     fetchJobs();
   }, [user]);
 
-  const handleAddJob = async () => {
+  // Pre-populate form when editing
+  useEffect(() => {
+    if (editingJob) {
+      setJobTitle(editingJob.title);
+      setJobUrl(editingJob.file_url || "");
+      setJobDescription(editingJob.text);
+    } else {
+      setJobTitle("");
+      setJobUrl("");
+      setJobDescription("");
+    }
+  }, [editingJob]);
+
+  const openAddModal = () => {
+    setEditingJob(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (job: Job) => {
+    setEditingJob(job);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingJob(null);
+    setJobTitle("");
+    setJobUrl("");
+    setJobDescription("");
+  };
+
+  const handleSubmit = async () => {
     if (!jobTitle || (!jobUrl && !jobDescription)) {
       toast.error("Please fill in job title and description");
       return;
@@ -166,12 +198,17 @@ export default function JobsPage() {
 
     setIsLoading(true);
     try {
-      const response = await fetch("/api/jobs/add", {
-        method: "POST",
+      const isEditing = !!editingJob;
+      const endpoint = isEditing ? "/api/jobs/update" : "/api/jobs/add";
+      const method = isEditing ? "PUT" : "POST";
+
+      const response = await fetch(endpoint, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          ...(isEditing && { jobId: editingJob.id }),
           title: jobTitle,
           url: jobUrl || null,
           description: jobDescription || null,
@@ -181,10 +218,10 @@ export default function JobsPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Job posting failed");
+        throw new Error(result.error || "Operation failed");
       }
 
-      toast.success("Job posting added!");
+      toast.success(isEditing ? "Job posting updated!" : "Job posting added!");
 
       // Refresh jobs list
       const supabase = createClient();
@@ -200,13 +237,10 @@ export default function JobsPage() {
       }
 
       // Close modal and reset form
-      setIsModalOpen(false);
-      setJobTitle("");
-      setJobUrl("");
-      setJobDescription("");
+      closeModal();
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Job posting failed";
+        error instanceof Error ? error.message : "Operation failed";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -307,7 +341,7 @@ export default function JobsPage() {
           <Title>Job Postings</Title>
           <Subtitle>Manage job postings to compare with your CV</Subtitle>
         </HeaderContent>
-        <Button onClick={() => setIsModalOpen(true)}>Add Job Posting</Button>
+        <Button onClick={openAddModal}>Add Job Posting</Button>
       </Header>
 
       {jobs.length === 0 ? (
@@ -318,7 +352,7 @@ export default function JobsPage() {
             description="Add job postings to analyze and compare with your CV."
             action={{
               label: "Add Job Posting",
-              onClick: () => setIsModalOpen(true),
+              onClick: openAddModal,
             }}
           />
         </Card>
@@ -381,20 +415,29 @@ export default function JobsPage() {
                 </DetailsPanel>
 
                 <Card.Footer>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleToggleDetails(job.id, job.text)}
-                  >
-                    {isExpanded ? "Hide Details" : "View Details"}
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDeleteClick(job.id)}
-                  >
-                    Delete
-                  </Button>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleToggleDetails(job.id, job.text)}
+                    >
+                      {isExpanded ? "Hide Details" : "View Details"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => openEditModal(job)}
+                    >
+                      Edit Title/URL
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDeleteClick(job.id)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </Card.Footer>
               </JobCard>
             );
@@ -404,9 +447,13 @@ export default function JobsPage() {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Add Job Posting"
-        description="Enter the job title and paste the full job description"
+        onClose={closeModal}
+        title={editingJob ? "Edit Job Posting" : "Add Job Posting"}
+        description={
+          editingJob
+            ? "Update the job details below"
+            : "Enter the job title and paste the full job description"
+        }
       >
         <Modal.Body>
           <FormGroup>
@@ -439,11 +486,11 @@ export default function JobsPage() {
           </FormGroup>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
+          <Button variant="ghost" onClick={closeModal}>
             Cancel
           </Button>
-          <Button onClick={handleAddJob} isLoading={isLoading}>
-            Add Job
+          <Button onClick={handleSubmit} isLoading={isLoading}>
+            {editingJob ? "Update Job" : "Add Job"}
           </Button>
         </Modal.Footer>
       </Modal>

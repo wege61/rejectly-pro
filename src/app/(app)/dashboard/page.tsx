@@ -99,7 +99,8 @@ const Grid = styled.div`
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: ${({ theme }) => theme.spacing.md};
+    gap: ${({ theme }) => theme.spacing.sm};
+    margin-bottom: ${({ theme }) => theme.spacing.lg};
   }
 `;
 
@@ -116,6 +117,10 @@ const StatCard = styled(Card)`
   &:active {
     transform: translateY(-2px);
   }
+
+  @media (max-width: 768px) {
+    padding: ${({ theme }) => theme.spacing.md} !important;
+  }
 `;
 
 const StatIcon = styled.div`
@@ -131,11 +136,11 @@ const StatIcon = styled.div`
   }
 
   @media (max-width: 768px) {
-    margin-bottom: ${({ theme }) => theme.spacing.sm};
+    margin-bottom: ${({ theme }) => theme.spacing.xs};
 
     svg {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
     }
   }
 `;
@@ -147,8 +152,8 @@ const StatValue = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.sm};
 
   @media (max-width: 768px) {
-    font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-    margin-bottom: ${({ theme }) => theme.spacing.xs};
+    font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+    margin-bottom: 2px;
   }
 `;
 

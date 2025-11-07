@@ -94,12 +94,28 @@ const Subtitle = styled.p`
 const Grid = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.spacing.lg};
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: ${({ theme }) => theme.spacing.md};
+  }
 `;
 
 const StatCard = styled(Card)`
   text-align: center;
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: ${({ theme }) => theme.shadow.lg};
+  }
+
+  &:active {
+    transform: translateY(-2px);
+  }
 `;
 
 const StatIcon = styled.div`
@@ -108,6 +124,20 @@ const StatIcon = styled.div`
   justify-content: center;
   margin-bottom: ${({ theme }) => theme.spacing.md};
   color: ${({ theme }) => theme.colors.primary};
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  @media (max-width: 768px) {
+    margin-bottom: ${({ theme }) => theme.spacing.sm};
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
 `;
 
 const StatValue = styled.div`
@@ -115,11 +145,20 @@ const StatValue = styled.div`
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.primary};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
+
+  @media (max-width: 768px) {
+    font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
+    margin-bottom: ${({ theme }) => theme.spacing.xs};
+  }
 `;
 
 const StatLabel = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: ${({ theme }) => theme.colors.textSecondary};
+
+  @media (max-width: 768px) {
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  }
 `;
 
 const Section = styled.section`
@@ -424,21 +463,21 @@ export default function DashboardPage() {
 
         {/* Stats */}
         <Grid>
-          <StatCard variant="elevated">
+          <StatCard variant="elevated" onClick={() => router.push(ROUTES.APP.REPORTS)}>
             <StatIcon>
               <ReportsIcon />
             </StatIcon>
             <StatValue>{stats.totalReports}</StatValue>
             <StatLabel>Total Reports</StatLabel>
           </StatCard>
-          <StatCard variant="elevated">
+          <StatCard variant="elevated" onClick={() => router.push(ROUTES.APP.CV)}>
             <StatIcon>
               <CVIcon />
             </StatIcon>
             <StatValue>{stats.totalCVs}</StatValue>
             <StatLabel>CVs Uploaded</StatLabel>
           </StatCard>
-          <StatCard variant="elevated">
+          <StatCard variant="elevated" onClick={() => router.push(ROUTES.APP.JOBS)}>
             <StatIcon>
               <JobsIcon />
             </StatIcon>

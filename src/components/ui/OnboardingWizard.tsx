@@ -485,10 +485,10 @@ const ButtonGroup = styled.div`
 
 const CVOptionsContainer = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme }) => theme.spacing.md};
   align-items: stretch;
 
-  @media (max-width: 500px) {
+  @media (max-width: 600px) {
     flex-direction: column;
   }
 `;
@@ -499,7 +499,7 @@ const DividerText = styled.div`
   justify-content: center;
   color: ${({ theme }) => theme.colors.textSecondary};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  padding: 0 ${({ theme }) => theme.spacing.md};
+  padding: 0 ${({ theme }) => theme.spacing.sm};
   position: relative;
 
   &::before,
@@ -511,14 +511,14 @@ const DividerText = styled.div`
   }
 
   &::before {
-    margin-right: ${({ theme }) => theme.spacing.md};
+    margin-right: ${({ theme }) => theme.spacing.sm};
   }
 
   &::after {
-    margin-left: ${({ theme }) => theme.spacing.md};
+    margin-left: ${({ theme }) => theme.spacing.sm};
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: 600px) {
     margin: ${({ theme }) => theme.spacing.lg} 0;
 
     &::before,

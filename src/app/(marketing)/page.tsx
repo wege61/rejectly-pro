@@ -2,7 +2,13 @@
 
 import styled, { keyframes } from "styled-components";
 import { useState } from "react";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import dynamic from "next/dynamic";
+
+// Import ThemeToggle with SSR disabled
+const ThemeToggle = dynamic(
+  () => import("@/components/ui/ThemeToggle").then((mod) => mod.ThemeToggle),
+  { ssr: false }
+);
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`

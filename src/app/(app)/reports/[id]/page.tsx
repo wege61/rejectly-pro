@@ -143,6 +143,13 @@ const BreakdownItem = styled.div`
     border-color: ${({ theme }) => theme.colors.primary};
     transform: translateX(4px);
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    grid-template-columns: 1fr;
+    gap: ${({ theme }) => theme.spacing.sm};
+    text-align: center;
+    align-items: center;
+  }
 `;
 
 const ImpactBadge = styled.div`
@@ -157,6 +164,13 @@ const ImpactBadge = styled.div`
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   border-radius: ${({ theme }) => theme.radius.md};
   flex-shrink: 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    width: 48px;
+    height: 48px;
+    font-size: ${({ theme }) => theme.typography.fontSize.lg};
+    margin: 0 auto;
+  }
 `;
 
 const ImpactContent = styled.div`
@@ -164,6 +178,12 @@ const ImpactContent = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
   min-width: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    text-align: center;
+  }
 `;
 
 const ImpactCategory = styled.div`
@@ -179,12 +199,21 @@ const ImpactAction = styled.div`
   color: ${({ theme }) => theme.colors.textPrimary};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   line-height: ${({ theme }) => theme.typography.lineHeight.normal};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  }
 `;
 
 const ImpactReason = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: ${({ theme }) => theme.colors.textSecondary};
   line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+    line-height: ${({ theme }) => theme.typography.lineHeight.normal};
+  }
 `;
 
 const ImpactPoints = styled.div`
@@ -192,18 +221,31 @@ const ImpactPoints = styled.div`
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    align-items: center;
+    margin-top: ${({ theme }) => theme.spacing.xs};
+  }
 `;
 
 const ImpactValue = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: #10b981;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  }
 `;
 
 const ImpactLabel = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
   color: ${({ theme }) => theme.colors.textSecondary};
   text-transform: uppercase;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  }
 `;
 
 const TotalImpactSummary = styled.div`
@@ -215,16 +257,31 @@ const TotalImpactSummary = styled.div`
   border-radius: ${({ theme }) => theme.radius.lg};
   color: white;
   margin-top: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex-direction: column;
+    gap: ${({ theme }) => theme.spacing.sm};
+    padding: ${({ theme }) => theme.spacing.md};
+    text-align: center;
+  }
 `;
 
 const TotalLabel = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+  }
 `;
 
 const TotalValue = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  }
 `;
 
 const Section = styled.section`

@@ -139,10 +139,12 @@ const BreakdownItem = styled.div`
   border-radius: ${({ theme }) => theme.radius.md};
   align-items: start;
   transition: all ${({ theme }) => theme.transitions.fast};
+  cursor: pointer;
 
   &:hover {
     border-color: ${({ theme }) => theme.colors.primary};
     transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
@@ -368,6 +370,45 @@ const PreviewActions = styled.div`
   margin-top: ${({ theme }) => theme.spacing.lg};
 `;
 
+const ImprovementHighlight = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.radius.md};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const HighlightTitle = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  opacity: 0.9;
+`;
+
+const HighlightAction = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const HighlightReason = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  opacity: 0.95;
+  line-height: 1.5;
+`;
+
+const HighlightImpact = styled.div`
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.radius.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  margin-top: ${({ theme }) => theme.spacing.sm};
+`;
+
 interface RoleRecommendation {
   title: string;
   fit: number;
@@ -421,6 +462,7 @@ export default function ReportDetailPage() {
   const [jobPostingTitles, setJobPostingTitles] = useState<string[]>([]);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [selectedImprovement, setSelectedImprovement] = useState<Improvement | null>(null);
 
   // Define analyzeOptimizedCV before useEffect that uses it
   const analyzeOptimizedCV = useCallback(async () => {
@@ -734,9 +776,27 @@ export default function ReportDetailPage() {
 
   const handleClosePreview = () => {
     setIsPreviewOpen(false);
+    setSelectedImprovement(null);
     if (pdfPreviewUrl) {
       URL.revokeObjectURL(pdfPreviewUrl);
       setPdfPreviewUrl(null);
+    }
+  };
+
+  const handleImprovementClick = async (improvement: Improvement) => {
+    if (!report?.generated_cv) return;
+
+    setSelectedImprovement(improvement);
+
+    try {
+      const pdf = await generateCVPDF(report.generated_cv);
+      const pdfBlob = pdf.output("blob");
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      setPdfPreviewUrl(blobUrl);
+      setIsPreviewOpen(true);
+    } catch (error) {
+      console.error("CV preview error:", error);
+      toast.error("Failed to preview CV. Please try again.");
     }
   };
 
@@ -856,7 +916,11 @@ export default function ReportDetailPage() {
             <Card.Content>
               <BreakdownContainer>
                 {improvementBreakdown.map((improvement, index) => (
-                  <BreakdownItem key={index}>
+                  <BreakdownItem
+                    key={index}
+                    onClick={() => handleImprovementClick(improvement)}
+                    title="Click to view this improvement in your CV"
+                  >
                     <ImpactBadge>+{Math.round(improvement.impact * 10) / 10}</ImpactBadge>
                     <ImpactContent>
                       <ImpactCategory>{improvement.category}</ImpactCategory>
@@ -1095,6 +1159,18 @@ export default function ReportDetailPage() {
         size="lg"
       >
         <Modal.Body>
+          {selectedImprovement && (
+            <ImprovementHighlight>
+              <HighlightTitle>
+                {selectedImprovement.category} • +{Math.round(selectedImprovement.impact * 10) / 10}% Impact
+              </HighlightTitle>
+              <HighlightAction>{selectedImprovement.action}</HighlightAction>
+              <HighlightReason>{selectedImprovement.reason}</HighlightReason>
+              <HighlightImpact>
+                💡 This improvement boosted your score by +{Math.round(selectedImprovement.impact * 10) / 10}%
+              </HighlightImpact>
+            </ImprovementHighlight>
+          )}
           <PDFPreviewContainer>
             {pdfPreviewUrl ? (
               <PDFViewer

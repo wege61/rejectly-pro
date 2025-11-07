@@ -47,66 +47,18 @@ const JobsList = styled.div`
 
 const JobCard = styled(Card)`
   cursor: default;
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
 `;
 
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
-`;
-
-const DetailsPanel = styled.div<{ $isExpanded: boolean }>`
-  max-height: ${({ $isExpanded }) => ($isExpanded ? "800px" : "0")};
-  overflow: hidden;
-  transition: max-height ${({ theme }) => theme.transitions.normal};
-  margin-top: ${({ $isExpanded, theme }) => ($isExpanded ? theme.spacing.md : "0")};
-`;
-
-const DetailsPanelContent = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  background-color: ${({ theme }) => theme.colors.surface};
-`;
-
-const PanelTitle = styled.h4`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-`;
-
-const EditableTextarea = styled.textarea`
-  width: 100%;
-  min-height: 300px;
-  padding: ${({ theme }) => theme.spacing.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.sm};
-  background-color: ${({ theme }) => theme.colors.background};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  resize: vertical;
-  font-family: monospace;
-  line-height: 1.6;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const CharCount = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  text-align: right;
-  margin-top: ${({ theme }) => theme.spacing.xs};
-`;
-
-const EditActions = styled.div`
-  margin-top: ${({ theme }) => theme.spacing.md};
-  display: flex;
-  gap: ${({ theme }) => theme.spacing.sm};
-  justify-content: flex-end;
 `;
 
 interface Job {
@@ -128,9 +80,6 @@ export default function JobsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingJobs, setIsFetchingJobs] = useState(true);
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
-  const [editedTexts, setEditedTexts] = useState<Record<string, string>>({});
-  const [savingJobId, setSavingJobId] = useState<string | null>(null);
   const [deletingJobId, setDeletingJobId] = useState<string | null>(null);
   const toast = useToast();
   const { user } = useAuth();
@@ -277,59 +226,6 @@ export default function JobsPage() {
     setDeletingJobId(null);
   };
 
-  const handleToggleDetails = (jobId: string, jobText: string) => {
-    if (expandedJobId === jobId) {
-      setExpandedJobId(null);
-    } else {
-      setExpandedJobId(jobId);
-      // Initialize edited text if not already set
-      if (!editedTexts[jobId]) {
-        setEditedTexts({ ...editedTexts, [jobId]: jobText });
-      }
-    }
-  };
-
-  const handleTextChange = (jobId: string, newText: string) => {
-    setEditedTexts({ ...editedTexts, [jobId]: newText });
-  };
-
-  const handleSaveChanges = async (jobId: string) => {
-    const job = jobs.find((j) => j.id === jobId);
-    if (!job) return;
-
-    setSavingJobId(jobId);
-    try {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("documents")
-        .update({ text: editedTexts[jobId] })
-        .eq("id", jobId);
-
-      if (error) throw error;
-
-      toast.success("Job posting updated successfully!");
-      // Update local state
-      setJobs(
-        jobs.map((j) =>
-          j.id === jobId ? { ...j, text: editedTexts[jobId] } : j
-        )
-      );
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to update job posting";
-      toast.error(errorMessage);
-    } finally {
-      setSavingJobId(null);
-    }
-  };
-
-  const handleDiscardChanges = (jobId: string) => {
-    const job = jobs.find((j) => j.id === jobId);
-    if (job) {
-      setEditedTexts({ ...editedTexts, [jobId]: job.text });
-    }
-  };
-
   if (isFetchingJobs) {
     return <JobsListSkeleton />;
   }
@@ -358,90 +254,46 @@ export default function JobsPage() {
         </Card>
       ) : (
         <JobsList>
-          {jobs.map((job) => {
-            const isExpanded = expandedJobId === job.id;
-            const editedText = editedTexts[job.id] || job.text;
-            const hasChanges = editedText !== job.text;
-
-            return (
-              <JobCard key={job.id} variant="elevated">
-                <Card.Header>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "start",
-                    }}
+          {jobs.map((job) => (
+            <JobCard key={job.id} variant="elevated">
+              <Card.Header>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "start",
+                  }}
+                >
+                  <div>
+                    <Card.Title>{job.title}</Card.Title>
+                    <Card.Description>
+                      Added on{" "}
+                      {new Date(job.created_at).toLocaleDateString("tr-TR")}
+                    </Card.Description>
+                  </div>
+                  <Badge>{job.text.length.toLocaleString()} characters</Badge>
+                </div>
+              </Card.Header>
+              <Card.Footer>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openEditModal(job)}
                   >
-                    <div>
-                      <Card.Title>{job.title}</Card.Title>
-                      <Card.Description>
-                        Added on{" "}
-                        {new Date(job.created_at).toLocaleDateString("tr-TR")}
-                      </Card.Description>
-                    </div>
-                    <Badge>{job.text.length.toLocaleString()} characters</Badge>
-                  </div>
-                </Card.Header>
-
-                <DetailsPanel $isExpanded={isExpanded}>
-                  <DetailsPanelContent>
-                    <PanelTitle>Job Posting Content</PanelTitle>
-                    <EditableTextarea
-                      value={editedText}
-                      onChange={(e) => handleTextChange(job.id, e.target.value)}
-                      placeholder="Job posting content will appear here..."
-                    />
-                    <CharCount>{editedText.length} characters</CharCount>
-                    {hasChanges && (
-                      <EditActions>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDiscardChanges(job.id)}
-                        >
-                          Discard Changes
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handleSaveChanges(job.id)}
-                          isLoading={savingJobId === job.id}
-                        >
-                          Save Changes
-                        </Button>
-                      </EditActions>
-                    )}
-                  </DetailsPanelContent>
-                </DetailsPanel>
-
-                <Card.Footer>
-                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleToggleDetails(job.id, job.text)}
-                    >
-                      {isExpanded ? "Hide Details" : "View Details"}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEditModal(job)}
-                    >
-                      Edit Title/URL
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDeleteClick(job.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </Card.Footer>
-              </JobCard>
-            );
-          })}
+                    Edit
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => handleDeleteClick(job.id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </Card.Footer>
+            </JobCard>
+          ))}
         </JobsList>
       )}
 

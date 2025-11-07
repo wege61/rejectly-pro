@@ -45,11 +45,25 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     setMounted(true);
   }, []);
 
-  // Save theme preference to localStorage and update data-theme attribute when it changes
+  // Save theme preference to localStorage and update CSS variables when it changes
   useEffect(() => {
     if (mounted) {
       localStorage.setItem("theme", mode);
-      document.documentElement.setAttribute('data-theme', mode);
+      const root = document.documentElement;
+      root.setAttribute('data-theme', mode);
+
+      // Update CSS variables
+      if (mode === 'light') {
+        root.style.setProperty('--bg-color', '#F5F7FA');
+        root.style.setProperty('--text-color', '#1F2937');
+        root.style.setProperty('--surface-color', '#FFFFFF');
+        root.style.setProperty('--border-color', '#D1D5DB');
+      } else {
+        root.style.setProperty('--bg-color', '#0f172a');
+        root.style.setProperty('--text-color', '#f1f5f9');
+        root.style.setProperty('--surface-color', '#1e293b');
+        root.style.setProperty('--border-color', '#334155');
+      }
     }
   }, [mode, mounted]);
 

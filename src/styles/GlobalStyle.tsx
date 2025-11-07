@@ -15,9 +15,6 @@ export const GlobalStyle = createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    background-color: ${({ theme }) => theme.colors.background};
-    color: ${({ theme }) => theme.colors.textPrimary};
-    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   body {
@@ -25,10 +22,7 @@ export const GlobalStyle = createGlobalStyle`
     font-size: ${({ theme }) => theme.typography.fontSize.base};
     font-weight: ${({ theme }) => theme.typography.fontWeight.normal};
     line-height: ${({ theme }) => theme.typography.lineHeight.normal};
-    color: ${({ theme }) => theme.colors.textPrimary};
-    background-color: ${({ theme }) => theme.colors.background};
     overflow-x: hidden;
-    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   /* Headings */

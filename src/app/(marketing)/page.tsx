@@ -1,7 +1,8 @@
 "use client";
 
 import styled, { keyframes } from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -123,6 +124,31 @@ const Container = styled.div`
   min-height: 100vh;
   background-color: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const FloatingThemeToggle = styled.div`
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  background: ${({ theme }) => theme.colors.surface};
+  padding: 8px;
+  border-radius: ${({ theme }) => theme.radius.full};
+  box-shadow: ${({ theme }) => theme.shadow.lg};
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  &:hover {
+    box-shadow: ${({ theme }) => theme.shadow.xl};
+  }
+
+  @media (max-width: 640px) {
+    top: 16px;
+    right: 16px;
+    padding: 6px;
+  }
 `;
 
 // ==================== HERO SECTION ====================
@@ -1471,6 +1497,7 @@ const JobDescription = styled.p`
 
 // ==================== MAIN COMPONENT ====================
 export default function Page() {
+  const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState<"upload" | "loading" | "analyzing">("upload");
 const [detectedLocation, setDetectedLocation] = useState("");
 const [improvementTips, setImprovementTips] = useState<string[]>([]);
@@ -1488,6 +1515,10 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
     missingKeywords: string[];
   } | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const faqs = [
     {
@@ -1613,6 +1644,12 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
 
   return (
     <Container>
+      {mounted && (
+        <FloatingThemeToggle>
+          <ThemeToggle />
+        </FloatingThemeToggle>
+      )}
+
       {/* HERO SECTION */}
       <HeroSection>
         <BackgroundBlur>

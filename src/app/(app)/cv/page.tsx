@@ -97,7 +97,7 @@ const PreviewPanel = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
   background-color: ${({ theme }) => theme.colors.surface};
-  max-height: 400px;
+  
   overflow-y: auto;
 `;
 

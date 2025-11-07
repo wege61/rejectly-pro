@@ -1,8 +1,14 @@
 "use client";
 
 import styled, { keyframes } from "styled-components";
-import { useState, useEffect } from "react";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useState } from "react";
+import dynamic from "next/dynamic";
+
+// Import ThemeToggle with SSR disabled
+const ThemeToggle = dynamic(
+  () => import("@/components/ui/ThemeToggle").then((mod) => mod.ThemeToggle),
+  { ssr: false }
+);
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -1497,7 +1503,6 @@ const JobDescription = styled.p`
 
 // ==================== MAIN COMPONENT ====================
 export default function Page() {
-  const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState<"upload" | "loading" | "analyzing">("upload");
 const [detectedLocation, setDetectedLocation] = useState("");
 const [improvementTips, setImprovementTips] = useState<string[]>([]);
@@ -1515,10 +1520,6 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
     missingKeywords: string[];
   } | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const faqs = [
     {
@@ -1644,11 +1645,9 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
 
   return (
     <Container>
-      {mounted && (
-        <FloatingThemeToggle>
-          <ThemeToggle />
-        </FloatingThemeToggle>
-      )}
+      <FloatingThemeToggle>
+        <ThemeToggle />
+      </FloatingThemeToggle>
 
       {/* HERO SECTION */}
       <HeroSection>

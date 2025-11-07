@@ -28,6 +28,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme') || 'dark';
+                  document.documentElement.setAttribute('data-theme', theme);
+                } catch (e) {
+                  document.documentElement.setAttribute('data-theme', 'dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body>
         <StyledComponentsRegistry>
           <Providers>{children}</Providers>

@@ -284,7 +284,9 @@ const UpgradeFeatures = styled.ul`
 
 const PDFPreviewContainer = styled.div`
   width: 100%;
-  height: 600px;
+  height: 70vh;
+  min-height: 500px;
+  max-height: 800px;
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
   overflow: hidden;
@@ -292,6 +294,7 @@ const PDFPreviewContainer = styled.div`
 
   @media (max-width: 640px) {
     height: 500px;
+    min-height: 400px;
   }
 `;
 
@@ -1032,13 +1035,13 @@ export default function ReportDetailPage() {
         onClose={handleClosePreview}
         title="CV Preview"
         description="Review your optimized CV before downloading"
-        size="sm"
+        size="lg"
       >
         <Modal.Body>
           <PDFPreviewContainer>
             {pdfPreviewUrl ? (
               <PDFViewer
-                src={pdfPreviewUrl}
+                src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
                 title="CV Preview"
               />
             ) : (

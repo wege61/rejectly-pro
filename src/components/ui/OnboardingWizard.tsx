@@ -113,10 +113,12 @@ const EditIcon = () => (
 );
 
 const WizardContainer = styled.div`
+  height: 70vh;
   min-height: 500px;
-  max-height: 85vh;
+  max-height: 800px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 `;
 
 const ProgressBar = styled.div`
@@ -126,6 +128,7 @@ const ProgressBar = styled.div`
   border-radius: 999px;
   margin-bottom: ${({ theme }) => theme.spacing.xl};
   overflow: hidden;
+  flex-shrink: 0;
 `;
 
 const ProgressFill = styled.div<{ $progress: number }>`
@@ -139,6 +142,7 @@ const ProgressFill = styled.div<{ $progress: number }>`
 const StepHeader = styled.div`
   text-align: center;
   margin-bottom: ${({ theme }) => theme.spacing.xl};
+  flex-shrink: 0;
 `;
 
 const StepTitle = styled.h2`
@@ -154,25 +158,26 @@ const StepDescription = styled.p`
 `;
 
 const StepContent = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
   flex: 1;
   overflow-y: auto;
-  padding-right: ${({ theme }) => theme.spacing.xs};
-  
+  overflow-x: hidden;
+  padding-right: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+
   /* Custom scrollbar styling */
   &::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: ${({ theme }) => theme.colors.background};
     border-radius: ${({ theme }) => theme.radius.full};
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.colors.border};
     border-radius: ${({ theme }) => theme.radius.full};
-    
+
     &:hover {
       background: ${({ theme }) => theme.colors.borderHover};
     }
@@ -263,27 +268,6 @@ const PreviewPanel = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.lg};
   background-color: ${({ theme }) => theme.colors.background};
-  max-height: 400px;
-  overflow-y: auto;
-  
-  /* Custom scrollbar styling */
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.colors.surface};
-    border-radius: ${({ theme }) => theme.radius.full};
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.border};
-    border-radius: ${({ theme }) => theme.radius.full};
-    
-    &:hover {
-      background: ${({ theme }) => theme.colors.borderHover};
-    }
-  }
 `;
 
 const PreviewSection = styled.div`
@@ -402,9 +386,10 @@ const WizardActions = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: ${({ theme }) => theme.spacing.md};
-  margin-top: auto;
   padding-top: ${({ theme }) => theme.spacing.lg};
   border-top: 1px solid ${({ theme }) => theme.colors.border};
+  flex-shrink: 0;
+  margin-top: 0;
 `;
 
 const SelectionList = styled.div`
@@ -523,6 +508,11 @@ const CardSubtitle = styled.div`
 const LoadingContainer = styled.div`
   text-align: center;
   padding: ${({ theme }) => `${theme.spacing["3xl"]} 0`};
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 const LoadingTitle = styled.p`

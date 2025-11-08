@@ -35,28 +35,9 @@ export default function RootLayout({
               (function() {
                 try {
                   const theme = localStorage.getItem('theme') || 'dark';
-                  const root = document.documentElement;
-                  root.setAttribute('data-theme', theme);
-
-                  // Set CSS variables immediately to prevent FOUC
-                  if (theme === 'light') {
-                    root.style.setProperty('--bg-color', '#F5F7FA');
-                    root.style.setProperty('--text-color', '#1F2937');
-                    root.style.setProperty('--surface-color', '#FFFFFF');
-                    root.style.setProperty('--border-color', '#D1D5DB');
-                  } else {
-                    root.style.setProperty('--bg-color', '#0f172a');
-                    root.style.setProperty('--text-color', '#f1f5f9');
-                    root.style.setProperty('--surface-color', '#1e293b');
-                    root.style.setProperty('--border-color', '#334155');
-                  }
+                  document.documentElement.setAttribute('data-theme', theme);
                 } catch (e) {
-                  const root = document.documentElement;
-                  root.setAttribute('data-theme', 'dark');
-                  root.style.setProperty('--bg-color', '#0f172a');
-                  root.style.setProperty('--text-color', '#f1f5f9');
-                  root.style.setProperty('--surface-color', '#1e293b');
-                  root.style.setProperty('--border-color', '#334155');
+                  document.documentElement.setAttribute('data-theme', 'dark');
                 }
               })();
             `,
@@ -65,12 +46,22 @@ export default function RootLayout({
         <style
           dangerouslySetInnerHTML={{
             __html: `
+              /* Default theme - Dark */
               :root {
                 --bg-color: #0f172a;
                 --text-color: #f1f5f9;
                 --surface-color: #1e293b;
                 --border-color: #334155;
               }
+
+              /* Light theme - Applied via data-theme attribute */
+              :root[data-theme="light"] {
+                --bg-color: #F5F7FA;
+                --text-color: #1F2937;
+                --surface-color: #FFFFFF;
+                --border-color: #D1D5DB;
+              }
+
               html {
                 background-color: var(--bg-color);
                 color: var(--text-color);

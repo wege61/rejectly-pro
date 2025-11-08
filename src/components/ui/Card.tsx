@@ -10,8 +10,8 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 interface StyledCardProps {
-  variant?: "default" | "bordered" | "elevated";
-  padding?: "none" | "sm" | "md" | "lg";
+  $variant?: "default" | "bordered" | "elevated";
+  $padding?: "none" | "sm" | "md" | "lg";
   $hoverable?: boolean;
 }
 
@@ -21,8 +21,8 @@ const StyledCard = styled.div<StyledCardProps>`
   transition: all ${({ theme }) => theme.transitions.normal};
   position: relative;
 
-  ${({ padding, theme }) => {
-    switch (padding) {
+  ${({ $padding, theme }) => {
+    switch ($padding) {
       case "none":
         return css`
           padding: 0;
@@ -42,8 +42,8 @@ const StyledCard = styled.div<StyledCardProps>`
     }
   }}
 
-  ${({ variant, theme }) => {
-    switch (variant) {
+  ${({ $variant, theme }) => {
+    switch ($variant) {
       case "bordered":
         return css`
           border: 1px solid ${theme.colors.border};
@@ -123,8 +123,8 @@ export const Card: React.FC<CardProps> & {
 }) => {
   return (
     <StyledCard
-      variant={variant}
-      padding={padding}
+      $variant={variant}
+      $padding={padding}
       $hoverable={hoverable}
       {...props}
     >

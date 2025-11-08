@@ -18,8 +18,8 @@ interface RippleType {
 }
 
 const StyledButton = styled.button<{
-  variant: ButtonProps['variant'];
-  size: ButtonProps['size'];
+  $variant: ButtonProps['variant'];
+  $size: ButtonProps['size'];
   $fullWidth: boolean;
 }>`
   position: relative;
@@ -42,8 +42,8 @@ const StyledButton = styled.button<{
       width: 100%;
     `}
 
-  ${({ size, theme }) => {
-    switch (size) {
+  ${({ $size, theme }) => {
+    switch ($size) {
       case "sm":
         return css`
           padding: ${theme.spacing.xs} ${theme.spacing.md};
@@ -65,8 +65,8 @@ const StyledButton = styled.button<{
     }
   }}
 
-  ${({ variant, theme }) => {
-    switch (variant) {
+  ${({ $variant, theme }) => {
+    switch ($variant) {
       case "secondary":
         return css`
           background-color: ${theme.colors.secondary};
@@ -214,8 +214,8 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <StyledButton
-      variant={variant}
-      size={size}
+      $variant={variant}
+      $size={size}
       $fullWidth={fullWidth}
       disabled={disabled || isLoading}
       onClick={handleClick}

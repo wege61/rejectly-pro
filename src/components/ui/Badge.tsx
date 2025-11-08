@@ -11,7 +11,12 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode;
 }
 
-const StyledBadge = styled.span<BadgeProps>`
+interface StyledBadgeProps {
+  $variant?: BadgeVariant;
+  $size?: BadgeSize;
+}
+
+const StyledBadge = styled.span<StyledBadgeProps>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -22,8 +27,8 @@ const StyledBadge = styled.span<BadgeProps>`
   animation: ${({ theme }) => theme.animations.scaleIn} 0.2s ease;
 
   /* Sizes */
-  ${({ size = "md", theme }) => {
-    switch (size) {
+  ${({ $size = "md", theme }) => {
+    switch ($size) {
       case "sm":
         return css`
           padding: ${theme.spacing.xs} ${theme.spacing.sm};
@@ -46,8 +51,8 @@ const StyledBadge = styled.span<BadgeProps>`
   }}
 
   /* Variants */
-  ${({ variant = "default", theme }) => {
-    switch (variant) {
+  ${({ $variant = "default", theme }) => {
+    switch ($variant) {
       case "success":
         return css`
           background-color: ${theme.colors.successLight};
@@ -107,6 +112,6 @@ const StyledBadge = styled.span<BadgeProps>`
   }}
 `;
 
-export const Badge: React.FC<BadgeProps> = ({ children, ...props }) => {
-  return <StyledBadge {...props}>{children}</StyledBadge>;
+export const Badge: React.FC<BadgeProps> = ({ children, variant, size, ...props }) => {
+  return <StyledBadge $variant={variant} $size={size} {...props}>{children}</StyledBadge>;
 };

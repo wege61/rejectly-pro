@@ -69,13 +69,13 @@ const StyledButton = styled.button<{
     switch ($variant) {
       case "secondary":
         return css`
-          background-color: ${theme.colors.secondary};
-          color: ${theme.colors.textPrimary};
-          border: 1px solid ${theme.colors.border};
+          background-color: var(--surface-color);
+          color: var(--text-color);
+          border: 1px solid var(--border-color);
 
           &:hover:not(:disabled) {
-            background-color: ${theme.colors.secondaryHover};
-            border-color: ${theme.colors.borderHover};
+            background-color: var(--surface-hover);
+            border-color: var(--border-color);
             transform: translateY(-1px);
             box-shadow: ${theme.shadow.sm};
           }
@@ -87,16 +87,16 @@ const StyledButton = styled.button<{
       case "ghost":
         return css`
           background-color: transparent;
-          color: ${theme.colors.textSecondary};
+          color: var(--text-secondary);
           border: none;
 
           &:hover:not(:disabled) {
-            background-color: ${theme.colors.surfaceHover};
-            color: ${theme.colors.textPrimary};
+            background-color: var(--surface-hover);
+            color: var(--text-color);
           }
 
           &:active:not(:disabled) {
-            background-color: ${theme.colors.surface};
+            background-color: var(--surface-color);
           }
         `;
       case "danger":
@@ -117,12 +117,13 @@ const StyledButton = styled.button<{
         `;
       default: // primary
         return css`
-          background-color: ${theme.colors.primary};
+          background-color: var(--primary-color);
           color: white;
           border: none;
 
           &:hover:not(:disabled) {
-            background-color: ${theme.colors.primaryHover};
+            background-color: var(--primary-color);
+            filter: brightness(0.9);
             transform: translateY(-2px);
             box-shadow: ${theme.shadow.md};
           }
@@ -141,7 +142,7 @@ const StyledButton = styled.button<{
   }
 
   &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.colors.primary};
+    outline: 2px solid var(--primary-color);
     outline-offset: 2px;
   }
 `;

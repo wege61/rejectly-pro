@@ -3,33 +3,13 @@
 import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`
-  /* CSS Reset */
-  *, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  html {
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-  }
-
-  body {
-    font-family: ${({ theme }) => theme.typography.fontFamily.sans};
-    font-size: ${({ theme }) => theme.typography.fontSize.base};
-    font-weight: ${({ theme }) => theme.typography.fontWeight.normal};
-    line-height: ${({ theme }) => theme.typography.lineHeight.normal};
-    overflow-x: hidden;
-  }
+  /* CSS Reset - already handled by layout.tsx */
 
   /* Headings */
   h1, h2, h3, h4, h5, h6 {
     font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
     line-height: ${({ theme }) => theme.typography.lineHeight.tight};
-    color: ${({ theme }) => theme.colors.textPrimary};
+    color: var(--text-color);
   }
 
   h1 {
@@ -67,16 +47,12 @@ export const GlobalStyle = createGlobalStyle`
 
   /* Links */
   a {
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--primary-color);
     text-decoration: none;
     transition: color ${({ theme }) => theme.transitions.fast};
-    
-    &:hover {
-      color: ${({ theme }) => theme.colors.primaryHover};
-    }
-    
+
     &:focus-visible {
-      outline: 2px solid ${({ theme }) => theme.colors.primary};
+      outline: 2px solid var(--primary-color);
       outline-offset: 2px;
       border-radius: ${({ theme }) => theme.radius.sm};
     }
@@ -88,14 +64,14 @@ export const GlobalStyle = createGlobalStyle`
     cursor: pointer;
     border: none;
     background: none;
-    
+
     &:disabled {
       cursor: not-allowed;
       opacity: 0.6;
     }
-    
+
     &:focus-visible {
-      outline: 2px solid ${({ theme }) => theme.colors.primary};
+      outline: 2px solid var(--primary-color);
       outline-offset: 2px;
     }
   }
@@ -104,9 +80,9 @@ export const GlobalStyle = createGlobalStyle`
   input, textarea, select {
     font-family: inherit;
     font-size: inherit;
-    
+
     &:focus-visible {
-      outline: 2px solid ${({ theme }) => theme.colors.primary};
+      outline: 2px solid var(--primary-color);
       outline-offset: 2px;
     }
   }
@@ -131,7 +107,7 @@ export const GlobalStyle = createGlobalStyle`
   /* Selection */
   ::selection {
     background-color: ${({ theme }) => theme.colors.primaryLight};
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--primary-color);
   }
 
   /* Scrollbar (webkit) */
@@ -141,13 +117,13 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   ::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.colors.backgroundAlt};
+    background: var(--bg-color);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.border};
+    background: var(--border-color);
     border-radius: ${({ theme }) => theme.radius.full};
-    
+
     &:hover {
       background: ${({ theme }) => theme.colors.borderHover};
     }

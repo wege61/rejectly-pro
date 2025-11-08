@@ -23,7 +23,7 @@ const Title = styled.h2`
 
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
@@ -33,7 +33,7 @@ const ForgotPasswordLink = styled.div`
 
   a {
     font-size: ${({ theme }) => theme.typography.fontSize.sm};
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--primary-color);
 
     &:hover {
       text-decoration: underline;
@@ -45,10 +45,10 @@ const Footer = styled.div`
   margin-top: ${({ theme }) => theme.spacing.lg};
   text-align: center;
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
 
   a {
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--primary-color);
     font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
 
     &:hover {
@@ -68,12 +68,12 @@ const Divider = styled.div`
     content: "";
     flex: 1;
     height: 1px;
-    background-color: ${({ theme }) => theme.colors.border};
+    background-color: var(--border-color);
   }
 
   span {
     font-size: ${({ theme }) => theme.typography.fontSize.sm};
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
   }
 `;
 

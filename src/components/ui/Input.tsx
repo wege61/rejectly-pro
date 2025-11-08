@@ -20,7 +20,7 @@ const InputWrapper = styled.div<{ $fullWidth?: boolean }>`
 const Label = styled.label`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   transition: all ${({ theme }) => theme.transitions.fast};
 `;
 
@@ -35,23 +35,25 @@ const StyledInput = styled.input<{ $hasError?: boolean }>`
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  background-color: ${({ theme }) => theme.colors.surface};
-  border: 2px solid ${({ theme }) => theme.colors.border};
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border: 2px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.md};
   transition: all ${({ theme }) => theme.transitions.normal};
   outline: none;
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.textTertiary};
+    color: var(--text-secondary);
+    opacity: 0.6;
   }
 
   &:hover:not(:disabled) {
-    border-color: ${({ theme }) => theme.colors.borderHover};
+    border-color: var(--border-color);
+    filter: brightness(1.1);
   }
 
   &:focus {
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primaryLight};
     transform: translateY(-1px);
   }
@@ -59,7 +61,7 @@ const StyledInput = styled.input<{ $hasError?: boolean }>`
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background-color: ${({ theme }) => theme.colors.surfaceHover};
+    background-color: var(--surface-hover);
   }
 
   ${({ $hasError, theme }) =>
@@ -77,7 +79,7 @@ const StyledInput = styled.input<{ $hasError?: boolean }>`
 const HelperText = styled.span<{ $isError?: boolean }>`
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
   color: ${({ $isError, theme }) =>
-    $isError ? theme.colors.error : theme.colors.textSecondary};
+    $isError ? theme.colors.error : "var(--text-secondary)"};
   margin-top: ${({ theme }) => theme.spacing.xs};
   display: block;
   animation: ${({ theme }) => theme.animations.slideInUp} 0.2s ease;

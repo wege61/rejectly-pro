@@ -64,11 +64,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const theme: Theme = mode === "dark" ? darkTheme : lightTheme;
 
-  // Prevent flash of unstyled content
-  if (!mounted) {
-    return <StyledThemeProvider theme={darkTheme}>{children}</StyledThemeProvider>;
-  }
-
   return (
     <ThemeContext.Provider value={{ mode, toggleTheme, setTheme }}>
       <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>

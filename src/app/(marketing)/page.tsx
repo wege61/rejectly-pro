@@ -121,8 +121,8 @@ const ChevronDownIcon = () => (
 // ==================== LAYOUT ====================
 const Container = styled.div`
   min-height: 100vh;
-  background-color: ${({ theme }) => theme.colors.background};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  background-color: var(--bg-color);
+  color: var(--text-color);
 `;
 
 // ==================== HERO SECTION ====================
@@ -218,7 +218,7 @@ const GradientText = styled.span`
 
 const HeroSubtitle = styled.p`
   font-size: 20px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   margin-bottom: 40px;
   max-width: 700px;
   margin-left: auto;
@@ -227,7 +227,7 @@ const HeroSubtitle = styled.p`
   animation: ${fadeIn} 0.6s ease-out 0.2s backwards;
 
   strong {
-    color: ${({ theme }) => theme.colors.textPrimary};
+    color: var(--text-color);
     font-weight: 600;
   }
 
@@ -292,7 +292,7 @@ const SecondaryButton = styled.a`
   gap: 8px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   padding: 18px 32px;
   border-radius: 9999px;
   font-weight: 600;
@@ -350,7 +350,7 @@ const TrustItem = styled.div`
 
   .label {
     font-size: 13px;
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
     text-align: center;
     line-height: 1.4;
   }
@@ -387,7 +387,7 @@ const AvatarStack = styled.div`
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    border: 3px solid ${({ theme }) => theme.colors.background};
+    border: 3px solid var(--bg-color);
     margin-left: -12px;
     transition: transform 0.2s ease;
 
@@ -413,7 +413,7 @@ const SocialProofText = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   font-size: 15px;
 
   svg {
@@ -424,7 +424,7 @@ const SocialProofText = styled.div`
   }
 
   strong {
-    color: ${({ theme }) => theme.colors.textPrimary};
+    color: var(--text-color);
     font-weight: 700;
   }
 
@@ -466,7 +466,7 @@ const SectionTitle = styled.h2`
 
 const SectionSubtitle = styled.p`
   font-size: 20px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
 
   @media (max-width: 768px) {
     font-size: 16px;
@@ -497,8 +497,8 @@ const DemoSection = styled.section`
 `;
 
 const DemoCard = styled.div`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.xl};
   padding: 40px;
   box-shadow: ${({ theme }) => theme.shadow.xl};
@@ -525,7 +525,7 @@ const DemoTitle = styled.h3`
 
 const DemoSubtitle = styled.p`
   font-size: 16px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   margin-bottom: 20px;
 `;
 
@@ -535,7 +535,7 @@ const LoadSampleButton = styled.button`
   gap: 8px;
   background: rgba(102, 126, 234, 0.1);
   border: 1px solid rgba(102, 126, 234, 0.3);
-  color: ${({ theme }) => theme.colors.primary};
+  color: var(--primary-color);
   padding: 10px 20px;
   border-radius: 9999px;
   font-weight: 600;
@@ -551,11 +551,11 @@ const LoadSampleButton = styled.button`
 
 const DemoTextarea = styled.textarea`
   width: 100%;
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 16px;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   font-size: 14px;
   font-family: inherit;
   resize: vertical;
@@ -565,12 +565,12 @@ const DemoTextarea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
   }
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
   }
 `;
 
@@ -618,8 +618,8 @@ const Spinner = styled.div`
 
 const ResultsCard = styled.div`
   margin-top: 32px;
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 32px;
   animation: ${fadeIn} 0.5s ease;
@@ -660,7 +660,7 @@ const ScoreValue = styled.div`
 const ScoreLabel = styled.div`
   font-size: 18px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
 `;
 
 const ResultSection = styled.div`
@@ -682,17 +682,17 @@ const ResultTitle = styled.h4`
   svg {
     width: 24px;
     height: 24px;
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--primary-color);
   }
 `;
 
 const SummaryBox = styled.div`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.md};
   padding: 20px;
   line-height: 1.7;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
 `;
 
 const KeywordList = styled.div`
@@ -730,7 +730,7 @@ const CTASection = styled.div`
   }
 
   p {
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
     margin-bottom: 24px;
     font-size: 16px;
   }
@@ -752,24 +752,24 @@ const CTAButton = styled.button<{ $variant?: "primary" | "secondary" }>`
   transition: all 0.3s ease;
   border: none;
 
-  ${({ $variant, theme }) =>
+  ${({ $variant }) =>
     $variant === "primary"
       ? `
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
     }
   `
       : `
-    background: ${theme.colors.surface};
-    color: ${theme.colors.textPrimary};
-    border: 1px solid ${theme.colors.border};
-    
+    background: var(--surface-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+
     &:hover {
-      background: ${theme.colors.surfaceHover};
+      background: var(--surface-hover);
     }
   `}
 `;
@@ -786,15 +786,15 @@ const FeatureGrid = styled.div`
 `;
 
 const FeatureCard = styled.div`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.xl};
   padding: 32px;
   transition: all 0.3s ease;
   text-align: center;
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: var(--primary-color);
     transform: translateY(-4px);
     box-shadow: ${({ theme }) => theme.shadow.lg};
   }
@@ -824,7 +824,7 @@ const FeatureTitle = styled.h3`
 `;
 
 const FeatureDescription = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   line-height: 1.6;
   font-size: 15px;
 `;
@@ -837,7 +837,7 @@ const FeatureHighlight = styled.div`
   border: 1px solid rgba(102, 126, 234, 0.2);
 
   strong {
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--primary-color);
     font-weight: 700;
   }
 `;
@@ -860,8 +860,8 @@ const TestimonialGrid = styled.div`
 `;
 
 const TestimonialCard = styled.div`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.xl};
   padding: 32px;
   transition: all 0.3s ease;
@@ -875,7 +875,7 @@ const TestimonialCard = styled.div`
   }
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: var(--primary-color);
     transform: translateY(-4px);
     box-shadow: ${({ theme }) => theme.shadow.lg};
   }
@@ -891,7 +891,7 @@ const TestimonialHeader = styled.div`
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    border: 2px solid ${({ theme }) => theme.colors.border};
+    border: 2px solid var(--border-color);
   }
 `;
 
@@ -903,12 +903,12 @@ const TestimonialAuthor = styled.div`
   .name {
     font-weight: 700;
     font-size: 16px;
-    color: ${({ theme }) => theme.colors.textPrimary};
+    color: var(--text-color);
   }
 
   .role {
     font-size: 14px;
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
   }
 `;
 
@@ -940,7 +940,7 @@ const TestimonialRating = styled.div`
 `;
 
 const TestimonialText = styled.p`
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   line-height: 1.7;
   font-size: 15px;
   font-style: italic;
@@ -949,7 +949,7 @@ const TestimonialText = styled.p`
   &:before {
     content: '"';
     font-size: 48px;
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--primary-color);
     opacity: 0.3;
     position: absolute;
     top: -10px;
@@ -991,11 +991,11 @@ const PricingGrid = styled.div`
 `;
 
 const PricingCard = styled.div<{ $featured?: boolean }>`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: ${({ $featured, theme }) =>
+  background: var(--bg-alt);
+  border: ${({ $featured }) =>
     $featured
-      ? `2px solid ${theme.colors.primary}`
-      : `1px solid ${theme.colors.border}`};
+      ? "2px solid var(--primary-color)"
+      : "1px solid var(--border-color)"};
   border-radius: ${({ theme }) => theme.radius.xl};
   padding: 40px 32px;
   transition: all 0.3s ease;
@@ -1038,7 +1038,7 @@ const PricingPrice = styled.div`
 
   span {
     font-size: 20px;
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
     font-weight: 600;
   }
 `;
@@ -1066,8 +1066,8 @@ const PricingFeature = styled.li<{ $enabled?: boolean }>`
   }
 
   span {
-    color: ${({ $enabled, theme }) =>
-      $enabled ? theme.colors.textPrimary : theme.colors.textSecondary};
+    color: ${({ $enabled }) =>
+      $enabled ? "var(--text-color)" : "var(--text-secondary)"};
     line-height: 1.5;
     font-size: 15px;
   }
@@ -1083,24 +1083,24 @@ const PricingButton = styled.button<{ $variant?: "primary" | "secondary" }>`
   transition: all 0.3s ease;
   border: none;
 
-  ${({ $variant, theme }) =>
+  ${({ $variant }) =>
     $variant === "primary"
       ? `
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
     }
   `
       : `
-    background: ${theme.colors.surface};
-    color: ${theme.colors.textPrimary};
-    border: 1px solid ${theme.colors.border};
-    
+    background: var(--surface-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+
     &:hover {
-      background: ${theme.colors.surfaceHover};
+      background: var(--surface-hover);
     }
   `}
 `;
@@ -1115,16 +1115,16 @@ const FAQList = styled.div`
 `;
 
 const FAQItem = styled.div<{ $isOpen?: boolean }>`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 24px;
   transition: all 0.3s ease;
 
-  ${({ $isOpen, theme }) =>
+  ${({ $isOpen }) =>
     $isOpen &&
     `
-    border-color: ${theme.colors.primary};
+    border-color: var(--primary-color);
     background: rgba(102, 126, 234, 0.05);
   `}
 `;
@@ -1137,7 +1137,7 @@ const FAQQuestion = styled.button<{ $isOpen?: boolean }>`
   align-items: center;
   font-weight: 600;
   font-size: 17px;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   background: none;
   border: none;
   padding: 0;
@@ -1149,13 +1149,13 @@ const FAQQuestion = styled.button<{ $isOpen?: boolean }>`
     flex-shrink: 0;
     transition: transform 0.3s ease;
     transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
   }
 `;
 
 const FAQAnswer = styled.div<{ $isOpen?: boolean }>`
   margin-top: 16px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   line-height: 1.7;
   font-size: 15px;
   display: ${({ $isOpen }) => ($isOpen ? "block" : "none")};
@@ -1163,7 +1163,7 @@ const FAQAnswer = styled.div<{ $isOpen?: boolean }>`
 
 // ==================== FOOTER ====================
 const Footer = styled.footer`
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: 1px solid var(--border-color);
   margin-top: 80px;
 `;
 
@@ -1198,7 +1198,7 @@ const FooterColumn = styled.div`
   }
 
   p {
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
     font-size: 14px;
     line-height: 1.6;
   }
@@ -1213,19 +1213,19 @@ const FooterColumn = styled.div`
   }
 
   li a {
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
     font-size: 14px;
     text-decoration: none;
     transition: color 0.2s ease;
 
     &:hover {
-      color: ${({ theme }) => theme.colors.textPrimary};
+      color: var(--text-color);
     }
   }
 `;
 
 const FooterBottom = styled.div`
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: 1px solid var(--border-color);
   padding-top: 32px;
   display: flex;
   flex-direction: column;
@@ -1238,7 +1238,7 @@ const FooterBottom = styled.div`
   }
 
   p {
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
     font-size: 14px;
   }
 `;
@@ -1248,13 +1248,13 @@ const FooterLinks = styled.div`
   gap: 24px;
 
   a {
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
     font-size: 14px;
     text-decoration: none;
     transition: color 0.2s ease;
 
     &:hover {
-      color: ${({ theme }) => theme.colors.textPrimary};
+      color: var(--text-color);
     }
   }
 `;
@@ -1280,19 +1280,19 @@ const LoadingSteps = styled.div`
 
 const LoadingStep = styled.div<{ $completed?: boolean }>`
   padding: 12px 16px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.md};
   font-size: 15px;
-  color: ${({ $completed, theme }) =>
-    $completed ? theme.colors.primary : theme.colors.textSecondary};
+  color: ${({ $completed }) =>
+    $completed ? "var(--primary-color)" : "var(--text-secondary)"};
   font-weight: ${({ $completed }) => ($completed ? 600 : 400)};
 `;
 
 const ImprovementSection = styled.div`
   margin-top: 32px;
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 32px;
 
@@ -1315,7 +1315,7 @@ const ImprovementHeader = styled.div`
   svg {
     width: 24px;
     height: 24px;
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--primary-color);
   }
 `;
 
@@ -1331,7 +1331,7 @@ const PotentialScoreBox = styled.div`
 
   .label {
     font-size: 15px;
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
   }
 
   .score {
@@ -1356,8 +1356,8 @@ const TipItem = styled.div`
   align-items: flex-start;
   gap: 12px;
   padding: 12px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.md};
 
   svg {
@@ -1369,7 +1369,7 @@ const TipItem = styled.div`
   }
 
   span {
-    color: ${({ theme }) => theme.colors.textPrimary};
+    color: var(--text-color);
     font-size: 15px;
     line-height: 1.5;
   }
@@ -1391,21 +1391,21 @@ const UnlockOverlay = styled.div`
   border-radius: ${({ theme }) => theme.radius.md};
 
   p {
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
     margin-bottom: 8px;
     font-size: 14px;
   }
 
   strong {
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--primary-color);
     font-weight: 600;
   }
 `;
 
 const BetterJobsSection = styled.div`
   margin-top: 32px;
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 32px;
 
@@ -1415,8 +1415,8 @@ const BetterJobsSection = styled.div`
 `;
 
 const BetterJobCard = styled.div<{ $blurred?: boolean }>`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.md};
   padding: 20px;
   margin-bottom: 16px;
@@ -1443,12 +1443,12 @@ const JobInfo = styled.div`
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 6px;
-    color: ${({ theme }) => theme.colors.textPrimary};
+    color: var(--text-color);
   }
 
   p {
     font-size: 14px;
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
   }
 `;
 
@@ -1464,7 +1464,7 @@ const MatchBadge = styled.div`
 
 const JobDescription = styled.p`
   font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: 12px;
 `;

@@ -15,13 +15,12 @@ const ThemeToggle = dynamic(
 );
 
 const Header = styled.header`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  border-bottom: 1px solid var(--border-color);
   padding: ${({ theme }) => theme.spacing.lg} 0;
-  background-color: ${({ theme }) => theme.colors.surface};
+  background-color: var(--bg-color);
   position: sticky;
   top: 0;
   z-index: ${({ theme }) => theme.zIndex.sticky};
-  backdrop-filter: blur(8px);
 `;
 
 const Nav = styled.nav`
@@ -58,14 +57,14 @@ const DesktopNav = styled.div`
   }
 
   a {
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
     font-size: ${({ theme }) => theme.typography.fontSize.sm};
     font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
     text-decoration: none;
     transition: color ${({ theme }) => theme.transitions.fast};
 
     &:hover {
-      color: ${({ theme }) => theme.colors.textPrimary};
+      color: var(--text-color);
     }
   }
 `;
@@ -81,7 +80,7 @@ const MobileMenuButton = styled.button`
   border: none;
   padding: ${({ theme }) => theme.spacing.sm};
   cursor: pointer;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
 
   @media (max-width: 768px) {
     display: flex;
@@ -100,8 +99,8 @@ const MobileMenu = styled.div<{ $isOpen: boolean }>`
   top: 73px;
   left: 0;
   right: 0;
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
   padding: ${({ theme }) => theme.spacing.lg};
   display: ${({ $isOpen }) => ($isOpen ? "flex" : "none")};
   flex-direction: column;
@@ -114,14 +113,14 @@ const MobileMenu = styled.div<{ $isOpen: boolean }>`
   }
 
   a {
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: var(--text-secondary);
     font-size: ${({ theme }) => theme.typography.fontSize.base};
     font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
     text-decoration: none;
     padding: ${({ theme }) => theme.spacing.sm} 0;
 
     &:hover {
-      color: ${({ theme }) => theme.colors.textPrimary};
+      color: var(--text-color);
     }
   }
 `;

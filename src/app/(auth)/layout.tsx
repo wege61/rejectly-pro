@@ -8,14 +8,14 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: var(--bg-alt);
   padding: ${({ theme }) => theme.spacing.lg};
 `;
 
 const Card = styled.div`
   width: 100%;
   max-width: 450px;
-  background-color: ${({ theme }) => theme.colors.surface};
+  background-color: var(--surface-color);
   border-radius: ${({ theme }) => theme.radius.xl};
   box-shadow: ${({ theme }) => theme.shadow.xl};
   padding: ${({ theme }) => theme.spacing['2xl']};
@@ -40,17 +40,17 @@ const LogoLink = styled.a`
 const LogoText = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.primary};
+  color: var(--primary-color);
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 
   ${LogoLink}:hover & {
-    color: ${({ theme }) => theme.colors.primaryHover};
+    filter: brightness(0.9);
   }
 `;
 
 const LogoSubtext = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
 `;
 
 export default function AuthLayout({

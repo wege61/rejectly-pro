@@ -22,7 +22,7 @@ const Title = styled.h2`
 
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
@@ -30,12 +30,12 @@ const Footer = styled.div`
   margin-top: ${({ theme }) => theme.spacing.lg};
   text-align: center;
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  
+  color: var(--text-secondary);
+
   a {
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--primary-color);
     font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-    
+
     &:hover {
       text-decoration: underline;
     }

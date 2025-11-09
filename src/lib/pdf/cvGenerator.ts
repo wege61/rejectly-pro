@@ -7,6 +7,8 @@ const COLORS = {
   text: "#1f2937", // Dark gray
   textLight: "#6b7280", // Light gray
   border: "#e5e7eb", // Very light gray
+  highlight: "#10b981", // Green for highlighting improvements
+  highlightBg: "#f0fdf4", // Light green background
 };
 
 const FONTS = {
@@ -16,7 +18,10 @@ const FONTS = {
   small: 9,
 };
 
-export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
+export async function generateCVPDF(
+  cv: GeneratedCV,
+  highlightSection?: string
+): Promise<jsPDF> {
   const doc = new jsPDF();
 
   // Load Unicode-compatible fonts (Roboto) for international character support
@@ -42,7 +47,25 @@ export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
     return doc.splitTextToSize(text, maxWidth);
   };
 
+  // Helper function to draw highlight border around a section
+  const drawHighlightBorder = (startY: number, endY: number) => {
+    const padding = 3;
+    const borderWidth = 2;
+    doc.setDrawColor(COLORS.highlight);
+    doc.setLineWidth(borderWidth);
+    doc.roundedRect(
+      margin - padding,
+      startY - padding,
+      contentWidth + padding * 2,
+      endY - startY + padding * 2,
+      3,
+      3
+    );
+    doc.setLineWidth(0.5); // Reset line width
+  };
+
   // 1. CONTACT SECTION
+  const contactStartY = yPosition;
   doc.setFontSize(FONTS.heading + 4);
   doc.setTextColor(COLORS.primary);
   doc.text(cv.contact.name, margin, yPosition);
@@ -68,6 +91,9 @@ export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
   });
 
   yPosition += 5;
+  if (highlightSection === "contact") {
+    drawHighlightBorder(contactStartY, yPosition);
+  }
 
   // Divider line
   doc.setDrawColor(COLORS.border);
@@ -75,6 +101,7 @@ export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
   yPosition += 8;
 
   // 2. PROFESSIONAL SUMMARY
+  const summaryStartY = yPosition;
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
   doc.text("PROFESSIONAL SUMMARY", margin, yPosition);
@@ -89,8 +116,12 @@ export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
     yPosition += 5;
   });
   yPosition += 5;
+  if (highlightSection === "summary") {
+    drawHighlightBorder(summaryStartY, yPosition);
+  }
 
   // 3. EXPERIENCE
+  const experienceStartY = yPosition;
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
   doc.text("PROFESSIONAL EXPERIENCE", margin, yPosition);
@@ -139,9 +170,13 @@ export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
   });
 
   yPosition += 2;
+  if (highlightSection === "experience") {
+    drawHighlightBorder(experienceStartY, yPosition);
+  }
 
   // 4. EDUCATION
   checkPageBreak(15);
+  const educationStartY = yPosition;
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
   doc.text("EDUCATION", margin, yPosition);
@@ -179,9 +214,13 @@ export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
   });
 
   yPosition += 2;
+  if (highlightSection === "education") {
+    drawHighlightBorder(educationStartY, yPosition);
+  }
 
   // 5. SKILLS
   checkPageBreak(15);
+  const skillsStartY = yPosition;
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
   doc.text("SKILLS", margin, yPosition);
@@ -220,11 +259,15 @@ export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
   });
 
   yPosition += 2;
+  if (highlightSection === "skills") {
+    drawHighlightBorder(skillsStartY, yPosition);
+  }
 
   // 6. CERTIFICATIONS (if present)
   if (cv.certifications && cv.certifications.length > 0) {
     yPosition += 2;
     checkPageBreak(15);
+    const certificationsStartY = yPosition;
     doc.setFontSize(FONTS.subheading);
     doc.setTextColor(COLORS.primary);
     doc.text("CERTIFICATIONS", margin, yPosition);
@@ -243,12 +286,16 @@ export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
       doc.text(`${cert.issuer} | ${cert.date}`, margin, yPosition);
       yPosition += 5;
     });
+    if (highlightSection === "certifications") {
+      drawHighlightBorder(certificationsStartY, yPosition);
+    }
   }
 
   // 7. LANGUAGES (if present)
   if (cv.languages && cv.languages.length > 0) {
     yPosition += 2;
     checkPageBreak(15);
+    const languagesStartY = yPosition;
     doc.setFontSize(FONTS.subheading);
     doc.setTextColor(COLORS.primary);
     doc.text("LANGUAGES", margin, yPosition);
@@ -265,6 +312,9 @@ export async function generateCVPDF(cv: GeneratedCV): Promise<jsPDF> {
       doc.text(line, margin, yPosition);
       yPosition += 5;
     });
+    if (highlightSection === "languages") {
+      drawHighlightBorder(languagesStartY, yPosition);
+    }
   }
 
   return doc;

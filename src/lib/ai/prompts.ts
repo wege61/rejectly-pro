@@ -155,31 +155,36 @@ Respond in JSON format:
       "category": "Keyword Addition",
       "action": "Added 'C#' to technical skills section",
       "impact": 10,
-      "reason": "Critical keyword from job posting that was missing"
+      "reason": "Critical keyword from job posting that was missing",
+      "section": "skills"
     },
     {
       "category": "Keyword Addition",
       "action": "Added 'SQL Server' to experience bullets",
       "impact": 8,
-      "reason": "Required database technology mentioned in job posting"
+      "reason": "Required database technology mentioned in job posting",
+      "section": "experience"
     },
     {
       "category": "Bullet Rewriting",
       "action": "Quantified achievement in project management bullet",
       "impact": 7,
-      "reason": "Added measurable results (30% efficiency increase)"
+      "reason": "Added measurable results (30% efficiency increase)",
+      "section": "experience"
     },
     {
       "category": "ATS Optimization",
       "action": "Restructured experience section with clear job titles",
       "impact": 5,
-      "reason": "Better ATS parsing and keyword matching"
+      "reason": "Better ATS parsing and keyword matching",
+      "section": "experience"
     },
     {
       "category": "Professional Summary",
       "action": "Added summary incorporating target role keywords",
       "impact": 5,
-      "reason": "Improved initial impression and keyword density"
+      "reason": "Improved initial impression and keyword density",
+      "section": "summary"
     }
   ]
 }
@@ -188,6 +193,7 @@ Guidelines:
 - List 5-8 most impactful improvements (prioritize by impact)
 - Impact values must be realistic and their SUM must equal EXACTLY ${actualDifference}%
 - Categories: "Keyword Addition", "Bullet Rewriting", "ATS Optimization", "Professional Summary", "Skills Organization", "Other"
+- Section must be one of: "summary", "experience", "skills", "education", "certifications", "languages", "contact"
 - Be specific about what changed
 - Distribute the ${actualDifference}% across improvements proportionally
 - Most impactful changes get higher values, smaller changes get 1-2%

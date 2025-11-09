@@ -547,6 +547,7 @@ interface Improvement {
   action: string;
   impact: number;
   reason: string;
+  section?: string; // Optional for backward compatibility with existing data
 }
 
 interface Report {
@@ -917,7 +918,7 @@ export default function ReportDetailPage() {
     setSelectedImprovement(improvement);
 
     try {
-      const pdf = await generateCVPDF(report.generated_cv);
+      const pdf = await generateCVPDF(report.generated_cv, improvement.section);
       const pdfBlob = pdf.output("blob");
       const blobUrl = URL.createObjectURL(pdfBlob);
       setPdfPreviewUrl(blobUrl);
@@ -1291,11 +1292,13 @@ export default function ReportDetailPage() {
             <ImprovementHighlight>
               <HighlightTitle>
                 {selectedImprovement.category} • +{Math.round(selectedImprovement.impact * 10) / 10}% Impact
+                {selectedImprovement.section && ` • ${selectedImprovement.section.charAt(0).toUpperCase() + selectedImprovement.section.slice(1)} Section`}
               </HighlightTitle>
               <HighlightAction>{selectedImprovement.action}</HighlightAction>
               <HighlightReason>{selectedImprovement.reason}</HighlightReason>
               <HighlightImpact>
                 <LightBulbIcon /> This improvement boosted your score by +{Math.round(selectedImprovement.impact * 10) / 10}%
+                {selectedImprovement.section && ` - Look for the green highlighted section in the CV below`}
               </HighlightImpact>
             </ImprovementHighlight>
           )}

@@ -1,6 +1,64 @@
-# Database Migration Required
+# Database Migrations
 
-## Migration: 002_add_optimized_analysis.sql
+## Latest Migration: 004_add_fake_it_mode.sql
+
+This migration adds support for tracking "Fake it until you make it" mode.
+
+### What it does:
+- Adds `fake_it_mode` column to track if CV was generated with fake skills
+
+### How to run:
+
+#### Option 1: Supabase Dashboard (Recommended)
+1. Go to your Supabase project dashboard
+2. Navigate to **SQL Editor**
+3. Copy and paste this SQL:
+```sql
+ALTER TABLE reports
+ADD COLUMN IF NOT EXISTS fake_it_mode BOOLEAN DEFAULT FALSE;
+
+COMMENT ON COLUMN reports.fake_it_mode IS 'Indicates if CV was generated with fake it mode';
+```
+4. Click **Run**
+
+#### Verification
+```sql
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name = 'reports'
+AND column_name = 'fake_it_mode';
+```
+
+---
+
+## Previous Migration: 003_add_fake_skills_recommendations.sql
+
+This migration adds support for "Fake it until you make it" feature.
+
+### What it does:
+- Adds `fake_skills_recommendations` column to store learning paths for added skills
+
+### How to run:
+
+#### Supabase Dashboard SQL:
+```sql
+ALTER TABLE reports
+ADD COLUMN IF NOT EXISTS fake_skills_recommendations JSONB DEFAULT NULL;
+
+COMMENT ON COLUMN reports.fake_skills_recommendations IS 'Learning recommendations for skills added through fake it mode.';
+```
+
+#### Verification
+```sql
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name = 'reports'
+AND column_name = 'fake_skills_recommendations';
+```
+
+---
+
+## Previous Migration: 002_add_optimized_analysis.sql
 
 This migration adds caching support for optimized CV analysis results.
 

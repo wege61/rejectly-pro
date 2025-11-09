@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
-import { generateOptimizedCVPrompt } from "@/lib/ai/prompts";
+import { generateOptimizedCVPrompt, generateFakeSkillsRecommendationsPrompt } from "@/lib/ai/prompts";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +17,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Get request body
-    const { reportId } = await request.json();
+    const { reportId, fakeItMode = false } = await request.json();
+
+    console.log('🔍 CV Generation Request:', {
+      reportId,
+      fakeItMode,
+      fakeItModeType: typeof fakeItMode,
+      fakeItModeValue: fakeItMode === true ? 'TRUE' : 'FALSE'
+    });
 
     if (!reportId) {
       return NextResponse.json(
@@ -78,11 +85,35 @@ export async function POST(request: NextRequest) {
       atsFlags: report.ats_flags || [],
     };
 
+    // Generate fake skills recommendations if fake it mode is enabled
+    let fakeSkillsRecommendations = null;
+    if (fakeItMode && analysisResults.missingKeywords.length > 0) {
+      const recommendationsPrompt = generateFakeSkillsRecommendationsPrompt(
+        analysisResults.missingKeywords,
+        jobDocs.map((job) => job.text)
+      );
+
+      const recommendationsCompletion = await openai.chat.completions.create({
+        model: AI_MODEL,
+        messages: [{ role: "user", content: recommendationsPrompt }],
+        temperature: 0.7,
+        max_tokens: 2500,
+        response_format: { type: "json_object" },
+      });
+
+      const recommendationsResult = JSON.parse(
+        recommendationsCompletion.choices[0].message.content || "{}"
+      );
+
+      fakeSkillsRecommendations = recommendationsResult.recommendations || [];
+    }
+
     // Generate optimized CV using AI
     const prompt = generateOptimizedCVPrompt(
       report.cv.text,
       jobDocs.map((job) => job.text),
-      analysisResults
+      analysisResults,
+      fakeItMode
     );
 
     const completion = await openai.chat.completions.create({
@@ -97,18 +128,44 @@ export async function POST(request: NextRequest) {
       completion.choices[0].message.content || "{}"
     );
 
-    // Save generated CV to database
+    // Save generated CV to database (always succeeds)
+    const updateData: { generated_cv: any; fake_it_mode?: boolean } = {
+      generated_cv: generatedCV,
+    };
+
+    // Try to save fake_it_mode flag (optional - may fail if column doesn't exist)
+    try {
+      updateData.fake_it_mode = fakeItMode;
+    } catch {
+      // Column doesn't exist yet - ignore
+    }
+
     const { error: updateError } = await supabase
       .from("reports")
-      .update({
-        generated_cv: generatedCV,
-      })
+      .update(updateData)
       .eq("id", reportId)
       .select()
       .single();
 
     if (updateError) {
       throw new Error(`Failed to save generated CV: ${updateError.message}`);
+    }
+
+    // Try to save fake skills recommendations (optional - may fail if column doesn't exist)
+    if (fakeSkillsRecommendations && fakeSkillsRecommendations.length > 0) {
+      try {
+        await supabase
+          .from("reports")
+          .update({
+            fake_skills_recommendations: fakeSkillsRecommendations,
+          })
+          .eq("id", reportId);
+        console.log('✅ Fake skills recommendations saved successfully');
+      } catch (fakeSkillsError) {
+        // Column doesn't exist yet - that's okay, user needs to run migration
+        console.log('⚠️ Could not save fake skills recommendations (migration not run yet):', fakeSkillsError);
+        // Don't fail the request - CV generation still succeeded
+      }
     }
 
     // Try to clear analysis cache (optional - may not exist in older DB schemas)

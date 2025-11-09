@@ -537,6 +537,262 @@ const HighlightImpact = styled.div`
   margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
+const FakeItToggleContainer = styled.div`
+  display: flex;
+  align-items: start;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  border-radius: ${({ theme }) => theme.radius.md};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+  }
+`;
+
+const FakeItCheckbox = styled.input`
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: white;
+  margin-top: 2px;
+`;
+
+const FakeItContent = styled.div`
+  flex: 1;
+  color: white;
+`;
+
+const FakeItTitle = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const FakeItDescription = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  opacity: 0.95;
+  line-height: 1.5;
+`;
+
+const LearningRecommendationCard = styled.div`
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 2px solid #f59e0b;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const SkillTitle = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: #f59e0b;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const SkillCategory = styled.div`
+  display: inline-block;
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: #f59e0b;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const LearningPathSection = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.md};
+`;
+
+const SectionTitle = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const TimeEstimate = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  margin-left: auto;
+`;
+
+const CareerInsightCard = styled.div`
+  position: relative;
+  padding: ${({ theme }) => theme.spacing["2xl"]};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: ${({ theme }) => theme.radius.xl};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #8b5cf6 0%, #ec4899 100%);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: ${({ theme }) => theme.spacing.xl};
+  }
+`;
+
+const InsightHeader = styled.div`
+  display: flex;
+  align-items: start;
+  gap: ${({ theme }) => theme.spacing.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex-direction: column;
+    gap: ${({ theme }) => theme.spacing.md};
+  }
+`;
+
+const InsightIcon = styled.div`
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  border-radius: ${({ theme }) => theme.radius.xl};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+`;
+
+const InsightContent = styled.div`
+  flex: 1;
+`;
+
+const InsightTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  line-height: 1.3;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  }
+`;
+
+const InsightSubtitle = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.6;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const MatchScoreBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.md};
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: #8b5cf6;
+`;
+
+const AlternativeRolesSection = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.xl};
+`;
+
+const SectionLabel = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const AlternativeRolesList = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const AlternativeRoleItem = styled.div`
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: ${({ theme }) => theme.radius.lg};
+  transition: all ${({ theme }) => theme.transitions.normal};
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.4);
+  }
+`;
+
+const RoleHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const RoleName = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: 1.4;
+`;
+
+const RoleMatch = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: #10b981;
+`;
+
+const RoleMatchIcon = styled.div`
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+`;
+
 interface RoleRecommendation {
   title: string;
   fit: number;
@@ -548,6 +804,14 @@ interface Improvement {
   impact: number;
   reason: string;
   section?: string; // Optional for backward compatibility with existing data
+}
+
+interface FakeSkillRecommendation {
+  skill: string;
+  category: string;
+  learningPath: string[];
+  projectIdeas: string[];
+  estimatedTime: string;
 }
 
 interface Report {
@@ -571,6 +835,7 @@ interface Report {
   generated_cv: GeneratedCV | null;
   optimized_score: number | null;
   improvement_breakdown: Improvement[] | null;
+  fake_skills_recommendations: FakeSkillRecommendation[] | null;
   created_at: string;
 }
 
@@ -592,6 +857,7 @@ export default function ReportDetailPage() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
   const [selectedImprovement, setSelectedImprovement] = useState<Improvement | null>(null);
+  const [fakeItMode, setFakeItMode] = useState(false);
 
   // Define analyzeOptimizedCV before useEffect that uses it
   const analyzeOptimizedCV = useCallback(async () => {
@@ -839,6 +1105,7 @@ export default function ReportDetailPage() {
         },
         body: JSON.stringify({
           reportId: report.id,
+          fakeItMode,
         }),
       });
 
@@ -1019,6 +1286,41 @@ export default function ReportDetailPage() {
           </ScoreCard>
         )}
       </Grid>
+
+      {report.fit_score < 50 && roleRecommendations.length > 0 && report.pro && (
+        <CareerInsightCard>
+          <InsightHeader>
+            <InsightIcon>💡</InsightIcon>
+            <InsightContent>
+              <InsightTitle>We Found Better Matches For You</InsightTitle>
+              <InsightSubtitle>
+                Your CV shows a {report.fit_score}% match with this position.
+                Based on your experience and skills, these roles might be a better fit for your career goals.
+              </InsightSubtitle>
+              <MatchScoreBadge>
+                Current Match: {report.fit_score}%
+              </MatchScoreBadge>
+            </InsightContent>
+          </InsightHeader>
+
+          <AlternativeRolesSection>
+            <SectionLabel>Recommended Positions</SectionLabel>
+            <AlternativeRolesList>
+              {roleRecommendations.slice(0, 3).map((role, index) => (
+                <AlternativeRoleItem key={index}>
+                  <RoleHeader>
+                    <RoleName>{role.title}</RoleName>
+                    <RoleMatch>
+                      <RoleMatchIcon>✓</RoleMatchIcon>
+                      {role.fit}%
+                    </RoleMatch>
+                  </RoleHeader>
+                </AlternativeRoleItem>
+              ))}
+            </AlternativeRolesList>
+          </AlternativeRolesSection>
+        </CareerInsightCard>
+      )}
 
       {report.generated_cv && isAnalyzingOptimized && (
         <Section>
@@ -1212,6 +1514,48 @@ export default function ReportDetailPage() {
             </Card>
           </Section>
 
+          {report.fake_skills_recommendations && report.fake_skills_recommendations.length > 0 && (
+            <Section>
+              <Card variant="bordered">
+                <Card.Header>
+                  <Card.Title>🎯 Learning Path - Turn Fake Skills into Real Ones!</Card.Title>
+                  <Card.Description>
+                    You've added these skills to your CV. Now let's make them real! Follow these personalized learning paths to acquire these skills.
+                  </Card.Description>
+                </Card.Header>
+                <Card.Content>
+                  {report.fake_skills_recommendations.map((recommendation, index) => (
+                    <LearningRecommendationCard key={index}>
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                        <SkillCategory>{recommendation.category}</SkillCategory>
+                        <TimeEstimate>⏱️ {recommendation.estimatedTime}</TimeEstimate>
+                      </div>
+                      <SkillTitle>{recommendation.skill}</SkillTitle>
+
+                      <LearningPathSection>
+                        <SectionTitle>📚 Learning Path</SectionTitle>
+                        <BulletList>
+                          {recommendation.learningPath.map((step, idx) => (
+                            <li key={idx}>{step}</li>
+                          ))}
+                        </BulletList>
+                      </LearningPathSection>
+
+                      <LearningPathSection>
+                        <SectionTitle>💡 Project Ideas</SectionTitle>
+                        <BulletList>
+                          {recommendation.projectIdeas.map((idea, idx) => (
+                            <li key={idx}>{idea}</li>
+                          ))}
+                        </BulletList>
+                      </LearningPathSection>
+                    </LearningRecommendationCard>
+                  ))}
+                </Card.Content>
+              </Card>
+            </Section>
+          )}
+
           <Section>
             <Card variant="bordered">
               <Card.Header>
@@ -1232,6 +1576,26 @@ export default function ReportDetailPage() {
                       <li>ATS-optimized formatting</li>
                       <li>Professional design and layout</li>
                     </ul>
+
+                    <FakeItToggleContainer onClick={() => setFakeItMode(!fakeItMode)}>
+                      <FakeItCheckbox
+                        type="checkbox"
+                        checked={fakeItMode}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          setFakeItMode(e.target.checked);
+                        }}
+                      />
+                      <FakeItContent>
+                        <FakeItTitle>🚀 Fake it until you make it!</FakeItTitle>
+                        <FakeItDescription>
+                          Add missing skills to your CV even if you don't have them yet.
+                          We'll provide you with personalized learning paths and project ideas to actually acquire these skills.
+                          Perfect for career transitions!
+                        </FakeItDescription>
+                      </FakeItContent>
+                    </FakeItToggleContainer>
+
                     <Button
                       onClick={handleGenerateCV}
                       isLoading={isGeneratingCV}

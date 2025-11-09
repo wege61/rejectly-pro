@@ -95,6 +95,146 @@ const ScoreBadge = styled(Badge)`
   }
 `;
 
+const MatchQualityBadge = styled.div<{ $quality: 'low' | 'medium' | 'high' }>`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  ${({ $quality, theme }) => {
+    if ($quality === 'high') {
+      return `
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+      `;
+    } else if ($quality === 'medium') {
+      return `
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+      `;
+    } else {
+      return `
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+      `;
+    }
+  }}
+`;
+
+const ScoreImprovement = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  margin-top: ${({ theme }) => theme.spacing.xs};
+`;
+
+const BeforeScore = styled.span`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-decoration: line-through;
+`;
+
+const AfterScore = styled.span`
+  color: #10b981;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+`;
+
+const ImprovementArrow = styled.span`
+  color: #10b981;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+`;
+
+const FakeItIndicator = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.md};
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  color: white;
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+    border-radius: ${({ theme }) => theme.radius.full};
+    opacity: 0.3;
+    filter: blur(8px);
+    z-index: -1;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+`;
+
+const FakeItBanner = styled.div`
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  color: white;
+  padding: 6px 16px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  border-radius: 6px 6px 0 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &::before {
+    content: '🚀';
+  }
+`;
+
+const ReportCardWithFakeIt = styled(ReportCard)<{ $fakeItMode?: boolean }>`
+  ${({ $fakeItMode }) =>
+    $fakeItMode &&
+    `
+    position: relative;
+    border: 2px solid rgba(245, 158, 11, 0.3);
+    margin-top: 12px;
+    overflow: visible;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #f59e0b 0%, #ea580c 100%);
+    }
+
+    &:hover {
+      border-color: rgba(245, 158, 11, 0.5);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
+    }
+  `}
+`;
+
 interface Report {
   id: string;
   fit_score: number;
@@ -105,6 +245,8 @@ interface Report {
   pro: boolean;
   created_at: string;
   job_ids: string[];
+  optimized_score: number | null;
+  fake_it_mode: boolean | null;
 }
 
 export default function ReportsPage() {
@@ -166,6 +308,16 @@ export default function ReportsPage() {
     return "error";
   };
 
+  const getMatchQuality = (score: number): { quality: 'low' | 'medium' | 'high'; label: string } => {
+    if (score >= 75) {
+      return { quality: 'high', label: '✨ Excellent Match' };
+    } else if (score >= 50) {
+      return { quality: 'medium', label: '📈 Growth Potential' };
+    } else {
+      return { quality: 'low', label: '💡 Consider Alternatives' };
+    }
+  };
+
   if (isLoading) {
     return <ReportsListSkeleton />;
   }
@@ -197,11 +349,17 @@ export default function ReportsPage() {
       ) : (
         <ReportsList>
           {reports.map((report) => (
-            <ReportCard
+            <ReportCardWithFakeIt
               key={report.id}
               variant="elevated"
               onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}
+              $fakeItMode={report.fake_it_mode}
             >
+              {report.fake_it_mode && (
+                <FakeItBanner>
+                  Fake It Mode
+                </FakeItBanner>
+              )}
               <ReportHeader>
                 <div>
                   <ReportTitle>CV Analysis Report</ReportTitle>
@@ -225,10 +383,25 @@ export default function ReportsPage() {
                       </span>
                     </div>
                   )}
+                  {report.optimized_score && report.optimized_score > report.fit_score && (
+                    <ScoreImprovement>
+                      <BeforeScore>{report.fit_score}%</BeforeScore>
+                      <ImprovementArrow>→</ImprovementArrow>
+                      <AfterScore>{report.optimized_score}%</AfterScore>
+                      <span style={{ fontSize: "11px", color: "#10b981" }}>
+                        (+{report.optimized_score - report.fit_score}%)
+                      </span>
+                    </ScoreImprovement>
+                  )}
                 </div>
-                <ScoreBadge variant={getScoreColor(report.fit_score)}>
-                  {report.fit_score}% Match
-                </ScoreBadge>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                  <ScoreBadge variant={getScoreColor(report.fit_score)}>
+                    {report.fit_score}% Match
+                  </ScoreBadge>
+                  <MatchQualityBadge $quality={getMatchQuality(report.fit_score).quality}>
+                    {getMatchQuality(report.fit_score).label}
+                  </MatchQualityBadge>
+                </div>
               </ReportHeader>
               <ReportMeta>
                 <Badge size="sm">
@@ -238,7 +411,7 @@ export default function ReportsPage() {
                   {report.pro ? "Pro Report" : "Free Report"}
                 </Badge>
               </ReportMeta>
-            </ReportCard>
+            </ReportCardWithFakeIt>
           ))}
         </ReportsList>
       )}

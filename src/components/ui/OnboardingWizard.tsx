@@ -677,6 +677,7 @@ export function OnboardingWizard({
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [hasExistingCV, setHasExistingCV] = useState(false);
+  const [hasExistingJob, setHasExistingJob] = useState(false);
 
   // Step 1: CV Upload
   const [uploadedCV, setUploadedCV] = useState<DocumentType | null>(null);
@@ -714,9 +715,9 @@ export function OnboardingWizard({
     }
   }, [isOpen]);
 
-  // Check if user has existing CV when modal opens
+  // Check if user has existing CV and Job when modal opens
   useEffect(() => {
-    async function checkExistingCV() {
+    async function checkExistingDocuments() {
       if (!isOpen) return;
 
       // Reset to step 1 when modal opens (unless we have saved state)
@@ -731,7 +732,8 @@ export function OnboardingWizard({
 
         if (!user) return;
 
-        const { data } = await supabase
+        // Check for existing CV
+        const { data: cvData } = await supabase
           .from("documents")
           .select("*")
           .eq("user_id", user.id)
@@ -740,19 +742,35 @@ export function OnboardingWizard({
           .limit(1)
           .maybeSingle();
 
-        if (data) {
+        if (cvData) {
           setHasExistingCV(true);
-          setUploadedCV(data);
-          setCvText(data.text || "");
+          setUploadedCV(cvData);
+          setCvText(cvData.text || "");
         } else {
           setHasExistingCV(false);
         }
+
+        // Check for existing Job
+        const { data: jobData } = await supabase
+          .from("documents")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("type", "job")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (jobData) {
+          setHasExistingJob(true);
+        } else {
+          setHasExistingJob(false);
+        }
       } catch (error) {
-        console.error("Failed to check existing CV:", error);
+        console.error("Failed to check existing documents:", error);
       }
     }
 
-    checkExistingCV();
+    checkExistingDocuments();
   }, [isOpen]);
 
   // Load wizard state from localStorage
@@ -1142,33 +1160,82 @@ export function OnboardingWizard({
             <StepHeader>
               <StepTitle><BriefcaseIcon /> Add Job Posting</StepTitle>
               <StepDescription>
-                Paste the job description you want to apply to
+                {hasExistingJob
+                  ? "Add a new job posting or use an existing one"
+                  : "Paste the job description you want to apply to"
+                }
               </StepDescription>
             </StepHeader>
             <StepContent>
-              <JobForm>
-                <div>
-                  <FormLabel>Job Title</FormLabel>
-                  <Input
-                    type="text"
-                    placeholder="e.g. Senior Frontend Developer"
-                    value={jobTitle}
-                    onChange={(e) => setJobTitle(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <FormLabel>Job Description</FormLabel>
-                  <Textarea
-                    placeholder="Paste the full job description here (requirements, responsibilities, qualifications, etc.)..."
-                    value={jobDetails}
-                    onChange={(e) => setJobDetails(e.target.value)}
-                    style={{ minHeight: "300px" }}
-                  />
-                  <CharCount>
-                    {jobDetails.length} characters · {jobDetails.split('\n').length} lines
-                  </CharCount>
-                </div>
-              </JobForm>
+              {hasExistingJob && !savedJob ? (
+                <CVOptionsContainer>
+                  <CVOptionWrapper>
+                    <JobForm>
+                      <div>
+                        <FormLabel>Job Title</FormLabel>
+                        <Input
+                          type="text"
+                          placeholder="e.g. Senior Frontend Developer"
+                          value={jobTitle}
+                          onChange={(e) => setJobTitle(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <FormLabel>Job Description</FormLabel>
+                        <Textarea
+                          placeholder="Paste the full job description here..."
+                          value={jobDetails}
+                          onChange={(e) => setJobDetails(e.target.value)}
+                          style={{ minHeight: "200px" }}
+                        />
+                        <CharCount>
+                          {jobDetails.length} characters
+                        </CharCount>
+                      </div>
+                    </JobForm>
+                  </CVOptionWrapper>
+
+                  <DividerText>or</DividerText>
+
+                  <CVOptionWrapper>
+                    <ExistingCVCard onClick={() => {
+                      // Skip to next step - user will select existing job there
+                      setCurrentStep(3);
+                      fetchDataForAnalysis();
+                    }}>
+                      <CVIcon><BriefcaseIcon /></CVIcon>
+                      <CVTitle>Use Existing Job</CVTitle>
+                      <CVSubtitle>
+                        Skip this step and select from your saved job postings
+                      </CVSubtitle>
+                    </ExistingCVCard>
+                  </CVOptionWrapper>
+                </CVOptionsContainer>
+              ) : (
+                <JobForm>
+                  <div>
+                    <FormLabel>Job Title</FormLabel>
+                    <Input
+                      type="text"
+                      placeholder="e.g. Senior Frontend Developer"
+                      value={jobTitle}
+                      onChange={(e) => setJobTitle(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <FormLabel>Job Description</FormLabel>
+                    <Textarea
+                      placeholder="Paste the full job description here (requirements, responsibilities, qualifications, etc.)..."
+                      value={jobDetails}
+                      onChange={(e) => setJobDetails(e.target.value)}
+                      style={{ minHeight: "300px" }}
+                    />
+                    <CharCount>
+                      {jobDetails.length} characters · {jobDetails.split('\n').length} lines
+                    </CharCount>
+                  </div>
+                </JobForm>
+              )}
             </StepContent>
           </>
         );

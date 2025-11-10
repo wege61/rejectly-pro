@@ -64,6 +64,23 @@ const JobsIcon = () => (
   </svg>
 );
 
+const CoverLettersIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{ width: '32px', height: '32px' }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+    />
+  </svg>
+);
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -255,6 +272,43 @@ const ReportSummary = styled.p`
   overflow: hidden;
 `;
 
+const CoverLetterCard = styled(Card)<{ $tone: string }>`
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.normal};
+  border-left: 4px solid ${({ $tone }) => {
+    switch ($tone) {
+      case 'professional':
+        return '#3b82f6';
+      case 'friendly':
+        return '#10b981';
+      case 'formal':
+        return '#8b5cf6';
+      default:
+        return '#6b7280';
+    }
+  }};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${({ theme }) => theme.shadow.md};
+  }
+`;
+
+const CoverLetterTitle = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const CoverLetterMeta = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
 // Floating Action Button (FAB)
 const FAB = styled.button`
   position: fixed;
@@ -342,6 +396,7 @@ interface Stats {
   totalReports: number;
   totalCVs: number;
   totalJobs: number;
+  totalCoverLetters: number;
 }
 
 interface Report {
@@ -356,6 +411,16 @@ interface Report {
   } | null;
 }
 
+interface CoverLetter {
+  id: string;
+  created_at: string;
+  tone: string;
+  job?: {
+    id: string;
+    title: string;
+  };
+}
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -364,8 +429,10 @@ export default function DashboardPage() {
     totalReports: 0,
     totalCVs: 0,
     totalJobs: 0,
+    totalCoverLetters: 0,
   });
   const [recentReports, setRecentReports] = useState<Report[]>([]);
+  const [recentCoverLetters, setRecentCoverLetters] = useState<CoverLetter[]>([]);
   const [jobTitlesMap, setJobTitlesMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -376,7 +443,7 @@ export default function DashboardPage() {
         const supabase = createClient();
 
         // Fetch stats
-        const [reportsRes, cvsRes, jobsRes] = await Promise.all([
+        const [reportsRes, cvsRes, jobsRes, coverLettersRes] = await Promise.all([
           supabase
             .from("reports")
             .select("id", { count: "exact", head: true })
@@ -391,28 +458,44 @@ export default function DashboardPage() {
             .select("id", { count: "exact", head: true })
             .eq("user_id", user.id)
             .eq("type", "job"),
+          supabase
+            .from("cover_letters")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id),
         ]);
 
         setStats({
           totalReports: reportsRes.count || 0,
           totalCVs: cvsRes.count || 0,
           totalJobs: jobsRes.count || 0,
+          totalCoverLetters: coverLettersRes.count || 0,
         });
 
-        // Fetch recent reports
-        const { data: reports } = await supabase
-          .from("reports")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(5);
+        // Fetch recent data
+        const [reportsData, coverLettersData] = await Promise.all([
+          supabase
+            .from("reports")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(5),
+          supabase
+            .from("cover_letters")
+            .select(`
+              *,
+              job:documents!job_id(id, title)
+            `)
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(3),
+        ]);
 
-        if (reports) {
-          setRecentReports(reports);
+        if (reportsData.data) {
+          setRecentReports(reportsData.data);
 
           // Collect all unique job IDs from reports
           const allJobIds = new Set<string>();
-          reports.forEach((report) => {
+          reportsData.data.forEach((report) => {
             if (report.job_ids && Array.isArray(report.job_ids)) {
               report.job_ids.forEach((id) => allJobIds.add(id));
             }
@@ -435,6 +518,10 @@ export default function DashboardPage() {
             }
           }
         }
+
+        if (coverLettersData.data) {
+          setRecentCoverLetters(coverLettersData.data);
+        }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -450,6 +537,16 @@ export default function DashboardPage() {
     if (score >= 50) return "warning";
     return "error";
   };
+
+  const getToneIcon = (tone: string) => {
+    const icons: Record<string, string> = {
+      professional: "💼",
+      friendly: "😊",
+      formal: "🎩",
+    };
+    return icons[tone] || "✉️";
+  };
+
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -489,6 +586,13 @@ export default function DashboardPage() {
             <StatValue>{stats.totalJobs}</StatValue>
             <StatLabel>Job Postings</StatLabel>
           </StatCard>
+          <StatCard variant="elevated" onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}>
+            <StatIcon>
+              <CoverLettersIcon />
+            </StatIcon>
+            <StatValue>{stats.totalCoverLetters}</StatValue>
+            <StatLabel>Cover Letters</StatLabel>
+          </StatCard>
         </Grid>
 
         {/* Quick Actions */}
@@ -519,8 +623,56 @@ export default function DashboardPage() {
                 </Card.Description>
               </Card.Header>
             </ActionCard>
+            <ActionCard
+              variant="elevated"
+              onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
+            >
+              <Card.Header>
+                <Card.Title>✉️ Generate Cover Letter</Card.Title>
+                <Card.Description>
+                  Create AI-powered cover letters for your applications
+                </Card.Description>
+              </Card.Header>
+            </ActionCard>
           </QuickActionsGrid>
         </Section>
+
+        {/* Recent Cover Letters */}
+        {recentCoverLetters.length > 0 && (
+          <Section>
+            <SectionHeader>
+              <SectionTitle>Recent Cover Letters</SectionTitle>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
+              >
+                View All
+              </Button>
+            </SectionHeader>
+            <ReportsList>
+              {recentCoverLetters.map((letter) => (
+                <CoverLetterCard
+                  key={letter.id}
+                  variant="elevated"
+                  $tone={letter.tone}
+                  onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
+                >
+                  <CoverLetterTitle>
+                    {getToneIcon(letter.tone)} {letter.job?.title || "Cover Letter"}
+                  </CoverLetterTitle>
+                  <CoverLetterMeta>
+                    Created on {new Date(letter.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </CoverLetterMeta>
+                </CoverLetterCard>
+              ))}
+            </ReportsList>
+          </Section>
+        )}
 
         {/* Recent Reports */}
         <Section>

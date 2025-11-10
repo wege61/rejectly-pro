@@ -456,3 +456,85 @@ Guidelines:
 - Focus on hands-on learning and building real projects
 - Make sure recommendations are tailored to the job requirements`;
 }
+
+export function generateCoverLetterPrompt(
+  cvText: string,
+  jobText: string,
+  candidateName: string,
+  companyName: string,
+  positionTitle: string,
+  tone: 'professional' | 'friendly' | 'formal' = 'professional',
+  length: 'short' | 'medium' | 'long' = 'medium',
+  language: 'en' | 'tr' = 'en'
+): string {
+  const wordCounts = {
+    short: '150-200',
+    medium: '250-300',
+    long: '350-400'
+  };
+
+  const toneInstructions = {
+    professional: 'Use a professional, confident tone. Be direct and results-oriented.',
+    friendly: 'Use a warm, approachable tone while maintaining professionalism. Show enthusiasm.',
+    formal: 'Use a formal, respectful tone. Follow traditional business letter conventions.'
+  };
+
+  const languageInstruction = language === 'tr'
+    ? 'Write the cover letter in TURKISH language.'
+    : 'Write the cover letter in ENGLISH language.';
+
+  return `You are an expert cover letter writer. Create a compelling, personalized cover letter for a job application.
+
+CANDIDATE CV:
+"""
+${cvText}
+"""
+
+JOB POSTING:
+"""
+${jobText}
+"""
+
+APPLICATION DETAILS:
+- Candidate Name: ${candidateName}
+- Company: ${companyName}
+- Position: ${positionTitle}
+- Tone: ${tone}
+- Length: ${wordCounts[length]} words
+- Language: ${language.toUpperCase()}
+
+${languageInstruction}
+
+INSTRUCTIONS:
+${toneInstructions[tone]}
+
+Structure:
+1. Opening: Hook the reader with enthusiasm and clear statement of interest
+2. Body (2-3 paragraphs):
+   - Highlight 2-3 most relevant achievements from CV that match job requirements
+   - Explain why you're interested in this specific company/role
+   - Demonstrate knowledge of company's values/products/mission
+3. Closing: Strong call to action, express availability for interview
+
+CRITICAL RULES:
+- Target word count: ${wordCounts[length]} words
+- Use specific examples and quantifiable achievements from the CV
+- Match keywords from job posting naturally
+- Avoid generic phrases like "I am writing to apply"
+- Be authentic and passionate
+- Show you researched the company
+- DO NOT use placeholder text like [Your Name] - use actual candidate name
+- Address specific requirements mentioned in job posting
+- ${languageInstruction}
+
+Respond in JSON format:
+{
+  "content": "The full cover letter text here...",
+  "wordCount": 250,
+  "keyHighlights": [
+    "Main achievement 1 mentioned",
+    "Main achievement 2 mentioned",
+    "Main skill highlighted"
+  ]
+}`;
+}

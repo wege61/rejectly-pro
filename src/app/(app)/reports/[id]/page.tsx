@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { GeneratedCV } from "@/types/cv";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
+import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
 
 // Icons
 const TargetIcon = () => (
@@ -793,6 +794,132 @@ const RoleMatchIcon = styled.div`
   font-size: 12px;
 `;
 
+const ImprovementVisualization = styled.div`
+  padding: ${({ theme }) => theme.spacing["2xl"]};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  margin-top: ${({ theme }) => theme.spacing.xl};
+`;
+
+const VisualizationHeader = styled.div`
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+`;
+
+const VisualizationTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const VisualizationSubtitle = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const ChartContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing["3xl"]};
+  flex-wrap: wrap;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex-direction: column;
+  }
+`;
+
+const CircularChart = styled.div`
+  position: relative;
+  width: 280px;
+  height: 280px;
+`;
+
+const ScoreRing = styled.svg`
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 4px 12px rgba(16, 185, 129, 0.2));
+`;
+
+const ChartCenter = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+`;
+
+const CenterScore = styled.div`
+  font-size: 48px;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: #10b981;
+  line-height: 1;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const CenterLabel = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const ImprovementsList = styled.div`
+  flex: 1;
+  min-width: 300px;
+  max-width: 500px;
+`;
+
+const ImprovementItem = styled.div<{ $color: string }>`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-left: 4px solid ${({ $color }) => $color};
+  border-radius: ${({ theme }) => theme.radius.md};
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const ImprovementIcon = styled.div<{ $color: string }>`
+  width: 40px;
+  height: 40px;
+  background: ${({ $color }) => $color};
+  border-radius: ${({ theme }) => theme.radius.md};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  flex-shrink: 0;
+`;
+
+const ImprovementContent = styled.div`
+  flex: 1;
+`;
+
+const ImprovementCategory = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const ImprovementDescription = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.4;
+`;
+
 interface RoleRecommendation {
   title: string;
   fit: number;
@@ -858,6 +985,7 @@ export default function ReportDetailPage() {
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
   const [selectedImprovement, setSelectedImprovement] = useState<Improvement | null>(null);
   const [fakeItMode, setFakeItMode] = useState(false);
+  const [isCoverLetterModalOpen, setIsCoverLetterModalOpen] = useState(false);
 
   // Define analyzeOptimizedCV before useEffect that uses it
   const analyzeOptimizedCV = useCallback(async () => {
@@ -1336,44 +1464,114 @@ export default function ReportDetailPage() {
       )}
 
       {improvementBreakdown.length > 0 && optimizedScore !== null && !isAnalyzingOptimized && (
-        <Section>
-          <Card variant="bordered">
-            <Card.Header>
-              <Card.Title><TargetIcon /> How We Improved Your Score</Card.Title>
-              <Card.Description>
-                Detailed breakdown of each optimization and its impact
-              </Card.Description>
-            </Card.Header>
-            <Card.Content>
-              <BreakdownContainer>
-                {improvementBreakdown.map((improvement, index) => (
-                  <BreakdownItem
-                    key={index}
-                    onClick={() => handleImprovementClick(improvement)}
-                    title="Click to view this improvement in your CV"
-                  >
-                    <ImpactBadge>+{Math.round(improvement.impact * 10) / 10}</ImpactBadge>
-                    <ImpactContent>
-                      <ImpactCategory>{improvement.category}</ImpactCategory>
-                      <ImpactAction>{improvement.action}</ImpactAction>
-                      <ImpactReason>{improvement.reason}</ImpactReason>
-                    </ImpactContent>
-                    <ImpactPoints>
-                      <ImpactValue>+{Math.round(improvement.impact * 10) / 10}%</ImpactValue>
-                      <ImpactLabel>Score</ImpactLabel>
-                    </ImpactPoints>
-                  </BreakdownItem>
-                ))}
-              </BreakdownContainer>
-              <TotalImpactSummary>
-                <TotalLabel>Total Impact</TotalLabel>
-                <TotalValue>
-                  +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}%
-                </TotalValue>
-              </TotalImpactSummary>
-            </Card.Content>
-          </Card>
-        </Section>
+        <>
+          <Section>
+            <Card variant="bordered">
+              <Card.Header>
+                <Card.Title><TargetIcon /> How We Improved Your Score</Card.Title>
+                <Card.Description>
+                  Detailed breakdown of each optimization and its impact
+                </Card.Description>
+              </Card.Header>
+              <Card.Content>
+                <BreakdownContainer>
+                  {improvementBreakdown.map((improvement, index) => (
+                    <BreakdownItem
+                      key={index}
+                      onClick={() => handleImprovementClick(improvement)}
+                      title="Click to view this improvement in your CV"
+                    >
+                      <ImpactBadge>+{Math.round(improvement.impact * 10) / 10}</ImpactBadge>
+                      <ImpactContent>
+                        <ImpactCategory>{improvement.category}</ImpactCategory>
+                        <ImpactAction>{improvement.action}</ImpactAction>
+                        <ImpactReason>{improvement.reason}</ImpactReason>
+                      </ImpactContent>
+                      <ImpactPoints>
+                        <ImpactValue>+{Math.round(improvement.impact * 10) / 10}%</ImpactValue>
+                        <ImpactLabel>Score</ImpactLabel>
+                      </ImpactPoints>
+                    </BreakdownItem>
+                  ))}
+                </BreakdownContainer>
+                <TotalImpactSummary>
+                  <TotalLabel>Total Impact</TotalLabel>
+                  <TotalValue>
+                    +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}%
+                  </TotalValue>
+                </TotalImpactSummary>
+              </Card.Content>
+            </Card>
+          </Section>
+
+          <Section>
+            <ImprovementVisualization>
+              <VisualizationHeader>
+                <VisualizationTitle>📊 Score Improvement Breakdown</VisualizationTitle>
+                <VisualizationSubtitle>
+                  Visual representation of how each optimization contributed to your final score
+                </VisualizationSubtitle>
+              </VisualizationHeader>
+
+              <ChartContainer>
+                <CircularChart>
+                  <ScoreRing width="280" height="280">
+                    <circle
+                      cx="140"
+                      cy="140"
+                      r="120"
+                      fill="none"
+                      stroke="#e5e7eb"
+                      strokeWidth="20"
+                    />
+                    <circle
+                      cx="140"
+                      cy="140"
+                      r="120"
+                      fill="none"
+                      stroke="#10b981"
+                      strokeWidth="20"
+                      strokeDasharray={`${(optimizedScore / 100) * 754} 754`}
+                      strokeLinecap="round"
+                      style={{
+                        transition: 'stroke-dasharray 1s ease-in-out',
+                      }}
+                    />
+                  </ScoreRing>
+                  <ChartCenter>
+                    <CenterScore>{optimizedScore}%</CenterScore>
+                    <CenterLabel>New Score</CenterLabel>
+                    <div style={{ marginTop: '8px', fontSize: '14px', color: '#6b7280' }}>
+                      from {report.fit_score}%
+                    </div>
+                  </ChartCenter>
+                </CircularChart>
+
+                <ImprovementsList>
+                  {improvementBreakdown.map((improvement, index) => {
+                    const colors = [
+                      '#10b981', '#3b82f6', '#8b5cf6',
+                      '#f59e0b', '#ec4899', '#14b8a6'
+                    ];
+                    const color = colors[index % colors.length];
+
+                    return (
+                      <ImprovementItem key={index} $color={color}>
+                        <ImprovementIcon $color={color}>
+                          +{Math.round(improvement.impact * 10) / 10}%
+                        </ImprovementIcon>
+                        <ImprovementContent>
+                          <ImprovementCategory>{improvement.category}</ImprovementCategory>
+                          <ImprovementDescription>{improvement.action}</ImprovementDescription>
+                        </ImprovementContent>
+                      </ImprovementItem>
+                    );
+                  })}
+                </ImprovementsList>
+              </ChartContainer>
+            </ImprovementVisualization>
+          </Section>
+        </>
       )}
 
       <Section>
@@ -1627,6 +1825,13 @@ export default function ReportDetailPage() {
                         <EyeIcon /> Preview & Download CV
                       </Button>
                       <Button
+                        onClick={() => setIsCoverLetterModalOpen(true)}
+                        size="lg"
+                        variant="secondary"
+                      >
+                        ✉️ Generate Cover Letter
+                      </Button>
+                      <Button
                         onClick={handleGenerateCV}
                         size="lg"
                         variant="ghost"
@@ -1695,6 +1900,13 @@ export default function ReportDetailPage() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Cover Letter Generator Modal */}
+      <CoverLetterGenerator
+        isOpen={isCoverLetterModalOpen}
+        onClose={() => setIsCoverLetterModalOpen(false)}
+        reportId={reportId}
+      />
     </Container>
   );
 }

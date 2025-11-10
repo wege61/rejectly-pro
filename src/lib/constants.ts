@@ -85,6 +85,7 @@ export const ROUTES = {
     CV: "/cv",
     JOBS: "/jobs",
     ANALYZE: "/analyze", // ← YENİ EKLENEN
+    COVER_LETTERS: "/cover-letters",
     BILLING: "/billing",
     SETTINGS: "/settings",
   },

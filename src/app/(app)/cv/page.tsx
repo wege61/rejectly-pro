@@ -888,7 +888,12 @@ export default function CVPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = cv.title || "cv.pdf";
+
+      // Clean filename and ensure proper .pdf extension
+      // Remove .pdf and anything after it, then add clean .pdf extension
+      const filename = (cv.title || "cv").replace(/\.pdf.*/i, "") + ".pdf";
+
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -973,7 +978,7 @@ export default function CVPage() {
                   {allCVs
                     .filter((cv) => "isOptimized" in cv && cv.isOptimized)
                     .map((cv) => (
-                      <CVCard key={cv.id} $isOptimized={true}>
+                      <CVCard key={cv.id} $isOptimized={true} onClick={() => setPreviewCV(cv)}>
                         <CVCardHeader>
                           <CVCardIcon $isOptimized={true}>
                             <FileIcon />
@@ -997,7 +1002,10 @@ export default function CVPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setPreviewCV(cv)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPreviewCV(cv);
+                            }}
                             style={{ flex: 1 }}
                           >
                             <EyeIcon /> Preview
@@ -1037,7 +1045,7 @@ export default function CVPage() {
                   {allCVs
                     .filter((cv) => !("isOptimized" in cv) || !cv.isOptimized)
                     .map((cv) => (
-                      <CVCard key={cv.id}>
+                      <CVCard key={cv.id} onClick={() => setPreviewCV(cv)}>
                         <CVCardHeader>
                           <CVCardIcon>
                             <FileIcon />
@@ -1061,7 +1069,10 @@ export default function CVPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setPreviewCV(cv)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPreviewCV(cv);
+                            }}
                             style={{ flex: 1 }}
                           >
                             <EyeIcon /> Preview

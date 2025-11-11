@@ -561,7 +561,7 @@ export default function DashboardPage() {
           const allJobIds = new Set<string>();
           reportsData.data.forEach((report) => {
             if (report.job_ids && Array.isArray(report.job_ids)) {
-              report.job_ids.forEach((id) => allJobIds.add(id));
+              report.job_ids.forEach((id: string) => allJobIds.add(id));
             }
           });
 
@@ -759,29 +759,6 @@ export default function DashboardPage() {
               />
             </Card>
           ) : (
-<<<<<<< HEAD
-            <ReportsList>
-              {recentReports.map((report) => (
-                <ReportCard
-                  key={report.id}
-                  variant="elevated"
-                  onClick={() =>
-                    router.push(ROUTES.APP.REPORT_DETAIL(report.id))
-                  }
-                >
-                  <ReportHeader>
-                    <div>
-                      <ReportTitle>Resume Analysis Report</ReportTitle>
-                      <ReportDate>
-                        Created on{" "}
-                        {new Date(report.created_at).toLocaleDateString(
-                          "en-EN",
-                          {
-                            year: "numeric", 
-                            month: "long",
-                            day: "numeric",
-                          }
-=======
             <>
               <ReportsList>
                 {recentReports.map((report) => (
@@ -791,7 +768,7 @@ export default function DashboardPage() {
                     onClick={() =>
                       router.push(ROUTES.APP.REPORT_DETAIL(report.id))
                     }
-                    $fakeItMode={report.fake_it_mode}
+                    $fakeItMode={report.fake_it_mode ?? false}
                   >
                     {report.fake_it_mode && (
                       <FakeItBanner>
@@ -819,11 +796,10 @@ export default function DashboardPage() {
                             </span>
                             <span style={{ color: "#6b7280", fontWeight: "600" }}>
                               {report.job_ids
-                                .map((id) => jobTitlesMap[id] || "Unknown")
+                                .map((id: string) => jobTitlesMap[id] || "Unknown")
                                 .join(" • ")}
                             </span>
                           </div>
->>>>>>> 7a4ea4a (CoverLetterGenerator düzenlemesiiiii)
                         )}
                       </div>
                       <ScoreBadge variant={getScoreColor(report.fit_score)}>
@@ -848,7 +824,7 @@ export default function DashboardPage() {
                   size="sm"
                   onClick={() => router.push(ROUTES.APP.REPORTS)}
                 >
-                  View All Reports →
+                  View All Reports {'\u2192'}
                 </Button>
               </ViewAllLink>
             </>

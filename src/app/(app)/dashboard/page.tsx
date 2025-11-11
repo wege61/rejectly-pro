@@ -561,7 +561,7 @@ export default function DashboardPage() {
           const allJobIds = new Set<string>();
           reportsData.data.forEach((report) => {
             if (report.job_ids && Array.isArray(report.job_ids)) {
-              report.job_ids.forEach((id) => allJobIds.add(id));
+              report.job_ids.forEach((id: string) => allJobIds.add(id));
             }
           });
 
@@ -760,6 +760,7 @@ export default function DashboardPage() {
             </Card>
           ) : (
 <<<<<<< HEAD
+<<<<<<< HEAD
             <ReportsList>
               {recentReports.map((report) => (
                 <ReportCard
@@ -782,6 +783,8 @@ export default function DashboardPage() {
                             day: "numeric",
                           }
 =======
+=======
+>>>>>>> 74d68d0 (yaptık bi şeyler)
             <>
               <ReportsList>
                 {recentReports.map((report) => (
@@ -791,7 +794,11 @@ export default function DashboardPage() {
                     onClick={() =>
                       router.push(ROUTES.APP.REPORT_DETAIL(report.id))
                     }
+<<<<<<< HEAD
                     $fakeItMode={report.fake_it_mode}
+=======
+                    $fakeItMode={report.fake_it_mode ?? false}
+>>>>>>> 74d68d0 (yaptık bi şeyler)
                   >
                     {report.fake_it_mode && (
                       <FakeItBanner>
@@ -823,7 +830,10 @@ export default function DashboardPage() {
                                 .join(" • ")}
                             </span>
                           </div>
+<<<<<<< HEAD
 >>>>>>> 7a4ea4a (CoverLetterGenerator düzenlemesiiiii)
+=======
+>>>>>>> 74d68d0 (yaptık bi şeyler)
                         )}
                       </div>
                       <ScoreBadge variant={getScoreColor(report.fit_score)}>
@@ -848,7 +858,11 @@ export default function DashboardPage() {
                   size="sm"
                   onClick={() => router.push(ROUTES.APP.REPORTS)}
                 >
+<<<<<<< HEAD
                   View All Reports →
+=======
+                  View All Reports {'\u2192'}
+>>>>>>> 74d68d0 (yaptık bi şeyler)
                 </Button>
               </ViewAllLink>
             </>

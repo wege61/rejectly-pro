@@ -823,7 +823,7 @@ const AnalyzeButton = styled.button<{ $isLoading?: boolean }>`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea ;
   color: white;
   padding: 16px 32px;
   border: none;
@@ -1749,7 +1749,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
     {
       question: "How long does the analysis take?",
       answer:
-        "Our AI analysis typically takes 15-30 seconds to complete. For complex CVs and longer job descriptions, it may take up to 1 minute, but never longer.",
+        "Our AI analysis typically takes 15-30 seconds to complete. For complex resumes and longer job descriptions, it may take up to 1 minute, but never longer.",
     },
     {
       question: "How many analyses can I do with the free plan?",
@@ -1797,7 +1797,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to parse CV");
+        throw new Error(data.error || "Failed to parse resume");
       }
 
       setCvText(data.text);
@@ -1814,7 +1814,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
 
  const handleAnalyze = async () => {
   if (!cvText || !jobText) {
-    alert("Please paste both CV and job description");
+    alert("Please paste both resume and job description");
     return;
   }
 
@@ -1921,11 +1921,11 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
           </TrustBadge>
 
           <HeroTitle>
-            Optimize Your CV for <GradientText>Job Postings</GradientText>
+            Optimize Your Resume for <GradientText>Job Postings</GradientText>
           </HeroTitle>
 
           <HeroSubtitle>
-            Use AI to <strong>identify missing skills</strong>, improve your CV,
+            Use AI to <strong>identify missing skills</strong>, improve your resume,
             and get <strong>73% more interview invitations</strong>
           </HeroSubtitle>
 
@@ -1983,7 +1983,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
         <SectionHeader>
           <SectionTitle>🚀 Try It Now - Free</SectionTitle>
           <SectionSubtitle>
-            Paste your CV and job description, get instant AI feedback
+            Paste your resume and job description, get instant AI feedback
           </SectionSubtitle>
         </SectionHeader>
 
@@ -1993,7 +1993,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
       <DemoHeader>
         <DemoTitle>Quick Demo</DemoTitle>
         <DemoSubtitle>
-          Upload or paste your CV and job description, get instant AI feedback
+          Upload or paste your resume and job description, get instant AI feedback
         </DemoSubtitle>
         <LoadSampleButton onClick={loadSample}>
           📝 Load Sample Data
@@ -2003,7 +2003,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
       <InputWrapper>
         <InputLabel>
           <DocumentTextIcon />
-          Your CV
+          Your Resume
         </InputLabel>
         {!uploadedFileName ? (
           <>
@@ -2022,7 +2022,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
               <OrDivider>or paste text below</OrDivider>
             </UploadOrText>
             <DemoTextarea
-              placeholder="Paste your CV here (or upload a file above)..."
+              placeholder="Paste your resume here (or upload a file above)..."
               value={cvText}
               onChange={(e) => setCvText(e.target.value)}
               rows={6}
@@ -2107,7 +2107,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
   {step === "loading" && (
     <LoadingState>
       <Spinner />
-      <h3>🔍 Analyzing Your CV...</h3>
+      <h3>🔍 Analyzing Your Resume...</h3>
       <LoadingSteps>
         <LoadingStep $completed>
           ✅ Detected: {detectedJobTitle || "..."}
@@ -2129,7 +2129,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
       <h3>🤖 Analyzing Match...</h3>
       <LoadingSteps>
         <LoadingStep $completed>
-          ✅ CV and job description loaded
+          ✅ Resume and job description loaded
         </LoadingStep>
         <LoadingStep $completed={false}>
           🔄 Calculating match score...
@@ -2220,7 +2220,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
         </ImprovementHeader>
 
         <p style={{ marginBottom: '20px', color: 'var(--text-secondary)' }}>
-          Based on your CV, these positions might be a better fit
+          Based on your resume, these positions might be a better fit
         </p>
 
         {betterJobs.slice(0, 2).map((job, idx) => (
@@ -2261,7 +2261,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
     <CTASection>
       <h3>🎯 Want the Full Analysis?</h3>
       <p>
-        Sign up for free, save your report, and perfect your CV with Pro features!
+        Sign up for free, save your report, and perfect your resume with Pro features!
       </p>
       <CTAButtons>
         <CTAButton as="a" href="/signup" $variant="primary">
@@ -2296,7 +2296,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
             </FeatureIcon>
             <FeatureTitle>Identify Missing Skills</FeatureTitle>
             <FeatureDescription>
-              Discover gaps between your CV and job postings in 30 seconds with
+              Discover gaps between your resume and job postings in 30 seconds with
               GPT-4 technology
             </FeatureDescription>
             <FeatureHighlight>
@@ -2310,7 +2310,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
             </FeatureIcon>
             <FeatureTitle>Pass Bot Filters</FeatureTitle>
             <FeatureDescription>
-              Reduce your CV rejection rate by robots with ATS (Applicant
+              Reduce your resume rejection rate by robots with ATS (Applicant
               Tracking System) optimization
             </FeatureDescription>
             <FeatureHighlight>
@@ -2322,7 +2322,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
             <FeatureIcon $gradient="linear-gradient(135deg, #10b981 0%, #14b8a6 100%)">
               <TargetIcon />
             </FeatureIcon>
-            <FeatureTitle>Professionally Rewrite Your CV</FeatureTitle>
+            <FeatureTitle>Professionally Rewrite Your Resume</FeatureTitle>
             <FeatureDescription>
               Get bullet point suggestions optimized for specific job postings,
               written in HR language
@@ -2364,7 +2364,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
             </TestimonialHeader>
             <TestimonialText>
               I was applying to jobs for months with no responses. After using
-              Rejectly.pro, I optimized my CV and got 5 interview invitations in
+              Rejectly.pro, I optimized my resume and got 5 interview invitations in
               2 weeks! The AI insights were spot-on about what I was missing.
             </TestimonialText>
             <TestimonialHighlight>
@@ -2390,7 +2390,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
               </TestimonialRating>
             </TestimonialHeader>
             <TestimonialText>
-              The ATS optimization feature is a game-changer. My CV was being
+              The ATS optimization feature is a game-changer. My resume was being
               rejected by automated systems before I even got to human
               reviewers. Now I'm getting past those filters and landing
               interviews at top companies.
@@ -2418,7 +2418,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
               </TestimonialRating>
             </TestimonialHeader>
             <TestimonialText>
-              The professional rewriting suggestions helped me transform my CV
+              The professional rewriting suggestions helped me transform my resume
               from generic to compelling. I learned how to speak the language HR
               managers want to see. Landed my dream job within a month!
             </TestimonialText>
@@ -2550,7 +2550,7 @@ const [fetchedJobs, setFetchedJobs] = useState<any[]>([]);
             <FooterColumn>
               <h3>Rejectly.pro</h3>
               <p>
-                AI-powered CV analysis to help you land your dream job.
+                AI-powered resume analysis to help you land your dream job.
               </p>
             </FooterColumn>
             <FooterColumn>

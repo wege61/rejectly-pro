@@ -249,7 +249,7 @@ export default function FAQPage() {
         {
           question: "How does Rejectly.pro work?",
           answer:
-            "Upload your CV and paste a job description. Our AI analyzes the match, identifies gaps, and provides actionable recommendations to improve your chances. The entire process takes 15-30 seconds.",
+            "Upload your resume and paste a job description. Our AI analyzes the match, identifies gaps, and provides actionable recommendations to improve your chances. The entire process takes 15-30 seconds.",
         },
         {
           question: "What file formats do you support?",
@@ -259,7 +259,7 @@ export default function FAQPage() {
         {
           question: "How long does the analysis take?",
           answer:
-            "Our AI analysis typically takes <strong>15-30 seconds</strong> to complete. For complex CVs and longer job descriptions, it may take up to 1 minute, but never longer.",
+            "Our AI analysis typically takes <strong>15-30 seconds</strong> to complete. For complex resumes and longer job descriptions, it may take up to 1 minute, but never longer.",
         },
         {
           question: "Do I need to create an account?",
@@ -306,22 +306,22 @@ export default function FAQPage() {
         {
           question: "Is my data secure?",
           answer:
-            "Absolutely! All your data is <strong>encrypted in transit (TLS) and at rest</strong>. We never share your information with third parties. We're fully GDPR compliant and take data security seriously. Your CVs are stored securely in encrypted cloud storage.",
+            "Absolutely! All your data is <strong>encrypted in transit (TLS) and at rest</strong>. We never share your information with third parties. We're fully GDPR compliant and take data security seriously. Your resumes are stored securely in encrypted cloud storage.",
         },
         {
-          question: "How is my CV data used?",
+          question: "How is my resume data used?",
           answer:
-            "Your CV data is processed by our AI (OpenAI GPT-4) solely to provide analysis services. According to OpenAI's API data usage policy, data submitted via API is <strong>not used to train their models</strong>. You can delete your data at any time from your account settings.",
+            "Your resume data is processed by our AI (OpenAI GPT-4) solely to provide analysis services. According to OpenAI's API data usage policy, data submitted via API is <strong>not used to train their models</strong>. You can delete your data at any time from your account settings.",
         },
         {
-          question: "Who can see my CV?",
+          question: "Who can see my resume?",
           answer:
-            "Only you can see your uploaded CVs. Our team does not have access to your personal data except when absolutely necessary for troubleshooting (with your explicit consent). We do not share, sell, or distribute your CVs to anyone.",
+            "Only you can see your uploaded resumes. Our team does not have access to your personal data except when absolutely necessary for troubleshooting (with your explicit consent). We do not share, sell, or distribute your resumes to anyone.",
         },
         {
           question: "Can I delete my account and data?",
           answer:
-            "Yes! You can delete your account and all associated data at any time through your account settings. This action is permanent and will remove all your CVs, analyses, and personal information from our systems.",
+            "Yes! You can delete your account and all associated data at any time through your account settings. This action is permanent and will remove all your resumes, analyses, and personal information from our systems.",
         },
       ],
     },
@@ -332,7 +332,7 @@ export default function FAQPage() {
         {
           question: "What languages do you support?",
           answer:
-            "Currently, we support <strong>English and Turkish</strong> CVs and job descriptions. Our AI can analyze content in both languages with high accuracy. We're planning to add more languages based on user demand.",
+            "Currently, we support <strong>English and Turkish</strong> resumes and job descriptions. Our AI can analyze content in both languages with high accuracy. We're planning to add more languages based on user demand.",
         },
         {
           question: "How accurate is the AI analysis?",
@@ -342,17 +342,17 @@ export default function FAQPage() {
         {
           question: "Can I analyze multiple job postings at once?",
           answer:
-            "Currently, each analysis compares your CV to one job posting. However, you can run multiple analyses (3 per month on Free, unlimited on Pro) to compare your CV against different positions and track which roles you're best suited for.",
+            "Currently, each analysis compares your resume to one job posting. However, you can run multiple analyses (3 per month on Free, unlimited on Pro) to compare your resume against different positions and track which roles you're best suited for.",
         },
         {
           question: "Do you provide cover letter generation?",
           answer:
-            "Not yet, but it's on our roadmap! Currently, we focus on CV analysis and optimization. Cover letter generation and other AI-powered career tools are planned for future releases. <a href='mailto:feedback@rejectly.pro'>Let us know</a> if this is important to you!",
+            "Not yet, but it's on our roadmap! Currently, we focus on resume analysis and optimization. Cover letter generation and other AI-powered career tools are planned for future releases. <a href='mailto:feedback@rejectly.pro'>Let us know</a> if this is important to you!",
         },
         {
           question: "What is ATS optimization?",
           answer:
-            "ATS (Applicant Tracking System) is software that many companies use to screen CVs before humans see them. Our <strong>Pro plan</strong> provides recommendations to optimize your CV for ATS, including keyword suggestions, formatting tips, and structure improvements to pass automated screenings.",
+            "ATS (Applicant Tracking System) is software that many companies use to screen resumes before humans see them. Our <strong>Pro plan</strong> provides recommendations to optimize your resume for ATS, including keyword suggestions, formatting tips, and structure improvements to pass automated screenings.",
         },
       ],
     },
@@ -368,12 +368,12 @@ export default function FAQPage() {
         {
           question: "The analysis is taking longer than usual. Why?",
           answer:
-            "Analysis times can vary based on CV length, job description complexity, and current server load. If it takes longer than 2 minutes, please refresh the page and try again. If the issue persists, our AI service might be experiencing high demand.",
+            "Analysis times can vary based on resume length, job description complexity, and current server load. If it takes longer than 2 minutes, please refresh the page and try again. If the issue persists, our AI service might be experiencing high demand.",
         },
         {
           question: "Can I use Rejectly.pro on mobile?",
           answer:
-            "Yes! Our platform is fully responsive and works on mobile devices, tablets, and desktops. The experience is optimized for all screen sizes, so you can analyze CVs on the go.",
+            "Yes! Our platform is fully responsive and works on mobile devices, tablets, and desktops. The experience is optimized for all screen sizes, so you can analyze resumes on the go.",
         },
         {
           question: "Do you have an API?",

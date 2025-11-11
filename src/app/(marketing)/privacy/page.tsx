@@ -220,7 +220,7 @@ export default function PrivacyPage() {
             Welcome to Rejectly.pro ("we," "our," or "us"). We are committed to
             protecting your personal information and your right to privacy. This
             Privacy Policy explains how we collect, use, disclose, and safeguard
-            your information when you use our CV analysis platform.
+            your information when you use our resume analysis platform.
           </Paragraph>
           <Paragraph>
             <strong>By using Rejectly.pro, you agree to the collection and use
@@ -244,7 +244,7 @@ export default function PrivacyPage() {
               password when you create an account
             </ListItem>
             <ListItem>
-              <strong>CV Content:</strong> The text and files you upload for
+              <strong>Resume Content:</strong> The text and files you upload for
               analysis, including your resume, work history, skills, and
               qualifications
             </ListItem>
@@ -277,7 +277,7 @@ export default function PrivacyPage() {
           </Paragraph>
           <List>
             <ListItem>
-              <strong>Provide our services:</strong> Analyze your CV against job
+              <strong>Provide our services:</strong> Analyze your resume against job
               postings using AI, generate match scores, identify missing skills,
               and provide personalized recommendations
             </ListItem>
@@ -311,7 +311,7 @@ export default function PrivacyPage() {
           </SectionTitle>
           <HighlightBox>
             <Paragraph>
-              <strong>Important:</strong> Your CV and job posting data is
+              <strong>Important:</strong> Your resume and job posting data is
               processed using OpenAI's GPT-4 API to provide our analysis services.
               When you use our platform, your data is sent to OpenAI's servers for
               processing.
@@ -333,7 +333,7 @@ export default function PrivacyPage() {
               encryption
             </ListItem>
             <ListItem>
-              We do not share your personal CV data with any third parties except
+              We do not share your personal resume data with any third parties except
               as necessary to provide our services
             </ListItem>
           </List>
@@ -354,7 +354,7 @@ export default function PrivacyPage() {
               and at rest
             </ListItem>
             <ListItem>
-              <strong>Secure Storage:</strong> Your CVs and documents are stored
+              <strong>Secure Storage:</strong> Your resumes and documents are stored
               securely in Supabase cloud storage with access controls
             </ListItem>
             <ListItem>

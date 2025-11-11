@@ -109,7 +109,7 @@ export function Footer() {
         <FooterGrid>
           <FooterColumn>
             <h3>Rejectly.pro</h3>
-            <p>AI-powered CV analysis to help you land your dream job.</p>
+            <p>AI-powered resume analysis to help you land your dream job.</p>
           </FooterColumn>
           <FooterColumn>
             <h4>Product</h4>
@@ -129,13 +129,13 @@ export function Footer() {
             <h4>Company</h4>
             <ul>
               <li>
-                <a href="#">About</a>
+                <Link href="/about">About</Link>
               </li>
               <li>
                 <a href="#">Blog</a>
               </li>
               <li>
-                <a href="#">Contact</a>
+                <Link href="/contact">Contact</Link>
               </li>
             </ul>
           </FooterColumn>

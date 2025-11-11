@@ -869,7 +869,7 @@ export function OnboardingWizard({
 
       setUploadedCV(result.document);
       setCvText(result.document.text || "");
-      toast.success("CV uploaded successfully!");
+      toast.success("Resume uploaded successfully!");
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Upload failed";
@@ -983,7 +983,7 @@ export function OnboardingWizard({
   // Step 3: Create analysis
   const handleCreateAnalysis = async () => {
     if (!selectedCV || !selectedJob) {
-      toast.error("Please select a CV and a job posting");
+      toast.error("Please select a resume and a job posting");
       return;
     }
 
@@ -993,7 +993,7 @@ export function OnboardingWizard({
       setAnalysisProgress("Preparing your documents...");
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      setAnalysisProgress("Analyzing CV content...");
+      setAnalysisProgress("Analyzing resume content...");
       await new Promise(resolve => setTimeout(resolve, 500));
 
       setAnalysisProgress("Comparing with job requirements...");
@@ -1045,10 +1045,10 @@ export function OnboardingWizard({
         return (
           <>
             <StepHeader>
-              <StepTitle><DocumentIcon /> Upload Your CV</StepTitle>
+              <StepTitle><DocumentIcon /> Upload Your Resume</StepTitle>
               <StepDescription>
                 {hasExistingCV 
-                  ? "Use your existing CV or upload a new one"
+                  ? "Use your existing resume or upload a new one"
                   : "Upload your resume in PDF or DOCX format"
                 }
               </StepDescription>
@@ -1064,7 +1064,7 @@ export function OnboardingWizard({
                       <CVIcon><DocumentIcon /></CVIcon>
                       <CVTitle>{uploadedCV.title}</CVTitle>
                       <CVSubtitle>
-                        {cvText.length} characters • Click to use this CV
+                        {cvText.length} characters • Click to use this resume
                       </CVSubtitle>
                     </ExistingCVCard>
                   </CVOptionWrapper>
@@ -1081,7 +1081,7 @@ export function OnboardingWizard({
                     >
                       <UploadIcon><UploadArrowIcon /></UploadIcon>
                       <UploadText>
-                        <strong>Upload a new CV</strong>
+                        <strong>Upload a new resume</strong>
                       </UploadText>
                       <UploadHint>
                         PDF or DOCX (max 5MB)
@@ -1112,11 +1112,11 @@ export function OnboardingWizard({
                   {cvText && (
                     <PreviewPanel>
                       <PreviewSection>
-                        <PreviewTitle>CV Content Preview</PreviewTitle>
+                        <PreviewTitle>Resume Content Preview</PreviewTitle>
                         <EditablePreview
                           value={cvText}
                           onChange={(e) => setCvText(e.target.value)}
-                          placeholder="Edit your CV text here..."
+                          placeholder="Edit your resume text here..."
                         />
                         <CharCount>{cvText.length} characters</CharCount>
                       </PreviewSection>
@@ -1252,7 +1252,7 @@ export function OnboardingWizard({
             <StepContent>
               <SelectionList>
                 <div>
-                  <SectionHeading>Selected CV</SectionHeading>
+                  <SectionHeading>Selected Resume</SectionHeading>
                   {cvList.map((cv) => (
                     <SelectionCard
                       key={cv.id}
@@ -1292,7 +1292,7 @@ export function OnboardingWizard({
             <StepHeader>
               <StepTitle><SparklesIcon /> Analysis Complete!</StepTitle>
               <StepDescription>
-                Here&apos;s your CV match summary
+                Here&apos;s your resume match summary
               </StepDescription>
             </StepHeader>
             <StepContent>

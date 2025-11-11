@@ -234,7 +234,7 @@ export default function TermsPage() {
           </SectionTitle>
           <Paragraph>
             Welcome to Rejectly.pro! These Terms of Service ("Terms") govern your
-            access to and use of our CV analysis platform, including our website,
+            access to and use of our resume analysis platform, including our website,
             services, and applications (collectively, the "Service").
           </Paragraph>
           <Paragraph>
@@ -297,7 +297,7 @@ export default function TermsPage() {
             </Paragraph>
             <Paragraph>
               <strong>Pro Plan ($9/month):</strong> Unlimited analyses with
-              advanced features including professional CV rewriting, ATS
+              advanced features including professional resume rewriting, ATS
               optimization, and role recommendations.
             </Paragraph>
           </HighlightBox>
@@ -378,7 +378,7 @@ export default function TermsPage() {
             Your Content and Data
           </SectionTitle>
           <Paragraph>
-            When you upload CVs, job postings, or other content to our Service:
+            When you upload resumes, job postings, or other content to our Service:
           </Paragraph>
           <List>
             <ListItem>

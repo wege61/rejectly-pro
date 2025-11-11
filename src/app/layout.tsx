@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import StyledComponentsRegistry from "@/lib/registry";
 import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
-  title: "Rejectly.pro - AI-Powered CV Analysis | Why Was I Rejected?",
+  title: "Rejectly.pro - AI-Powered Resume Analysis | Why Was I Rejected?",
   description:
-    "Get instant AI-powered insights on why your CV didn't match the job. Improve your applications with data-driven analysis. Free demo available!",
+    "Get instant AI-powered insights on why your resume didn't match the job. Improve your applications with data-driven analysis. Free demo available!",
   keywords: [
-    "CV analysis",
+    "Resume analysis",
     "job matching",
     "AI career coach",
     "resume optimizer",
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Rejectly.pro" }],
   openGraph: {
     title: "Rejectly.pro - Why Was I Rejected?",
-    description: "AI-powered CV & job posting match analysis",
+    description: "AI-powered resume & job posting match analysis",
     type: "website",
   },
 };
@@ -97,6 +98,20 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-8P38Q6H1DG"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-8P38Q6H1DG');
+          `}
+        </Script>
+
         <StyledComponentsRegistry>
           <Providers>{children}</Providers>
         </StyledComponentsRegistry>

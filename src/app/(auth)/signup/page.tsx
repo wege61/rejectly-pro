@@ -86,7 +86,7 @@ export default function SignupPage() {
   return (
     <>
       <Title>Create an Account</Title>
-      <Subtitle>Sign up for free and start your CV analysis</Subtitle>
+      <Subtitle>Sign up for free and start your resume analysis</Subtitle>
 
       <Form onSubmit={handleSubmit}>
         <Input

@@ -577,7 +577,7 @@ export default function DashboardPage() {
               <CVIcon />
             </StatIcon>
             <StatValue>{stats.totalCVs}</StatValue>
-            <StatLabel>CVs Uploaded</StatLabel>
+            <StatLabel>Resumes Uploaded</StatLabel>
           </StatCard>
           <StatCard variant="elevated" onClick={() => router.push(ROUTES.APP.JOBS)}>
             <StatIcon>
@@ -606,9 +606,9 @@ export default function DashboardPage() {
               onClick={() => router.push(ROUTES.APP.CV)}
             >
               <Card.Header>
-                <Card.Title>Upload CV</Card.Title>
+                <Card.Title>Upload Resume</Card.Title>
                 <Card.Description>
-                  Add a new CV to analyze against job postings
+                  Add a new resume to analyze against job postings
                 </Card.Description>
               </Card.Header>
             </ActionCard>
@@ -619,7 +619,7 @@ export default function DashboardPage() {
               <Card.Header>
                 <Card.Title>Add Job Posting</Card.Title>
                 <Card.Description>
-                  Save job postings to compare with your CV
+                  Save job postings to compare with your resume
                 </Card.Description>
               </Card.Header>
             </ActionCard>
@@ -711,7 +711,7 @@ export default function DashboardPage() {
                 >
                   <ReportHeader>
                     <div>
-                      <ReportTitle>CV Analysis Report</ReportTitle>
+                      <ReportTitle>Resume Analysis Report</ReportTitle>
                       <ReportDate>
                         Created on{" "}
                         {new Date(report.created_at).toLocaleDateString(

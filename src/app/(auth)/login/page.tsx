@@ -102,7 +102,7 @@ export default function LoginPage() {
   return (
     <>
       <Title>Log In</Title>
-      <Subtitle>Access your account and continue your CV analysis</Subtitle>
+      <Subtitle>Access your account and continue your resume analysis</Subtitle>
 
       <Form onSubmit={handleSubmit}>
         <Input

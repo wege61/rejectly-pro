@@ -7,6 +7,57 @@ import { Spinner } from "@/components/ui/Spinner";
 import { useToast } from "@/contexts/ToastContext";
 import { Modal } from "@/components/ui/Modal";
 
+// Icons
+const ViewIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const CopyIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+  </svg>
+);
+
+const DeleteIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <line x1="10" y1="11" x2="10" y2="17" />
+    <line x1="14" y1="11" x2="14" y2="17" />
+  </svg>
+);
+
 const Container = styled.div`
   max-width: 1400px;
   margin: 0 auto;
@@ -61,13 +112,13 @@ const CoverLetterCard = styled.div<{ $tone: string }>`
   border: 2px solid ${({ $tone }) => {
     switch ($tone) {
       case 'professional':
-        return '#3b82f6'; // Blue
+        return '#3b82f6';
       case 'friendly':
-        return '#10b981'; // Green
+        return '#10b981';
       case 'formal':
-        return '#8b5cf6'; // Purple
+        return '#8b5cf6';
       default:
-        return '#6b7280'; // Gray
+        return '#6b7280';
     }
   }};
   border-radius: ${({ theme }) => theme.radius.lg};
@@ -212,10 +263,67 @@ const Tag = styled.div<{ $tone?: string }>`
 
 const CardActions = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: ${({ theme }) => theme.spacing.sm};
   margin-top: ${({ theme }) => theme.spacing.md};
   padding-top: ${({ theme }) => theme.spacing.md};
   border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const ActionButton = styled.button<{ $variant?: 'primary' | 'danger' | 'ghost' }>`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  border: none;
+  border-radius: ${({ theme }) => theme.radius.md};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  ${({ $variant = 'primary', theme }) => {
+    if ($variant === 'danger') {
+      return `
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.2);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+      `;
+    } else if ($variant === 'ghost') {
+      return `
+        background: transparent;
+        color: ${theme.colors.textSecondary};
+
+        &:hover {
+          background: ${theme.colors.surfaceHover};
+          color: ${theme.colors.textPrimary};
+          transform: translateY(-2px);
+        }
+      `;
+    } else {
+      return `
+        background: ${theme.colors.surfaceHover};
+        color: ${theme.colors.textPrimary};
+
+        &:hover {
+          background: ${theme.colors.primary};
+          color: white;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+      `;
+    }
+  }}
+
+  &:active {
+    transform: translateY(0);
+  }
 `;
 
 const EmptyState = styled.div`
@@ -259,6 +367,7 @@ const ModalMetaInfo = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.lg};
   padding-bottom: ${({ theme }) => theme.spacing.md};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  flex-wrap: wrap;
 `;
 
 const MetaItem = styled.div`
@@ -268,6 +377,8 @@ const MetaItem = styled.div`
 
 const SelectionModalContent = styled.div`
   padding: ${({ theme }) => theme.spacing.lg};
+  max-height: 600px;
+  overflow-y: auto;
 `;
 
 const Section = styled.div`
@@ -281,6 +392,12 @@ const SectionTitle = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.sm};
   text-transform: uppercase;
   letter-spacing: 0.5px;
+`;
+
+const SectionDescription = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
 const SelectList = styled.div`
@@ -327,6 +444,12 @@ const OptionGrid = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
+const TemplateGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
 const OptionButton = styled.button<{ $selected: boolean }>`
   padding: ${({ theme }) => theme.spacing.md};
   background: ${({ $selected, theme }) =>
@@ -357,12 +480,41 @@ const OptionButton = styled.button<{ $selected: boolean }>`
   }
 `;
 
+const TemplateButton = styled(OptionButton)`
+  padding: ${({ theme }) => theme.spacing.lg};
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const Input = styled.input`
+  padding: ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 2px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  width: 100%;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.textSecondary};
+    opacity: 0.6;
+  }
+`;
+
 interface CoverLetter {
   id: string;
   content: string;
   tone: string;
   length: string;
   language: string;
+  template?: string;
   created_at: string;
   job?: {
     id: string;
@@ -378,6 +530,15 @@ interface Document {
   created_at: string;
 }
 
+const TEMPLATES = [
+  { id: 'standard', name: 'Standard', emoji: '📄', description: 'Classic professional format' },
+  { id: 'story_driven', name: 'Story Driven', emoji: '📖', description: 'Narrative approach' },
+  { id: 'technical_focus', name: 'Technical Focus', emoji: '💻', description: 'Emphasize technical skills' },
+  { id: 'results_oriented', name: 'Results Oriented', emoji: '📊', description: 'Focus on metrics' },
+  { id: 'career_change', name: 'Career Change', emoji: '🔄', description: 'Transitioning fields' },
+  { id: 'short_intro', name: 'Short Intro', emoji: '⚡', description: 'Concise and impactful' },
+];
+
 export default function CoverLettersPage() {
   const toast = useToast();
   const [coverLetters, setCoverLetters] = useState<CoverLetter[]>([]);
@@ -386,13 +547,19 @@ export default function CoverLettersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [letterToDelete, setLetterToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [cvs, setCvs] = useState<Document[]>([]);
   const [jobs, setJobs] = useState<Document[]>([]);
   const [selectedCvId, setSelectedCvId] = useState<string>("");
   const [selectedJobId, setSelectedJobId] = useState<string>("");
+  const [template, setTemplate] = useState<string>('standard');
   const [tone, setTone] = useState<'professional' | 'friendly' | 'formal'>('professional');
   const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium');
   const [language, setLanguage] = useState<'en' | 'tr'>('en');
+  const [emphasizeSkills, setEmphasizeSkills] = useState<string>('');
+  const [specificProjects, setSpecificProjects] = useState<string>('');
 
   const fetchCoverLetters = useCallback(async () => {
     try {
@@ -443,9 +610,12 @@ export default function CoverLettersPage() {
     await fetchDocuments();
     setSelectedCvId("");
     setSelectedJobId("");
+    setTemplate('standard');
     setTone('professional');
     setLength('medium');
     setLanguage('en');
+    setEmphasizeSkills('');
+    setSpecificProjects('');
     setIsSelectionModalOpen(true);
   };
 
@@ -458,6 +628,14 @@ export default function CoverLettersPage() {
     setIsGenerating(true);
 
     try {
+      const customizationFields: any = {};
+      if (emphasizeSkills) {
+        customizationFields.emphasize_skills = emphasizeSkills.split(',').map(s => s.trim());
+      }
+      if (specificProjects) {
+        customizationFields.specific_projects = specificProjects.split(',').map(s => s.trim());
+      }
+
       const response = await fetch("/api/cover-letter/generate-simple", {
         method: "POST",
         headers: {
@@ -466,9 +644,11 @@ export default function CoverLettersPage() {
         body: JSON.stringify({
           cvId: selectedCvId,
           jobId: selectedJobId,
+          template,
           tone,
           length,
           language,
+          customizationFields: Object.keys(customizationFields).length > 0 ? customizationFields : undefined,
         }),
       });
 
@@ -517,13 +697,17 @@ export default function CoverLettersPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this cover letter?")) {
-      return;
-    }
+  const handleDeleteClick = (id: string) => {
+    setLetterToDelete(id);
+    setDeleteModalOpen(true);
+  };
 
+  const handleDeleteConfirm = async () => {
+    if (!letterToDelete) return;
+
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/cover-letters?id=${id}`, {
+      const response = await fetch(`/api/cover-letters?id=${letterToDelete}`, {
         method: "DELETE",
       });
 
@@ -535,11 +719,15 @@ export default function CoverLettersPage() {
 
       toast.success("Cover letter deleted successfully!");
       fetchCoverLetters();
+      setDeleteModalOpen(false);
+      setLetterToDelete(null);
       setIsModalOpen(false);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
       toast.error(errorMessage);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -562,6 +750,11 @@ export default function CoverLettersPage() {
       formal: "🎩 Formal",
     };
     return labels[tone] || tone;
+  };
+
+  const getTemplateLabel = (template: string) => {
+    const tmpl = TEMPLATES.find(t => t.id === template);
+    return tmpl ? `${tmpl.emoji} ${tmpl.name}` : template;
   };
 
   const getToneIcon = (tone: string) => {
@@ -610,8 +803,9 @@ export default function CoverLettersPage() {
           <EmptyIcon>✉️</EmptyIcon>
           <h3 style={{ marginBottom: "8px" }}>No cover letters yet</h3>
           <p style={{ marginBottom: "24px" }}>
-            Generate your first cover letter from a report page
+            Generate your first cover letter using the button above
           </p>
+          <Button onClick={handleGenerateNew}>+ Generate Cover Letter</Button>
         </EmptyState>
       ) : (
         <Grid>
@@ -639,32 +833,39 @@ export default function CoverLettersPage() {
 
               <MetaTags>
                 <Tag $tone={letter.tone}>{getToneLabel(letter.tone)}</Tag>
+                {letter.template && <Tag>{getTemplateLabel(letter.template)}</Tag>}
                 <Tag>{getWordCount(letter.content)} words</Tag>
                 <Tag>{getLanguageLabel(letter.language)}</Tag>
               </MetaTags>
 
               <CardActions onClick={(e) => e.stopPropagation()}>
-                <Button
-                  size="sm"
-                  variant="ghost"
+                <ActionButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCardClick(letter);
+                  }}
+                >
+                  <ViewIcon /> View Full
+                </ActionButton>
+                <ActionButton
+                  $variant="ghost"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigator.clipboard.writeText(letter.content);
                     toast.success("Copied to clipboard!");
                   }}
                 >
-                  📋 Copy
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
+                  <CopyIcon /> Copy
+                </ActionButton>
+                <ActionButton
+                  $variant="danger"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDelete(letter.id);
+                    handleDeleteClick(letter.id);
                   }}
                 >
-                  🗑️ Delete
-                </Button>
+                  <DeleteIcon /> Delete
+                </ActionButton>
               </CardActions>
             </CoverLetterCard>
           ))}
@@ -685,6 +886,11 @@ export default function CoverLettersPage() {
                 <MetaItem>
                   <strong>Tone:</strong> {getToneLabel(selectedLetter.tone)}
                 </MetaItem>
+                {selectedLetter.template && (
+                  <MetaItem>
+                    <strong>Template:</strong> {getTemplateLabel(selectedLetter.template)}
+                  </MetaItem>
+                )}
                 <MetaItem>
                   <strong>Words:</strong> {getWordCount(selectedLetter.content)}
                 </MetaItem>
@@ -713,13 +919,13 @@ export default function CoverLettersPage() {
         </Modal>
       )}
 
-      {/* Selection Modal */}
+      {/* Generation Modal */}
       <Modal
         isOpen={isSelectionModalOpen}
         onClose={() => setIsSelectionModalOpen(false)}
-        title="Generate Cover Letter"
-        description="Select CV, Job, and customize your cover letter"
-        size="lg"
+        title="✉️ Generate Cover Letter"
+        description="Customize and generate a personalized cover letter"
+        size="xl"
       >
         <Modal.Body>
           <SelectionModalContent>
@@ -761,6 +967,26 @@ export default function CoverLettersPage() {
                   ))}
                 </SelectList>
               )}
+            </Section>
+
+            <Section>
+              <SectionTitle>Template</SectionTitle>
+              <SectionDescription>
+                Choose the approach that best fits your application
+              </SectionDescription>
+              <TemplateGrid>
+                {TEMPLATES.map(tmpl => (
+                  <TemplateButton
+                    key={tmpl.id}
+                    $selected={template === tmpl.id}
+                    onClick={() => setTemplate(tmpl.id)}
+                  >
+                    <div style={{ fontSize: '20px' }}>{tmpl.emoji}</div>
+                    <div style={{ fontWeight: 600, fontSize: '14px' }}>{tmpl.name}</div>
+                    <div style={{ fontSize: '11px', opacity: 0.8, fontWeight: 400 }}>{tmpl.description}</div>
+                  </TemplateButton>
+                ))}
+              </TemplateGrid>
             </Section>
 
             <Section>
@@ -828,6 +1054,27 @@ export default function CoverLettersPage() {
                 </OptionButton>
               </OptionGrid>
             </Section>
+
+            <Section>
+              <SectionTitle>Customization (Optional)</SectionTitle>
+              <SectionDescription>
+                Help AI personalize your letter by specifying key information
+              </SectionDescription>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <Input
+                  type="text"
+                  placeholder="Skills to emphasize (comma-separated, e.g., Python, Leadership, Data Analysis)"
+                  value={emphasizeSkills}
+                  onChange={(e) => setEmphasizeSkills(e.target.value)}
+                />
+                <Input
+                  type="text"
+                  placeholder="Specific projects to highlight (comma-separated, e.g., E-commerce Platform, ML Model)"
+                  value={specificProjects}
+                  onChange={(e) => setSpecificProjects(e.target.value)}
+                />
+              </div>
+            </Section>
           </SelectionModalContent>
         </Modal.Body>
         <Modal.Footer>
@@ -845,6 +1092,45 @@ export default function CoverLettersPage() {
             disabled={!selectedCvId || !selectedJobId}
           >
             {isGenerating ? "Generating..." : "Generate Cover Letter"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => !isDeleting && setDeleteModalOpen(false)}
+        title="Delete Cover Letter"
+        size="sm"
+      >
+        <Modal.Body>
+          <div style={{ padding: '16px 0' }}>
+            <p style={{ marginBottom: '12px', fontSize: '15px', lineHeight: '1.6' }}>
+              Are you sure you want to delete this cover letter? This action cannot be undone.
+            </p>
+            <p style={{ color: '#dc2626', fontSize: '14px', fontWeight: 500 }}>
+              ⚠️ This will permanently remove the cover letter from your account.
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="ghost"
+            onClick={() => setDeleteModalOpen(false)}
+            disabled={isDeleting}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleDeleteConfirm}
+            isLoading={isDeleting}
+            style={{
+              background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+              border: 'none',
+            }}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Cover Letter'}
           </Button>
         </Modal.Footer>
       </Modal>

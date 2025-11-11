@@ -1277,9 +1277,40 @@ export default function ReportDetailPage() {
       const blobUrl = URL.createObjectURL(pdfBlob);
       setPdfPreviewUrl(blobUrl);
       setIsPreviewOpen(true);
+
+      // Save PDF to Storage for CV page
+      savePDFToStorage(pdfBlob);
     } catch (error) {
       console.error("CV preview error:", error);
       toast.error("Failed to preview CV. Please try again.");
+    }
+  };
+
+  const savePDFToStorage = async (pdfBlob: Blob) => {
+    if (!report) return;
+
+    try {
+      // Create FormData
+      const formData = new FormData();
+      formData.append("pdf", pdfBlob, `optimized-cv-${report.id}.pdf`);
+      formData.append("reportId", report.id);
+
+      // Call API endpoint
+      const response = await fetch("/api/cv/save-optimized", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("Save error:", result.error);
+        return;
+      }
+
+      console.log("✅ PDF saved successfully:", result.message);
+    } catch (error) {
+      console.error("Error saving PDF:", error);
     }
   };
 

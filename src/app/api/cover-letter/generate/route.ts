@@ -21,7 +21,9 @@ export async function POST(request: NextRequest) {
       reportId,
       tone = 'professional',
       length = 'medium',
-      language = 'en'
+      language = 'en',
+      template = 'standard',
+      customizationFields
     } = await request.json();
 
     if (!reportId) {
@@ -89,20 +91,41 @@ export async function POST(request: NextRequest) {
       primaryJob.title,
       tone as 'professional' | 'friendly' | 'formal',
       length as 'short' | 'medium' | 'long',
-      language as 'en' | 'tr'
+      language as 'en' | 'tr',
+      template as 'standard' | 'story_driven' | 'technical_focus' | 'results_oriented' | 'career_change' | 'short_intro',
+      customizationFields
     );
 
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.8,
-      max_tokens: 1500,
+      max_tokens: 3000, // Increased for structured response
       response_format: { type: "json_object" },
     });
 
-    const result = JSON.parse(
-      completion.choices[0].message.content || "{}"
-    );
+    let result;
+    try {
+      const content = completion.choices[0].message.content || "{}";
+      result = JSON.parse(content);
+
+      // Validate required fields
+      if (!result.content || !result.wordCount) {
+        throw new Error("Invalid AI response: missing required fields");
+      }
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
+      console.error("Raw AI response:", completion.choices[0].message.content);
+
+      // Fallback: try to extract at least the content
+      const content = completion.choices[0].message.content || "";
+      result = {
+        content: content,
+        wordCount: content.split(/\s+/).length,
+        keyHighlights: [],
+        paragraphs: null
+      };
+    }
 
     // Save cover letter to database
     const { data: coverLetter, error: saveError } = await supabase
@@ -115,6 +138,13 @@ export async function POST(request: NextRequest) {
         tone,
         length,
         language,
+        template,
+        structured_content: result.paragraphs ? {
+          paragraphs: result.paragraphs,
+          keyHighlights: result.keyHighlights,
+          wordCount: result.wordCount
+        } : null,
+        customization_fields: customizationFields || null,
       })
       .select()
       .single();
@@ -131,9 +161,11 @@ export async function POST(request: NextRequest) {
         content: result.content,
         wordCount: result.wordCount,
         keyHighlights: result.keyHighlights,
+        paragraphs: result.paragraphs,
         tone,
         length,
         language,
+        template,
       },
     });
   } catch (error) {

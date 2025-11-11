@@ -7,10 +7,47 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ReportsListSkeleton } from "@/components/skeletons/ReportsListSkeleton";
+import { Modal } from "@/components/ui/Modal";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
+
+// Icons
+const ViewIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const DeleteIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <line x1="10" y1="11" x2="10" y2="17" />
+    <line x1="14" y1="11" x2="14" y2="17" />
+  </svg>
+);
 
 const Container = styled.div`
   max-width: 1200px;
@@ -85,6 +122,57 @@ const ReportMeta = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.sm};
   flex-wrap: wrap;
+`;
+
+const CardActions = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.sm};
+  margin-top: ${({ theme }) => theme.spacing.md};
+  padding-top: ${({ theme }) => theme.spacing.md};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const ActionButton = styled.button<{ $variant?: 'primary' | 'danger' }>`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  border: none;
+  border-radius: ${({ theme }) => theme.radius.md};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  ${({ $variant = 'primary', theme }) =>
+    $variant === 'danger'
+      ? `
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+  `
+      : `
+    background: ${theme.colors.surfaceHover};
+    color: ${theme.colors.textPrimary};
+
+    &:hover {
+      background: ${theme.colors.primary};
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+  `}
+
+  &:active {
+    transform: translateY(0);
+  }
 `;
 
 const ScoreBadge = styled(Badge)`
@@ -253,8 +341,12 @@ export default function ReportsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [reports, setReports] = useState<Report[]>([]);
   const [jobTitlesMap, setJobTitlesMap] = useState<Record<string, string>>({});
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
+  const toast = useToast();
 
   useEffect(() => {
     async function fetchReports() {
@@ -318,6 +410,39 @@ export default function ReportsPage() {
     }
   };
 
+  const handleDeleteClick = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setReportToDelete(id);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!reportToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("reports")
+        .delete()
+        .eq("id", reportToDelete)
+        .eq("user_id", user?.id);
+
+      if (error) throw error;
+
+      toast.success("Report deleted successfully!");
+      setReports(reports.filter(report => report.id !== reportToDelete));
+      setDeleteModalOpen(false);
+      setReportToDelete(null);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to delete report";
+      toast.error(errorMessage);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (isLoading) {
     return <ReportsListSkeleton />;
   }
@@ -352,7 +477,6 @@ export default function ReportsPage() {
             <ReportCardWithFakeIt
               key={report.id}
               variant="elevated"
-              onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}
               $fakeItMode={report.fake_it_mode}
             >
               {report.fake_it_mode && (
@@ -360,61 +484,113 @@ export default function ReportsPage() {
                   Fake It Mode
                 </FakeItBanner>
               )}
-              <ReportHeader>
-                <div>
-                  <ReportTitle>CV Analysis Report</ReportTitle>
-                  <ReportDate>
-                    Created on{" "}
-                    {new Date(report.created_at).toLocaleDateString("en-EN", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </ReportDate>
-                  {report.job_ids && report.job_ids.length > 0 && (
-                    <div style={{ marginTop: "4px", fontSize: "13px" }}>
-                      <span style={{ color: "#6b7280", fontWeight: "500" }}>
-                        Job{report.job_ids.length > 1 ? "s" : ""}:{" "}
-                      </span>
-                      <span style={{ color: "#6b7280", fontWeight: "600" }}>
-                        {report.job_ids
-                          .map((id) => jobTitlesMap[id] || "Unknown")
-                          .join(" • ")}
-                      </span>
-                    </div>
-                  )}
-                  {report.optimized_score && report.optimized_score > report.fit_score && (
-                    <ScoreImprovement>
-                      <BeforeScore>{report.fit_score}%</BeforeScore>
-                      <ImprovementArrow>→</ImprovementArrow>
-                      <AfterScore>{report.optimized_score}%</AfterScore>
-                      <span style={{ fontSize: "11px", color: "#10b981" }}>
-                        (+{report.optimized_score - report.fit_score}%)
-                      </span>
-                    </ScoreImprovement>
-                  )}
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-                  <ScoreBadge variant={getScoreColor(report.fit_score)}>
-                    {report.fit_score}% Match
-                  </ScoreBadge>
-                  <MatchQualityBadge $quality={getMatchQuality(report.fit_score).quality}>
-                    {getMatchQuality(report.fit_score).label}
-                  </MatchQualityBadge>
-                </div>
-              </ReportHeader>
-              <ReportMeta>
-                <Badge size="sm">
-                  {report.keywords?.missing?.length || 0} Missing Keywords
-                </Badge>
-                <Badge variant={report.pro ? "info" : "default"} size="sm">
-                  {report.pro ? "Pro Report" : "Free Report"}
-                </Badge>
-              </ReportMeta>
+              <div onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))} style={{ cursor: 'pointer' }}>
+                <ReportHeader>
+                  <div>
+                    <ReportTitle>CV Analysis Report</ReportTitle>
+                    <ReportDate>
+                      Created on{" "}
+                      {new Date(report.created_at).toLocaleDateString("en-EN", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </ReportDate>
+                    {report.job_ids && report.job_ids.length > 0 && (
+                      <div style={{ marginTop: "4px", fontSize: "13px" }}>
+                        <span style={{ color: "#6b7280", fontWeight: "500" }}>
+                          Job{report.job_ids.length > 1 ? "s" : ""}:{" "}
+                        </span>
+                        <span style={{ color: "#6b7280", fontWeight: "600" }}>
+                          {report.job_ids
+                            .map((id) => jobTitlesMap[id] || "Unknown")
+                            .join(" • ")}
+                        </span>
+                      </div>
+                    )}
+                    {report.optimized_score && report.optimized_score > report.fit_score && (
+                      <ScoreImprovement>
+                        <BeforeScore>{report.fit_score}%</BeforeScore>
+                        <ImprovementArrow>→</ImprovementArrow>
+                        <AfterScore>{report.optimized_score}%</AfterScore>
+                        <span style={{ fontSize: "11px", color: "#10b981" }}>
+                          (+{report.optimized_score - report.fit_score}%)
+                        </span>
+                      </ScoreImprovement>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                    <ScoreBadge variant={getScoreColor(report.fit_score)}>
+                      {report.fit_score}% Match
+                    </ScoreBadge>
+                    <MatchQualityBadge $quality={getMatchQuality(report.fit_score).quality}>
+                      {getMatchQuality(report.fit_score).label}
+                    </MatchQualityBadge>
+                  </div>
+                </ReportHeader>
+                <ReportMeta>
+                  <Badge size="sm">
+                    {report.keywords?.missing?.length || 0} Missing Keywords
+                  </Badge>
+                  <Badge variant={report.pro ? "info" : "default"} size="sm">
+                    {report.pro ? "Pro Report" : "Free Report"}
+                  </Badge>
+                </ReportMeta>
+              </div>
+              <CardActions onClick={(e) => e.stopPropagation()}>
+                <ActionButton onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}>
+                  <ViewIcon /> View Details
+                </ActionButton>
+                <ActionButton
+                  $variant="danger"
+                  onClick={(e) => handleDeleteClick(report.id, e)}
+                >
+                  <DeleteIcon /> Delete
+                </ActionButton>
+              </CardActions>
             </ReportCardWithFakeIt>
           ))}
         </ReportsList>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => !isDeleting && setDeleteModalOpen(false)}
+        title="Delete Report"
+        size="sm"
+      >
+        <Modal.Body>
+          <div style={{ padding: '16px 0' }}>
+            <p style={{ marginBottom: '12px', fontSize: '15px', lineHeight: '1.6' }}>
+              Are you sure you want to delete this report? This action cannot be undone.
+            </p>
+            <p style={{ color: '#dc2626', fontSize: '14px', fontWeight: 500 }}>
+              ⚠️ This will permanently remove all analysis data.
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="ghost"
+            onClick={() => setDeleteModalOpen(false)}
+            disabled={isDeleting}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleDeleteConfirm}
+            isLoading={isDeleting}
+            style={{
+              background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+              border: 'none',
+            }}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Report'}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

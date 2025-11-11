@@ -227,8 +227,57 @@ const ReportCard = styled(Card)`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.shadow.md};
+    box-shadow: ${({ theme }) => theme.shadow.lg};
   }
+`;
+
+const FakeItBanner = styled.div`
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  color: white;
+  padding: 6px 16px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  border-radius: 6px 6px 0 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &::before {
+    content: '🚀';
+  }
+`;
+
+const ReportCardWithFakeIt = styled(ReportCard)<{ $fakeItMode?: boolean }>`
+  ${({ $fakeItMode }) =>
+    $fakeItMode &&
+    `
+    position: relative;
+    border: 2px solid rgba(245, 158, 11, 0.3);
+    margin-top: 12px;
+    overflow: visible;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #f59e0b 0%, #ea580c 100%);
+    }
+
+    &:hover {
+      border-color: rgba(245, 158, 11, 0.5);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
+    }
+  `}
 `;
 
 const ReportHeader = styled.div`
@@ -270,6 +319,20 @@ const ReportSummary = styled.p`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+`;
+
+const ViewAllLink = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: ${({ theme }) => theme.spacing.lg};
+
+  button {
+    transition: all ${({ theme }) => theme.transitions.normal};
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
 `;
 
 const CoverLetterCard = styled(Card)<{ $tone: string }>`
@@ -409,6 +472,7 @@ interface Report {
   keywords: {
     missing?: string[];
   } | null;
+  fake_it_mode: boolean | null;
 }
 
 interface CoverLetter {
@@ -478,7 +542,7 @@ export default function DashboardPage() {
             .select("*")
             .eq("user_id", user.id)
             .order("created_at", { ascending: false })
-            .limit(5),
+            .limit(2),
           supabase
             .from("cover_letters")
             .select(`
@@ -642,13 +706,6 @@ export default function DashboardPage() {
           <Section>
             <SectionHeader>
               <SectionTitle>Recent Cover Letters</SectionTitle>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
-              >
-                View All
-              </Button>
             </SectionHeader>
             <ReportsList>
               {recentCoverLetters.map((letter) => (
@@ -671,6 +728,15 @@ export default function DashboardPage() {
                 </CoverLetterCard>
               ))}
             </ReportsList>
+            <ViewAllLink>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
+              >
+                View All Cover Letters →
+              </Button>
+            </ViewAllLink>
           </Section>
         )}
 
@@ -678,13 +744,6 @@ export default function DashboardPage() {
         <Section>
           <SectionHeader>
             <SectionTitle>Recent Reports</SectionTitle>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => router.push(ROUTES.APP.REPORTS)}
-            >
-              View All
-            </Button>
           </SectionHeader>
 
           {recentReports.length === 0 ? (
@@ -700,6 +759,7 @@ export default function DashboardPage() {
               />
             </Card>
           ) : (
+<<<<<<< HEAD
             <ReportsList>
               {recentReports.map((report) => (
                 <ReportCard
@@ -721,37 +781,77 @@ export default function DashboardPage() {
                             month: "long",
                             day: "numeric",
                           }
+=======
+            <>
+              <ReportsList>
+                {recentReports.map((report) => (
+                  <ReportCardWithFakeIt
+                    key={report.id}
+                    variant="elevated"
+                    onClick={() =>
+                      router.push(ROUTES.APP.REPORT_DETAIL(report.id))
+                    }
+                    $fakeItMode={report.fake_it_mode}
+                  >
+                    {report.fake_it_mode && (
+                      <FakeItBanner>
+                        Fake It Mode
+                      </FakeItBanner>
+                    )}
+                    <ReportHeader>
+                      <div>
+                        <ReportTitle>Resume Analysis Report</ReportTitle>
+                        <ReportDate>
+                          Created on{" "}
+                          {new Date(report.created_at).toLocaleDateString(
+                            "en-EN",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }
+                          )}
+                        </ReportDate>
+                        {report.job_ids && report.job_ids.length > 0 && (
+                          <div style={{ marginTop: "4px", fontSize: "13px" }}>
+                            <span style={{ color: "#6b7280", fontWeight: "500" }}>
+                              Job{report.job_ids.length > 1 ? "s" : ""}:{" "}
+                            </span>
+                            <span style={{ color: "#6b7280", fontWeight: "600" }}>
+                              {report.job_ids
+                                .map((id) => jobTitlesMap[id] || "Unknown")
+                                .join(" • ")}
+                            </span>
+                          </div>
+>>>>>>> 7a4ea4a (CoverLetterGenerator düzenlemesiiiii)
                         )}
-                      </ReportDate>
-                      {report.job_ids && report.job_ids.length > 0 && (
-                        <div style={{ marginTop: "4px", fontSize: "13px" }}>
-                          <span style={{ color: "#6b7280", fontWeight: "500" }}>
-                            Job{report.job_ids.length > 1 ? "s" : ""}:{" "}
-                          </span>
-                          <span style={{ color: "#6b7280", fontWeight: "600" }}>
-                            {report.job_ids
-                              .map((id) => jobTitlesMap[id] || "Unknown")
-                              .join(" • ")}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <ScoreBadge variant={getScoreColor(report.fit_score)}>
-                      {report.fit_score}% Match
-                    </ScoreBadge>
-                  </ReportHeader>
-                  <ReportMeta>
-                    <Badge size="sm">
-                      {report.keywords?.missing?.length || 0} Missing Keywords
-                    </Badge>
-                    <Badge variant={report.pro ? "info" : "default"} size="sm">
-                      {report.pro ? "Pro Report" : "Free Report"}
-                    </Badge>
-                  </ReportMeta>
-                  <ReportSummary>{report.summary_free}</ReportSummary>
-                </ReportCard>
-              ))}
-            </ReportsList>
+                      </div>
+                      <ScoreBadge variant={getScoreColor(report.fit_score)}>
+                        {report.fit_score}% Match
+                      </ScoreBadge>
+                    </ReportHeader>
+                    <ReportMeta>
+                      <Badge size="sm">
+                        {report.keywords?.missing?.length || 0} Missing Keywords
+                      </Badge>
+                      <Badge variant={report.pro ? "info" : "default"} size="sm">
+                        {report.pro ? "Pro Report" : "Free Report"}
+                      </Badge>
+                    </ReportMeta>
+                    <ReportSummary>{report.summary_free}</ReportSummary>
+                  </ReportCardWithFakeIt>
+                ))}
+              </ReportsList>
+              <ViewAllLink>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => router.push(ROUTES.APP.REPORTS)}
+                >
+                  View All Reports →
+                </Button>
+              </ViewAllLink>
+            </>
           )}
         </Section>
       </Container>

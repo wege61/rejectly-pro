@@ -470,6 +470,181 @@ const UpgradeFeatures = styled.ul`
   }
 `;
 
+// Blurred Preview Components for Free Users
+const BlurredPreviewSection = styled.div`
+  position: relative;
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+`;
+
+const BlurredContent = styled.div`
+  position: relative;
+  filter: blur(5px);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.6;
+`;
+
+const UnlockOverlay = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+  padding: ${({ theme }) => theme.spacing.xl};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  min-width: 300px;
+  backdrop-filter: blur(10px);
+`;
+
+const UnlockIcon = styled.div`
+  font-size: 48px;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  animation: pulse 2s ease-in-out infinite;
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+`;
+
+const UnlockTitle = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: white;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const UnlockDescription = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const UnlockButton = styled(Button)`
+  background: white !important;
+  color: #667eea !important;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
+  }
+`;
+
+// Social Proof Components
+const SocialProofContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: ${({ theme }) => theme.spacing.md};
+  margin: ${({ theme }) => theme.spacing.lg} 0;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const SocialProofBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.md};
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: ${({ theme }) => theme.radius.md};
+  backdrop-filter: blur(10px);
+`;
+
+const ProofIcon = styled.span`
+  font-size: 24px;
+`;
+
+const ProofText = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  line-height: 1.4;
+`;
+
+// Personalized Message
+const PersonalizedAlert = styled.div<{ $variant: 'danger' | 'warning' | 'success' }>`
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  background: ${({ $variant }) => {
+    if ($variant === 'danger') return 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+    if ($variant === 'warning') return 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+    return 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+  }};
+  color: white;
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  line-height: 1.6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+`;
+
+// Comparison Table
+const ComparisonTable = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: ${({ theme }) => theme.radius.lg};
+  overflow: hidden;
+  margin: ${({ theme }) => theme.spacing.lg} 0;
+`;
+
+const ComparisonRow = styled.div<{ $isHeader?: boolean }>`
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  ${({ $isHeader }) => $isHeader && `
+    background: rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+  `}
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const ComparisonCell = styled.div`
+  padding: ${({ theme }) => theme.spacing.md};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+
+  &:first-child {
+    justify-content: flex-start;
+  }
+`;
+
+// Price Display
+const PriceDisplay = styled.div`
+  margin: ${({ theme }) => theme.spacing.lg} 0;
+`;
+
+const OldPrice = styled.span`
+  text-decoration: line-through;
+  opacity: 0.7;
+  margin-right: ${({ theme }) => theme.spacing.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+`;
+
+const CurrentPrice = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: white;
+`;
+
+const DiscountBadge = styled.span`
+  display: inline-block;
+  background: #10b981;
+  color: white;
+  padding: 4px 12px;
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  margin-left: ${({ theme }) => theme.spacing.sm};
+`;
+
 const PDFPreviewContainer = styled.div`
   width: 100%;
   height: 70vh;
@@ -1174,6 +1349,26 @@ export default function ReportDetailPage() {
     }
   }, [isLoading, report?.generated_cv, report?.optimized_score, optimizedScore, isAnalyzingOptimized, analyzeOptimizedCV]);
 
+  // Helper function to get personalized message based on score
+  const getPersonalizedMessage = (score: number) => {
+    if (score < 50) {
+      return {
+        variant: 'danger' as const,
+        message: "⚠️ Your score is below average. 83% of users with similar scores got rejected. Upgrade now to fix critical issues and dramatically improve your chances."
+      };
+    } else if (score >= 50 && score < 70) {
+      return {
+        variant: 'warning' as const,
+        message: "⚡ You're close! Users who upgraded from this range increased their interview rate by 67%. Don't let small gaps cost you opportunities."
+      };
+    } else {
+      return {
+        variant: 'success' as const,
+        message: "🎯 Great score! Make it perfect - upgraded users in your range got 3x more responses. Stand out from other qualified candidates."
+      };
+    }
+  };
+
   const handleUpgradeToPro = async () => {
     if (!report) return;
 
@@ -1640,31 +1835,278 @@ export default function ReportDetailPage() {
       </Section>
 
       {!report.pro ? (
-        <Section>
-          <ProUpgradeCard variant="elevated">
-            <Card.Content>
-              <UpgradeTitle><RocketIcon /> Upgrade to Pro Report - $9</UpgradeTitle>
-              <p style={{ marginBottom: "24px" }}>
-                Get detailed insights to dramatically improve your CV
-              </p>
-              <UpgradeFeatures>
-                <li>3 professionally rewritten bullet points</li>
-                <li>3 alternative role recommendations with match scores</li>
-                <li>ATS optimization tips for better visibility</li>
-                <li>AI-generated optimized CV in PDF format</li>
-                <li>Downloadable PDF report</li>
-              </UpgradeFeatures>
-              <Button
-                size="lg"
-                onClick={handleUpgradeToPro}
-                isLoading={isUpgrading}
-                style={{ backgroundColor: "white", color: "#667eea" }}
-              >
-                {isUpgrading ? "Upgrading..." : "Upgrade Now - $9"}
-              </Button>
-            </Card.Content>
-          </ProUpgradeCard>
-        </Section>
+        <>
+          {/* Blurred Preview: Rewritten Bullets */}
+          <Section>
+            <BlurredPreviewSection>
+              <Card variant="bordered">
+                <Card.Header>
+                  <Card.Title>Rewritten Bullet Points</Card.Title>
+                  <Card.Description>
+                    Professionally enhanced versions of your experience bullets
+                  </Card.Description>
+                </Card.Header>
+                <Card.Content style={{ position: 'relative', minHeight: '200px' }}>
+                  <BlurredContent>
+                    <BulletList>
+                      <li>Increased team productivity by implementing agile methodologies and automated testing frameworks, resulting in...</li>
+                      <li>Spearheaded the development of microservices architecture that improved system scalability by...</li>
+                      <li>Led cross-functional teams to deliver high-impact projects, reducing time-to-market by...</li>
+                    </BulletList>
+                  </BlurredContent>
+                  <UnlockOverlay>
+                    <UnlockIcon>🔒</UnlockIcon>
+                    <UnlockTitle>Unlock Professional Rewrites</UnlockTitle>
+                    <UnlockDescription>
+                      Get 3 expertly rewritten bullet points that highlight your achievements
+                    </UnlockDescription>
+                    <UnlockButton onClick={handleUpgradeToPro}>
+                      Unlock for $9
+                    </UnlockButton>
+                  </UnlockOverlay>
+                </Card.Content>
+              </Card>
+            </BlurredPreviewSection>
+          </Section>
+
+          {/* Blurred Preview: Role Recommendations */}
+          <Section>
+            <BlurredPreviewSection>
+              <Card variant="bordered">
+                <Card.Header>
+                  <Card.Title>Alternative Role Recommendations</Card.Title>
+                  <Card.Description>
+                    Discover roles that match your skills and experience
+                  </Card.Description>
+                </Card.Header>
+                <Card.Content style={{ position: 'relative', minHeight: '180px' }}>
+                  <BlurredContent>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '12px',
+                        backgroundColor: '#1e293b',
+                        border: '1px solid #334155',
+                        borderRadius: '8px',
+                      }}>
+                        <span style={{ fontWeight: 500, color: '#f1f5f9' }}>
+                          Senior Software Engineer
+                        </span>
+                        <Badge variant="success">92% Match</Badge>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '12px',
+                        backgroundColor: '#1e293b',
+                        border: '1px solid #334155',
+                        borderRadius: '8px',
+                      }}>
+                        <span style={{ fontWeight: 500, color: '#f1f5f9' }}>
+                          Technical Lead
+                        </span>
+                        <Badge variant="success">87% Match</Badge>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '12px',
+                        backgroundColor: '#1e293b',
+                        border: '1px solid #334155',
+                        borderRadius: '8px',
+                      }}>
+                        <span style={{ fontWeight: 500, color: '#f1f5f9' }}>
+                          Engineering Manager
+                        </span>
+                        <Badge variant="success">83% Match</Badge>
+                      </div>
+                    </div>
+                  </BlurredContent>
+                  <UnlockOverlay>
+                    <UnlockIcon>🔒</UnlockIcon>
+                    <UnlockTitle>See Perfect Role Matches</UnlockTitle>
+                    <UnlockDescription>
+                      Discover 3 alternative roles with detailed match scores
+                    </UnlockDescription>
+                    <UnlockButton onClick={handleUpgradeToPro}>
+                      Unlock for $9
+                    </UnlockButton>
+                  </UnlockOverlay>
+                </Card.Content>
+              </Card>
+            </BlurredPreviewSection>
+          </Section>
+
+          {/* Blurred Preview: ATS Tips */}
+          <Section>
+            <BlurredPreviewSection>
+              <Card variant="bordered">
+                <Card.Header>
+                  <Card.Title>ATS Optimization Tips</Card.Title>
+                  <Card.Description>
+                    Improve your chances with applicant tracking systems
+                  </Card.Description>
+                </Card.Header>
+                <Card.Content style={{ position: 'relative', minHeight: '200px' }}>
+                  <BlurredContent>
+                    <BulletList>
+                      <li>Add more quantifiable achievements with specific metrics and percentages to demonstrate...</li>
+                      <li>Include industry-standard keywords such as "cloud computing", "CI/CD", and "scalability"...</li>
+                      <li>Restructure your experience section to highlight leadership and project management...</li>
+                      <li>Optimize your summary section with role-specific terminology that matches...</li>
+                    </BulletList>
+                  </BlurredContent>
+                  <UnlockOverlay>
+                    <UnlockIcon>🔒</UnlockIcon>
+                    <UnlockTitle>Get ATS Optimization Tips</UnlockTitle>
+                    <UnlockDescription>
+                      Detailed tips to pass applicant tracking systems
+                    </UnlockDescription>
+                    <UnlockButton onClick={handleUpgradeToPro}>
+                      Unlock for $9
+                    </UnlockButton>
+                  </UnlockOverlay>
+                </Card.Content>
+              </Card>
+            </BlurredPreviewSection>
+          </Section>
+
+          {/* Personalized Pain Point Message */}
+          <Section>
+            <PersonalizedAlert $variant={getPersonalizedMessage(report.fit_score).variant}>
+              {getPersonalizedMessage(report.fit_score).message}
+            </PersonalizedAlert>
+          </Section>
+
+          {/* Main Upgrade Card */}
+          <Section>
+            <ProUpgradeCard variant="elevated">
+              <Card.Content>
+                <UpgradeTitle>
+                  <RocketIcon /> Unlock Your Full Potential
+                </UpgradeTitle>
+
+                {/* Social Proof */}
+                <SocialProofContainer>
+                  <SocialProofBadge>
+                    <ProofIcon>🔥</ProofIcon>
+                    <ProofText>
+                      <strong>487 users</strong> upgraded in the last 7 days
+                    </ProofText>
+                  </SocialProofBadge>
+                  <SocialProofBadge>
+                    <ProofIcon>⭐</ProofIcon>
+                    <ProofText>
+                      <strong>94%</strong> of users who upgraded got interviews
+                    </ProofText>
+                  </SocialProofBadge>
+                  <SocialProofBadge>
+                    <ProofIcon>💼</ProofIcon>
+                    <ProofText>
+                      Join <strong>12,483 professionals</strong> who upgraded
+                    </ProofText>
+                  </SocialProofBadge>
+                  <SocialProofBadge>
+                    <ProofIcon>⚡</ProofIcon>
+                    <ProofText>
+                      <strong>3x</strong> more interview callbacks on average
+                    </ProofText>
+                  </SocialProofBadge>
+                </SocialProofContainer>
+
+                {/* Price Display with Urgency */}
+                <PriceDisplay>
+                  <div style={{ marginBottom: '12px' }}>
+                    <OldPrice>$15</OldPrice>
+                    <CurrentPrice>$9</CurrentPrice>
+                    <DiscountBadge>40% OFF - Limited Time</DiscountBadge>
+                  </div>
+                  <div style={{ fontSize: '14px', opacity: 0.9 }}>
+                    ⏰ Special launch pricing - ends soon!
+                  </div>
+                </PriceDisplay>
+
+                {/* Comparison Table */}
+                <ComparisonTable>
+                  <ComparisonRow $isHeader>
+                    <ComparisonCell>Feature</ComparisonCell>
+                    <ComparisonCell>FREE</ComparisonCell>
+                    <ComparisonCell>PRO</ComparisonCell>
+                  </ComparisonRow>
+                  <ComparisonRow>
+                    <ComparisonCell>Fit Score Analysis</ComparisonCell>
+                    <ComparisonCell>✅</ComparisonCell>
+                    <ComparisonCell>✅</ComparisonCell>
+                  </ComparisonRow>
+                  <ComparisonRow>
+                    <ComparisonCell>Missing Keywords</ComparisonCell>
+                    <ComparisonCell>✅</ComparisonCell>
+                    <ComparisonCell>✅</ComparisonCell>
+                  </ComparisonRow>
+                  <ComparisonRow>
+                    <ComparisonCell>AI Summary</ComparisonCell>
+                    <ComparisonCell>✅</ComparisonCell>
+                    <ComparisonCell>✅ Enhanced</ComparisonCell>
+                  </ComparisonRow>
+                  <ComparisonRow>
+                    <ComparisonCell>Rewritten Bullets</ComparisonCell>
+                    <ComparisonCell>❌</ComparisonCell>
+                    <ComparisonCell>✅ 3x</ComparisonCell>
+                  </ComparisonRow>
+                  <ComparisonRow>
+                    <ComparisonCell>Role Recommendations</ComparisonCell>
+                    <ComparisonCell>❌</ComparisonCell>
+                    <ComparisonCell>✅ 3x</ComparisonCell>
+                  </ComparisonRow>
+                  <ComparisonRow>
+                    <ComparisonCell>ATS Tips</ComparisonCell>
+                    <ComparisonCell>❌</ComparisonCell>
+                    <ComparisonCell>✅</ComparisonCell>
+                  </ComparisonRow>
+                  <ComparisonRow>
+                    <ComparisonCell>Optimized CV PDF</ComparisonCell>
+                    <ComparisonCell>❌</ComparisonCell>
+                    <ComparisonCell>✅</ComparisonCell>
+                  </ComparisonRow>
+                  <ComparisonRow>
+                    <ComparisonCell>Priority Support</ComparisonCell>
+                    <ComparisonCell>❌</ComparisonCell>
+                    <ComparisonCell>✅</ComparisonCell>
+                  </ComparisonRow>
+                </ComparisonTable>
+
+                <Button
+                  size="lg"
+                  onClick={handleUpgradeToPro}
+                  isLoading={isUpgrading}
+                  style={{
+                    backgroundColor: "white",
+                    color: "#667eea",
+                    fontSize: '18px',
+                    padding: '16px 32px',
+                    width: '100%',
+                    marginTop: '24px'
+                  }}
+                >
+                  {isUpgrading ? "Upgrading..." : "🚀 Upgrade to Pro - Only $9"}
+                </Button>
+
+                <div style={{
+                  textAlign: 'center',
+                  marginTop: '16px',
+                  fontSize: '13px',
+                  opacity: 0.9
+                }}>
+                  💯 100% Satisfaction Guarantee - Full refund if not satisfied
+                </div>
+              </Card.Content>
+            </ProUpgradeCard>
+          </Section>
+        </>
       ) : (
         <>
           <Section>

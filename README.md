@@ -9,7 +9,7 @@ AI-powered CV & job posting match analysis - "Why was I rejected?"
 - Node.js 20+ (use nvm: `nvm use 20`)
 - pnpm (`npm install -g pnpm`)
 - Supabase account
-- OpenAI API key
+- OpenAI API key.
 - Stripe account
 
 ### Installation

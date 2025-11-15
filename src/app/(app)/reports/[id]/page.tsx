@@ -645,6 +645,196 @@ const DiscountBadge = styled.span`
   margin-left: ${({ theme }) => theme.spacing.sm};
 `;
 
+// Before/After Comparison Components
+const BeforeAfterCard = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 2px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: ${({ theme }) => theme.spacing.md};
+  }
+`;
+
+const ComparisonColumn = styled.div<{ $isAfter?: boolean }>`
+  padding: ${({ theme }) => theme.spacing.md};
+  background: ${({ $isAfter, theme }) =>
+    $isAfter
+      ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)'
+      : 'rgba(239, 68, 68, 0.05)'
+  };
+  border: 1px solid ${({ $isAfter }) =>
+    $isAfter ? '#10b981' : '#ef4444'
+  };
+  border-radius: ${({ theme }) => theme.radius.md};
+  position: relative;
+`;
+
+const ColumnLabel = styled.div<{ $isAfter?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  background: ${({ $isAfter }) =>
+    $isAfter
+      ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+      : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+  };
+  color: white;
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const ComparisonText = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  line-height: 1.6;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  }
+`;
+
+const SampleBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: ${({ theme }) => theme.radius.md};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+`;
+
+const ArrowIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #10b981;
+
+  @media (max-width: 768px) {
+    transform: rotate(90deg);
+    margin: ${({ theme }) => theme.spacing.sm} 0;
+  }
+`;
+
+const RoleCard = styled.div`
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: ${({ theme }) => theme.radius.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.5);
+  }
+`;
+
+const RoleCardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: ${({ theme }) => theme.spacing.sm};
+  }
+`;
+
+const RoleTitle = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin: 0;
+`;
+
+const RoleFitBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+`;
+
+const RoleDescription = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  line-height: 1.6;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin: 0;
+`;
+
+const ATSTipCard = styled.div`
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  border-radius: ${({ theme }) => theme.radius.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.md};
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.5);
+  }
+`;
+
+const ATSIcon = styled.div`
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: ${({ theme }) => theme.radius.md};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+`;
+
+const ATSTipContent = styled.div`
+  flex: 1;
+`;
+
+const ATSTipTitle = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const ATSTipText = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  line-height: 1.6;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
 const PDFPreviewContainer = styled.div`
   width: 100%;
   height: 70vh;
@@ -1130,6 +1320,15 @@ interface Report {
   } | null;
   keywords: {
     missing?: string[];
+  } | null;
+  sample_rewrite: {
+    original: string;
+    rewritten: string;
+  } | null;
+  sample_role: {
+    title: string;
+    fit: number;
+    description: string;
   } | null;
   role_fit: RoleRecommendation[] | null;
   ats_flags: string[] | null;
@@ -1836,143 +2035,269 @@ export default function ReportDetailPage() {
 
       {!report.pro ? (
         <>
-          {/* Blurred Preview: Rewritten Bullets */}
+          {/* Rewritten Bullets with Before/After Example */}
           <Section>
-            <BlurredPreviewSection>
-              <Card variant="bordered">
-                <Card.Header>
-                  <Card.Title>Rewritten Bullet Points</Card.Title>
-                  <Card.Description>
-                    Professionally enhanced versions of your experience bullets
-                  </Card.Description>
-                </Card.Header>
-                <Card.Content style={{ position: 'relative', minHeight: '200px' }}>
-                  <BlurredContent>
-                    <BulletList>
-                      <li>Increased team productivity by implementing agile methodologies and automated testing frameworks, resulting in...</li>
-                      <li>Spearheaded the development of microservices architecture that improved system scalability by...</li>
-                      <li>Led cross-functional teams to deliver high-impact projects, reducing time-to-market by...</li>
-                    </BulletList>
-                  </BlurredContent>
-                  <UnlockOverlay>
-                    <UnlockIcon>🔒</UnlockIcon>
-                    <UnlockTitle>Unlock Professional Rewrites</UnlockTitle>
-                    <UnlockDescription>
-                      Get 3 expertly rewritten bullet points that highlight your achievements
-                    </UnlockDescription>
-                    <UnlockButton onClick={handleUpgradeToPro}>
-                      Unlock for $9
-                    </UnlockButton>
-                  </UnlockOverlay>
-                </Card.Content>
-              </Card>
-            </BlurredPreviewSection>
+            <Card variant="bordered">
+              <Card.Header>
+                <Card.Title>Rewritten Bullet Points</Card.Title>
+                <Card.Description>
+                  Professionally enhanced versions of your experience bullets
+                </Card.Description>
+              </Card.Header>
+              <Card.Content>
+                <SampleBadge>
+                  ✨ Free Sample - See the Difference
+                </SampleBadge>
+
+                {report.sample_rewrite ? (
+                  <BeforeAfterCard>
+                    <ComparisonColumn>
+                      <ColumnLabel>❌ Before (Your CV)</ColumnLabel>
+                      <ComparisonText>
+                        {report.sample_rewrite.original}
+                      </ComparisonText>
+                    </ComparisonColumn>
+
+                    <ComparisonColumn $isAfter>
+                      <ColumnLabel $isAfter>✅ After (Pro)</ColumnLabel>
+                      <ComparisonText>
+                        {report.sample_rewrite.rewritten}
+                      </ComparisonText>
+                    </ComparisonColumn>
+                  </BeforeAfterCard>
+                ) : (
+                  <div style={{
+                    padding: '20px',
+                    textAlign: 'center',
+                    color: '#9ca3af',
+                    fontSize: '14px',
+                    border: '1px dashed #334155',
+                    borderRadius: '8px',
+                    marginBottom: '24px'
+                  }}>
+                    Sample rewrite is being generated from your CV. Please refresh the page or create a new analysis.
+                  </div>
+                )}
+
+                <BlurredPreviewSection style={{ marginTop: '24px' }}>
+                  <div style={{ position: 'relative', minHeight: '180px' }}>
+                    <BlurredContent>
+                      <BulletList>
+                        <li>Spearheaded the development of microservices architecture that improved system scalability by 45%, reducing server costs by $15K/month while maintaining 99.9% uptime</li>
+                        <li>Led cross-functional teams of 8 developers to deliver high-impact projects, reducing time-to-market by 40% through implementation of agile methodologies and CI/CD pipelines</li>
+                      </BulletList>
+                    </BlurredContent>
+                    <UnlockOverlay>
+                      <UnlockIcon>🔒</UnlockIcon>
+                      <UnlockTitle>Unlock 2 More Professional Rewrites</UnlockTitle>
+                      <UnlockDescription>
+                        Get additional expertly rewritten bullet points with metrics and achievements
+                      </UnlockDescription>
+                      <UnlockButton onClick={handleUpgradeToPro}>
+                        Unlock for $9
+                      </UnlockButton>
+                    </UnlockOverlay>
+                  </div>
+                </BlurredPreviewSection>
+              </Card.Content>
+            </Card>
           </Section>
 
-          {/* Blurred Preview: Role Recommendations */}
+          {/* Role Recommendations with Sample */}
           <Section>
-            <BlurredPreviewSection>
-              <Card variant="bordered">
-                <Card.Header>
-                  <Card.Title>Alternative Role Recommendations</Card.Title>
-                  <Card.Description>
-                    Discover roles that match your skills and experience
-                  </Card.Description>
-                </Card.Header>
-                <Card.Content style={{ position: 'relative', minHeight: '180px' }}>
-                  <BlurredContent>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '12px',
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #334155',
-                        borderRadius: '8px',
-                      }}>
-                        <span style={{ fontWeight: 500, color: '#f1f5f9' }}>
-                          Senior Software Engineer
-                        </span>
-                        <Badge variant="success">92% Match</Badge>
+            <Card variant="bordered">
+              <Card.Header>
+                <Card.Title>Alternative Role Recommendations</Card.Title>
+                <Card.Description>
+                  Discover roles that match your skills and experience
+                </Card.Description>
+              </Card.Header>
+              <Card.Content>
+                <SampleBadge>
+                  ✨ Top Match for Your Profile
+                </SampleBadge>
+
+                {report.sample_role ? (
+                  <RoleCard>
+                    <RoleCardHeader>
+                      <RoleTitle>
+                        {report.sample_role.title}
+                      </RoleTitle>
+                      <RoleFitBadge>
+                        ✓ {report.sample_role.fit}% Match
+                      </RoleFitBadge>
+                    </RoleCardHeader>
+                    <RoleDescription>
+                      {report.sample_role.description}
+                    </RoleDescription>
+                  </RoleCard>
+                ) : (
+                  <div style={{
+                    padding: '20px',
+                    textAlign: 'center',
+                    color: '#9ca3af',
+                    fontSize: '14px',
+                    border: '1px dashed #334155',
+                    borderRadius: '8px'
+                  }}>
+                    Role recommendation is being generated. Please refresh the page or create a new analysis.
+                  </div>
+                )}
+
+                <BlurredPreviewSection style={{ marginTop: '24px' }}>
+                  <div style={{ position: 'relative', minHeight: '200px' }}>
+                    <BlurredContent>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{
+                          padding: '16px',
+                          backgroundColor: '#1e293b',
+                          border: '2px solid #334155',
+                          borderRadius: '12px',
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <span style={{ fontWeight: 600, fontSize: '18px', color: '#f1f5f9' }}>
+                              Technical Lead
+                            </span>
+                            <Badge variant="success">85% Match</Badge>
+                          </div>
+                          <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0 }}>
+                            Your leadership experience and technical depth make you an excellent candidate for this role...
+                          </p>
+                        </div>
+                        <div style={{
+                          padding: '16px',
+                          backgroundColor: '#1e293b',
+                          border: '2px solid #334155',
+                          borderRadius: '12px',
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <span style={{ fontWeight: 600, fontSize: '18px', color: '#f1f5f9' }}>
+                              Solutions Architect
+                            </span>
+                            <Badge variant="success">82% Match</Badge>
+                          </div>
+                          <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0 }}>
+                            Your system design skills and cross-functional experience position you well for this strategic role...
+                          </p>
+                        </div>
                       </div>
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '12px',
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #334155',
-                        borderRadius: '8px',
-                      }}>
-                        <span style={{ fontWeight: 500, color: '#f1f5f9' }}>
-                          Technical Lead
-                        </span>
-                        <Badge variant="success">87% Match</Badge>
-                      </div>
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '12px',
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #334155',
-                        borderRadius: '8px',
-                      }}>
-                        <span style={{ fontWeight: 500, color: '#f1f5f9' }}>
-                          Engineering Manager
-                        </span>
-                        <Badge variant="success">83% Match</Badge>
-                      </div>
-                    </div>
-                  </BlurredContent>
-                  <UnlockOverlay>
-                    <UnlockIcon>🔒</UnlockIcon>
-                    <UnlockTitle>See Perfect Role Matches</UnlockTitle>
-                    <UnlockDescription>
-                      Discover 3 alternative roles with detailed match scores
-                    </UnlockDescription>
-                    <UnlockButton onClick={handleUpgradeToPro}>
-                      Unlock for $9
-                    </UnlockButton>
-                  </UnlockOverlay>
-                </Card.Content>
-              </Card>
-            </BlurredPreviewSection>
+                    </BlurredContent>
+                    <UnlockOverlay>
+                      <UnlockIcon>🔒</UnlockIcon>
+                      <UnlockTitle>Unlock 2 More Perfect Matches</UnlockTitle>
+                      <UnlockDescription>
+                        Discover additional roles tailored to your unique skills and experience
+                      </UnlockDescription>
+                      <UnlockButton onClick={handleUpgradeToPro}>
+                        Unlock for $9
+                      </UnlockButton>
+                    </UnlockOverlay>
+                  </div>
+                </BlurredPreviewSection>
+              </Card.Content>
+            </Card>
           </Section>
 
-          {/* Blurred Preview: ATS Tips */}
+          {/* ATS Optimization Tips with Sample */}
           <Section>
-            <BlurredPreviewSection>
-              <Card variant="bordered">
-                <Card.Header>
-                  <Card.Title>ATS Optimization Tips</Card.Title>
-                  <Card.Description>
-                    Improve your chances with applicant tracking systems
-                  </Card.Description>
-                </Card.Header>
-                <Card.Content style={{ position: 'relative', minHeight: '200px' }}>
-                  <BlurredContent>
-                    <BulletList>
-                      <li>Add more quantifiable achievements with specific metrics and percentages to demonstrate...</li>
-                      <li>Include industry-standard keywords such as "cloud computing", "CI/CD", and "scalability"...</li>
-                      <li>Restructure your experience section to highlight leadership and project management...</li>
-                      <li>Optimize your summary section with role-specific terminology that matches...</li>
-                    </BulletList>
-                  </BlurredContent>
-                  <UnlockOverlay>
-                    <UnlockIcon>🔒</UnlockIcon>
-                    <UnlockTitle>Get ATS Optimization Tips</UnlockTitle>
-                    <UnlockDescription>
-                      Detailed tips to pass applicant tracking systems
-                    </UnlockDescription>
-                    <UnlockButton onClick={handleUpgradeToPro}>
-                      Unlock for $9
-                    </UnlockButton>
-                  </UnlockOverlay>
-                </Card.Content>
-              </Card>
-            </BlurredPreviewSection>
+            <Card variant="bordered">
+              <Card.Header>
+                <Card.Title>ATS Optimization Tips</Card.Title>
+                <Card.Description>
+                  Improve your chances with applicant tracking systems
+                </Card.Description>
+              </Card.Header>
+              <Card.Content>
+                <SampleBadge>
+                  ✨ Free Tip - Boost Your ATS Score
+                </SampleBadge>
+
+                <ATSTipCard>
+                  <ATSIcon>📄</ATSIcon>
+                  <ATSTipContent>
+                    <ATSTipTitle>Optimize Your CV File Name</ATSTipTitle>
+                    <ATSTipText>
+                      Name your CV file strategically: "FirstName_LastName_Position_CV.pdf" (e.g., "John_Smith_Senior_Developer_CV.pdf").
+                      ATS systems often index file names, and including the position helps recruiters find your application quickly.
+                      Avoid generic names like "Resume.pdf" or "CV_final_v2.pdf" which appear unprofessional.
+                    </ATSTipText>
+                  </ATSTipContent>
+                </ATSTipCard>
+
+                <BlurredPreviewSection style={{ marginTop: '24px' }}>
+                  <div style={{ position: 'relative', minHeight: '220px' }}>
+                    <BlurredContent>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{
+                          display: 'flex',
+                          gap: '16px',
+                          padding: '16px',
+                          backgroundColor: '#1e293b',
+                          border: '2px solid #334155',
+                          borderRadius: '12px',
+                        }}>
+                          <div style={{ fontSize: '24px' }}>🎯</div>
+                          <div>
+                            <div style={{ fontWeight: 600, marginBottom: '4px', color: '#f1f5f9' }}>
+                              Add Quantifiable Achievements
+                            </div>
+                            <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0, lineHeight: 1.6 }}>
+                              Include specific metrics and percentages to demonstrate impact. ATS systems prioritize candidates who show measurable results...
+                            </p>
+                          </div>
+                        </div>
+                        <div style={{
+                          display: 'flex',
+                          gap: '16px',
+                          padding: '16px',
+                          backgroundColor: '#1e293b',
+                          border: '2px solid #334155',
+                          borderRadius: '12px',
+                        }}>
+                          <div style={{ fontSize: '24px' }}>🔑</div>
+                          <div>
+                            <div style={{ fontWeight: 600, marginBottom: '4px', color: '#f1f5f9' }}>
+                              Strategic Keyword Placement
+                            </div>
+                            <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0, lineHeight: 1.6 }}>
+                              Place important keywords in your professional summary, skills section, and throughout experience bullets. Mirror the exact terminology...
+                            </p>
+                          </div>
+                        </div>
+                        <div style={{
+                          display: 'flex',
+                          gap: '16px',
+                          padding: '16px',
+                          backgroundColor: '#1e293b',
+                          border: '2px solid #334155',
+                          borderRadius: '12px',
+                        }}>
+                          <div style={{ fontSize: '24px' }}>📊</div>
+                          <div>
+                            <div style={{ fontWeight: 600, marginBottom: '4px', color: '#f1f5f9' }}>
+                              Formatting Best Practices
+                            </div>
+                            <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0, lineHeight: 1.6 }}>
+                              Use standard section headers like "Experience", "Education", and "Skills". Avoid tables, text boxes, and graphics that confuse ATS parsers...
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </BlurredContent>
+                    <UnlockOverlay>
+                      <UnlockIcon>🔒</UnlockIcon>
+                      <UnlockTitle>Unlock 3+ Detailed ATS Tips</UnlockTitle>
+                      <UnlockDescription>
+                        Get comprehensive strategies to beat applicant tracking systems and land more interviews
+                      </UnlockDescription>
+                      <UnlockButton onClick={handleUpgradeToPro}>
+                        Unlock for $9
+                      </UnlockButton>
+                    </UnlockOverlay>
+                  </div>
+                </BlurredPreviewSection>
+              </Card.Content>
+            </Card>
           </Section>
 
           {/* Personalized Pain Point Message */}

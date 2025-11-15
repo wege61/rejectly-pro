@@ -26,20 +26,62 @@ Analyze the match and provide:
 1. **Match Score** (0-100): Overall compatibility score
 2. **Summary** (3-4 sentences, 350-450 characters): Professional summary explaining the match, highlighting strengths and gaps
 3. **Missing Keywords** (exactly 5): Critical keywords from job postings that are missing in the CV
+4. **Sample Rewrite**: Select ONE bullet point from the candidate's CV experience section and rewrite it professionally. This should:
+   - Be an actual bullet from their CV (don't make one up)
+   - Include quantifiable achievements where possible
+   - Incorporate relevant keywords from job postings
+   - Follow achievement-focused format
+   - Be significantly improved compared to original
+5. **Sample Role Recommendation**: Analyze the candidate's CV and suggest ONE alternative role based on their ACTUAL experience, skills, and background. CRITICAL REQUIREMENTS:
+   - Analyze their work history, education, and demonstrated skills in the CV
+   - Role title must be realistic and aligned with their actual background
+   - Fit score must be realistic (75-95% for well-matched roles, lower if pivoting)
+   - Write a 2-3 sentence PERSONALIZED description that:
+     * References SPECIFIC skills/technologies from their CV
+     * Mentions ACTUAL years of experience or level of seniority
+     * Explains WHY this role fits based on THEIR unique background
+   - DO NOT use generic descriptions - make it personal to THIS candidate
 
 Respond in JSON format:
 {
   "fitScore": 85,
   "summary": "Your detailed 3-4 sentence summary here...",
-  "missingKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"]
+  "missingKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
+  "sampleRewrite": {
+    "original": "Exact original bullet point from their CV...",
+    "rewritten": "Professionally enhanced version with achievements and keywords..."
+  },
+  "sampleRole": {
+    "title": "Senior Backend Developer",
+    "fit": 92,
+    "description": "Your 4 years of Python/Django experience and proven track record with microservices architecture make you an ideal candidate. Your API design skills and database optimization expertise are highly sought after in this role."
+  }
 }
+
+CRITICAL NOTE FOR SAMPLE ROLE:
+- The description MUST reference SPECIFIC technologies, skills, or experiences from the candidate's CV
+- Use ACTUAL years of experience if mentioned in CV
+- Role title should be based on their CURRENT level and experience
+- Examples of GOOD personalization:
+  * "Your 5 years of React expertise and experience leading a team of 4 developers..."
+  * "Your background in electrical engineering combined with recent Python projects..."
+  * "Your proven track record with AWS, Docker, and CI/CD pipelines..."
+- Examples of BAD (too generic):
+  * "Your development experience makes you a good fit..."
+  * "You have the skills needed for this role..."
+  * "This is a natural career progression..."
 
 Guidelines:
 - Be honest and constructive
 - Focus on actionable insights
 - Use professional tone
 - Summary should be encouraging yet realistic
-- Keywords should be specific technical skills or requirements`;
+- Keywords should be specific technical skills or requirements
+- For sample rewrite: Pick a weak/generic bullet point from their CV that can be dramatically improved
+- The rewritten version should showcase the value of upgrading to Pro
+- For sample role: Base recommendation on candidate's ACTUAL background (same rules as Pro role recommendations)
+- Sample role should be the BEST match - typically 75-95% fit score
+- Description should be personalized to their specific experience and skills`;
 }
 
 export function generateProReportPrompt(

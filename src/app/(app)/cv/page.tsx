@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useToast } from "@/contexts/ToastContext";
 import { Spinner } from "@/components/ui/Spinner";
 import { CVListSkeleton } from "@/components/skeletons/CVListSkeleton";
@@ -649,34 +650,6 @@ const HiddenInput = styled.input`
   display: none;
 `;
 
-const EmptyState = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing["4xl"]} ${({ theme }) => theme.spacing.xl};
-  color: ${({ theme }) => theme.colors.textSecondary};
-
-  svg {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto ${({ theme }) => theme.spacing.lg};
-    opacity: 0.3;
-  }
-
-  h3 {
-    font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-    font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-    margin-bottom: ${({ theme }) => theme.spacing.sm};
-    color: ${({ theme }) => theme.colors.textPrimary};
-  }
-
-  p {
-    font-size: ${({ theme }) => theme.typography.fontSize.base};
-    color: ${({ theme }) => theme.colors.textSecondary};
-    line-height: 1.6;
-    max-width: 400px;
-    margin: 0 auto ${({ theme }) => theme.spacing.lg};
-  }
-`;
-
 export default function CVPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -947,24 +920,17 @@ export default function CVPage() {
         </Header>
 
         {allCVs.length === 0 ? (
-          <EmptyState>
-            <FileIcon />
-            <h3>No CVs yet</h3>
-            <p>
-              Upload your first resume to get started with job matching analysis and AI-powered optimization
-            </p>
-            <UploadButton onClick={handleUploadClick} disabled={isUploading}>
-              {isUploading ? (
-                <>
-                  <Spinner size="sm" /> Uploading...
-                </>
-              ) : (
-                <>
-                  <UploadIcon /> Upload Your First CV
-                </>
-              )}
-            </UploadButton>
-          </EmptyState>
+          <Card variant="bordered">
+            <EmptyState
+              icon={<EmptyState.DocumentIcon />}
+              title="No CVs yet"
+              description="Upload your first resume to get started with job matching analysis and AI-powered optimization."
+              action={{
+                label: isUploading ? "Uploading..." : "Upload Your First CV",
+                onClick: handleUploadClick,
+              }}
+            />
+          </Card>
         ) : (
           <>
             {/* Optimized CVs Section */}

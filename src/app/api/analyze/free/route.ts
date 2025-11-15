@@ -84,6 +84,8 @@ export async function POST(request: NextRequest) {
         fit_score: result.fitScore || 0,
         summary_free: result.summary || "",
         keywords: { missing: result.missingKeywords || [] },
+        sample_rewrite: result.sampleRewrite || null,
+        sample_role: result.sampleRole || null,
         pro: false,
       })
       .select()

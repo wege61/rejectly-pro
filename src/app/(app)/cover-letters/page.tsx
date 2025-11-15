@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { useToast } from "@/contexts/ToastContext";
 import { Modal } from "@/components/ui/Modal";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Card } from "@/components/ui/Card";
 
 // Icons
 const ViewIcon = () => (
@@ -324,21 +326,6 @@ const ActionButton = styled.button<{ $variant?: 'primary' | 'danger' | 'ghost' }
   &:active {
     transform: translateY(0);
   }
-`;
-
-const EmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: ${({ theme }) => theme.spacing["3xl"]};
-  text-align: center;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const EmptyIcon = styled.div`
-  font-size: 64px;
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
 const LoadingContainer = styled.div`
@@ -799,14 +786,17 @@ export default function CoverLettersPage() {
       </Header>
 
       {coverLetters.length === 0 ? (
-        <EmptyState>
-          <EmptyIcon>✉️</EmptyIcon>
-          <h3 style={{ marginBottom: "8px" }}>No cover letters yet</h3>
-          <p style={{ marginBottom: "24px" }}>
-            Generate your first cover letter using the button above
-          </p>
-          <Button onClick={handleGenerateNew}>+ Generate Cover Letter</Button>
-        </EmptyState>
+        <Card variant="bordered">
+          <EmptyState
+            icon={<EmptyState.DocumentIcon />}
+            title="No cover letters yet"
+            description="Generate your first cover letter using AI to match your CV with job postings."
+            action={{
+              label: "Generate Cover Letter",
+              onClick: handleGenerateNew,
+            }}
+          />
+        </Card>
       ) : (
         <Grid>
           {coverLetters.map((letter) => (

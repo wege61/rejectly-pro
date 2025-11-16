@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
@@ -341,7 +341,16 @@ interface GeneratedLetter {
 interface CoverLetterGeneratorProps {
   isOpen: boolean;
   onClose: () => void;
-  reportId: string;
+  reportId?: string;
+  existingLetter?: {
+    id: string;
+    content: string;
+    tone: string;
+    length: string;
+    language: string;
+    paragraphs?: Paragraph[];
+    keyHighlights?: string[];
+  };
   onSuccess?: () => void;
 }
 
@@ -388,6 +397,7 @@ export function CoverLetterGenerator({
   isOpen,
   onClose,
   reportId,
+  existingLetter,
   onSuccess,
 }: CoverLetterGeneratorProps) {
   const toast = useToast();
@@ -403,6 +413,31 @@ export function CoverLetterGenerator({
   // Generation states
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedLetter, setGeneratedLetter] = useState<GeneratedLetter | null>(null);
+
+  // Load existing letter when modal opens in edit mode
+  useEffect(() => {
+    if (isOpen && existingLetter) {
+      const wordCount = existingLetter.content.trim().split(/\s+/).length;
+      setGeneratedLetter({
+        content: existingLetter.content,
+        wordCount: wordCount,
+        keyHighlights: existingLetter.keyHighlights || [],
+        paragraphs: existingLetter.paragraphs,
+      });
+      setTone(existingLetter.tone as 'professional' | 'friendly' | 'formal');
+      setLength(existingLetter.length as 'short' | 'medium' | 'long');
+      setLanguage(existingLetter.language as 'en' | 'tr');
+    } else if (isOpen && !existingLetter) {
+      // Reset when opening in create mode
+      setGeneratedLetter(null);
+      setTone('professional');
+      setLength('medium');
+      setLanguage('en');
+      setTemplate('standard');
+      setEmphasizeSkills('');
+      setSpecificProjects('');
+    }
+  }, [isOpen, existingLetter]);
 
   // Editor states
   const [selectedSentence, setSelectedSentence] = useState<{
@@ -535,8 +570,8 @@ export function CoverLetterGenerator({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="✉️ Generate Cover Letter"
-      description="Create a personalized, customizable cover letter with AI assistance"
+      title={existingLetter ? "✏️ Edit Cover Letter" : "✉️ Generate Cover Letter"}
+      description={existingLetter ? "Review and edit your cover letter" : "Create a personalized, customizable cover letter with AI assistance"}
       size="xl"
     >
       <Modal.Body>

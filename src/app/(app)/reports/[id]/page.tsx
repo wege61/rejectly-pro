@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -23,7 +23,12 @@ const TargetIcon = () => (
     viewBox="0 0 24 24"
     strokeWidth={2}
     stroke="currentColor"
-    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+    style={{
+      width: "20px",
+      height: "20px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
   >
     <path
       strokeLinecap="round"
@@ -40,7 +45,12 @@ const RocketIcon = () => (
     viewBox="0 0 24 24"
     strokeWidth={2}
     stroke="currentColor"
-    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+    style={{
+      width: "20px",
+      height: "20px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
   >
     <path
       strokeLinecap="round"
@@ -57,7 +67,12 @@ const EyeIcon = () => (
     viewBox="0 0 24 24"
     strokeWidth={2}
     stroke="currentColor"
-    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+    style={{
+      width: "20px",
+      height: "20px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
   >
     <path
       strokeLinecap="round"
@@ -79,7 +94,12 @@ const RefreshIcon = () => (
     viewBox="0 0 24 24"
     strokeWidth={2}
     stroke="currentColor"
-    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+    style={{
+      width: "20px",
+      height: "20px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
   >
     <path
       strokeLinecap="round"
@@ -96,7 +116,12 @@ const LightBulbIcon = () => (
     viewBox="0 0 24 24"
     strokeWidth={2}
     stroke="currentColor"
-    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+    style={{
+      width: "20px",
+      height: "20px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
   >
     <path
       strokeLinecap="round"
@@ -113,7 +138,12 @@ const DownloadIcon = () => (
     viewBox="0 0 24 24"
     strokeWidth={2}
     stroke="currentColor"
-    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+    style={{
+      width: "20px",
+      height: "20px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
   >
     <path
       strokeLinecap="round"
@@ -130,12 +160,176 @@ const CheckCircleIcon = () => (
     viewBox="0 0 24 24"
     strokeWidth={2}
     stroke="currentColor"
-    style={{ width: '20px', height: '20px', display: 'inline-block', verticalAlign: 'middle' }}
+    style={{
+      width: "20px",
+      height: "20px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
   >
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+const FireIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "18px",
+      height: "18px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z"
+    />
+  </svg>
+);
+
+const StarIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "18px",
+      height: "18px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+    />
+  </svg>
+);
+
+const BriefcaseIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "18px",
+      height: "18px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"
+    />
+  </svg>
+);
+
+const LightningIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "18px",
+      height: "18px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+    />
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "18px",
+      height: "18px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+const XMarkIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "18px",
+      height: "18px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M6 18L18 6M6 6l12 12"
+    />
+  </svg>
+);
+
+const ShieldCheckIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "18px",
+      height: "18px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
     />
   </svg>
 );
@@ -146,8 +340,9 @@ const Container = styled.div`
   padding: ${({ theme }) => theme.spacing["2xl"]};
 
   @media (max-width: 450px) {
-  
-  padding: ${({ theme }) => theme.spacing["lg"]};}`;
+    padding: ${({ theme }) => theme.spacing["lg"]};
+  }
+`;
 
 const BackButton = styled(Button)`
   margin-bottom: ${({ theme }) => theme.spacing.lg};
@@ -491,7 +686,11 @@ const UnlockOverlay = styled.div`
   transform: translate(-50%, -50%);
   z-index: 10;
   text-align: center;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.95) 0%,
+    rgba(118, 75, 162, 0.95) 100%
+  );
   padding: ${({ theme }) => theme.spacing.xl};
   border-radius: ${({ theme }) => theme.radius.lg};
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -505,8 +704,13 @@ const UnlockIcon = styled.div`
   animation: pulse 2s ease-in-out infinite;
 
   @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
   }
 `;
 
@@ -566,14 +770,18 @@ const ProofText = styled.div`
 `;
 
 // Personalized Message
-const PersonalizedAlert = styled.div<{ $variant: 'danger' | 'warning' | 'success' }>`
+const PersonalizedAlert = styled.div<{
+  $variant: "danger" | "warning" | "success";
+}>`
   padding: ${({ theme }) => theme.spacing.lg};
   border-radius: ${({ theme }) => theme.radius.lg};
   margin-bottom: ${({ theme }) => theme.spacing.lg};
   background: ${({ $variant }) => {
-    if ($variant === 'danger') return 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-    if ($variant === 'warning') return 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
-    return 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    if ($variant === "danger")
+      return "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)";
+    if ($variant === "warning")
+      return "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)";
+    return "linear-gradient(135deg, #10b981 0%, #059669 100%)";
   }};
   color: white;
   font-size: ${({ theme }) => theme.typography.fontSize.base};
@@ -594,7 +802,9 @@ const ComparisonRow = styled.div<{ $isHeader?: boolean }>`
   grid-template-columns: 2fr 1fr 1fr;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
-  ${({ $isHeader }) => $isHeader && `
+  ${({ $isHeader }) =>
+    $isHeader &&
+    `
     background: rgba(255, 255, 255, 0.1);
     font-weight: 600;
   `}
@@ -666,12 +876,9 @@ const ComparisonColumn = styled.div<{ $isAfter?: boolean }>`
   padding: ${({ theme }) => theme.spacing.md};
   background: ${({ $isAfter, theme }) =>
     $isAfter
-      ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)'
-      : 'rgba(239, 68, 68, 0.05)'
-  };
-  border: 1px solid ${({ $isAfter }) =>
-    $isAfter ? '#10b981' : '#ef4444'
-  };
+      ? "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)"
+      : "rgba(239, 68, 68, 0.05)"};
+  border: 1px solid ${({ $isAfter }) => ($isAfter ? "#10b981" : "#ef4444")};
   border-radius: ${({ theme }) => theme.radius.md};
   position: relative;
 `;
@@ -683,9 +890,8 @@ const ColumnLabel = styled.div<{ $isAfter?: boolean }>`
   padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
   background: ${({ $isAfter }) =>
     $isAfter
-      ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-      : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
-  };
+      ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+      : "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"};
   color: white;
   border-radius: ${({ theme }) => theme.radius.full};
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
@@ -735,7 +941,11 @@ const ArrowIcon = styled.div`
 
 const RoleCard = styled.div`
   padding: ${({ theme }) => theme.spacing.lg};
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.05) 100%
+  );
   border: 2px solid rgba(102, 126, 234, 0.3);
   border-radius: ${({ theme }) => theme.radius.lg};
   margin-bottom: ${({ theme }) => theme.spacing.md};
@@ -789,7 +999,11 @@ const RoleDescription = styled.p`
 
 const ATSTipCard = styled.div`
   padding: ${({ theme }) => theme.spacing.lg};
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.1) 0%,
+    rgba(5, 150, 105, 0.05) 100%
+  );
   border: 2px solid rgba(16, 185, 129, 0.3);
   border-radius: ${({ theme }) => theme.radius.lg};
   margin-bottom: ${({ theme }) => theme.spacing.md};
@@ -945,6 +1159,334 @@ const FakeItDescription = styled.div`
   line-height: 1.5;
 `;
 
+const CVGenerationSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xl};
+`;
+
+const CVGenerationIntro = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.lg} 0;
+`;
+
+const IntroHeading = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+`;
+
+const IntroSubtext = styled.p`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+`;
+
+const FeaturesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+`;
+
+const FeatureCard = styled.div`
+  display: flex;
+  align-items: start;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px ${({ theme }) => theme.colors.primary}15;
+  }
+`;
+
+const FeatureIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: ${({ theme }) => theme.radius.full};
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, #764ba2 100%);
+  color: white;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 2px;
+`;
+
+const FeatureText = styled.div`
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  line-height: 1.5;
+`;
+
+const FakeItSection = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+`;
+
+const GenerateCTAContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding-top: ${({ theme }) => theme.spacing.lg};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const CVSuccessSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xl};
+`;
+
+const SuccessCelebration = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.xl} 0;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+  border: 2px solid #10b981;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '✨';
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 40px;
+    opacity: 0.3;
+  }
+
+  &::after {
+    content: '🎉';
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    font-size: 40px;
+    opacity: 0.3;
+  }
+`;
+
+const SuccessIcon = styled.div`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: ${({ theme }) => theme.radius.full};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+
+  svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+  }
+`;
+
+const SuccessTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.xxl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: #10b981;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const SuccessSubtext = styled.p`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  max-width: 500px;
+  margin: 0 auto;
+`;
+
+const ActionCardsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: ${({ theme }) => theme.spacing.lg};
+`;
+
+const ActionCard = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost' }>`
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.surface};
+  border: 2px solid ${({ theme, $variant }) =>
+    $variant === 'primary' ? theme.colors.primary :
+    $variant === 'secondary' ? theme.colors.border :
+    theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  transition: all ${({ theme }) => theme.transitions.fast};
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px ${({ theme, $variant }) =>
+      $variant === 'primary' ? `${theme.colors.primary}25` :
+      `${theme.colors.border}40`};
+    border-color: ${({ theme, $variant }) =>
+      $variant === 'primary' ? theme.colors.primary :
+      $variant === 'secondary' ? theme.colors.primary :
+      theme.colors.textSecondary};
+  }
+`;
+
+const ActionCardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const ActionCardIcon = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ theme, $variant }) =>
+    $variant === 'primary'
+      ? `linear-gradient(135deg, ${theme.colors.primary} 0%, #764ba2 100%)`
+      : $variant === 'secondary'
+      ? `${theme.colors.primary}15`
+      : `${theme.colors.textSecondary}15`};
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: ${({ theme, $variant }) =>
+      $variant === 'primary' ? 'white' : theme.colors.primary};
+  }
+`;
+
+const ActionCardTitle = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin: 0;
+`;
+
+const ActionCardDescription = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.5;
+  margin: 0;
+`;
+
+const LoadingModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+const LoadingModalContent = styled.div`
+  background: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: ${({ theme }) => theme.spacing.xxl};
+  max-width: 600px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s ease-out;
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  width: 80px;
+  height: 80px;
+  margin: 0 auto ${({ theme }) => theme.spacing.xl};
+  border: 4px solid ${({ theme }) => theme.colors.border};
+  border-top: 4px solid ${({ theme }) => theme.colors.primary};
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+const LoadingTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+`;
+
+const LoadingMessage = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.6;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 ${({ theme }) => theme.spacing.lg};
+  animation: messageSlide 0.5s ease-in-out;
+
+  @keyframes messageSlide {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
 const LearningRecommendationCard = styled.div`
   padding: ${({ theme }) => theme.spacing.lg};
   background: ${({ theme }) => theme.colors.surface};
@@ -1011,7 +1553,7 @@ const CareerInsightCard = styled.div`
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -1111,7 +1653,11 @@ const AlternativeRolesList = styled.div`
 
 const AlternativeRoleItem = styled.div`
   padding: ${({ theme }) => theme.spacing.lg};
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.05) 0%,
+    rgba(236, 72, 153, 0.05) 100%
+  );
   border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: ${({ theme }) => theme.radius.lg};
   transition: all ${({ theme }) => theme.transitions.normal};
@@ -1352,23 +1898,42 @@ export default function ReportDetailPage() {
   const [isGeneratingCV, setIsGeneratingCV] = useState(false);
   const [isAnalyzingOptimized, setIsAnalyzingOptimized] = useState(false);
   const [optimizedScore, setOptimizedScore] = useState<number | null>(null);
-  const [improvementBreakdown, setImprovementBreakdown] = useState<Improvement[]>([]);
+  const [improvementBreakdown, setImprovementBreakdown] = useState<
+    Improvement[]
+  >([]);
   const [report, setReport] = useState<Report | null>(null);
   const [jobPostingTitles, setJobPostingTitles] = useState<string[]>([]);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
-  const [selectedImprovement, setSelectedImprovement] = useState<Improvement | null>(null);
+  const [selectedImprovement, setSelectedImprovement] =
+    useState<Improvement | null>(null);
   const [fakeItMode, setFakeItMode] = useState(false);
   const [isCoverLetterModalOpen, setIsCoverLetterModalOpen] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const wasGeneratingRef = useRef(false);
+
+  // Funny loading messages
+  const loadingMessages = [
+    "Powering up your CV with AI magic... 🚀",
+    "Adding secret keywords to trick ATS robots... 🤖",
+    "Making your achievements sound more epic... 📖",
+    "Elevating your CV to Fortune 500 standards... 💼",
+    "Sprinkling some professional magic between the lines... ✨",
+    "Selecting words that will dazzle HR... 👀",
+    "Presenting your skills Hollywood-style... 🎬",
+    "Moving your CV to the top of the pile... 📑",
+    "Adding rocket fuel to your career goals... 🔥",
+    "Crafting a professional masterpiece... 🎨",
+  ];
 
   // Define analyzeOptimizedCV before useEffect that uses it
   const analyzeOptimizedCV = useCallback(async () => {
     if (!report) return;
 
-    console.log('🔍 Starting CV analysis...', {
+    console.log("🔍 Starting CV analysis...", {
       reportId: report.id,
       hasGeneratedCV: !!report.generated_cv,
-      currentOptimizedScore: optimizedScore
+      currentOptimizedScore: optimizedScore,
     });
 
     setIsAnalyzingOptimized(true);
@@ -1385,12 +1950,12 @@ export default function ReportDetailPage() {
 
       const result = await response.json();
 
-      console.log('📊 Analysis result:', {
+      console.log("📊 Analysis result:", {
         ...result,
         improvementBreakdownType: typeof result.improvementBreakdown,
         improvementBreakdownValue: result.improvementBreakdown,
         isArray: Array.isArray(result.improvementBreakdown),
-        length: result.improvementBreakdown?.length
+        length: result.improvementBreakdown?.length,
       });
 
       if (!response.ok) {
@@ -1400,19 +1965,21 @@ export default function ReportDetailPage() {
       setOptimizedScore(result.fitScore);
 
       // Normalize improvement breakdown to match actual score difference
-      if (result.improvementBreakdown &&
-          Array.isArray(result.improvementBreakdown) &&
-          result.improvementBreakdown.length > 0) {
+      if (
+        result.improvementBreakdown &&
+        Array.isArray(result.improvementBreakdown) &&
+        result.improvementBreakdown.length > 0
+      ) {
         const actualDifference = result.fitScore - report.fit_score;
         const totalImpact = result.improvementBreakdown.reduce(
           (sum: number, imp: Improvement) => sum + imp.impact,
           0
         );
 
-        console.log('🎯 Breakdown normalization:', {
+        console.log("🎯 Breakdown normalization:", {
           actualDifference,
           totalImpact,
-          needsNormalization: Math.abs(totalImpact - actualDifference) > 0.5
+          needsNormalization: Math.abs(totalImpact - actualDifference) > 0.5,
         });
 
         // If AI's total doesn't match actual difference, normalize it
@@ -1424,14 +1991,17 @@ export default function ReportDetailPage() {
               impact: Math.round(imp.impact * scaleFactor * 10) / 10, // Round to 1 decimal
             })
           );
-          console.log('✅ Setting normalized breakdown:', normalizedBreakdown);
+          console.log("✅ Setting normalized breakdown:", normalizedBreakdown);
           setImprovementBreakdown(normalizedBreakdown);
         } else {
-          console.log('✅ Setting original breakdown:', result.improvementBreakdown);
+          console.log(
+            "✅ Setting original breakdown:",
+            result.improvementBreakdown
+          );
           setImprovementBreakdown(result.improvementBreakdown);
         }
       } else {
-        console.log('⚠️ No breakdown data received');
+        console.log("⚠️ No breakdown data received");
         setImprovementBreakdown([]);
       }
     } catch (error) {
@@ -1461,7 +2031,11 @@ export default function ReportDetailPage() {
       }
 
       // Fetch job posting titles from job_ids
-      if (data.job_ids && Array.isArray(data.job_ids) && data.job_ids.length > 0) {
+      if (
+        data.job_ids &&
+        Array.isArray(data.job_ids) &&
+        data.job_ids.length > 0
+      ) {
         const { data: jobDocs, error: jobError } = await supabase
           .from("documents")
           .select("title")
@@ -1469,52 +2043,53 @@ export default function ReportDetailPage() {
           .eq("type", "job");
 
         if (!jobError && jobDocs) {
-          setJobPostingTitles(jobDocs.map(doc => doc.title));
+          setJobPostingTitles(jobDocs.map((doc) => doc.title));
         }
       }
 
-      console.log('📋 Report loaded from database:', {
+      console.log("📋 Report loaded from database:", {
         reportId: data.id,
         hasGeneratedCV: !!data.generated_cv,
         optimizedScore: {
           type: typeof data.optimized_score,
           value: data.optimized_score,
-          isNumber: typeof data.optimized_score === 'number'
+          isNumber: typeof data.optimized_score === "number",
         },
         improvementBreakdown: {
           exists: !!data.improvement_breakdown,
           type: typeof data.improvement_breakdown,
           length: data.improvement_breakdown?.length,
-          isArray: Array.isArray(data.improvement_breakdown)
-        }
+          isArray: Array.isArray(data.improvement_breakdown),
+        },
       });
 
       setReport(data);
 
       // Load cached analysis results from database if available
-      const hasValidScore = typeof data.optimized_score === 'number';
-      const hasValidBreakdown = data.improvement_breakdown &&
-                                Array.isArray(data.improvement_breakdown) &&
-                                data.improvement_breakdown.length > 0;
+      const hasValidScore = typeof data.optimized_score === "number";
+      const hasValidBreakdown =
+        data.improvement_breakdown &&
+        Array.isArray(data.improvement_breakdown) &&
+        data.improvement_breakdown.length > 0;
 
-      console.log('🔍 Cache validation:', {
+      console.log("🔍 Cache validation:", {
         hasValidScore,
         hasValidBreakdown,
-        willLoadFromCache: hasValidScore && hasValidBreakdown
+        willLoadFromCache: hasValidScore && hasValidBreakdown,
       });
 
       if (hasValidScore && hasValidBreakdown) {
-        console.log('✅ Loading from cache:', {
+        console.log("✅ Loading from cache:", {
           score: data.optimized_score,
           breakdownCount: data.improvement_breakdown.length,
-          breakdown: data.improvement_breakdown
+          breakdown: data.improvement_breakdown,
         });
         setOptimizedScore(data.optimized_score);
         setImprovementBreakdown(data.improvement_breakdown);
       } else {
-        console.log('⚠️ Cache not available:', {
-          reason: !hasValidScore ? 'No valid score' : 'No valid breakdown',
-          willAnalyze: !!data.generated_cv
+        console.log("⚠️ Cache not available:", {
+          reason: !hasValidScore ? "No valid score" : "No valid breakdown",
+          willAnalyze: !!data.generated_cv,
         });
       }
 
@@ -1531,39 +2106,71 @@ export default function ReportDetailPage() {
       report?.generated_cv &&
       optimizedScore === null &&
       !isAnalyzingOptimized &&
-      typeof report.optimized_score !== 'number';
+      typeof report.optimized_score !== "number";
 
-    console.log('🔍 Analysis check:', {
+    console.log("🔍 Analysis check:", {
       isLoading,
       hasCV: !!report?.generated_cv,
       currentScore: optimizedScore,
       analyzing: isAnalyzingOptimized,
       dbScore: report?.optimized_score,
-      shouldAnalyze
+      shouldAnalyze,
     });
 
     if (shouldAnalyze) {
-      console.log('🚀 Triggering analysis');
+      console.log("🚀 Triggering analysis");
       analyzeOptimizedCV();
     }
-  }, [isLoading, report?.generated_cv, report?.optimized_score, optimizedScore, isAnalyzingOptimized, analyzeOptimizedCV]);
+  }, [
+    isLoading,
+    report?.generated_cv,
+    report?.optimized_score,
+    optimizedScore,
+    isAnalyzingOptimized,
+    analyzeOptimizedCV,
+  ]);
+
+  // Rotate loading messages every 5 seconds
+  useEffect(() => {
+    if (!isGeneratingCV) {
+      setLoadingMessageIndex(0);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setLoadingMessageIndex((prev) => (prev + 1) % loadingMessages.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isGeneratingCV, loadingMessages.length]);
+
+  // Scroll to top when CV generation completes
+  useEffect(() => {
+    if (wasGeneratingRef.current && !isGeneratingCV) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    wasGeneratingRef.current = isGeneratingCV;
+  }, [isGeneratingCV]);
 
   // Helper function to get personalized message based on score
   const getPersonalizedMessage = (score: number) => {
     if (score < 50) {
       return {
-        variant: 'danger' as const,
-        message: "⚠️ Your score is below average. 83% of users with similar scores got rejected. Upgrade now to fix critical issues and dramatically improve your chances."
+        variant: "danger" as const,
+        message:
+          "⚠️ Your score is below average. 83% of users with similar scores got rejected. Upgrade now to fix critical issues and dramatically improve your chances.",
       };
     } else if (score >= 50 && score < 70) {
       return {
-        variant: 'warning' as const,
-        message: "⚡ You're close! Users who upgraded from this range increased their interview rate by 67%. Don't let small gaps cost you opportunities."
+        variant: "warning" as const,
+        message:
+          "⚡ You're close! Users who upgraded from this range increased their interview rate by 67%. Don't let small gaps cost you opportunities.",
       };
     } else {
       return {
-        variant: 'success' as const,
-        message: "🎯 Great score! Make it perfect - upgraded users in your range got 3x more responses. Stand out from other qualified candidates."
+        variant: "success" as const,
+        message:
+          "🎯 Great score! Make it perfect - upgraded users in your range got 3x more responses. Stand out from other qualified candidates.",
       };
     }
   };
@@ -1637,7 +2244,9 @@ export default function ReportDetailPage() {
         throw new Error(result.error || "CV generation failed");
       }
 
-      toast.success("Your optimized CV has been generated successfully! You can now download it as PDF.");
+      toast.success(
+        "Your optimized CV has been generated successfully! You can now download it as PDF."
+      );
 
       // Refresh report to get generated_cv (cache will be cleared)
       const supabase = createClient();
@@ -1713,7 +2322,10 @@ export default function ReportDetailPage() {
 
     try {
       const pdf = await generateCVPDF(report.generated_cv);
-      const fileName = `${report.generated_cv.contact.name.replace(/\s+/g, "_")}_CV_Optimized.pdf`;
+      const fileName = `${report.generated_cv.contact.name.replace(
+        /\s+/g,
+        "_"
+      )}_CV_Optimized.pdf`;
       pdf.save(fileName);
       toast.success("CV downloaded successfully! Check your downloads folder.");
       handleClosePreview(); // Close modal after download
@@ -1784,10 +2396,14 @@ export default function ReportDetailPage() {
         </HeaderMeta>
         {jobPostingTitles.length > 0 && (
           <div style={{ marginTop: "12px" }}>
-            <span style={{ color: "#6b7280", fontSize: "14px", fontWeight: "500" }}>
+            <span
+              style={{ color: "#6b7280", fontSize: "14px", fontWeight: "500" }}
+            >
               Job Posting{jobPostingTitles.length > 1 ? "s" : ""}:{" "}
             </span>
-            <span style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>
+            <span
+              style={{ color: "white", fontSize: "14px", fontWeight: "600" }}
+            >
               {jobPostingTitles.join(" • ")}
             </span>
           </div>
@@ -1805,7 +2421,9 @@ export default function ReportDetailPage() {
               <ScoreDivider />
               <ScoreColumn>
                 <ScoreTitle>OPTIMIZED</ScoreTitle>
-                <ComparisonValue $isOptimized>{optimizedScore}%</ComparisonValue>
+                <ComparisonValue $isOptimized>
+                  {optimizedScore}%
+                </ComparisonValue>
               </ScoreColumn>
             </ScoreComparison>
             {optimizedScore > report.fit_score && (
@@ -1840,47 +2458,50 @@ export default function ReportDetailPage() {
         )}
       </Grid>
 
-      {report.fit_score < 50 && roleRecommendations.length > 0 && report.pro && (
-        <CareerInsightCard>
-          <InsightHeader>
-            <InsightIcon>💡</InsightIcon>
-            <InsightContent>
-              <InsightTitle>We Found Better Matches For You</InsightTitle>
-              <InsightSubtitle>
-                Your CV shows a {report.fit_score}% match with this position.
-                Based on your experience and skills, these roles might be a better fit for your career goals.
-              </InsightSubtitle>
-              <MatchScoreBadge>
-                Current Match: {report.fit_score}%
-              </MatchScoreBadge>
-            </InsightContent>
-          </InsightHeader>
+      {report.fit_score < 50 &&
+        roleRecommendations.length > 0 &&
+        report.pro && (
+          <CareerInsightCard>
+            <InsightHeader>
+              <InsightIcon>💡</InsightIcon>
+              <InsightContent>
+                <InsightTitle>We Found Better Matches For You</InsightTitle>
+                <InsightSubtitle>
+                  Your CV shows a {report.fit_score}% match with this position.
+                  Based on your experience and skills, these roles might be a
+                  better fit for your career goals.
+                </InsightSubtitle>
+                <MatchScoreBadge>
+                  Current Match: {report.fit_score}%
+                </MatchScoreBadge>
+              </InsightContent>
+            </InsightHeader>
 
-          <AlternativeRolesSection>
-            <SectionLabel>Recommended Positions</SectionLabel>
-            <AlternativeRolesList>
-              {roleRecommendations.slice(0, 3).map((role, index) => (
-                <AlternativeRoleItem key={index}>
-                  <RoleHeader>
-                    <RoleName>{role.title}</RoleName>
-                    <RoleMatch>
-                      <RoleMatchIcon>✓</RoleMatchIcon>
-                      {role.fit}%
-                    </RoleMatch>
-                  </RoleHeader>
-                </AlternativeRoleItem>
-              ))}
-            </AlternativeRolesList>
-          </AlternativeRolesSection>
-        </CareerInsightCard>
-      )}
+            <AlternativeRolesSection>
+              <SectionLabel>Recommended Positions</SectionLabel>
+              <AlternativeRolesList>
+                {roleRecommendations.slice(0, 3).map((role, index) => (
+                  <AlternativeRoleItem key={index}>
+                    <RoleHeader>
+                      <RoleName>{role.title}</RoleName>
+                      <RoleMatch>
+                        <RoleMatchIcon>✓</RoleMatchIcon>
+                        {role.fit}%
+                      </RoleMatch>
+                    </RoleHeader>
+                  </AlternativeRoleItem>
+                ))}
+              </AlternativeRolesList>
+            </AlternativeRolesSection>
+          </CareerInsightCard>
+        )}
 
       {report.generated_cv && isAnalyzingOptimized && (
         <Section>
           <Card variant="bordered">
-            <Card.Content style={{ textAlign: 'center', padding: '40px' }}>
+            <Card.Content style={{ textAlign: "center", padding: "40px" }}>
               <Spinner size="lg" />
-              <p style={{ marginTop: '16px', color: '#9ca3af' }}>
+              <p style={{ marginTop: "16px", color: "#9ca3af" }}>
                 Analyzing optimized CV to calculate improvement breakdown...
               </p>
             </Card.Content>
@@ -1888,116 +2509,150 @@ export default function ReportDetailPage() {
         </Section>
       )}
 
-      {improvementBreakdown.length > 0 && optimizedScore !== null && !isAnalyzingOptimized && (
-        <>
-          <Section>
-            <Card variant="bordered">
-              <Card.Header>
-                <Card.Title><TargetIcon /> How We Improved Your Score</Card.Title>
-                <Card.Description>
-                  Detailed breakdown of each optimization and its impact
-                </Card.Description>
-              </Card.Header>
-              <Card.Content>
-                <BreakdownContainer>
-                  {improvementBreakdown.map((improvement, index) => (
-                    <BreakdownItem
-                      key={index}
-                      onClick={() => handleImprovementClick(improvement)}
-                      title="Click to view this improvement in your CV"
-                    >
-                      <ImpactBadge>+{Math.round(improvement.impact * 10) / 10}</ImpactBadge>
-                      <ImpactContent>
-                        <ImpactCategory>{improvement.category}</ImpactCategory>
-                        <ImpactAction>{improvement.action}</ImpactAction>
-                        <ImpactReason>{improvement.reason}</ImpactReason>
-                      </ImpactContent>
-                      <ImpactPoints>
-                        <ImpactValue>+{Math.round(improvement.impact * 10) / 10}%</ImpactValue>
-                        <ImpactLabel>Score</ImpactLabel>
-                      </ImpactPoints>
-                    </BreakdownItem>
-                  ))}
-                </BreakdownContainer>
-                <TotalImpactSummary>
-                  <TotalLabel>Total Impact</TotalLabel>
-                  <TotalValue>
-                    +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}%
-                  </TotalValue>
-                </TotalImpactSummary>
-              </Card.Content>
-            </Card>
-          </Section>
+      {improvementBreakdown.length > 0 &&
+        optimizedScore !== null &&
+        !isAnalyzingOptimized && (
+          <>
+            <Section>
+              <Card variant="bordered">
+                <Card.Header>
+                  <Card.Title>
+                    <TargetIcon /> How We Improved Your Score
+                  </Card.Title>
+                  <Card.Description>
+                    Detailed breakdown of each optimization and its impact
+                  </Card.Description>
+                </Card.Header>
+                <Card.Content>
+                  <BreakdownContainer>
+                    {improvementBreakdown.map((improvement, index) => (
+                      <BreakdownItem
+                        key={index}
+                        onClick={() => handleImprovementClick(improvement)}
+                        title="Click to view this improvement in your CV"
+                      >
+                        <ImpactBadge>
+                          +{Math.round(improvement.impact * 10) / 10}
+                        </ImpactBadge>
+                        <ImpactContent>
+                          <ImpactCategory>
+                            {improvement.category}
+                          </ImpactCategory>
+                          <ImpactAction>{improvement.action}</ImpactAction>
+                          <ImpactReason>{improvement.reason}</ImpactReason>
+                        </ImpactContent>
+                        <ImpactPoints>
+                          <ImpactValue>
+                            +{Math.round(improvement.impact * 10) / 10}%
+                          </ImpactValue>
+                          <ImpactLabel>Score</ImpactLabel>
+                        </ImpactPoints>
+                      </BreakdownItem>
+                    ))}
+                  </BreakdownContainer>
+                  <TotalImpactSummary>
+                    <TotalLabel>Total Impact</TotalLabel>
+                    <TotalValue>
+                      +
+                      {Math.round(
+                        improvementBreakdown.reduce(
+                          (sum, imp) => sum + imp.impact,
+                          0
+                        ) * 10
+                      ) / 10}
+                      %
+                    </TotalValue>
+                  </TotalImpactSummary>
+                </Card.Content>
+              </Card>
+            </Section>
 
-          <Section>
-            <ImprovementVisualization>
-              <VisualizationHeader>
-                <VisualizationTitle>📊 Score Improvement Breakdown</VisualizationTitle>
-                <VisualizationSubtitle>
-                  Visual representation of how each optimization contributed to your final score
-                </VisualizationSubtitle>
-              </VisualizationHeader>
+            <Section>
+              <ImprovementVisualization>
+                <VisualizationHeader>
+                  <VisualizationTitle>
+                    📊 Score Improvement Breakdown
+                  </VisualizationTitle>
+                  <VisualizationSubtitle>
+                    Visual representation of how each optimization contributed
+                    to your final score
+                  </VisualizationSubtitle>
+                </VisualizationHeader>
 
-              <ChartContainer>
-                <CircularChart>
-                  <ScoreRing width="280" height="280">
-                    <circle
-                      cx="140"
-                      cy="140"
-                      r="120"
-                      fill="none"
-                      stroke="#e5e7eb"
-                      strokeWidth="20"
-                    />
-                    <circle
-                      cx="140"
-                      cy="140"
-                      r="120"
-                      fill="none"
-                      stroke="#10b981"
-                      strokeWidth="20"
-                      strokeDasharray={`${(optimizedScore / 100) * 754} 754`}
-                      strokeLinecap="round"
-                      style={{
-                        transition: 'stroke-dasharray 1s ease-in-out',
-                      }}
-                    />
-                  </ScoreRing>
-                  <ChartCenter>
-                    <CenterScore>{optimizedScore}%</CenterScore>
-                    <CenterLabel>New Score</CenterLabel>
-                    <div style={{ marginTop: '8px', fontSize: '14px', color: '#6b7280' }}>
-                      from {report.fit_score}%
-                    </div>
-                  </ChartCenter>
-                </CircularChart>
+                <ChartContainer>
+                  <CircularChart>
+                    <ScoreRing width="280" height="280">
+                      <circle
+                        cx="140"
+                        cy="140"
+                        r="120"
+                        fill="none"
+                        stroke="#e5e7eb"
+                        strokeWidth="20"
+                      />
+                      <circle
+                        cx="140"
+                        cy="140"
+                        r="120"
+                        fill="none"
+                        stroke="#10b981"
+                        strokeWidth="20"
+                        strokeDasharray={`${(optimizedScore / 100) * 754} 754`}
+                        strokeLinecap="round"
+                        style={{
+                          transition: "stroke-dasharray 1s ease-in-out",
+                        }}
+                      />
+                    </ScoreRing>
+                    <ChartCenter>
+                      <CenterScore>{optimizedScore}%</CenterScore>
+                      <CenterLabel>New Score</CenterLabel>
+                      <div
+                        style={{
+                          marginTop: "8px",
+                          fontSize: "14px",
+                          color: "#6b7280",
+                        }}
+                      >
+                        from {report.fit_score}%
+                      </div>
+                    </ChartCenter>
+                  </CircularChart>
 
-                <ImprovementsList>
-                  {improvementBreakdown.map((improvement, index) => {
-                    const colors = [
-                      '#10b981', '#3b82f6', '#8b5cf6',
-                      '#f59e0b', '#ec4899', '#14b8a6'
-                    ];
-                    const color = colors[index % colors.length];
+                  <ImprovementsList>
+                    {improvementBreakdown.map((improvement, index) => {
+                      const colors = [
+                        "#10b981",
+                        "#3b82f6",
+                        "#8b5cf6",
+                        "#f59e0b",
+                        "#ec4899",
+                        "#14b8a6",
+                      ];
+                      const color = colors[index % colors.length];
 
-                    return (
-                      <ImprovementItem key={index} $color={color}>
-                        <ImprovementIcon $color={color}>
-                          +{Math.round(improvement.impact * 10) / 10}%
-                        </ImprovementIcon>
-                        <ImprovementContent>
-                          <ImprovementCategory>{improvement.category}</ImprovementCategory>
-                          <ImprovementDescription>{improvement.action}</ImprovementDescription>
-                        </ImprovementContent>
-                      </ImprovementItem>
-                    );
-                  })}
-                </ImprovementsList>
-              </ChartContainer>
-            </ImprovementVisualization>
-          </Section>
-        </>
-      )}
+                      return (
+                        <ImprovementItem key={index} $color={color}>
+                          <ImprovementIcon $color={color}>
+                            +{Math.round(improvement.impact * 10) / 10}%
+                          </ImprovementIcon>
+                          <ImprovementContent>
+                            <ImprovementCategory>
+                              {improvement.category}
+                            </ImprovementCategory>
+                            <ImprovementDescription>
+                              {improvement.action}
+                            </ImprovementDescription>
+                          </ImprovementContent>
+                        </ImprovementItem>
+                      );
+                    })}
+                  </ImprovementsList>
+                </ChartContainer>
+              </ImprovementVisualization>
+            </Section>
+          </>
+        )}
 
       <Section>
         <Card variant="bordered">
@@ -2045,9 +2700,7 @@ export default function ReportDetailPage() {
                 </Card.Description>
               </Card.Header>
               <Card.Content>
-                <SampleBadge>
-                  ✨ Free Sample - See the Difference
-                </SampleBadge>
+                <SampleBadge>✨ Free Sample - See the Difference</SampleBadge>
 
                 {report.sample_rewrite ? (
                   <BeforeAfterCard>
@@ -2066,32 +2719,48 @@ export default function ReportDetailPage() {
                     </ComparisonColumn>
                   </BeforeAfterCard>
                 ) : (
-                  <div style={{
-                    padding: '20px',
-                    textAlign: 'center',
-                    color: '#9ca3af',
-                    fontSize: '14px',
-                    border: '1px dashed #334155',
-                    borderRadius: '8px',
-                    marginBottom: '24px'
-                  }}>
-                    Sample rewrite is being generated from your CV. Please refresh the page or create a new analysis.
+                  <div
+                    style={{
+                      padding: "20px",
+                      textAlign: "center",
+                      color: "#9ca3af",
+                      fontSize: "14px",
+                      border: "1px dashed #334155",
+                      borderRadius: "8px",
+                      marginBottom: "24px",
+                    }}
+                  >
+                    Sample rewrite is being generated from your CV. Please
+                    refresh the page or create a new analysis.
                   </div>
                 )}
 
-                <BlurredPreviewSection style={{ marginTop: '24px' }}>
-                  <div style={{ position: 'relative', minHeight: '180px' }}>
+                <BlurredPreviewSection style={{ marginTop: "24px" }}>
+                  <div style={{ position: "relative", minHeight: "180px" }}>
                     <BlurredContent>
                       <BulletList>
-                        <li>Spearheaded the development of microservices architecture that improved system scalability by 45%, reducing server costs by $15K/month while maintaining 99.9% uptime</li>
-                        <li>Led cross-functional teams of 8 developers to deliver high-impact projects, reducing time-to-market by 40% through implementation of agile methodologies and CI/CD pipelines</li>
+                        <li>
+                          Spearheaded the development of microservices
+                          architecture that improved system scalability by 45%,
+                          reducing server costs by $15K/month while maintaining
+                          99.9% uptime
+                        </li>
+                        <li>
+                          Led cross-functional teams of 8 developers to deliver
+                          high-impact projects, reducing time-to-market by 40%
+                          through implementation of agile methodologies and
+                          CI/CD pipelines
+                        </li>
                       </BulletList>
                     </BlurredContent>
                     <UnlockOverlay>
                       <UnlockIcon>🔒</UnlockIcon>
-                      <UnlockTitle>Unlock 2 More Professional Rewrites</UnlockTitle>
+                      <UnlockTitle>
+                        Unlock 2 More Professional Rewrites
+                      </UnlockTitle>
                       <UnlockDescription>
-                        Get additional expertly rewritten bullet points with metrics and achievements
+                        Get additional expertly rewritten bullet points with
+                        metrics and achievements
                       </UnlockDescription>
                       <UnlockButton onClick={handleUpgradeToPro}>
                         Unlock for $9
@@ -2113,16 +2782,12 @@ export default function ReportDetailPage() {
                 </Card.Description>
               </Card.Header>
               <Card.Content>
-                <SampleBadge>
-                  ✨ Top Match for Your Profile
-                </SampleBadge>
+                <SampleBadge>✨ Top Match for Your Profile</SampleBadge>
 
                 {report.sample_role ? (
                   <RoleCard>
                     <RoleCardHeader>
-                      <RoleTitle>
-                        {report.sample_role.title}
-                      </RoleTitle>
+                      <RoleTitle>{report.sample_role.title}</RoleTitle>
                       <RoleFitBadge>
                         ✓ {report.sample_role.fit}% Match
                       </RoleFitBadge>
@@ -2132,52 +2797,104 @@ export default function ReportDetailPage() {
                     </RoleDescription>
                   </RoleCard>
                 ) : (
-                  <div style={{
-                    padding: '20px',
-                    textAlign: 'center',
-                    color: '#9ca3af',
-                    fontSize: '14px',
-                    border: '1px dashed #334155',
-                    borderRadius: '8px'
-                  }}>
-                    Role recommendation is being generated. Please refresh the page or create a new analysis.
+                  <div
+                    style={{
+                      padding: "20px",
+                      textAlign: "center",
+                      color: "#9ca3af",
+                      fontSize: "14px",
+                      border: "1px dashed #334155",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    Role recommendation is being generated. Please refresh the
+                    page or create a new analysis.
                   </div>
                 )}
 
-                <BlurredPreviewSection style={{ marginTop: '24px' }}>
-                  <div style={{ position: 'relative', minHeight: '200px' }}>
+                <BlurredPreviewSection style={{ marginTop: "24px" }}>
+                  <div style={{ position: "relative", minHeight: "200px" }}>
                     <BlurredContent>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{
-                          padding: '16px',
-                          backgroundColor: '#1e293b',
-                          border: '2px solid #334155',
-                          borderRadius: '12px',
-                        }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                            <span style={{ fontWeight: 600, fontSize: '18px', color: '#f1f5f9' }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "12px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            padding: "16px",
+                            backgroundColor: "#1e293b",
+                            border: "2px solid #334155",
+                            borderRadius: "12px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontWeight: 600,
+                                fontSize: "18px",
+                                color: "#f1f5f9",
+                              }}
+                            >
                               Technical Lead
                             </span>
                             <Badge variant="success">85% Match</Badge>
                           </div>
-                          <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0 }}>
-                            Your leadership experience and technical depth make you an excellent candidate for this role...
+                          <p
+                            style={{
+                              fontSize: "14px",
+                              color: "#94a3b8",
+                              margin: 0,
+                            }}
+                          >
+                            Your leadership experience and technical depth make
+                            you an excellent candidate for this role...
                           </p>
                         </div>
-                        <div style={{
-                          padding: '16px',
-                          backgroundColor: '#1e293b',
-                          border: '2px solid #334155',
-                          borderRadius: '12px',
-                        }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                            <span style={{ fontWeight: 600, fontSize: '18px', color: '#f1f5f9' }}>
+                        <div
+                          style={{
+                            padding: "16px",
+                            backgroundColor: "#1e293b",
+                            border: "2px solid #334155",
+                            borderRadius: "12px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontWeight: 600,
+                                fontSize: "18px",
+                                color: "#f1f5f9",
+                              }}
+                            >
                               Solutions Architect
                             </span>
                             <Badge variant="success">82% Match</Badge>
                           </div>
-                          <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0 }}>
-                            Your system design skills and cross-functional experience position you well for this strategic role...
+                          <p
+                            style={{
+                              fontSize: "14px",
+                              color: "#94a3b8",
+                              margin: 0,
+                            }}
+                          >
+                            Your system design skills and cross-functional
+                            experience position you well for this strategic
+                            role...
                           </p>
                         </div>
                       </div>
@@ -2186,7 +2903,8 @@ export default function ReportDetailPage() {
                       <UnlockIcon>🔒</UnlockIcon>
                       <UnlockTitle>Unlock 2 More Perfect Matches</UnlockTitle>
                       <UnlockDescription>
-                        Discover additional roles tailored to your unique skills and experience
+                        Discover additional roles tailored to your unique skills
+                        and experience
                       </UnlockDescription>
                       <UnlockButton onClick={handleUpgradeToPro}>
                         Unlock for $9
@@ -2208,77 +2926,137 @@ export default function ReportDetailPage() {
                 </Card.Description>
               </Card.Header>
               <Card.Content>
-                <SampleBadge>
-                  ✨ Free Tip - Boost Your ATS Score
-                </SampleBadge>
+                <SampleBadge>✨ Free Tip - Boost Your ATS Score</SampleBadge>
 
                 <ATSTipCard>
                   <ATSIcon>📄</ATSIcon>
                   <ATSTipContent>
                     <ATSTipTitle>Optimize Your CV File Name</ATSTipTitle>
                     <ATSTipText>
-                      Name your CV file strategically: "FirstName_LastName_Position_CV.pdf" (e.g., "John_Smith_Senior_Developer_CV.pdf").
-                      ATS systems often index file names, and including the position helps recruiters find your application quickly.
-                      Avoid generic names like "Resume.pdf" or "CV_final_v2.pdf" which appear unprofessional.
+                      Name your CV file strategically:
+                      &quot;FirstName_LastName_Position_CV.pdf&quot; (e.g.,
+                      &quot;John_Smith_Senior_Developer_CV.pdf&quot;). ATS
+                      systems often index file names, and including the position
+                      helps recruiters find your application quickly. Avoid
+                      generic names like &quot;Resume.pdf&quot; or
+                      &ldquo;CV_final_v2.pdf" which appear unprofessional.
                     </ATSTipText>
                   </ATSTipContent>
                 </ATSTipCard>
 
-                <BlurredPreviewSection style={{ marginTop: '24px' }}>
-                  <div style={{ position: 'relative', minHeight: '220px' }}>
+                <BlurredPreviewSection style={{ marginTop: "24px" }}>
+                  <div style={{ position: "relative", minHeight: "220px" }}>
                     <BlurredContent>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div style={{
-                          display: 'flex',
-                          gap: '16px',
-                          padding: '16px',
-                          backgroundColor: '#1e293b',
-                          border: '2px solid #334155',
-                          borderRadius: '12px',
-                        }}>
-                          <div style={{ fontSize: '24px' }}>🎯</div>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "16px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "16px",
+                            padding: "16px",
+                            backgroundColor: "#1e293b",
+                            border: "2px solid #334155",
+                            borderRadius: "12px",
+                          }}
+                        >
+                          <div style={{ fontSize: "24px" }}>🎯</div>
                           <div>
-                            <div style={{ fontWeight: 600, marginBottom: '4px', color: '#f1f5f9' }}>
+                            <div
+                              style={{
+                                fontWeight: 600,
+                                marginBottom: "4px",
+                                color: "#f1f5f9",
+                              }}
+                            >
                               Add Quantifiable Achievements
                             </div>
-                            <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0, lineHeight: 1.6 }}>
-                              Include specific metrics and percentages to demonstrate impact. ATS systems prioritize candidates who show measurable results...
+                            <p
+                              style={{
+                                fontSize: "14px",
+                                color: "#94a3b8",
+                                margin: 0,
+                                lineHeight: 1.6,
+                              }}
+                            >
+                              Include specific metrics and percentages to
+                              demonstrate impact. ATS systems prioritize
+                              candidates who show measurable results...
                             </p>
                           </div>
                         </div>
-                        <div style={{
-                          display: 'flex',
-                          gap: '16px',
-                          padding: '16px',
-                          backgroundColor: '#1e293b',
-                          border: '2px solid #334155',
-                          borderRadius: '12px',
-                        }}>
-                          <div style={{ fontSize: '24px' }}>🔑</div>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "16px",
+                            padding: "16px",
+                            backgroundColor: "#1e293b",
+                            border: "2px solid #334155",
+                            borderRadius: "12px",
+                          }}
+                        >
+                          <div style={{ fontSize: "24px" }}>🔑</div>
                           <div>
-                            <div style={{ fontWeight: 600, marginBottom: '4px', color: '#f1f5f9' }}>
+                            <div
+                              style={{
+                                fontWeight: 600,
+                                marginBottom: "4px",
+                                color: "#f1f5f9",
+                              }}
+                            >
                               Strategic Keyword Placement
                             </div>
-                            <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0, lineHeight: 1.6 }}>
-                              Place important keywords in your professional summary, skills section, and throughout experience bullets. Mirror the exact terminology...
+                            <p
+                              style={{
+                                fontSize: "14px",
+                                color: "#94a3b8",
+                                margin: 0,
+                                lineHeight: 1.6,
+                              }}
+                            >
+                              Place important keywords in your professional
+                              summary, skills section, and throughout experience
+                              bullets. Mirror the exact terminology...
                             </p>
                           </div>
                         </div>
-                        <div style={{
-                          display: 'flex',
-                          gap: '16px',
-                          padding: '16px',
-                          backgroundColor: '#1e293b',
-                          border: '2px solid #334155',
-                          borderRadius: '12px',
-                        }}>
-                          <div style={{ fontSize: '24px' }}>📊</div>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "16px",
+                            padding: "16px",
+                            backgroundColor: "#1e293b",
+                            border: "2px solid #334155",
+                            borderRadius: "12px",
+                          }}
+                        >
+                          <div style={{ fontSize: "24px" }}>📊</div>
                           <div>
-                            <div style={{ fontWeight: 600, marginBottom: '4px', color: '#f1f5f9' }}>
+                            <div
+                              style={{
+                                fontWeight: 600,
+                                marginBottom: "4px",
+                                color: "#f1f5f9",
+                              }}
+                            >
                               Formatting Best Practices
                             </div>
-                            <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0, lineHeight: 1.6 }}>
-                              Use standard section headers like "Experience", "Education", and "Skills". Avoid tables, text boxes, and graphics that confuse ATS parsers...
+                            <p
+                              style={{
+                                fontSize: "14px",
+                                color: "#94a3b8",
+                                margin: 0,
+                                lineHeight: 1.6,
+                              }}
+                            >
+                              Use standard section headers like
+                              &quot;Experience&quot;, &quot;Education&quot;, and
+                              "Skills". Avoid tables, text boxes, and graphics
+                              that confuse ATS parsers...
                             </p>
                           </div>
                         </div>
@@ -2288,7 +3066,8 @@ export default function ReportDetailPage() {
                       <UnlockIcon>🔒</UnlockIcon>
                       <UnlockTitle>Unlock 3+ Detailed ATS Tips</UnlockTitle>
                       <UnlockDescription>
-                        Get comprehensive strategies to beat applicant tracking systems and land more interviews
+                        Get comprehensive strategies to beat applicant tracking
+                        systems and land more interviews
                       </UnlockDescription>
                       <UnlockButton onClick={handleUpgradeToPro}>
                         Unlock for $9
@@ -2302,7 +3081,9 @@ export default function ReportDetailPage() {
 
           {/* Personalized Pain Point Message */}
           <Section>
-            <PersonalizedAlert $variant={getPersonalizedMessage(report.fit_score).variant}>
+            <PersonalizedAlert
+              $variant={getPersonalizedMessage(report.fit_score).variant}
+            >
               {getPersonalizedMessage(report.fit_score).message}
             </PersonalizedAlert>
           </Section>
@@ -2318,25 +3099,33 @@ export default function ReportDetailPage() {
                 {/* Social Proof */}
                 <SocialProofContainer>
                   <SocialProofBadge>
-                    <ProofIcon>🔥</ProofIcon>
+                    <ProofIcon>
+                      <FireIcon />
+                    </ProofIcon>
                     <ProofText>
                       <strong>487 users</strong> upgraded in the last 7 days
                     </ProofText>
                   </SocialProofBadge>
                   <SocialProofBadge>
-                    <ProofIcon>⭐</ProofIcon>
+                    <ProofIcon>
+                      <StarIcon />
+                    </ProofIcon>
                     <ProofText>
                       <strong>94%</strong> of users who upgraded got interviews
                     </ProofText>
                   </SocialProofBadge>
                   <SocialProofBadge>
-                    <ProofIcon>💼</ProofIcon>
+                    <ProofIcon>
+                      <BriefcaseIcon />
+                    </ProofIcon>
                     <ProofText>
                       Join <strong>12,483 professionals</strong> who upgraded
                     </ProofText>
                   </SocialProofBadge>
                   <SocialProofBadge>
-                    <ProofIcon>⚡</ProofIcon>
+                    <ProofIcon>
+                      <LightningIcon />
+                    </ProofIcon>
                     <ProofText>
                       <strong>3x</strong> more interview callbacks on average
                     </ProofText>
@@ -2345,13 +3134,22 @@ export default function ReportDetailPage() {
 
                 {/* Price Display with Urgency */}
                 <PriceDisplay>
-                  <div style={{ marginBottom: '12px' }}>
+                  <div style={{ marginBottom: "12px" }}>
                     <OldPrice>$15</OldPrice>
                     <CurrentPrice>$9</CurrentPrice>
                     <DiscountBadge>40% OFF - Limited Time</DiscountBadge>
                   </div>
-                  <div style={{ fontSize: '14px', opacity: 0.9 }}>
-                    ⏰ Special launch pricing - ends soon!
+                  <div
+                    style={{
+                      fontSize: "14px",
+                      opacity: 0.9,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <ClockIcon /> Special launch pricing - ends soon!
                   </div>
                 </PriceDisplay>
 
@@ -2364,43 +3162,84 @@ export default function ReportDetailPage() {
                   </ComparisonRow>
                   <ComparisonRow>
                     <ComparisonCell>Fit Score Analysis</ComparisonCell>
-                    <ComparisonCell>✅</ComparisonCell>
-                    <ComparisonCell>✅</ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon />
+                    </ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon />
+                    </ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
                     <ComparisonCell>Missing Keywords</ComparisonCell>
-                    <ComparisonCell>✅</ComparisonCell>
-                    <ComparisonCell>✅</ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon />
+                    </ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon />
+                    </ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
                     <ComparisonCell>AI Summary</ComparisonCell>
-                    <ComparisonCell>✅</ComparisonCell>
-                    <ComparisonCell>✅ Enhanced</ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon />
+                    </ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon /> Enhanced
+                    </ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
                     <ComparisonCell>Rewritten Bullets</ComparisonCell>
-                    <ComparisonCell>❌</ComparisonCell>
-                    <ComparisonCell>✅ 3x</ComparisonCell>
+                    <ComparisonCell>
+                      <XMarkIcon />
+                    </ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon /> 3x
+                    </ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
                     <ComparisonCell>Role Recommendations</ComparisonCell>
-                    <ComparisonCell>❌</ComparisonCell>
-                    <ComparisonCell>✅ 3x</ComparisonCell>
+                    <ComparisonCell>
+                      <XMarkIcon />
+                    </ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon /> 3x
+                    </ComparisonCell>
+                  </ComparisonRow>
+                  <ComparisonRow>
+                    <ComparisonCell>Cover Letter Generator</ComparisonCell>
+                    <ComparisonCell>
+                      <XMarkIcon />
+                    </ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon />
+                    </ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
                     <ComparisonCell>ATS Tips</ComparisonCell>
-                    <ComparisonCell>❌</ComparisonCell>
-                    <ComparisonCell>✅</ComparisonCell>
+                    <ComparisonCell>
+                      <XMarkIcon />
+                    </ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon />
+                    </ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
                     <ComparisonCell>Optimized CV PDF</ComparisonCell>
-                    <ComparisonCell>❌</ComparisonCell>
-                    <ComparisonCell>✅</ComparisonCell>
+                    <ComparisonCell>
+                      <XMarkIcon />
+                    </ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon />
+                    </ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
                     <ComparisonCell>Priority Support</ComparisonCell>
-                    <ComparisonCell>❌</ComparisonCell>
-                    <ComparisonCell>✅</ComparisonCell>
+                    <ComparisonCell>
+                      <XMarkIcon />
+                    </ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon />
+                    </ComparisonCell>
                   </ComparisonRow>
                 </ComparisonTable>
 
@@ -2411,23 +3250,24 @@ export default function ReportDetailPage() {
                   style={{
                     backgroundColor: "white",
                     color: "#667eea",
-                    fontSize: '18px',
-                    padding: '16px 32px',
-                    width: '100%',
-                    marginTop: '24px'
+                    fontSize: "18px",
+                    padding: "16px 32px",
+                    width: "100%",
+                    marginTop: "24px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
                   }}
                 >
-                  {isUpgrading ? "Upgrading..." : "🚀 Upgrade to Pro - Only $9"}
+                  {isUpgrading ? (
+                    "Upgrading..."
+                  ) : (
+                    <>
+                      <RocketIcon /> Upgrade to Pro - Only $9
+                    </>
+                  )}
                 </Button>
-
-                <div style={{
-                  textAlign: 'center',
-                  marginTop: '16px',
-                  fontSize: '13px',
-                  opacity: 0.9
-                }}>
-                  💯 100% Satisfaction Guarantee - Full refund if not satisfied
-                </div>
               </Card.Content>
             </ProUpgradeCard>
           </Section>
@@ -2510,135 +3350,217 @@ export default function ReportDetailPage() {
             </Card>
           </Section>
 
-          {report.fake_skills_recommendations && report.fake_skills_recommendations.length > 0 && (
-            <Section>
-              <Card variant="bordered">
-                <Card.Header>
-                  <Card.Title>🎯 Learning Path - Turn Fake Skills into Real Ones!</Card.Title>
-                  <Card.Description>
-                    You've added these skills to your CV. Now let's make them real! Follow these personalized learning paths to acquire these skills.
-                  </Card.Description>
-                </Card.Header>
-                <Card.Content>
-                  {report.fake_skills_recommendations.map((recommendation, index) => (
-                    <LearningRecommendationCard key={index}>
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                        <SkillCategory>{recommendation.category}</SkillCategory>
-                        <TimeEstimate>⏱️ {recommendation.estimatedTime}</TimeEstimate>
-                      </div>
-                      <SkillTitle>{recommendation.skill}</SkillTitle>
+          {report.fake_skills_recommendations &&
+            report.fake_skills_recommendations.length > 0 && (
+              <Section>
+                <Card variant="bordered">
+                  <Card.Header>
+                    <Card.Title>
+                      🎯 Learning Path - Turn Fake Skills into Real Ones!
+                    </Card.Title>
+                    <Card.Description>
+                      You&apos;ve added these skills to your CV. Now let's make
+                      them real! Follow these personalized learning paths to
+                      acquire these skills.
+                    </Card.Description>
+                  </Card.Header>
+                  <Card.Content>
+                    {report.fake_skills_recommendations.map(
+                      (recommendation, index) => (
+                        <LearningRecommendationCard key={index}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            <SkillCategory>
+                              {recommendation.category}
+                            </SkillCategory>
+                            <TimeEstimate>
+                              ⏱️ {recommendation.estimatedTime}
+                            </TimeEstimate>
+                          </div>
+                          <SkillTitle>{recommendation.skill}</SkillTitle>
 
-                      <LearningPathSection>
-                        <SectionTitle>📚 Learning Path</SectionTitle>
-                        <BulletList>
-                          {recommendation.learningPath.map((step, idx) => (
-                            <li key={idx}>{step}</li>
-                          ))}
-                        </BulletList>
-                      </LearningPathSection>
+                          <LearningPathSection>
+                            <SectionTitle>📚 Learning Path</SectionTitle>
+                            <BulletList>
+                              {recommendation.learningPath.map((step, idx) => (
+                                <li key={idx}>{step}</li>
+                              ))}
+                            </BulletList>
+                          </LearningPathSection>
 
-                      <LearningPathSection>
-                        <SectionTitle>💡 Project Ideas</SectionTitle>
-                        <BulletList>
-                          {recommendation.projectIdeas.map((idea, idx) => (
-                            <li key={idx}>{idea}</li>
-                          ))}
-                        </BulletList>
-                      </LearningPathSection>
-                    </LearningRecommendationCard>
-                  ))}
-                </Card.Content>
-              </Card>
-            </Section>
-          )}
+                          <LearningPathSection>
+                            <SectionTitle>💡 Project Ideas</SectionTitle>
+                            <BulletList>
+                              {recommendation.projectIdeas.map((idea, idx) => (
+                                <li key={idx}>{idea}</li>
+                              ))}
+                            </BulletList>
+                          </LearningPathSection>
+                        </LearningRecommendationCard>
+                      )
+                    )}
+                  </Card.Content>
+                </Card>
+              </Section>
+            )}
 
           <Section>
             <Card variant="bordered">
               <Card.Header>
-                <Card.Title><TargetIcon /> Generate Optimized CV</Card.Title>
+                <Card.Title>
+                  <TargetIcon /> Generate Optimized CV
+                </Card.Title>
                 <Card.Description>
-                  Get a fully optimized, ATS-friendly CV with all improvements applied
+                  Get a fully optimized, ATS-friendly CV with all improvements
+                  applied
                 </Card.Description>
               </Card.Header>
               <Card.Content>
                 {!report.generated_cv ? (
-                  <div>
-                    <p style={{ marginBottom: "16px", color: "#9ca3af" }}>
-                      Generate a professional CV that incorporates all the analysis insights:
-                    </p>
-                    <ul style={{ marginBottom: "24px", marginLeft: "20px", color: "#9ca3af" }}>
-                      <li>Missing keywords naturally integrated</li>
-                      <li>Rewritten bullet points with achievements</li>
-                      <li>ATS-optimized formatting</li>
-                      <li>Professional design and layout</li>
-                    </ul>
+                  <CVGenerationSection>
+                    <CVGenerationIntro>
+                      <IntroHeading>
+                        Transform Your CV Into an ATS Powerhouse
+                      </IntroHeading>
+                      <IntroSubtext>
+                        Generate a professionally optimized CV that incorporates all
+                        analysis insights and dramatically improves your chances
+                      </IntroSubtext>
+                    </CVGenerationIntro>
 
-                    <FakeItToggleContainer onClick={() => setFakeItMode(!fakeItMode)}>
-                      <FakeItCheckbox
-                        type="checkbox"
-                        checked={fakeItMode}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          setFakeItMode(e.target.checked);
-                        }}
-                      />
-                      <FakeItContent>
-                        <FakeItTitle>🚀 Fake it until you make it!</FakeItTitle>
-                        <FakeItDescription>
-                          Add missing skills to your CV even if you don't have them yet.
-                          We'll provide you with personalized learning paths and project ideas to actually acquire these skills.
-                          Perfect for career transitions!
-                        </FakeItDescription>
-                      </FakeItContent>
-                    </FakeItToggleContainer>
+                    <FeaturesGrid>
+                      <FeatureCard>
+                        <FeatureIcon>✓</FeatureIcon>
+                        <FeatureText>
+                          Missing keywords naturally integrated
+                        </FeatureText>
+                      </FeatureCard>
+                      <FeatureCard>
+                        <FeatureIcon>✓</FeatureIcon>
+                        <FeatureText>
+                          Rewritten bullet points with achievements
+                        </FeatureText>
+                      </FeatureCard>
+                      <FeatureCard>
+                        <FeatureIcon>✓</FeatureIcon>
+                        <FeatureText>ATS-optimized formatting</FeatureText>
+                      </FeatureCard>
+                      <FeatureCard>
+                        <FeatureIcon>✓</FeatureIcon>
+                        <FeatureText>Professional design and layout</FeatureText>
+                      </FeatureCard>
+                    </FeaturesGrid>
 
-                    <Button
-                      onClick={handleGenerateCV}
-                      isLoading={isGeneratingCV}
-                      size="lg"
-                    >
-                      {isGeneratingCV ? "Generating CV..." : "Generate Optimized CV"}
-                    </Button>
-                  </div>
-                ) : (
-                  <div>
-                    <div
-                      style={{
-                        padding: "16px",
-                        backgroundColor: "#10b981",
-                        borderRadius: "8px",
-                        marginBottom: "16px",
-                      }}
-                    >
-                      <p style={{ color: "white", fontWeight: 500 }}>
-                        <CheckCircleIcon /> Your optimized CV is ready!
-                      </p>
-                    </div>
-                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                      <Button
-                        onClick={handlePreviewCV}
-                        size="lg"
-                        variant="primary"
+                    <FakeItSection>
+                      <FakeItToggleContainer
+                        onClick={() => setFakeItMode(!fakeItMode)}
                       >
-                        <EyeIcon /> Preview & Download CV
-                      </Button>
-                      <Button
-                        onClick={() => setIsCoverLetterModalOpen(true)}
-                        size="lg"
-                        variant="secondary"
-                      >
-                        ✉️ Generate Cover Letter
-                      </Button>
+                        <FakeItCheckbox
+                          type="checkbox"
+                          checked={fakeItMode}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            setFakeItMode(e.target.checked);
+                          }}
+                        />
+                        <FakeItContent>
+                          <FakeItTitle>
+                            🚀 Fake it until you make it!
+                          </FakeItTitle>
+                          <FakeItDescription>
+                            Add missing skills to your CV even if you don't have
+                            them yet. We'll provide you with personalized learning
+                            paths and project ideas to actually acquire these
+                            skills. Perfect for career transitions!
+                          </FakeItDescription>
+                        </FakeItContent>
+                      </FakeItToggleContainer>
+                    </FakeItSection>
+
+                    <GenerateCTAContainer>
                       <Button
                         onClick={handleGenerateCV}
-                        size="lg"
-                        variant="ghost"
                         isLoading={isGeneratingCV}
+                        size="lg"
                       >
-                        {isGeneratingCV ? "Regenerating..." : <><RefreshIcon /> Regenerate CV</>}
+                        {isGeneratingCV
+                          ? "Generating CV..."
+                          : "Generate Optimized CV"}
                       </Button>
-                    </div>
-                  </div>
+                    </GenerateCTAContainer>
+                  </CVGenerationSection>
+                ) : (
+                  <CVSuccessSection>
+                    <SuccessCelebration>
+                      <SuccessIcon>
+                        <CheckCircleIcon />
+                      </SuccessIcon>
+                      <SuccessTitle>Your Optimized CV is Ready!</SuccessTitle>
+                      <SuccessSubtext>
+                        Your professionally crafted CV is ready to download. Choose
+                        your next action below.
+                      </SuccessSubtext>
+                    </SuccessCelebration>
+
+                    <ActionCardsGrid>
+                      <ActionCard
+                        $variant="primary"
+                        onClick={handlePreviewCV}
+                      >
+                        <ActionCardHeader>
+                          <ActionCardIcon $variant="primary">
+                            <EyeIcon />
+                          </ActionCardIcon>
+                          <ActionCardTitle>Preview & Download</ActionCardTitle>
+                        </ActionCardHeader>
+                        <ActionCardDescription>
+                          Review your optimized CV and download it as a PDF to start
+                          applying immediately.
+                        </ActionCardDescription>
+                      </ActionCard>
+
+                      <ActionCard
+                        $variant="secondary"
+                        onClick={() => setIsCoverLetterModalOpen(true)}
+                      >
+                        <ActionCardHeader>
+                          <ActionCardIcon $variant="secondary">
+                            <span style={{ fontSize: '20px' }}>✉️</span>
+                          </ActionCardIcon>
+                          <ActionCardTitle>Generate Cover Letter</ActionCardTitle>
+                        </ActionCardHeader>
+                        <ActionCardDescription>
+                          Create a tailored cover letter that perfectly complements
+                          your optimized CV.
+                        </ActionCardDescription>
+                      </ActionCard>
+
+                      <ActionCard
+                        $variant="ghost"
+                        onClick={!isGeneratingCV ? handleGenerateCV : undefined}
+                        style={{ opacity: isGeneratingCV ? 0.6 : 1, cursor: isGeneratingCV ? 'not-allowed' : 'pointer' }}
+                      >
+                        <ActionCardHeader>
+                          <ActionCardIcon $variant="ghost">
+                            <RefreshIcon />
+                          </ActionCardIcon>
+                          <ActionCardTitle>
+                            {isGeneratingCV ? "Regenerating..." : "Regenerate CV"}
+                          </ActionCardTitle>
+                        </ActionCardHeader>
+                        <ActionCardDescription>
+                          {isGeneratingCV
+                            ? "Please wait while we regenerate your CV..."
+                            : "Not satisfied? Generate a new version with different optimizations."}
+                        </ActionCardDescription>
+                      </ActionCard>
+                    </ActionCardsGrid>
+                  </CVSuccessSection>
                 )}
               </Card.Content>
             </Card>
@@ -2658,14 +3580,21 @@ export default function ReportDetailPage() {
           {selectedImprovement && (
             <ImprovementHighlight>
               <HighlightTitle>
-                {selectedImprovement.category} • +{Math.round(selectedImprovement.impact * 10) / 10}% Impact
-                {selectedImprovement.section && ` • ${selectedImprovement.section.charAt(0).toUpperCase() + selectedImprovement.section.slice(1)} Section`}
+                {selectedImprovement.category} • +
+                {Math.round(selectedImprovement.impact * 10) / 10}% Impact
+                {selectedImprovement.section &&
+                  ` • ${
+                    selectedImprovement.section.charAt(0).toUpperCase() +
+                    selectedImprovement.section.slice(1)
+                  } Section`}
               </HighlightTitle>
               <HighlightAction>{selectedImprovement.action}</HighlightAction>
               <HighlightReason>{selectedImprovement.reason}</HighlightReason>
               <HighlightImpact>
-                <LightBulbIcon /> This improvement boosted your score by +{Math.round(selectedImprovement.impact * 10) / 10}%
-                {selectedImprovement.section && ` - Look for the green highlighted section in the CV below`}
+                <LightBulbIcon /> This improvement boosted your score by +
+                {Math.round(selectedImprovement.impact * 10) / 10}%
+                {selectedImprovement.section &&
+                  ` - Look for the green highlighted section in the CV below`}
               </HighlightImpact>
             </ImprovementHighlight>
           )}
@@ -2698,6 +3627,19 @@ export default function ReportDetailPage() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* CV Generation Loading Modal */}
+      {isGeneratingCV && (
+        <LoadingModalOverlay>
+          <LoadingModalContent>
+            <LoadingSpinner />
+            <LoadingTitle>Generating Your Optimized CV</LoadingTitle>
+            <LoadingMessage key={loadingMessageIndex}>
+              {loadingMessages[loadingMessageIndex]}
+            </LoadingMessage>
+          </LoadingModalContent>
+        </LoadingModalOverlay>
+      )}
 
       {/* Cover Letter Generator Modal */}
       <CoverLetterGenerator

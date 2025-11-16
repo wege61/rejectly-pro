@@ -400,6 +400,82 @@ const SelectionList = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
+const CompactJobList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: ${({ theme }) => theme.spacing.xs};
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: ${({ theme }) => theme.colors.background};
+    border-radius: ${({ theme }) => theme.radius.full};
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.border};
+    border-radius: ${({ theme }) => theme.radius.full};
+
+    &:hover {
+      background: ${({ theme }) => theme.colors.borderHover};
+    }
+  }
+`;
+
+const CompactJobCard = styled.div<{ $selected?: boolean }>`
+  padding: ${({ theme }) => theme.spacing.md};
+  border: 2px solid ${({ theme, $selected }) =>
+    $selected ? theme.colors.primary : theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background-color: ${({ theme, $selected }) =>
+    $selected ? theme.colors.primaryLight : theme.colors.surface};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.normal};
+  position: relative;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.primaryLight};
+    transform: translateX(4px);
+  }
+
+  ${({ $selected, theme }) => $selected && `
+    &::before {
+      content: '✓';
+      position: absolute;
+      top: ${theme.spacing.sm};
+      right: ${theme.spacing.sm};
+      width: 20px;
+      height: 20px;
+      background: ${theme.colors.primary};
+      color: white;
+      border-radius: ${theme.radius.full};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: ${theme.typography.fontSize.xs};
+      font-weight: ${theme.typography.fontWeight.bold};
+    }
+  `}
+`;
+
+const CompactJobTitle = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const CompactJobMeta = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
 const SuccessBox = styled.div`
   padding: ${({ theme }) => theme.spacing["2xl"]};
   border: 2px solid ${({ theme }) => theme.colors.success};
@@ -819,6 +895,33 @@ export function OnboardingWizard({
     }
   }, [currentStep, uploadedCV, cvText, jobTitle, jobDetails, savedJob, selectedCV, selectedJob, isOpen]);
 
+  // Fetch job list when entering step 2 if user has existing jobs
+  useEffect(() => {
+    async function fetchJobs() {
+      if (currentStep === 2 && hasExistingJob && jobList.length === 0) {
+        try {
+          const supabase = createClient();
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
+
+          const { data: jobsData } = await supabase
+            .from("documents")
+            .select("*")
+            .eq("user_id", user.id)
+            .eq("type", "job")
+            .order("created_at", { ascending: false });
+
+          if (jobsData) {
+            setJobList(jobsData);
+          }
+        } catch (error) {
+          console.error("Failed to fetch jobs:", error);
+        }
+      }
+    }
+    fetchJobs();
+  }, [currentStep, hasExistingJob, jobList.length]);
+
   // Clear wizard state when modal is completed or closed
   const handleClose = () => {
     // Only clear if not in middle of wizard
@@ -1047,9 +1150,11 @@ export function OnboardingWizard({
             <StepHeader>
               <StepTitle><DocumentIcon /> Upload Your Resume</StepTitle>
               <StepDescription>
-                {hasExistingCV 
-                  ? "Use your existing resume or upload a new one"
-                  : "Upload your resume in PDF or DOCX format"
+                {uploadedCV && !isLoading
+                  ? "Great! Your resume is ready. You can proceed to the next step or upload a different one."
+                  : hasExistingCV
+                    ? "Use your existing resume or upload a new one"
+                    : "Upload your resume in PDF or DOCX format"
                 }
               </StepDescription>
             </StepHeader>
@@ -1105,7 +1210,7 @@ export function OnboardingWizard({
                     <SuccessIcon>✓</SuccessIcon>
                     <SuccessTitle>{uploadedCV.title}</SuccessTitle>
                     <SuccessSubtitle>
-                      {cvText.length} characters extracted
+                      Resume uploaded successfully
                     </SuccessSubtitle>
                   </SuccessBox>
 
@@ -1167,7 +1272,7 @@ export function OnboardingWizard({
               </StepDescription>
             </StepHeader>
             <StepContent>
-              {hasExistingJob && !savedJob ? (
+              {hasExistingJob ? (
                 <CVOptionsContainer>
                   <CVOptionWrapper>
                     <JobForm>
@@ -1198,17 +1303,26 @@ export function OnboardingWizard({
                   <DividerText>or</DividerText>
 
                   <CVOptionWrapper>
-                    <ExistingCVCard onClick={() => {
-                      // Skip to next step - user will select existing job there
-                      setCurrentStep(3);
-                      fetchDataForAnalysis();
-                    }}>
-                      <CVIcon><BriefcaseIcon /></CVIcon>
-                      <CVTitle>Use Existing Job</CVTitle>
-                      <CVSubtitle>
-                        Skip this step and select from your saved job postings
-                      </CVSubtitle>
-                    </ExistingCVCard>
+                    <div>
+                      <SectionHeading>Select Existing Job</SectionHeading>
+                      <CompactJobList>
+                        {jobList.map((job) => (
+                          <CompactJobCard
+                            key={job.id}
+                            $selected={savedJob?.id === job.id}
+                            onClick={() => {
+                              setSavedJob(job);
+                              setSelectedJob(job.id);
+                            }}
+                          >
+                            <CompactJobTitle>{job.title}</CompactJobTitle>
+                            <CompactJobMeta>
+                              {job.text?.length || 0} characters
+                            </CompactJobMeta>
+                          </CompactJobCard>
+                        ))}
+                      </CompactJobList>
+                    </div>
                   </CVOptionWrapper>
                 </CVOptionsContainer>
               ) : (
@@ -1364,6 +1478,21 @@ export function OnboardingWizard({
                   variant="ghost"
                   onClick={() => {
                     if (currentStep > 1) {
+                      // Clear the current step's state when going back
+                      if (currentStep === 2) {
+                        // Going back from step 2 to step 1
+                        setSavedJob(null);
+                        setJobTitle("");
+                        setJobDetails("");
+                        setSelectedJob(null);
+                      } else if (currentStep === 3) {
+                        // Going back from step 3 to step 2
+                        setSelectedCV(null);
+                        setSelectedJob(null);
+                      } else if (currentStep === 4) {
+                        // Going back from step 4 to step 3
+                        setAnalysisResult(null);
+                      }
                       setCurrentStep(currentStep - 1);
                     } else {
                       handleClose();
@@ -1384,15 +1513,18 @@ export function OnboardingWizard({
               {currentStep === 2 && (
                 <Button
                   onClick={async () => {
-                    await handleJobSubmit();
+                    if (!savedJob) {
+                      // Only submit new job if user hasn't selected an existing one
+                      await handleJobSubmit();
+                    }
                     if (savedJob || jobTitle) {
                       setCurrentStep(3);
                       fetchDataForAnalysis();
                     }
                   }}
-                  disabled={!jobTitle || !jobDetails}
+                  disabled={!savedJob && (!jobTitle || !jobDetails)}
                 >
-                  Save & Continue →
+                  {savedJob ? "Next Step →" : "Save & Continue →"}
                 </Button>
               )}
 

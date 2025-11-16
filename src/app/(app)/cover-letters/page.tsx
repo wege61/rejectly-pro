@@ -8,6 +8,8 @@ import { useToast } from "@/contexts/ToastContext";
 import { Modal } from "@/components/ui/Modal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
 
 // Icons
 const ViewIcon = () => (
@@ -60,6 +62,25 @@ const DeleteIcon = () => (
   </svg>
 );
 
+const DocumentIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <line x1="10" y1="9" x2="8" y2="9" />
+  </svg>
+);
+
 const Container = styled.div`
   max-width: 1400px;
   margin: 0 auto;
@@ -70,20 +91,47 @@ const Container = styled.div`
   }
 `;
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  gap: ${({ theme }) => theme.spacing.lg};
+const TwoColumnLayout = styled.div`
+  display: grid;
+  grid-template-columns: 20% 1px 1fr;
+  gap: ${({ theme }) => theme.spacing.xl};
+  align-items: start;
 
-  @media (max-width: 768px) {
-    flex-direction: column;
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+    gap: ${({ theme }) => theme.spacing.lg};
   }
 `;
 
-const HeaderContent = styled.div`
-  flex: 1;
+const ColumnDivider = styled.div`
+  width: 1px;
+  height: 100%;
+  min-height: 500px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    ${({ theme }) => theme.colors.border} 5%,
+    ${({ theme }) => theme.colors.border} 95%,
+    transparent 100%
+  );
+
+  @media (max-width: 1200px) {
+    display: none;
+  }
+`;
+
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const ColumnHeader = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const Header = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const Title = styled.h1`
@@ -96,87 +144,196 @@ const Title = styled.h1`
 const Description = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
   color: ${({ theme }) => theme.colors.textSecondary};
-  max-width: 800px;
+  max-width: 600px;
+`;
+
+
+const SectionTitle = styled.h2`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const SectionDescription = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: ${({ theme }) => theme.spacing.lg};
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
 
-const CoverLetterCard = styled.div<{ $tone: string }>`
+// Report Card Styles - Compact & Professional
+const ReportCard = styled.div<{ $isPremium: boolean }>`
   background: ${({ theme }) => theme.colors.surface};
-  border: 2px solid ${({ $tone }) => {
-    switch ($tone) {
-      case 'professional':
-        return '#3b82f6';
-      case 'friendly':
-        return '#10b981';
-      case 'formal':
-        return '#8b5cf6';
-      default:
-        return '#6b7280';
-    }
-  }};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.md};
   transition: all ${({ theme }) => theme.transitions.fast};
   cursor: pointer;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+  height: 100%;
   overflow: hidden;
+
+  ${({ $isPremium, theme }) =>
+    $isPremium &&
+    `
+    border-color: ${theme.colors.primary};
+    box-shadow: 0 0 0 1px ${theme.colors.primary}15;
+
+    &::after {
+      content: 'PRO';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: linear-gradient(135deg, ${theme.colors.primary} 0%, #764ba2 100%);
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+    }
+  `}
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const ReportCardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const ReportCardInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const ReportCardTitle = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 2px;
+`;
+
+const ReportCardSubtitle = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const ReportScore = styled.div<{ $score: number }>`
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ $score }) => {
+    if ($score >= 80) return '#10b981';
+    if ($score >= 60) return '#f59e0b';
+    return '#ef4444';
+  }};
+  line-height: 1;
+  flex-shrink: 0;
+
+  &::after {
+    content: '%';
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+    margin-left: 1px;
+  }
+`;
+
+const ReportMeta = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding-top: ${({ theme }) => theme.spacing.xs};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const GenerateButton = styled(Button)`
+  width: 100%;
+  margin-top: ${({ theme }) => theme.spacing.md};
+  padding-top: ${({ theme }) => theme.spacing.md};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+// Cover Letter Card Styles - Refined & Symmetric
+const CoverLetterCard = styled.div<{ $tone: string }>`
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: ${({ theme }) => theme.spacing.md};
+  transition: all ${({ theme }) => theme.transitions.fast};
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 
   &::before {
     content: '';
     position: absolute;
-    top: 0;
     left: 0;
-    right: 0;
-    height: 4px;
+    top: 12px;
+    bottom: 12px;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
     background: ${({ $tone }) => {
       switch ($tone) {
         case 'professional':
-          return 'linear-gradient(90deg, #3b82f6 0%, #2563eb 100%)';
+          return '#3b82f6';
         case 'friendly':
-          return 'linear-gradient(90deg, #10b981 0%, #059669 100%)';
+          return '#10b981';
         case 'formal':
-          return 'linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%)';
+          return '#8b5cf6';
         default:
-          return 'linear-gradient(90deg, #6b7280 0%, #4b5563 100%)';
+          return '#6b7280';
       }
     }};
   }
 
   &:hover {
-    border-color: ${({ $tone }) => {
+    border-color: ${({ $tone, theme }) => {
       switch ($tone) {
         case 'professional':
-          return '#2563eb';
+          return '#3b82f6';
         case 'friendly':
-          return '#059669';
+          return '#10b981';
         case 'formal':
-          return '#7c3aed';
+          return '#8b5cf6';
         default:
-          return '#4b5563';
+          return theme.colors.primary;
       }
     }};
-    box-shadow: 0 8px 24px ${({ $tone }) => {
-      switch ($tone) {
-        case 'professional':
-          return 'rgba(59, 130, 246, 0.2)';
-        case 'friendly':
-          return 'rgba(16, 185, 129, 0.2)';
-        case 'formal':
-          return 'rgba(139, 92, 246, 0.2)';
-        default:
-          return 'rgba(0, 0, 0, 0.1)';
-      }
-    }};
-    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 
@@ -184,56 +341,39 @@ const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
   gap: ${({ theme }) => theme.spacing.sm};
+  padding-left: 8px;
 `;
 
 const CardTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.textPrimary};
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
+  line-height: 1.3;
 `;
 
 const CardSubtitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
   color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
 const DateBadge = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
   color: ${({ theme }) => theme.colors.textSecondary};
-  background: ${({ theme }) => theme.colors.background};
-  padding: 4px 10px;
-  border-radius: ${({ theme }) => theme.radius.full};
   white-space: nowrap;
-`;
-
-const PreviewText = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.6;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 const MetaTags = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: ${({ theme }) => theme.spacing.xs};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  padding-left: 8px;
 `;
 
 const Tag = styled.div<{ $tone?: string }>`
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: ${({ theme }) => theme.radius.sm};
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
@@ -263,68 +403,55 @@ const Tag = styled.div<{ $tone?: string }>`
   }};
 `;
 
-const CardActions = styled.div`
+const QuickActions = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.sm};
-  margin-top: ${({ theme }) => theme.spacing.md};
-  padding-top: ${({ theme }) => theme.spacing.md};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  gap: ${({ theme }) => theme.spacing.xs};
+  margin-top: ${({ theme }) => theme.spacing.sm};
+  padding-left: 8px;
 `;
 
-const ActionButton = styled.button<{ $variant?: 'primary' | 'danger' | 'ghost' }>`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+const QuickActionButton = styled.button<{ $variant?: 'copy' | 'delete' }>`
+  padding: 4px 10px;
   border: none;
-  border-radius: ${({ theme }) => theme.radius.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  border-radius: ${({ theme }) => theme.radius.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
+  display: flex;
+  align-items: center;
+  gap: 4px;
 
-  ${({ $variant = 'primary', theme }) => {
-    if ($variant === 'danger') {
-      return `
-        background: rgba(239, 68, 68, 0.1);
-        color: #dc2626;
-
-        &:hover {
-          background: rgba(239, 68, 68, 0.2);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-        }
-      `;
-    } else if ($variant === 'ghost') {
+  ${({ $variant = 'copy', theme }) => {
+    if ($variant === 'delete') {
       return `
         background: transparent;
-        color: ${theme.colors.textSecondary};
-
+        color: #ef4444;
         &:hover {
-          background: ${theme.colors.surfaceHover};
-          color: ${theme.colors.textPrimary};
-          transform: translateY(-2px);
+          background: rgba(239, 68, 68, 0.1);
+        }
+        &:active {
+          background: rgba(239, 68, 68, 0.15);
         }
       `;
     } else {
       return `
-        background: ${theme.colors.surfaceHover};
-        color: ${theme.colors.textPrimary};
-
+        background: transparent;
+        color: ${theme.colors.textSecondary};
         &:hover {
-          background: ${theme.colors.primary};
-          color: white;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+          background: ${theme.colors.surfaceHover};
+          color: ${theme.colors.textPrimary};
+        }
+        &:active {
+          background: ${theme.colors.border};
         }
       `;
     }
   }}
 
-  &:active {
-    transform: translateY(0);
+  svg {
+    width: 12px;
+    height: 12px;
   }
 `;
 
@@ -362,139 +489,6 @@ const MetaItem = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const SelectionModalContent = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  max-height: 600px;
-  overflow-y: auto;
-`;
-
-const Section = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
-
-const SectionTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-`;
-
-const SectionDescription = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-`;
-
-const SelectList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
-  max-height: 200px;
-  overflow-y: auto;
-`;
-
-const SelectItem = styled.div<{ $selected: boolean }>`
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ $selected, theme }) =>
-    $selected ? theme.colors.primaryLight : theme.colors.surface};
-  border: 2px solid
-    ${({ $selected, theme }) =>
-      $selected ? theme.colors.primary : theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    background: ${({ $selected, theme }) =>
-      $selected ? theme.colors.primaryLight : theme.colors.surfaceHover};
-  }
-`;
-
-const ItemTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-`;
-
-const ItemMeta = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const OptionGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-const TemplateGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const OptionButton = styled.button<{ $selected: boolean }>`
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ $selected, theme }) =>
-    $selected
-      ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-      : theme.colors.surface};
-  border: 2px solid
-    ${({ $selected, theme }) =>
-      $selected ? "#667eea" : theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  color: ${({ $selected, theme }) =>
-    $selected ? "white" : theme.colors.textPrimary};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px
-      ${({ $selected }) =>
-        $selected ? "rgba(102, 126, 234, 0.3)" : "rgba(0, 0, 0, 0.1)"};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const TemplateButton = styled(OptionButton)`
-  padding: ${({ theme }) => theme.spacing.lg};
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const Input = styled.input`
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  width: 100%;
-
-  &:focus {
-    outline: none;
-    border-color: #667eea;
-  }
-
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    opacity: 0.6;
-  }
-`;
-
 interface CoverLetter {
   id: string;
   content: string;
@@ -503,54 +497,65 @@ interface CoverLetter {
   language: string;
   template?: string;
   created_at: string;
-  job?: {
+  report_id?: string;
+  structured_content?: {
+    paragraphs?: Array<{
+      id: string;
+      type: string;
+      content: string;
+      rationale: string;
+      sentences: Array<{
+        id: string;
+        text: string;
+        isHighlight: boolean;
+        alternatives?: string[];
+      }>;
+    }>;
+    keyHighlights?: string[];
+    wordCount?: number;
+  };
+  report?: {
     id: string;
-    title: string;
-    type: string;
+    job?: {
+      title: string;
+    };
   };
 }
 
-interface Document {
+interface Report {
   id: string;
-  title: string;
-  type: string;
+  fit_score: number;
+  is_premium: boolean;
   created_at: string;
+  cv?: {
+    title: string;
+  };
+  job?: {
+    title: string;
+  };
 }
-
-const TEMPLATES = [
-  { id: 'standard', name: 'Standard', emoji: '📄', description: 'Classic professional format' },
-  { id: 'story_driven', name: 'Story Driven', emoji: '📖', description: 'Narrative approach' },
-  { id: 'technical_focus', name: 'Technical Focus', emoji: '💻', description: 'Emphasize technical skills' },
-  { id: 'results_oriented', name: 'Results Oriented', emoji: '📊', description: 'Focus on metrics' },
-  { id: 'career_change', name: 'Career Change', emoji: '🔄', description: 'Transitioning fields' },
-  { id: 'short_intro', name: 'Short Intro', emoji: '⚡', description: 'Concise and impactful' },
-];
 
 export default function CoverLettersPage() {
   const toast = useToast();
   const [coverLetters, setCoverLetters] = useState<CoverLetter[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLetter, setSelectedLetter] = useState<CoverLetter | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [letterToDelete, setLetterToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [cvs, setCvs] = useState<Document[]>([]);
-  const [jobs, setJobs] = useState<Document[]>([]);
-  const [selectedCvId, setSelectedCvId] = useState<string>("");
-  const [selectedJobId, setSelectedJobId] = useState<string>("");
-  const [template, setTemplate] = useState<string>('standard');
-  const [tone, setTone] = useState<'professional' | 'friendly' | 'formal'>('professional');
-  const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium');
-  const [language, setLanguage] = useState<'en' | 'tr'>('en');
-  const [emphasizeSkills, setEmphasizeSkills] = useState<string>('');
-  const [specificProjects, setSpecificProjects] = useState<string>('');
+
+  // Cover letter generator
+  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
+
+  // Cover letter editor
+  const [selectedLetterForEdit, setSelectedLetterForEdit] = useState<CoverLetter | null>(null);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   const fetchCoverLetters = useCallback(async () => {
     try {
-      setIsLoading(true);
       const response = await fetch("/api/cover-letters");
       const data = await response.json();
 
@@ -563,103 +568,54 @@ export default function CoverLettersPage() {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
       toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
+    }
+  }, [toast]);
+
+  const fetchReports = useCallback(async () => {
+    try {
+      const response = await fetch("/api/reports");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch reports");
+      }
+
+      setReports(data.reports || []);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      toast.error(errorMessage);
     }
   }, [toast]);
 
   useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      await Promise.all([fetchCoverLetters(), fetchReports()]);
+      setIsLoading(false);
+    };
+
+    loadData();
+  }, [fetchCoverLetters, fetchReports]);
+
+  const handleReportClick = (reportId: string) => {
+    setSelectedReportId(reportId);
+    setIsGeneratorOpen(true);
+  };
+
+  const handleGeneratorClose = () => {
+    setIsGeneratorOpen(false);
+    setSelectedReportId(null);
+  };
+
+  const handleGeneratorSuccess = () => {
     fetchCoverLetters();
-  }, [fetchCoverLetters]);
-
-  const fetchDocuments = async () => {
-    try {
-      const response = await fetch("/api/documents");
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch documents");
-      }
-
-      const cvDocs = data.documents.filter((doc: Document) => doc.type === "cv");
-      const jobDocs = data.documents.filter((doc: Document) => doc.type === "job");
-
-      setCvs(cvDocs || []);
-      setJobs(jobDocs || []);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      toast.error(errorMessage);
-    }
-  };
-
-  const handleGenerateNew = async () => {
-    await fetchDocuments();
-    setSelectedCvId("");
-    setSelectedJobId("");
-    setTemplate('standard');
-    setTone('professional');
-    setLength('medium');
-    setLanguage('en');
-    setEmphasizeSkills('');
-    setSpecificProjects('');
-    setIsSelectionModalOpen(true);
-  };
-
-  const handleGenerate = async () => {
-    if (!selectedCvId || !selectedJobId) {
-      toast.error("Please select both CV and Job");
-      return;
-    }
-
-    setIsGenerating(true);
-
-    try {
-      const customizationFields: any = {};
-      if (emphasizeSkills) {
-        customizationFields.emphasize_skills = emphasizeSkills.split(',').map(s => s.trim());
-      }
-      if (specificProjects) {
-        customizationFields.specific_projects = specificProjects.split(',').map(s => s.trim());
-      }
-
-      const response = await fetch("/api/cover-letter/generate-simple", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cvId: selectedCvId,
-          jobId: selectedJobId,
-          template,
-          tone,
-          length,
-          language,
-          customizationFields: Object.keys(customizationFields).length > 0 ? customizationFields : undefined,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Failed to generate cover letter");
-      }
-
-      toast.success("Cover letter generated successfully!");
-      setIsSelectionModalOpen(false);
-      fetchCoverLetters();
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      toast.error(errorMessage);
-    } finally {
-      setIsGenerating(false);
-    }
+    toast.success("Cover letter generated successfully!");
   };
 
   const handleCardClick = (letter: CoverLetter) => {
-    setSelectedLetter(letter);
-    setIsModalOpen(true);
+    setSelectedLetterForEdit(letter);
+    setIsEditorOpen(true);
   };
 
   const handleCopy = () => {
@@ -732,25 +688,11 @@ export default function CoverLettersPage() {
 
   const getToneLabel = (tone: string) => {
     const labels: Record<string, string> = {
-      professional: "💼 Professional",
-      friendly: "😊 Friendly",
-      formal: "🎩 Formal",
+      professional: "Professional",
+      friendly: "Friendly",
+      formal: "Formal",
     };
     return labels[tone] || tone;
-  };
-
-  const getTemplateLabel = (template: string) => {
-    const tmpl = TEMPLATES.find(t => t.id === template);
-    return tmpl ? `${tmpl.emoji} ${tmpl.name}` : template;
-  };
-
-  const getToneIcon = (tone: string) => {
-    const icons: Record<string, string> = {
-      professional: "💼",
-      friendly: "😊",
-      formal: "🎩",
-    };
-    return icons[tone] || "✉️";
   };
 
   const getLanguageLabel = (lang: string) => {
@@ -774,94 +716,140 @@ export default function CoverLettersPage() {
   return (
     <Container>
       <Header>
-        <HeaderContent>
-          <Title>✉️ Cover Letters</Title>
-          <Description>
-            View and manage all your AI-generated cover letters. Click on any letter to view the full content.
-          </Description>
-        </HeaderContent>
-        <Button onClick={handleGenerateNew} size="lg">
-          + Generate New
-        </Button>
+        <Title>Cover Letters</Title>
+        <Description>
+          Generate AI-powered cover letters from your reports and manage your applications.
+        </Description>
       </Header>
 
-      {coverLetters.length === 0 ? (
-        <Card variant="bordered">
-          <EmptyState
-            icon={<EmptyState.DocumentIcon />}
-            title="No cover letters yet"
-            description="Generate your first cover letter using AI to match your CV with job postings."
-            action={{
-              label: "Generate Cover Letter",
-              onClick: handleGenerateNew,
-            }}
-          />
-        </Card>
-      ) : (
-        <Grid>
-          {coverLetters.map((letter) => (
-            <CoverLetterCard
-              key={letter.id}
-              $tone={letter.tone}
-              onClick={() => handleCardClick(letter)}
-            >
-              <CardHeader>
-                <div style={{ flex: 1 }}>
-                  <CardTitle>
-                    {getToneIcon(letter.tone)} {letter.job?.title || "Cover Letter"}
-                  </CardTitle>
-                  {letter.job && (
-                    <CardSubtitle>
-                      Application for {letter.job.title}
-                    </CardSubtitle>
-                  )}
-                </div>
-                <DateBadge>{formatDate(letter.created_at)}</DateBadge>
-              </CardHeader>
+      <TwoColumnLayout>
+        {/* Left Column - Reports (30%) */}
+        <Column>
+          <ColumnHeader>
+            <SectionTitle>Reports</SectionTitle>
+            <SectionDescription>
+              Select a report to generate a cover letter
+            </SectionDescription>
+          </ColumnHeader>
 
-              <PreviewText>{letter.content}</PreviewText>
-
-              <MetaTags>
-                <Tag $tone={letter.tone}>{getToneLabel(letter.tone)}</Tag>
-                {letter.template && <Tag>{getTemplateLabel(letter.template)}</Tag>}
-                <Tag>{getWordCount(letter.content)} words</Tag>
-                <Tag>{getLanguageLabel(letter.language)}</Tag>
-              </MetaTags>
-
-              <CardActions onClick={(e) => e.stopPropagation()}>
-                <ActionButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCardClick(letter);
-                  }}
+          {reports.length === 0 ? (
+            <Card variant="bordered">
+              <EmptyState
+                icon={<EmptyState.DocumentIcon />}
+                title="No reports yet"
+                description="Create your first analysis to start generating cover letters."
+                action={{
+                  label: "Create Analysis",
+                  onClick: () => window.location.href = "/analyze",
+                }}
+              />
+            </Card>
+          ) : (
+            <Grid>
+              {reports.map((report) => (
+                <ReportCard
+                  key={report.id}
+                  $isPremium={report.is_premium}
+                  onClick={() => handleReportClick(report.id)}
                 >
-                  <ViewIcon /> View Full
-                </ActionButton>
-                <ActionButton
-                  $variant="ghost"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigator.clipboard.writeText(letter.content);
-                    toast.success("Copied to clipboard!");
-                  }}
-                >
-                  <CopyIcon /> Copy
-                </ActionButton>
-                <ActionButton
-                  $variant="danger"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteClick(letter.id);
-                  }}
-                >
-                  <DeleteIcon /> Delete
-                </ActionButton>
-              </CardActions>
-            </CoverLetterCard>
-          ))}
-        </Grid>
-      )}
+                  <ReportCardHeader>
+                    <ReportCardInfo>
+                      <ReportCardTitle>
+                        {report.job?.title || "Job Analysis"}
+                      </ReportCardTitle>
+                      {report.cv && (
+                        <ReportCardSubtitle>
+                          {report.cv.title}
+                        </ReportCardSubtitle>
+                      )}
+                    </ReportCardInfo>
+                    <ReportScore $score={report.fit_score}>
+                      {report.fit_score}
+                    </ReportScore>
+                  </ReportCardHeader>
 
+                  <ReportMeta>
+                    {formatDate(report.created_at)}
+                  </ReportMeta>
+                </ReportCard>
+              ))}
+            </Grid>
+          )}
+        </Column>
+
+        {/* Divider */}
+        <ColumnDivider />
+
+        {/* Right Column - Generated Cover Letters (70%) */}
+        <Column>
+          <ColumnHeader>
+            <SectionTitle>Your Cover Letters</SectionTitle>
+            <SectionDescription>
+              Click to view and edit
+            </SectionDescription>
+          </ColumnHeader>
+
+          {coverLetters.length === 0 ? (
+            <Card variant="bordered">
+              <EmptyState
+                icon={<EmptyState.DocumentIcon />}
+                title="No cover letters yet"
+                description="Click on a report to generate your first cover letter."
+              />
+            </Card>
+          ) : (
+            <Grid>
+              {coverLetters.map((letter) => (
+                <CoverLetterCard
+                  key={letter.id}
+                  $tone={letter.tone}
+                  onClick={() => handleCardClick(letter)}
+                >
+                  <CardHeader>
+                    <div style={{ flex: 1 }}>
+                      <CardTitle>
+                        {letter.report?.job?.title || "Cover Letter"}
+                      </CardTitle>
+                      <CardSubtitle>
+                        {getToneLabel(letter.tone)} · {getLanguageLabel(letter.language)} · {getWordCount(letter.content)} words
+                      </CardSubtitle>
+                    </div>
+                    <DateBadge>{formatDate(letter.created_at)}</DateBadge>
+                  </CardHeader>
+
+                  <MetaTags>
+                    <Tag $tone={letter.tone}>{getToneLabel(letter.tone)}</Tag>
+                    <Tag>{getLanguageLabel(letter.language)}</Tag>
+                  </MetaTags>
+
+                  <QuickActions onClick={(e) => e.stopPropagation()}>
+                    <QuickActionButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigator.clipboard.writeText(letter.content);
+                        toast.success("Copied to clipboard!");
+                      }}
+                    >
+                      <CopyIcon /> Copy
+                    </QuickActionButton>
+                    <QuickActionButton
+                      $variant="delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(letter.id);
+                      }}
+                    >
+                      <DeleteIcon /> Delete
+                    </QuickActionButton>
+                  </QuickActions>
+                </CoverLetterCard>
+              ))}
+            </Grid>
+          )}
+        </Column>
+      </TwoColumnLayout>
+
+      {/* View Cover Letter Modal */}
       {selectedLetter && (
         <Modal
           isOpen={isModalOpen}
@@ -876,11 +864,6 @@ export default function CoverLettersPage() {
                 <MetaItem>
                   <strong>Tone:</strong> {getToneLabel(selectedLetter.tone)}
                 </MetaItem>
-                {selectedLetter.template && (
-                  <MetaItem>
-                    <strong>Template:</strong> {getTemplateLabel(selectedLetter.template)}
-                  </MetaItem>
-                )}
                 <MetaItem>
                   <strong>Words:</strong> {getWordCount(selectedLetter.content)}
                 </MetaItem>
@@ -900,191 +883,48 @@ export default function CoverLettersPage() {
               Close
             </Button>
             <Button variant="ghost" onClick={handleCopy}>
-              📋 Copy
+              <CopyIcon /> Copy
             </Button>
             <Button variant="primary" onClick={handleDownload}>
-              💾 Download
+              Download
             </Button>
           </Modal.Footer>
         </Modal>
       )}
 
-      {/* Generation Modal */}
-      <Modal
-        isOpen={isSelectionModalOpen}
-        onClose={() => setIsSelectionModalOpen(false)}
-        title="✉️ Generate Cover Letter"
-        description="Customize and generate a personalized cover letter"
-        size="xl"
-      >
-        <Modal.Body>
-          <SelectionModalContent>
-            <Section>
-              <SectionTitle>Select Your CV</SectionTitle>
-              {cvs.length === 0 ? (
-                <p style={{ color: "#9ca3af" }}>No CVs found. Please upload a CV first.</p>
-              ) : (
-                <SelectList>
-                  {cvs.map((cv) => (
-                    <SelectItem
-                      key={cv.id}
-                      $selected={selectedCvId === cv.id}
-                      onClick={() => setSelectedCvId(cv.id)}
-                    >
-                      <ItemTitle>{cv.title}</ItemTitle>
-                      <ItemMeta>Created: {formatDate(cv.created_at)}</ItemMeta>
-                    </SelectItem>
-                  ))}
-                </SelectList>
-              )}
-            </Section>
+      {/* Cover Letter Generator Modal (for creating new letters) */}
+      {selectedReportId && (
+        <CoverLetterGenerator
+          isOpen={isGeneratorOpen}
+          onClose={handleGeneratorClose}
+          reportId={selectedReportId}
+          onSuccess={handleGeneratorSuccess}
+        />
+      )}
 
-            <Section>
-              <SectionTitle>Select Job Posting</SectionTitle>
-              {jobs.length === 0 ? (
-                <p style={{ color: "#9ca3af" }}>No jobs found. Please add a job posting first.</p>
-              ) : (
-                <SelectList>
-                  {jobs.map((job) => (
-                    <SelectItem
-                      key={job.id}
-                      $selected={selectedJobId === job.id}
-                      onClick={() => setSelectedJobId(job.id)}
-                    >
-                      <ItemTitle>{job.title}</ItemTitle>
-                      <ItemMeta>Created: {formatDate(job.created_at)}</ItemMeta>
-                    </SelectItem>
-                  ))}
-                </SelectList>
-              )}
-            </Section>
-
-            <Section>
-              <SectionTitle>Template</SectionTitle>
-              <SectionDescription>
-                Choose the approach that best fits your application
-              </SectionDescription>
-              <TemplateGrid>
-                {TEMPLATES.map(tmpl => (
-                  <TemplateButton
-                    key={tmpl.id}
-                    $selected={template === tmpl.id}
-                    onClick={() => setTemplate(tmpl.id)}
-                  >
-                    <div style={{ fontSize: '20px' }}>{tmpl.emoji}</div>
-                    <div style={{ fontWeight: 600, fontSize: '14px' }}>{tmpl.name}</div>
-                    <div style={{ fontSize: '11px', opacity: 0.8, fontWeight: 400 }}>{tmpl.description}</div>
-                  </TemplateButton>
-                ))}
-              </TemplateGrid>
-            </Section>
-
-            <Section>
-              <SectionTitle>Tone</SectionTitle>
-              <OptionGrid>
-                <OptionButton
-                  $selected={tone === 'professional'}
-                  onClick={() => setTone('professional')}
-                >
-                  Professional
-                </OptionButton>
-                <OptionButton
-                  $selected={tone === 'friendly'}
-                  onClick={() => setTone('friendly')}
-                >
-                  Friendly
-                </OptionButton>
-                <OptionButton
-                  $selected={tone === 'formal'}
-                  onClick={() => setTone('formal')}
-                >
-                  Formal
-                </OptionButton>
-              </OptionGrid>
-            </Section>
-
-            <Section>
-              <SectionTitle>Length</SectionTitle>
-              <OptionGrid>
-                <OptionButton
-                  $selected={length === 'short'}
-                  onClick={() => setLength('short')}
-                >
-                  Short (150-200)
-                </OptionButton>
-                <OptionButton
-                  $selected={length === 'medium'}
-                  onClick={() => setLength('medium')}
-                >
-                  Medium (250-300)
-                </OptionButton>
-                <OptionButton
-                  $selected={length === 'long'}
-                  onClick={() => setLength('long')}
-                >
-                  Long (350-400)
-                </OptionButton>
-              </OptionGrid>
-            </Section>
-
-            <Section>
-              <SectionTitle>Language</SectionTitle>
-              <OptionGrid>
-                <OptionButton
-                  $selected={language === 'en'}
-                  onClick={() => setLanguage('en')}
-                >
-                  English
-                </OptionButton>
-                <OptionButton
-                  $selected={language === 'tr'}
-                  onClick={() => setLanguage('tr')}
-                >
-                  Turkish
-                </OptionButton>
-              </OptionGrid>
-            </Section>
-
-            <Section>
-              <SectionTitle>Customization (Optional)</SectionTitle>
-              <SectionDescription>
-                Help AI personalize your letter by specifying key information
-              </SectionDescription>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <Input
-                  type="text"
-                  placeholder="Skills to emphasize (comma-separated, e.g., Python, Leadership, Data Analysis)"
-                  value={emphasizeSkills}
-                  onChange={(e) => setEmphasizeSkills(e.target.value)}
-                />
-                <Input
-                  type="text"
-                  placeholder="Specific projects to highlight (comma-separated, e.g., E-commerce Platform, ML Model)"
-                  value={specificProjects}
-                  onChange={(e) => setSpecificProjects(e.target.value)}
-                />
-              </div>
-            </Section>
-          </SelectionModalContent>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="ghost"
-            onClick={() => setIsSelectionModalOpen(false)}
-            disabled={isGenerating}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleGenerate}
-            isLoading={isGenerating}
-            disabled={!selectedCvId || !selectedJobId}
-          >
-            {isGenerating ? "Generating..." : "Generate Cover Letter"}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {/* Cover Letter Editor Modal (for editing existing letters) */}
+      {selectedLetterForEdit && (
+        <CoverLetterGenerator
+          isOpen={isEditorOpen}
+          onClose={() => {
+            setIsEditorOpen(false);
+            setSelectedLetterForEdit(null);
+          }}
+          existingLetter={{
+            id: selectedLetterForEdit.id,
+            content: selectedLetterForEdit.content,
+            tone: selectedLetterForEdit.tone,
+            length: selectedLetterForEdit.length,
+            language: selectedLetterForEdit.language,
+            paragraphs: selectedLetterForEdit.structured_content?.paragraphs as any,
+            keyHighlights: selectedLetterForEdit.structured_content?.keyHighlights,
+          }}
+          onSuccess={() => {
+            fetchCoverLetters();
+            toast.success("Cover letter viewed!");
+          }}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       <Modal
@@ -1097,9 +937,6 @@ export default function CoverLettersPage() {
           <div style={{ padding: '16px 0' }}>
             <p style={{ marginBottom: '12px', fontSize: '15px', lineHeight: '1.6' }}>
               Are you sure you want to delete this cover letter? This action cannot be undone.
-            </p>
-            <p style={{ color: '#dc2626', fontSize: '14px', fontWeight: 500 }}>
-              ⚠️ This will permanently remove the cover letter from your account.
             </p>
           </div>
         </Modal.Body>

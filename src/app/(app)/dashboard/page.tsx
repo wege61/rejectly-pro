@@ -1,12 +1,13 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
+import { WelcomeModal } from "@/components/ui/WelcomeModal";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
@@ -373,7 +374,7 @@ const CoverLetterMeta = styled.div`
 `;
 
 // Floating Action Button (FAB)
-const FAB = styled.button`
+const FAB = styled.button<{ $showHint?: boolean }>`
   position: fixed;
   bottom: ${({ theme }) => theme.spacing["2xl"]};
   right: ${({ theme }) => theme.spacing["2xl"]};
@@ -388,8 +389,14 @@ const FAB = styled.button`
   box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.normal};
-  z-index: ${({ theme }) => theme.zIndex.fixed};
+  z-index: 10010;
   border: none;
+
+  ${({ $showHint }) => $showHint && css`
+    box-shadow:
+      0 8px 24px rgba(102, 126, 234, 0.4),
+      0 0 0 4px rgba(255, 255, 255, 0.3);
+  `}
 
   &:hover {
     transform: scale(1.1) translateY(-2px);
@@ -406,20 +413,36 @@ const FAB = styled.button`
   }
 `;
 
-const FABTooltip = styled.div`
+const slideIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
+
+const FABTooltip = styled.div<{ $autoShow?: boolean }>`
   position: absolute;
   right: 80px;
   background: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.textPrimary};
-  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.md}`};
+  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.lg}`};
   border-radius: ${({ theme }) => theme.radius.md};
   white-space: nowrap;
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  box-shadow: ${({ theme }) => theme.shadow.lg};
-  opacity: 0;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  box-shadow: ${({ theme }) => theme.shadow.xl};
+  opacity: ${({ $autoShow }) => ($autoShow ? 1 : 0)};
   pointer-events: none;
   transition: opacity ${({ theme }) => theme.transitions.fast};
+  z-index: 10001;
+
+  ${({ $autoShow }) => $autoShow && css`
+    animation: ${slideIn} 0.5s ease-out;
+  `}
 
   ${FAB}:hover & {
     opacity: 1;
@@ -439,6 +462,126 @@ const FABTooltip = styled.div`
   }
 `;
 
+const SpotlightOverlay = styled.div<{ $show: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.85);
+  z-index: 10000;
+  pointer-events: ${({ $show }) => ($show ? 'auto' : 'none')};
+  opacity: ${({ $show }) => ($show ? 1 : 0)};
+  transition: opacity 0.5s ease;
+  backdrop-filter: blur(4px);
+`;
+
+const SpotlightCircle = styled.div`
+  position: fixed;
+  bottom: calc(${({ theme }) => theme.spacing["2xl"]} - 38px);
+  right: calc(${({ theme }) => theme.spacing["2xl"]} - 38px);
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.85) 40%,
+    transparent 70%
+  );
+  box-shadow:
+    0 0 0 9999px rgba(15, 23, 42, 0.85),
+    0 0 80px 20px rgba(102, 126, 234, 0.5);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 160%;
+    height: 160%;
+    border-radius: 50%;
+    border: 3px solid rgba(102, 126, 234, 0.6);
+  }
+`;
+
+const fadeInDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const HintContainer = styled.div`
+  position: fixed;
+  bottom: calc(${({ theme }) => theme.spacing["2xl"]} + 140px);
+  right: ${({ theme }) => theme.spacing["2xl"]};
+  z-index: 10002;
+  pointer-events: none;
+  max-width: 320px;
+  text-align: right;
+  ${css`
+    animation: ${fadeInDown} 0.6s ease-out 0.3s both;
+  `}
+`;
+
+const HintText = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.extrabold};
+  color: #ffffff;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(102, 126, 234, 0.4);
+  letter-spacing: -0.02em;
+`;
+
+const HintSubtext = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+`;
+
+const ArrowContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
+  background: rgba(102, 126, 234, 0.15);
+  border-radius: ${({ theme }) => theme.radius.full};
+  border: 2px solid rgba(102, 126, 234, 0.4);
+  backdrop-filter: blur(8px);
+`;
+
+const ArrowText = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+`;
+
+const ArrowIcon = styled.div`
+  color: #ffffff;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+`;
+
 const PlusIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -451,6 +594,22 @@ const PlusIcon = () => (
       strokeLinecap="round"
       strokeLinejoin="round"
       d="M12 4.5v15m7.5-7.5h-15"
+    />
+  </svg>
+);
+
+const DownArrowIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={3}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"
     />
   </svg>
 );
@@ -498,6 +657,108 @@ export default function DashboardPage() {
   const [recentReports, setRecentReports] = useState<Report[]>([]);
   const [recentCoverLetters, setRecentCoverLetters] = useState<CoverLetter[]>([]);
   const [jobTitlesMap, setJobTitlesMap] = useState<Record<string, string>>({});
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showFABHint, setShowFABHint] = useState(false);
+  const [fabHintCompleted, setFabHintCompleted] = useState(false);
+
+  // Check if user has seen welcome modal and FAB hint
+  useEffect(() => {
+    async function checkOnboardingStatus() {
+      if (!user) return;
+
+      try {
+        const supabase = createClient();
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("has_seen_welcome_modal, fab_hint_completed")
+          .eq("id", user.id)
+          .single();
+
+        if (profile) {
+          setFabHintCompleted(profile.fab_hint_completed || false);
+
+          if (!profile.has_seen_welcome_modal) {
+            // Show welcome modal after a short delay for better UX
+            setTimeout(() => {
+              setShowWelcomeModal(true);
+            }, 500);
+          } else if (!profile.fab_hint_completed) {
+            // If welcome modal was seen but FAB hint not completed, show hint
+            setTimeout(() => {
+              setShowFABHint(true);
+            }, 1000);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking onboarding status:", error);
+      }
+    }
+
+    checkOnboardingStatus();
+  }, [user]);
+
+  const handleWelcomeComplete = async () => {
+    if (!user) return;
+
+    try {
+      const supabase = createClient();
+      await supabase
+        .from("profiles")
+        .update({ has_seen_welcome_modal: true })
+        .eq("id", user.id);
+
+      setShowWelcomeModal(false);
+
+      // Show FAB hint after welcome modal is completed
+      if (!fabHintCompleted) {
+        setTimeout(() => {
+          setShowFABHint(true);
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("Error updating welcome modal status:", error);
+      setShowWelcomeModal(false);
+    }
+  };
+
+  const handleFABClick = async () => {
+    // Mark FAB hint as completed when user clicks FAB
+    if (showFABHint && !fabHintCompleted && user) {
+      try {
+        const supabase = createClient();
+        await supabase
+          .from("profiles")
+          .update({ fab_hint_completed: true })
+          .eq("id", user.id);
+
+        setShowFABHint(false);
+        setFabHintCompleted(true);
+      } catch (error) {
+        console.error("Error updating FAB hint status:", error);
+      }
+    }
+
+    // Navigate to analyze page
+    router.push(ROUTES.APP.ANALYZE);
+  };
+
+  const handleDismissFABHint = async () => {
+    if (!user) return;
+
+    try {
+      const supabase = createClient();
+      await supabase
+        .from("profiles")
+        .update({ fab_hint_completed: true })
+        .eq("id", user.id);
+
+      setShowFABHint(false);
+      setFabHintCompleted(true);
+    } catch (error) {
+      console.error("Error dismissing FAB hint:", error);
+      setShowFABHint(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -618,6 +879,12 @@ export default function DashboardPage() {
 
   return (
     <>
+      <WelcomeModal
+        isOpen={showWelcomeModal}
+        onClose={() => setShowWelcomeModal(false)}
+        onComplete={handleWelcomeComplete}
+      />
+
       <Container>
         <Header>
           <Title>Dashboard</Title>
@@ -832,9 +1099,30 @@ export default function DashboardPage() {
         </Section>
       </Container>
 
-      {/* Floating Action Button */}
-      <FAB onClick={() => router.push(ROUTES.APP.ANALYZE)}>
-        <FABTooltip>New Analysis</FABTooltip>
+      {/* Floating Action Button with Spotlight */}
+      {showFABHint && (
+        <>
+          <SpotlightOverlay $show={showFABHint} onClick={handleDismissFABHint} />
+          <SpotlightCircle />
+          <HintContainer>
+            <HintText>Ready to Get Started?</HintText>
+            <HintSubtext>
+              Create your first AI-powered resume analysis
+            </HintSubtext>
+            <ArrowContainer>
+              <ArrowText>Click here</ArrowText>
+              <ArrowIcon>
+                <DownArrowIcon />
+              </ArrowIcon>
+            </ArrowContainer>
+          </HintContainer>
+        </>
+      )}
+
+      <FAB onClick={handleFABClick} $showHint={showFABHint}>
+        <FABTooltip $autoShow={showFABHint}>
+          New Analysis
+        </FABTooltip>
         <PlusIcon />
       </FAB>
     </>

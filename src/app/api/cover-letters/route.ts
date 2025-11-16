@@ -14,11 +14,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch cover letters with related job data
+    // Fetch cover letters with related report data and structured content
     const { data: coverLetters, error } = await supabase
       .from("cover_letters")
       .select(`
         *,
+        report:reports!report_id(id, job_ids),
         job:documents!job_id(id, title, type)
       `)
       .eq("user_id", user.id)

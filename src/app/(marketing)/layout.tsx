@@ -35,7 +35,7 @@ const Nav = styled.nav`
 const Logo = styled.a`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #696FC7;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

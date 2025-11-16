@@ -6,6 +6,96 @@ import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
 
+// ==================== ICONS ====================
+const TargetIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+const RocketIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M13 10V3L4 14h7v7l9-11h-7z"
+    />
+  </svg>
+);
+
+const LightBulbIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+    />
+  </svg>
+);
+
+const HandshakeIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
+    />
+  </svg>
+);
+
+const AcademicCapIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 14l9-5-9-5-9 5 9 5z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+    />
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+    />
+  </svg>
+);
+
+const ZapIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M13 10V3L4 14h7v7l9-11h-7z"
+    />
+  </svg>
+);
+
 const Container = styled.div`
   min-height: 100vh;
   background-color: var(--bg-color);
@@ -35,7 +125,7 @@ const Title = styled.h1`
   font-size: 56px;
   font-weight: 900;
   margin-bottom: 24px;
-  background: linear-gradient(135deg, #FFB3BA 0%, #BFACE2 100%);
+  background: #E2A16F;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -170,8 +260,16 @@ const MissionVisionCard = styled.div`
 `;
 
 const CardIcon = styled.div`
-  font-size: 48px;
   margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  svg {
+    width: 48px;
+    height: 48px;
+    color: var(--primary-color);
+  }
 `;
 
 const CardTitle = styled.h3`
@@ -220,8 +318,16 @@ const ValueCard = styled.div`
 `;
 
 const ValueIcon = styled.div`
-  font-size: 40px;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 40px;
+    height: 40px;
+    color: var(--primary-color);
+  }
 `;
 
 const ValueTitle = styled.h4`
@@ -407,7 +513,9 @@ export default function AboutPage() {
 
         <MissionVisionGrid>
           <MissionVisionCard>
-            <CardIcon>🎯</CardIcon>
+            <CardIcon>
+              <TargetIcon />
+            </CardIcon>
             <CardTitle>Our Mission</CardTitle>
             <CardText>
               To democratize access to professional resume optimization, ensuring every
@@ -418,7 +526,9 @@ export default function AboutPage() {
           </MissionVisionCard>
 
           <MissionVisionCard>
-            <CardIcon>🚀</CardIcon>
+            <CardIcon>
+              <RocketIcon />
+            </CardIcon>
             <CardTitle>Our Vision</CardTitle>
             <CardText>
               To become the world's most trusted platform for career advancement,
@@ -437,7 +547,9 @@ export default function AboutPage() {
 
           <ValuesGrid>
             <ValueCard>
-              <ValueIcon>💡</ValueIcon>
+              <ValueIcon>
+                <LightBulbIcon />
+              </ValueIcon>
               <ValueTitle>Innovation</ValueTitle>
               <ValueText>
                 We constantly push boundaries, leveraging cutting-edge AI technology to
@@ -446,7 +558,9 @@ export default function AboutPage() {
             </ValueCard>
 
             <ValueCard>
-              <ValueIcon>🤝</ValueIcon>
+              <ValueIcon>
+                <HandshakeIcon />
+              </ValueIcon>
               <ValueTitle>Accessibility</ValueTitle>
               <ValueText>
                 Everyone deserves access to quality career tools. We're committed to
@@ -455,7 +569,9 @@ export default function AboutPage() {
             </ValueCard>
 
             <ValueCard>
-              <ValueIcon>🎓</ValueIcon>
+              <ValueIcon>
+                <AcademicCapIcon />
+              </ValueIcon>
               <ValueTitle>Education</ValueTitle>
               <ValueText>
                 We don't just tell you what's wrong—we explain why and teach you best
@@ -464,7 +580,9 @@ export default function AboutPage() {
             </ValueCard>
 
             <ValueCard>
-              <ValueIcon>🔒</ValueIcon>
+              <ValueIcon>
+                <LockIcon />
+              </ValueIcon>
               <ValueTitle>Privacy</ValueTitle>
               <ValueText>
                 Your career information is sensitive. We employ industry-leading security
@@ -473,7 +591,9 @@ export default function AboutPage() {
             </ValueCard>
 
             <ValueCard>
-              <ValueIcon>⚡</ValueIcon>
+              <ValueIcon>
+                <ZapIcon />
+              </ValueIcon>
               <ValueTitle>Speed</ValueTitle>
               <ValueText>
                 Time is crucial in job searches. We deliver fast, actionable insights so
@@ -482,7 +602,9 @@ export default function AboutPage() {
             </ValueCard>
 
             <ValueCard>
-              <ValueIcon>🎯</ValueIcon>
+              <ValueIcon>
+                <TargetIcon />
+              </ValueIcon>
               <ValueTitle>Accuracy</ValueTitle>
               <ValueText>
                 Our AI models are trained on millions of successful resumes, ensuring you

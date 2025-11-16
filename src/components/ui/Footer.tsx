@@ -2,6 +2,7 @@
 
 import styled from "styled-components";
 import Link from "next/link";
+import { ROUTES } from "@/lib/constants";
 
 const FooterWrapper = styled.footer`
   border-top: 1px solid var(--border-color);
@@ -118,7 +119,7 @@ export function Footer() {
                 <Link href="/#features">Features</Link>
               </li>
               <li>
-                <Link href="/#pricing">Pricing</Link>
+                <Link href={ROUTES.PUBLIC.PRICING}>Pricing</Link>
               </li>
               <li>
                 <Link href="/#demo">Demo</Link>
@@ -129,13 +130,13 @@ export function Footer() {
             <h4>Company</h4>
             <ul>
               <li>
-                <Link href="/about">About</Link>
+                <Link href={ROUTES.PUBLIC.ABOUT}>About</Link>
               </li>
               <li>
                 <a href="#">Blog</a>
               </li>
               <li>
-                <Link href="/contact">Contact</Link>
+                <Link href={ROUTES.PUBLIC.CONTACT}>Contact</Link>
               </li>
             </ul>
           </FooterColumn>
@@ -143,13 +144,13 @@ export function Footer() {
             <h4>Support</h4>
             <ul>
               <li>
-                <Link href="/#faq">FAQ</Link>
+                <Link href={ROUTES.PUBLIC.FAQ}>FAQ</Link>
               </li>
               <li>
-                <Link href="/privacy">Privacy</Link>
+                <Link href={ROUTES.PUBLIC.PRIVACY}>Privacy</Link>
               </li>
               <li>
-                <Link href="/terms">Terms</Link>
+                <Link href={ROUTES.PUBLIC.TERMS}>Terms</Link>
               </li>
             </ul>
           </FooterColumn>

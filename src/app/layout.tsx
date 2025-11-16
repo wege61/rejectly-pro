@@ -51,11 +51,13 @@ export default function RootLayout({
               :root {
                 --bg-color: #0f172a;
                 --text-color: #f1f5f9;
+                --title-color-blue: #98A1BC;
+                --title-color-pink: #F7A5A5;
                 --surface-color: #1e293b;
                 --surface-hover: #334155;
                 --bg-alt: #1e293b;
                 --border-color: #334155;
-                --primary-color: #6366f1;
+                --primary-color: #696FC7;
                 --text-secondary: #94a3b8;
                 --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
               }
@@ -66,9 +68,11 @@ export default function RootLayout({
                 --text-color: #1F2937;
                 --surface-color: #FFFFFF;
                 --surface-hover: #F3F4F6;
+                --title-color-blue: #5D688A;
+                --title-color-pink: #F7A5A5;
                 --bg-alt: #FFFFFF;
                 --border-color: #D1D5DB;
-                --primary-color: #5B5FCD;
+                --primary-color: #696FC7;
                 --text-secondary: #6B7280;
                 --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
               }

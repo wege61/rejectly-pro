@@ -5,50 +5,90 @@ import { Footer } from "@/components/ui/Footer";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 
+// ==================== ICONS ====================
+const UploadIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+    />
+  </svg>
+);
+
+const SparklesIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+    />
+  </svg>
+);
+
+const DocumentTextIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+    />
+  </svg>
+);
+
+const CheckCircleIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+// ==================== STYLED COMPONENTS ====================
 const Container = styled.div`
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
-  padding: 80px 24px 60px;
-
-  @media (max-width: 768px) {
-    padding: 60px 16px 40px;
-  }
+  padding-bottom: 60px;
 `;
 
-const Content = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-`;
-
-const Header = styled.header`
+const HeroSection = styled.section`
+  padding: 120px 24px 80px;
   text-align: center;
-  margin-bottom: 80px;
+  position: relative;
+  overflow: hidden;
 
   @media (max-width: 768px) {
-    margin-bottom: 48px;
+    padding: 80px 16px 60px;
   }
 `;
 
-const Title = styled.h1`
+const HeroTitle = styled.h1`
   font-size: 56px;
   font-weight: 900;
   margin-bottom: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  line-height: 1.2;
 
   @media (max-width: 768px) {
     font-size: 36px;
   }
 `;
 
-const Subtitle = styled.p`
+const HeroSubtitle = styled.p`
   font-size: 20px;
   color: var(--text-secondary);
   max-width: 700px;
-  margin: 0 auto;
+  margin: 0 auto 48px;
   line-height: 1.6;
 
   @media (max-width: 768px) {
@@ -56,146 +96,54 @@ const Subtitle = styled.p`
   }
 `;
 
-const StepsSection = styled.section`
-  margin-bottom: 120px;
+const StatsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  max-width: 900px;
+  margin: 0 auto;
 
   @media (max-width: 768px) {
-    margin-bottom: 80px;
-  }
-`;
-
-const StepsGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 64px;
-`;
-
-const StepCard = styled.div<{ $reverse?: boolean }>`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: center;
-
-  ${({ $reverse }) =>
-    $reverse &&
-    `
-    direction: rtl;
-    > * {
-      direction: ltr;
-    }
-  `}
-
-  @media (max-width: 968px) {
     grid-template-columns: 1fr;
-    direction: ltr;
-    gap: 32px;
+    gap: 24px;
   }
 `;
 
-const StepContent = styled.div``;
-
-const StepNumber = styled.div`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 12px;
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 16px;
+const StatCard = styled.div`
+  background: linear-gradient(135deg, rgba(191, 172, 226, 0.08) 0%, rgba(180, 167, 214, 0.08) 100%);
+  border: 1px solid rgba(155, 135, 196, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
 `;
 
-const StepTitle = styled.h3`
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: var(--text-color);
+const StatNumber = styled.div`
+  font-size: 42px;
+  font-weight: 900;
+  background: #ADB2D4;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
 
   @media (max-width: 768px) {
-    font-size: 24px;
+    font-size: 36px;
   }
 `;
 
-const StepDescription = styled.p`
-  font-size: 16px;
-  line-height: 1.8;
-  color: var(--text-secondary);
-  margin-bottom: 24px;
-`;
-
-const StepFeatures = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const StepFeature = styled.li`
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+const StatLabel = styled.div`
   font-size: 15px;
   color: var(--text-secondary);
-
-  &:before {
-    content: "✓";
-    color: #10b981;
-    font-weight: 700;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
+  font-weight: 500;
 `;
 
-const StepVisual = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 16px;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-height: 300px;
-  justify-content: center;
+const ProcessSection = styled.section`
+  padding: 80px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 32px;
-    min-height: 250px;
-  }
-`;
-
-const VisualIcon = styled.div`
-  font-size: 64px;
-  text-align: center;
-  margin-bottom: 16px;
-`;
-
-const VisualText = styled.div`
-  text-align: center;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-color);
-`;
-
-const VisualSubtext = styled.div`
-  text-align: center;
-  font-size: 14px;
-  color: var(--text-secondary);
-`;
-
-const ComparisonSection = styled.section`
-  margin-bottom: 120px;
-
-  @media (max-width: 768px) {
-    margin-bottom: 80px;
+    padding: 60px 16px;
   }
 `;
 
@@ -212,7 +160,10 @@ const SectionTitle = styled.h2`
   font-size: 42px;
   font-weight: 800;
   margin-bottom: 16px;
-  color: var(--text-color);
+  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 
   @media (max-width: 768px) {
     font-size: 32px;
@@ -222,39 +173,36 @@ const SectionTitle = styled.h2`
 const SectionSubtitle = styled.p`
   font-size: 18px;
   color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
 
   @media (max-width: 768px) {
     font-size: 16px;
   }
 `;
 
-const ComparisonGrid = styled.div`
+const ProcessGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 48px;
 
   @media (max-width: 968px) {
     grid-template-columns: 1fr;
+    gap: 32px;
   }
 `;
 
-const PlanCard = styled.div<{ $featured?: boolean }>`
-  background: var(--bg-alt);
-  border: 2px solid ${({ $featured }) => ($featured ? "#667eea" : "var(--border-color)")};
-  border-radius: 16px;
+const ProcessCard = styled.div<{ $color: string; $bgGradient: string }>`
+  background: ${({ $bgGradient }) => $bgGradient};
+  border: 1px solid ${({ $color }) => `${$color}40`};
+  border-radius: 20px;
   padding: 40px;
   position: relative;
   transition: all 0.3s ease;
 
-  ${({ $featured }) =>
-    $featured &&
-    `
-    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.2);
-  `}
-
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 32px ${({ $color }) => `${$color}20`};
   }
 
   @media (max-width: 768px) {
@@ -262,80 +210,94 @@ const PlanCard = styled.div<{ $featured?: boolean }>`
   }
 `;
 
-const PlanBadge = styled.div`
+const StepNumber = styled.div<{ $color: string }>`
   position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  top: -16px;
+  left: 40px;
+  width: 48px;
+  height: 48px;
+  background: ${({ $color }) => $color};
   color: white;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-`;
-
-const PlanName = styled.h3`
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: var(--text-color);
-`;
-
-const PlanPrice = styled.div`
-  font-size: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
   font-weight: 900;
-  margin-bottom: 8px;
-  color: var(--text-color);
+  box-shadow: 0 8px 16px ${({ $color }) => `${$color}40`};
 
-  span {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--text-secondary);
+  @media (max-width: 768px) {
+    left: 32px;
   }
 `;
 
-const PlanDescription = styled.p`
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--border-color);
+const IconWrapper = styled.div<{ $color: string }>`
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  svg {
+    width: 40px;
+    height: 40px;
+    color: ${({ $color }) => $color};
+  }
 `;
 
-const PlanFeatures = styled.ul`
+const ProcessTitle = styled.h3`
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-color);
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
+`;
+
+const ProcessDescription = styled.p`
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 24px;
+`;
+
+const FeaturesList = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 0 0 32px 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 `;
 
-const PlanFeature = styled.li<{ $disabled?: boolean }>`
+const FeatureItem = styled.li<{ $color: string }>`
   display: flex;
   align-items: flex-start;
   gap: 12px;
   font-size: 15px;
-  color: ${({ $disabled }) => ($disabled ? "var(--text-tertiary)" : "var(--text-secondary)")};
-  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
+  color: var(--text-secondary);
 
-  &:before {
-    content: "${({ $disabled }) => ($disabled ? "✗" : "✓")}";
-    color: ${({ $disabled }) => ($disabled ? "#ef4444" : "#10b981")};
-    font-weight: 700;
-    font-size: 18px;
+  svg {
+    width: 20px;
+    height: 20px;
+    color: ${({ $color }) => $color};
     flex-shrink: 0;
+    margin-top: 2px;
   }
 `;
 
 const BenefitsSection = styled.section`
-  margin-bottom: 120px;
+  padding: 80px 24px;
+  background: linear-gradient(135deg, rgba(191, 172, 226, 0.03) 0%, rgba(180, 231, 245, 0.03) 100%);
 
   @media (max-width: 768px) {
-    margin-bottom: 80px;
+    padding: 60px 16px;
   }
 `;
 
@@ -343,29 +305,49 @@ const BenefitsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
 
   @media (max-width: 968px) {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 `;
 
 const BenefitCard = styled.div`
-  background: var(--bg-alt);
+  background: var(--bg-color);
   border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 32px;
+  text-align: center;
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(102, 126, 234, 0.3);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
-    transform: translateY(-2px);
+    border-color: rgba(155, 135, 196, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(155, 135, 196, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    padding: 24px;
   }
 `;
 
 const BenefitIcon = styled.div`
-  font-size: 48px;
-  margin-bottom: 16px;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, rgba(191, 172, 226, 0.1) 0%, rgba(180, 167, 214, 0.1) 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+
+  svg {
+    width: 32px;
+    height: 32px;
+    color: #9B87C4;
+  }
 `;
 
 const BenefitTitle = styled.h4`
@@ -377,25 +359,29 @@ const BenefitTitle = styled.h4`
 
 const BenefitDescription = styled.p`
   font-size: 15px;
-  line-height: 1.7;
   color: var(--text-secondary);
+  line-height: 1.6;
 `;
 
 const CTASection = styled.section`
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.1) 100%
-  );
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  padding: 80px 24px;
+  max-width: 900px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 60px 16px;
+  }
+`;
+
+const CTACard = styled.div`
+  background: linear-gradient(135deg, rgba(255, 179, 186, 0.1) 0%, rgba(191, 172, 226, 0.1) 100%);
+  border: 1px solid rgba(191, 172, 226, 0.2);
   border-radius: 24px;
   padding: 64px 48px;
   text-align: center;
-  margin-bottom: 120px;
 
   @media (max-width: 768px) {
     padding: 48px 32px;
-    margin-bottom: 80px;
   }
 `;
 
@@ -403,7 +389,10 @@ const CTATitle = styled.h2`
   font-size: 38px;
   font-weight: 800;
   margin-bottom: 16px;
-  color: var(--text-color);
+  background: linear-gradient(135deg, #FF8FA3 0%, #9B87C4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 
   @media (max-width: 768px) {
     font-size: 28px;
@@ -433,282 +422,198 @@ const CTAButtons = styled.div`
 export default function HowItWorksPage() {
   const router = useRouter();
 
+  const processes = [
+    {
+      number: 1,
+      title: "Upload & Analyze",
+      description: "Upload your resume and job description. Our AI analyzes the match in 15-30 seconds and gives you an instant score.",
+      icon: <UploadIcon />,
+      color: "#FF8FA3",
+      bgGradient: "linear-gradient(135deg, rgba(255, 179, 186, 0.08) 0%, rgba(255, 204, 229, 0.08) 100%)",
+      features: [
+        "PDF, DOCX, or text paste",
+        "Instant AI analysis",
+        "Match score (0-100%)",
+        "Missing keywords identification",
+      ],
+    },
+    {
+      number: 2,
+      title: "Get Smart Recommendations",
+      description: "Receive detailed AI-powered feedback with actionable suggestions to improve your resume and increase your match score.",
+      icon: <SparklesIcon />,
+      color: "#7BCAE3",
+      bgGradient: "linear-gradient(135deg, rgba(180, 231, 245, 0.08) 0%, rgba(199, 233, 251, 0.08) 100%)",
+      features: [
+        "ATS optimization tips",
+        "Professional rewriting suggestions",
+        "Formatting improvements",
+        "Keyword integration advice",
+      ],
+    },
+    {
+      number: 3,
+      title: "Generate Cover Letter",
+      description: "Create compelling, personalized cover letters with AI. Get job recommendations tailored to your skills and experience.",
+      icon: <DocumentTextIcon />,
+      color: "#9B87C4",
+      bgGradient: "linear-gradient(135deg, rgba(191, 172, 226, 0.08) 0%, rgba(212, 197, 249, 0.08) 100%)",
+      features: [
+        "AI-generated cover letters",
+        "Personalized job matches",
+        "Alternative role suggestions",
+        "One-click creation",
+      ],
+    },
+    {
+      number: 4,
+      title: "Download Optimized Resume",
+      description: "Get a professionally optimized resume with all improvements. ATS-friendly formatting and 85% higher pass rate.",
+      icon: <CheckCircleIcon />,
+      color: "#6BBF9F",
+      bgGradient: "linear-gradient(135deg, rgba(185, 232, 216, 0.08) 0%, rgba(208, 240, 228, 0.08) 100%)",
+      features: [
+        "AI-optimized resume",
+        "Professional formatting",
+        "Keyword integration",
+        "Download as PDF",
+      ],
+    },
+  ];
+
   return (
     <Container>
-      <Content>
-        <Header>
-          <Title>How It Works</Title>
-          <Subtitle>
-            From resume upload to your dream job in 4 simple steps. Our AI-powered
-            platform analyzes, optimizes, and transforms your resume in seconds.
-          </Subtitle>
-        </Header>
+      <HeroSection>
+        <HeroTitle>Transform Your Job Search</HeroTitle>
+        <HeroSubtitle>
+          From resume upload to your dream job in 4 simple steps. Our AI-powered
+          platform helps you create resumes that get noticed.
+        </HeroSubtitle>
+        <StatsGrid>
+          <StatCard>
+            <StatNumber>50K+</StatNumber>
+            <StatLabel>Resumes Analyzed</StatLabel>
+          </StatCard>
+          <StatCard>
+            <StatNumber>85%</StatNumber>
+            <StatLabel>ATS Pass Rate</StatLabel>
+          </StatCard>
+          <StatCard>
+            <StatNumber>30s</StatNumber>
+            <StatLabel>Analysis Time</StatLabel>
+          </StatCard>
+        </StatsGrid>
+      </HeroSection>
 
-        <StepsSection>
-          <StepsGrid>
-            {/* Step 1 */}
-            <StepCard>
-              <StepContent>
-                <StepNumber>1</StepNumber>
-                <StepTitle>Upload Your Resume</StepTitle>
-                <StepDescription>
-                  Upload your resume in PDF or DOCX format, or paste it directly.
-                  Our AI instantly parses your resume and extracts all relevant
-                  information about your experience, skills, and qualifications.
-                </StepDescription>
-                <StepFeatures>
-                  <StepFeature>Support for PDF and DOCX formats</StepFeature>
-                  <StepFeature>Direct text paste option</StepFeature>
-                  <StepFeature>Smart parsing of complex layouts</StepFeature>
-                  <StepFeature>Maximum file size: 5MB</StepFeature>
-                  <StepFeature>Instant text extraction</StepFeature>
-                </StepFeatures>
-              </StepContent>
-              <StepVisual>
-                <VisualIcon>📄</VisualIcon>
-                <VisualText>Upload & Parse</VisualText>
-                <VisualSubtext>
-                  AI extracts your skills, experience, and achievements
-                </VisualSubtext>
-              </StepVisual>
-            </StepCard>
+      <ProcessSection>
+        <SectionHeader>
+          <SectionTitle>How It Works</SectionTitle>
+          <SectionSubtitle>
+            Four simple steps to create a resume that stands out
+          </SectionSubtitle>
+        </SectionHeader>
 
-            {/* Step 2 */}
-            <StepCard $reverse>
-              <StepContent>
-                <StepNumber>2</StepNumber>
-                <StepTitle>Add Job Postings</StepTitle>
-                <StepDescription>
-                  Paste the job description you're targeting. You can compare
-                  your resume against up to 3 job postings at once (unlimited for
-                  Pro users) to find the best matches and identify what's
-                  missing.
-                </StepDescription>
-                <StepFeatures>
-                  <StepFeature>Compare against multiple jobs</StepFeature>
-                  <StepFeature>Save job postings for future use</StepFeature>
-                  <StepFeature>Free: up to 3 jobs per analysis</StepFeature>
-                  <StepFeature>Pro: unlimited job comparisons</StepFeature>
-                  <StepFeature>Edit and manage saved jobs</StepFeature>
-                </StepFeatures>
-              </StepContent>
-              <StepVisual>
-                <VisualIcon>💼</VisualIcon>
-                <VisualText>Job Matching</VisualText>
-                <VisualSubtext>
-                  Compare your resume against multiple positions simultaneously
-                </VisualSubtext>
-              </StepVisual>
-            </StepCard>
+        <ProcessGrid>
+          {processes.map((process) => (
+            <ProcessCard key={process.number} $color={process.color} $bgGradient={process.bgGradient}>
+              <StepNumber $color={process.color}>{process.number}</StepNumber>
+              <IconWrapper $color={process.color}>{process.icon}</IconWrapper>
+              <ProcessTitle>{process.title}</ProcessTitle>
+              <ProcessDescription>{process.description}</ProcessDescription>
+              <FeaturesList>
+                {process.features.map((feature, idx) => (
+                  <FeatureItem key={idx} $color={process.color}>
+                    <CheckCircleIcon />
+                    <span>{feature}</span>
+                  </FeatureItem>
+                ))}
+              </FeaturesList>
+            </ProcessCard>
+          ))}
+        </ProcessGrid>
+      </ProcessSection>
 
-            {/* Step 3 */}
-            <StepCard>
-              <StepContent>
-                <StepNumber>3</StepNumber>
-                <StepTitle>Get AI Analysis</StepTitle>
-                <StepDescription>
-                  Our GPT-4 powered AI analyzes your resume in 15-30 seconds,
-                  comparing it against job requirements. Get an instant match
-                  score, missing keywords, and actionable insights to improve
-                  your chances.
-                </StepDescription>
-                <StepFeatures>
-                  <StepFeature>Match score (0-100%)</StepFeature>
-                  <StepFeature>5 missing keywords identified</StepFeature>
-                  <StepFeature>AI-generated summary</StepFeature>
-                  <StepFeature>Analysis in 15-30 seconds</StepFeature>
-                  <StepFeature>Context-aware recommendations</StepFeature>
-                </StepFeatures>
-              </StepContent>
-              <StepVisual>
-                <VisualIcon>🤖</VisualIcon>
-                <VisualText>AI-Powered Analysis</VisualText>
-                <VisualSubtext>
-                  GPT-4 understands context, not just keywords
-                </VisualSubtext>
-              </StepVisual>
-            </StepCard>
+      <BenefitsSection>
+        <SectionHeader>
+          <SectionTitle>Why Choose Rejectly.pro?</SectionTitle>
+          <SectionSubtitle>
+            Powerful features designed to help you succeed
+          </SectionSubtitle>
+        </SectionHeader>
 
-            {/* Step 4 */}
-            <StepCard $reverse>
-              <StepContent>
-                <StepNumber>4</StepNumber>
-                <StepTitle>Download Optimized Resume</StepTitle>
-                <StepDescription>
-                  Pro users get a complete, AI-generated resume that incorporates
-                  all insights. Download as PDF and start applying with
-                  confidence. Your new resume includes rewritten bullets, missing
-                  keywords, and ATS optimization.
-                </StepDescription>
-                <StepFeatures>
-                  <StepFeature>Complete resume regeneration</StepFeature>
-                  <StepFeature>3 professionally rewritten bullets</StepFeature>
-                  <StepFeature>All missing keywords integrated</StepFeature>
-                  <StepFeature>ATS-optimized formatting</StepFeature>
-                  <StepFeature>Download as PDF</StepFeature>
-                  <StepFeature>Interactive preview with highlights</StepFeature>
-                </StepFeatures>
-              </StepContent>
-              <StepVisual>
-                <VisualIcon>✨</VisualIcon>
-                <VisualText>Ready-to-Send Resume</VisualText>
-                <VisualSubtext>
-                  Professional, optimized, and ATS-friendly
-                </VisualSubtext>
-              </StepVisual>
-            </StepCard>
-          </StepsGrid>
-        </StepsSection>
+        <BenefitsGrid>
+          <BenefitCard>
+            <BenefitIcon>
+              <SparklesIcon />
+            </BenefitIcon>
+            <BenefitTitle>GPT-4 Powered</BenefitTitle>
+            <BenefitDescription>
+              Advanced AI technology that understands context, not just keywords.
+            </BenefitDescription>
+          </BenefitCard>
 
-        <ComparisonSection>
-          <SectionHeader>
-            <SectionTitle>Choose Your Plan</SectionTitle>
-            <SectionSubtitle>
-              Start free, upgrade when you're ready
-            </SectionSubtitle>
-          </SectionHeader>
+          <BenefitCard>
+            <BenefitIcon>
+              <SparklesIcon />
+            </BenefitIcon>
+            <BenefitTitle>Instant Results</BenefitTitle>
+            <BenefitDescription>
+              Get detailed analysis and recommendations in 30 seconds or less.
+            </BenefitDescription>
+          </BenefitCard>
 
-          <ComparisonGrid>
-            {/* Free Plan */}
-            <PlanCard>
-              <PlanName>Free</PlanName>
-              <PlanPrice>
-                $0<span>/month</span>
-              </PlanPrice>
-              <PlanDescription>
-                Perfect for trying out the platform and getting basic insights
-              </PlanDescription>
-              <PlanFeatures>
-                <PlanFeature>3 analyses per month</PlanFeature>
-                <PlanFeature>Basic match score</PlanFeature>
-                <PlanFeature>5 missing keywords</PlanFeature>
-                <PlanFeature>AI summary</PlanFeature>
-                <PlanFeature>Compare up to 3 jobs</PlanFeature>
-                <PlanFeature $disabled>Professional rewriting</PlanFeature>
-                <PlanFeature $disabled>ATS optimization guide</PlanFeature>
-                <PlanFeature $disabled>Role recommendations</PlanFeature>
-                <PlanFeature $disabled>Optimized resume generation</PlanFeature>
-                <PlanFeature $disabled>PDF download</PlanFeature>
-              </PlanFeatures>
-              <Button
-                size="lg"
-                variant="secondary"
-                fullWidth
-                onClick={() => router.push("/signup")}
-              >
-                Get Started Free
-              </Button>
-            </PlanCard>
+          <BenefitCard>
+            <BenefitIcon>
+              <SparklesIcon />
+            </BenefitIcon>
+            <BenefitTitle>ATS Optimized</BenefitTitle>
+            <BenefitDescription>
+              85% higher pass rate through automated resume screening systems.
+            </BenefitDescription>
+          </BenefitCard>
 
-            {/* Pro Plan */}
-            <PlanCard $featured>
-              <PlanBadge>Most Popular</PlanBadge>
-              <PlanName>Pro</PlanName>
-              <PlanPrice>
-                $9<span>/month</span>
-              </PlanPrice>
-              <PlanDescription>
-                Everything you need to land your dream job faster
-              </PlanDescription>
-              <PlanFeatures>
-                <PlanFeature>Unlimited analyses</PlanFeature>
-                <PlanFeature>Detailed match insights</PlanFeature>
-                <PlanFeature>Missing keywords + suggestions</PlanFeature>
-                <PlanFeature>AI-generated summaries</PlanFeature>
-                <PlanFeature>Compare unlimited jobs</PlanFeature>
-                <PlanFeature>3 bullet points rewritten</PlanFeature>
-                <PlanFeature>ATS optimization guide</PlanFeature>
-                <PlanFeature>3 role recommendations</PlanFeature>
-                <PlanFeature>AI-generated optimized resume</PlanFeature>
-                <PlanFeature>PDF download</PlanFeature>
-                <PlanFeature>Improvement breakdown</PlanFeature>
-                <PlanFeature>Interactive resume preview</PlanFeature>
-              </PlanFeatures>
-              <Button
-                size="lg"
-                fullWidth
-                onClick={() => router.push("/signup")}
-              >
-                Upgrade to Pro
-              </Button>
-            </PlanCard>
-          </ComparisonGrid>
-        </ComparisonSection>
+          <BenefitCard>
+            <BenefitIcon>
+              <SparklesIcon />
+            </BenefitIcon>
+            <BenefitTitle>Privacy First</BenefitTitle>
+            <BenefitDescription>
+              GDPR compliant with encrypted data storage and no third-party sharing.
+            </BenefitDescription>
+          </BenefitCard>
 
-        <BenefitsSection>
-          <SectionHeader>
-            <SectionTitle>Why Choose Rejectly.pro?</SectionTitle>
-            <SectionSubtitle>
-              The complete resume optimization solution
-            </SectionSubtitle>
-          </SectionHeader>
+          <BenefitCard>
+            <BenefitIcon>
+              <SparklesIcon />
+            </BenefitIcon>
+            <BenefitTitle>Multi-Language</BenefitTitle>
+            <BenefitDescription>
+              Support for English and Turkish resumes with high accuracy.
+            </BenefitDescription>
+          </BenefitCard>
 
-          <BenefitsGrid>
-            <BenefitCard>
-              <BenefitIcon>⚡</BenefitIcon>
-              <BenefitTitle>Instant Feedback</BenefitTitle>
-              <BenefitDescription>
-                Get results in 30 seconds, not days. Our AI analyzes your resume
-                instantly and provides actionable insights immediately.
-              </BenefitDescription>
-            </BenefitCard>
+          <BenefitCard>
+            <BenefitIcon>
+              <SparklesIcon />
+            </BenefitIcon>
+            <BenefitTitle>Job Matching</BenefitTitle>
+            <BenefitDescription>
+              Discover better-fit positions with our smart job recommendation engine.
+            </BenefitDescription>
+          </BenefitCard>
+        </BenefitsGrid>
+      </BenefitsSection>
 
-            <BenefitCard>
-              <BenefitIcon>🎯</BenefitIcon>
-              <BenefitTitle>ATS Optimization</BenefitTitle>
-              <BenefitDescription>
-                85% more ATS pass rate. Get past automated screening systems and
-                ensure your resume reaches human recruiters.
-              </BenefitDescription>
-            </BenefitCard>
-
-            <BenefitCard>
-              <BenefitIcon>📈</BenefitIcon>
-              <BenefitTitle>Proven Results</BenefitTitle>
-              <BenefitDescription>
-                73% more interview invitations on average. Our users see
-                significant improvements in their job search success rate.
-              </BenefitDescription>
-            </BenefitCard>
-
-            <BenefitCard>
-              <BenefitIcon>🔒</BenefitIcon>
-              <BenefitTitle>GDPR Compliant</BenefitTitle>
-              <BenefitDescription>
-                Your data is encrypted and secure. We never share your
-                information with third parties. Full GDPR compliance guaranteed.
-              </BenefitDescription>
-            </BenefitCard>
-
-            <BenefitCard>
-              <BenefitIcon>🌍</BenefitIcon>
-              <BenefitTitle>Multi-Language</BenefitTitle>
-              <BenefitDescription>
-                Support for English and Turkish resumes and job descriptions. Our AI
-                analyzes content in both languages with high accuracy.
-              </BenefitDescription>
-            </BenefitCard>
-
-            <BenefitCard>
-              <BenefitIcon>💡</BenefitIcon>
-              <BenefitTitle>Career Insights</BenefitTitle>
-              <BenefitDescription>
-                Discover alternative roles you qualify for. Get 3 role
-                recommendations with match scores to expand your job search.
-              </BenefitDescription>
-            </BenefitCard>
-          </BenefitsGrid>
-        </BenefitsSection>
-
-        <CTASection>
-          <CTATitle>Ready to Land Your Dream Job?</CTATitle>
+      <CTASection>
+        <CTACard>
+          <CTATitle>Ready to Get Started?</CTATitle>
           <CTADescription>
-            Join 500+ professionals who improved their resumes and increased their
-            interview rates by 73%. Start free, upgrade when you're ready.
+            Join thousands of job seekers who've improved their resumes and landed
+            their dream jobs with Rejectly.pro.
           </CTADescription>
           <CTAButtons>
             <Button size="lg" onClick={() => router.push("/signup")}>
-              Get Started Free
+              Start Free Now
             </Button>
             <Button
               size="lg"
@@ -718,8 +623,9 @@ export default function HowItWorksPage() {
               Try Demo
             </Button>
           </CTAButtons>
-        </CTASection>
-      </Content>
+        </CTACard>
+      </CTASection>
+
       <Footer />
     </Container>
   );

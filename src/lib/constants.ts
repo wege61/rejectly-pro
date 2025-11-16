@@ -71,6 +71,8 @@ export const ROUTES = {
     FAQ: "/faq",
     PRIVACY: "/privacy",
     TERMS: "/terms",
+    ABOUT: "/about",
+    CONTACT: "/contact",
   },
   AUTH: {
     LOGIN: "/login",

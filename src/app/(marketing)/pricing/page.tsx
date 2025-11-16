@@ -35,7 +35,7 @@ const Title = styled.h1`
   font-size: 56px;
   font-weight: 900;
   margin-bottom: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--text-color);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -80,7 +80,7 @@ const PricingGrid = styled.div`
 
 const PricingCard = styled.div<{ $featured?: boolean }>`
   background: var(--bg-alt);
-  border: 2px solid ${({ $featured }) => ($featured ? "#667eea" : "var(--border-color)")};
+  border: 2px solid ${({ $featured }) => ($featured ? "#624E88" : "var(--border-color)")};
   border-radius: 20px;
   padding: 48px;
   position: relative;
@@ -113,7 +113,7 @@ const Badge = styled.div`
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #624E88;
   color: white;
   padding: 8px 20px;
   border-radius: 20px;
@@ -606,6 +606,7 @@ export default function PricingPage() {
                 </Feature>
               </FeatureList>
               <Button
+              style={{background: "#624E88"}}
                 size="lg"
                 fullWidth
                 onClick={() => router.push("/signup")}

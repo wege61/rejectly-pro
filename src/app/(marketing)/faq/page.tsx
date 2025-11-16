@@ -4,6 +4,79 @@ import styled from "styled-components";
 import { useState } from "react";
 import { Footer } from "@/components/ui/Footer";
 
+// ==================== ICONS ====================
+const RocketIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M13 10V3L4 14h7v7l9-11h-7z"
+    />
+  </svg>
+);
+
+const CreditCardIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+    />
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+    />
+  </svg>
+);
+
+const SparklesIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+    />
+  </svg>
+);
+
+const WrenchIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+    />
+  </svg>
+);
+
+const MailIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+    />
+  </svg>
+);
+
 const Container = styled.div`
   min-height: 100vh;
   background-color: var(--bg-color);
@@ -36,7 +109,7 @@ const Title = styled.h1`
   font-size: 56px;
   font-weight: 900;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -70,11 +143,69 @@ const CategoryTitle = styled.h2`
   }
 `;
 
-const CategoryIcon = styled.span`
-  font-size: 28px;
+const CategoryIcon = styled.div<{ $variant?: string }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
+
+  ${({ $variant }) => {
+    switch ($variant) {
+      case 'rocket':
+        return `
+          background: linear-gradient(135deg, rgba(255, 179, 186, 0.15) 0%, rgba(255, 204, 229, 0.15) 100%);
+          border: 1px solid rgba(255, 179, 186, 0.3);
+          svg { color: #FF8FA3; }
+        `;
+      case 'credit':
+        return `
+          background: linear-gradient(135deg, rgba(180, 231, 245, 0.15) 0%, rgba(199, 233, 251, 0.15) 100%);
+          border: 1px solid rgba(180, 231, 245, 0.3);
+          svg { color: #7BCAE3; }
+        `;
+      case 'lock':
+        return `
+          background: linear-gradient(135deg, rgba(185, 232, 216, 0.15) 0%, rgba(208, 240, 228, 0.15) 100%);
+          border: 1px solid rgba(185, 232, 216, 0.3);
+          svg { color: #6BBF9F; }
+        `;
+      case 'sparkles':
+        return `
+          background: linear-gradient(135deg, rgba(191, 172, 226, 0.15) 0%, rgba(212, 197, 249, 0.15) 100%);
+          border: 1px solid rgba(191, 172, 226, 0.3);
+          svg { color: #9B87C4; }
+        `;
+      case 'wrench':
+        return `
+          background: linear-gradient(135deg, rgba(255, 228, 181, 0.15) 0%, rgba(255, 240, 209, 0.15) 100%);
+          border: 1px solid rgba(255, 228, 181, 0.3);
+          svg { color: #E6B566; }
+        `;
+      default:
+        return `
+          background: linear-gradient(135deg, rgba(155, 135, 196, 0.1) 0%, rgba(180, 167, 214, 0.1) 100%);
+          border: 1px solid rgba(155, 135, 196, 0.2);
+          svg { color: #9B87C4; }
+        `;
+    }
+  }}
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
 
   @media (max-width: 768px) {
-    font-size: 24px;
+    width: 36px;
+    height: 36px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
   }
 `;
 
@@ -94,8 +225,8 @@ const FAQItem = styled.div<{ $isOpen: boolean }>`
   ${({ $isOpen }) =>
     $isOpen &&
     `
-    border-color: rgba(102, 126, 234, 0.3);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    border-color: rgba(155, 135, 196, 0.3);
+    box-shadow: 0 4px 12px rgba(155, 135, 196, 0.1);
   `}
 `;
 
@@ -113,7 +244,7 @@ const Question = styled.button`
   transition: background 0.2s ease;
 
   &:hover {
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba(155, 135, 196, 0.05);
   }
 
   @media (max-width: 768px) {
@@ -134,7 +265,7 @@ const QuestionText = styled.span`
 
 const QuestionIcon = styled.span<{ $isOpen: boolean }>`
   font-size: 24px;
-  color: var(--primary-color);
+  color: #9B87C4;
   transition: transform 0.3s ease;
   transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
   flex-shrink: 0;
@@ -162,7 +293,7 @@ const AnswerText = styled.p`
   }
 
   a {
-    color: var(--primary-color);
+    color: #9B87C4;
     text-decoration: underline;
     transition: opacity 0.2s ease;
 
@@ -175,10 +306,10 @@ const AnswerText = styled.p`
 const CTABox = styled.div`
   background: linear-gradient(
     135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
+    rgba(191, 172, 226, 0.08) 0%,
+    rgba(180, 167, 214, 0.08) 100%
   );
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(155, 135, 196, 0.2);
   border-radius: 16px;
   padding: 32px;
   margin-top: 64px;
@@ -201,7 +332,7 @@ const CTABox = styled.div`
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #667eea;
+    background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
     color: white;
     padding: 14px 28px;
     border-radius: 20px;
@@ -209,9 +340,14 @@ const CTABox = styled.div`
     text-decoration: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 10px 25px rgba(155, 135, 196, 0.3);
     }
   }
 
@@ -228,7 +364,8 @@ type FAQ = {
 
 type FAQCategory = {
   title: string;
-  icon: string;
+  icon: React.ReactNode;
+  variant: string;
   questions: FAQ[];
 };
 
@@ -244,7 +381,8 @@ export default function FAQPage() {
   const faqCategories: FAQCategory[] = [
     {
       title: "Getting Started",
-      icon: "🚀",
+      icon: <RocketIcon />,
+      variant: "rocket",
       questions: [
         {
           question: "How does Rejectly.pro work?",
@@ -270,7 +408,8 @@ export default function FAQPage() {
     },
     {
       title: "Pricing & Plans",
-      icon: "💳",
+      icon: <CreditCardIcon />,
+      variant: "credit",
       questions: [
         {
           question: "How many analyses can I do with the free plan?",
@@ -280,7 +419,7 @@ export default function FAQPage() {
         {
           question: "What's included in the Pro plan?",
           answer:
-            "Pro includes <strong>unlimited analyses, detailed AI insights, professional rewriting of 3 bullet points, ATS optimization recommendations, and alternative role suggestions</strong>. Only $9/month with no long-term commitment.",
+            "Pro includes <strong>unlimited analyses,  detailed AI insights, professional rewriting of 3 bullet points, cover letter generating, ATS optimization recommendations, and alternative role suggestions</strong>. Only $9/month with no long-term commitment.",
         },
         {
           question: "Can I cancel anytime?",
@@ -301,7 +440,8 @@ export default function FAQPage() {
     },
     {
       title: "Privacy & Security",
-      icon: "🔒",
+      icon: <LockIcon />,
+      variant: "lock",
       questions: [
         {
           question: "Is my data secure?",
@@ -327,7 +467,8 @@ export default function FAQPage() {
     },
     {
       title: "Features & Functionality",
-      icon: "✨",
+      icon: <SparklesIcon />,
+      variant: "sparkles",
       questions: [
         {
           question: "What languages do you support?",
@@ -358,7 +499,8 @@ export default function FAQPage() {
     },
     {
       title: "Technical & Troubleshooting",
-      icon: "🛠️",
+      icon: <WrenchIcon />,
+      variant: "wrench",
       questions: [
         {
           question: "My PDF isn't uploading. What should I do?",
@@ -397,7 +539,7 @@ export default function FAQPage() {
         {faqCategories.map((category, categoryIndex) => (
           <FAQSection key={categoryIndex}>
             <CategoryTitle>
-              <CategoryIcon>{category.icon}</CategoryIcon>
+              <CategoryIcon $variant={category.variant}>{category.icon}</CategoryIcon>
               {category.title}
             </CategoryTitle>
             <FAQList>
@@ -432,7 +574,7 @@ export default function FAQPage() {
             to help.
           </p>
           <a href="mailto:support@rejectly.pro">
-            <span>✉️</span>
+            <MailIcon />
             Contact Support
           </a>
         </CTABox>

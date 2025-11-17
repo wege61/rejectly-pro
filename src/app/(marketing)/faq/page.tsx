@@ -357,6 +357,20 @@ const CTABox = styled.div`
   }
 `;
 
+const CTATitle = styled.h2`
+  font-size: 38px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+`;
+
 type FAQ = {
   question: string;
   answer: string;
@@ -568,7 +582,7 @@ export default function FAQPage() {
         ))}
 
         <CTABox>
-          <h3>Still Have Questions?</h3>
+          <CTATitle>Still Have Questions?</CTATitle>
           <p>
             Can't find the answer you're looking for? Our support team is here
             to help.

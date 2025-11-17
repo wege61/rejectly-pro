@@ -276,10 +276,6 @@ const CardTitle = styled.h3`
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #B4E7F5 0%, #B9E8D8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 `;
 
 const CardText = styled.p`
@@ -350,9 +346,11 @@ const TeamSection = styled.div`
     rgba(185, 232, 216, 0.1) 100%
   );
   border: 1px solid var(--border-color);
-  border-radius: 24px;
   padding: 64px 48px;
   text-align: center;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-bottom: 120px;  
 
   @media (max-width: 768px) {
     padding: 40px 24px;
@@ -443,7 +441,7 @@ const CTATitle = styled.h2`
   font-size: 40px;
   font-weight: 800;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #FFB3BA 0%, #BFACE2 100%);
+  background:  #FFB3BA ;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

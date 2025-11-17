@@ -374,8 +374,12 @@ const CTASection = styled.section`
 `;
 
 const CTACard = styled.div`
-  background: linear-gradient(135deg, rgba(255, 179, 186, 0.1) 0%, rgba(191, 172, 226, 0.1) 100%);
-  border: 1px solid rgba(191, 172, 226, 0.2);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 179, 186, 0.15) 0%,
+    rgba(255, 198, 211, 0.15) 100%
+  );
+  border: 1px solid var(--border-color);
   border-radius: 24px;
   padding: 64px 48px;
   text-align: center;
@@ -389,7 +393,7 @@ const CTATitle = styled.h2`
   font-size: 38px;
   font-weight: 800;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #FF8FA3 0%, #9B87C4 100%);
+  background: #FFB3BA;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -99,7 +99,7 @@ const ArrowRightIcon = () => (
 );
 
 const RocketIcon = () => (
-  <svg fill="none" stroke="#9B87C4" viewBox="0 0 24 24">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -2120,7 +2120,7 @@ export default function Page() {
       <DemoSection id="demo">
         <SectionHeader>
           <SectionTitle style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-            <RocketIcon />
+          
             Try It Now - Free
           </SectionTitle>
           <SectionSubtitle>

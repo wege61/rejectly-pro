@@ -120,7 +120,7 @@ const StatCard = styled.div`
 const StatNumber = styled.div`
   font-size: 42px;
   font-weight: 900;
-  background: #ADB2D4;
+  background: #FFB3BA;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -374,12 +374,12 @@ const CTASection = styled.section`
 `;
 
 const CTACard = styled.div`
-  background: linear-gradient(
+ background: linear-gradient(
     135deg,
-    rgba(255, 179, 186, 0.15) 0%,
-    rgba(255, 198, 211, 0.15) 100%
+    rgba(191, 172, 226, 0.1) 0%,
+    rgba(180, 167, 214, 0.1) 100%
   );
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(155, 135, 196, 0.25);
   border-radius: 24px;
   padding: 64px 48px;
   text-align: center;
@@ -393,7 +393,7 @@ const CTATitle = styled.h2`
   font-size: 38px;
   font-weight: 800;
   margin-bottom: 16px;
-  background: #FFB3BA;
+  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

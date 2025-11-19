@@ -81,6 +81,49 @@ const DocumentIcon = () => (
   </svg>
 );
 
+const EnvelopeIcon = ({ size = "64" }: { size?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    style={{
+      width: `${size}px`,
+      height: `${size}px`,
+      display: "inline-block",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+    />
+  </svg>
+);
+
+const CheckCircleIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "20px",
+      height: "20px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
 const Container = styled.div`
   max-width: 1400px;
   margin: 0 auto;
@@ -549,6 +592,7 @@ export default function CoverLettersPage() {
   // Cover letter generator
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
+  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
 
   // Cover letter editor
   const [selectedLetterForEdit, setSelectedLetterForEdit] = useState<CoverLetter | null>(null);
@@ -599,8 +643,15 @@ export default function CoverLettersPage() {
   }, [fetchCoverLetters, fetchReports]);
 
   const handleReportClick = (reportId: string) => {
-    setSelectedReportId(reportId);
-    setIsGeneratorOpen(true);
+    const report = reports.find(r => r.id === reportId);
+    if (!report) return;
+
+    if (report.is_premium) {
+      setSelectedReportId(reportId);
+      setIsGeneratorOpen(true);
+    } else {
+      setIsPremiumModalOpen(true);
+    }
   };
 
   const handleGeneratorClose = () => {
@@ -925,6 +976,123 @@ export default function CoverLettersPage() {
           }}
         />
       )}
+
+      {/* Premium Upgrade Modal */}
+      <Modal
+        isOpen={isPremiumModalOpen}
+        onClose={() => setIsPremiumModalOpen(false)}
+        title="✨ Premium Feature"
+        description="Cover letters are only available for premium reports"
+        size="md"
+      >
+        <Modal.Body>
+          <div style={{
+            padding: '24px',
+            textAlign: 'center',
+          }}>
+            <div style={{
+              marginBottom: '20px',
+              display: 'flex',
+              justifyContent: 'center',
+            }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '16px',
+                padding: '16px',
+                display: 'inline-flex',
+              }}>
+                <EnvelopeIcon size="48" />
+              </div>
+            </div>
+            <h3 style={{
+              fontSize: '24px',
+              fontWeight: 600,
+              marginBottom: '16px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>
+              AI-Powered Cover Letters
+            </h3>
+            <p style={{
+              fontSize: '16px',
+              color: '#9ca3af',
+              marginBottom: '24px',
+              lineHeight: '1.6',
+            }}>
+              Create personalized, professional cover letters tailored to each job posting.
+              To unlock this feature, you need to upgrade the report to premium.
+            </p>
+
+            <div style={{
+              background: 'rgba(102, 126, 234, 0.1)',
+              border: '2px solid rgba(102, 126, 234, 0.3)',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '24px',
+              textAlign: 'left',
+            }}>
+              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#667eea' }}>
+                ✨ What you'll get with premium:
+              </div>
+              <ul style={{
+                listStyle: 'none',
+                padding: 0,
+                margin: 0,
+                fontSize: '14px',
+                color: '#d1d5db',
+              }}>
+                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                    <CheckCircleIcon />
+                  </div>
+                  <span>AI-generated cover letters with 6 templates</span>
+                </li>
+                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                    <CheckCircleIcon />
+                  </div>
+                  <span>Optimized CV with improved ATS score</span>
+                </li>
+                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                    <CheckCircleIcon />
+                  </div>
+                  <span>Detailed improvement breakdown</span>
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                    <CheckCircleIcon />
+                  </div>
+                  <span>Alternative role recommendations</span>
+                </li>
+              </ul>
+            </div>
+
+            <Button
+              size="lg"
+              onClick={() => window.location.href = '/analyze'}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                fontSize: '16px',
+                padding: '14px 24px',
+                marginBottom: '12px',
+              }}
+            >
+              Create Premium Report - $9
+            </Button>
+
+            <p style={{
+              fontSize: '12px',
+              color: '#6b7280',
+              marginTop: '12px',
+            }}>
+              One-time payment per report • Unlock all premium features
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
 
       {/* Delete Confirmation Modal */}
       <Modal

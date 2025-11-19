@@ -202,6 +202,69 @@ const FireIcon = () => (
   </svg>
 );
 
+const EnvelopeIcon = ({ size = "64" }: { size?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    style={{
+      width: `${size}px`,
+      height: `${size}px`,
+      display: "inline-block",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+    />
+  </svg>
+);
+
+const CheckBadgeIcon = ({ size = "20" }: { size?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: `${size}px`,
+      height: `${size}px`,
+      display: "inline-block",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
+    />
+  </svg>
+);
+
+const SparklesIcon = ({ size = "24" }: { size?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: `${size}px`,
+      height: `${size}px`,
+      display: "inline-block",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+    />
+  </svg>
+);
+
 const StarIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -1319,12 +1382,13 @@ const ActionCardsGrid = styled.div`
   gap: ${({ theme }) => theme.spacing.lg};
 `;
 
-const ActionCard = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost' }>`
+const ActionCard = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost' | 'accent' }>`
   padding: ${({ theme }) => theme.spacing.lg};
   background: ${({ theme }) => theme.colors.surface};
   border: 2px solid ${({ theme, $variant }) =>
     $variant === 'primary' ? theme.colors.primary :
     $variant === 'secondary' ? theme.colors.border :
+    $variant === 'accent' ? '#f59e0b' :
     theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.lg};
   transition: all ${({ theme }) => theme.transitions.fast};
@@ -1337,10 +1401,12 @@ const ActionCard = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost' }>`
     transform: translateY(-4px);
     box-shadow: 0 8px 24px ${({ theme, $variant }) =>
       $variant === 'primary' ? `${theme.colors.primary}25` :
+      $variant === 'accent' ? 'rgba(245, 158, 11, 0.25)' :
       `${theme.colors.border}40`};
     border-color: ${({ theme, $variant }) =>
       $variant === 'primary' ? theme.colors.primary :
       $variant === 'secondary' ? theme.colors.primary :
+      $variant === 'accent' ? '#f59e0b' :
       theme.colors.textSecondary};
   }
 `;
@@ -1351,7 +1417,7 @@ const ActionCardHeader = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
-const ActionCardIcon = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost' }>`
+const ActionCardIcon = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost' | 'accent' }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1363,13 +1429,17 @@ const ActionCardIcon = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost'
       ? `linear-gradient(135deg, ${theme.colors.primary} 0%, #764ba2 100%)`
       : $variant === 'secondary'
       ? `${theme.colors.primary}15`
+      : $variant === 'accent'
+      ? 'rgba(245, 158, 11, 0.15)'
       : `${theme.colors.textSecondary}15`};
 
   svg {
     width: 20px;
     height: 20px;
     color: ${({ theme, $variant }) =>
-      $variant === 'primary' ? 'white' : theme.colors.primary};
+      $variant === 'primary' ? 'white' :
+      $variant === 'accent' ? '#f59e0b' :
+      theme.colors.primary};
   }
 `;
 
@@ -1883,6 +1953,7 @@ interface Report {
   optimized_score: number | null;
   improvement_breakdown: Improvement[] | null;
   fake_skills_recommendations: FakeSkillRecommendation[] | null;
+  fake_it_mode: boolean;
   created_at: string;
 }
 
@@ -1909,6 +1980,7 @@ export default function ReportDetailPage() {
     useState<Improvement | null>(null);
   const [fakeItMode, setFakeItMode] = useState(false);
   const [isCoverLetterModalOpen, setIsCoverLetterModalOpen] = useState(false);
+  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const wasGeneratingRef = useRef(false);
 
@@ -2172,6 +2244,77 @@ export default function ReportDetailPage() {
         message:
           "🎯 Great score! Make it perfect - upgraded users in your range got 3x more responses. Stand out from other qualified candidates.",
       };
+    }
+  };
+
+  const handleCreateFakeItReport = async () => {
+    if (!report || isGeneratingCV) return;
+
+    setIsGeneratingCV(true);
+    try {
+      // Create a new premium report with the same CV and jobs
+      const createResponse = await fetch("/api/analyze/free", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cvId: report.cv_id,
+          jobIds: report.job_ids,
+        }),
+      });
+
+      const createResult = await createResponse.json();
+
+      if (!createResponse.ok) {
+        throw new Error(createResult.error || "Failed to create report");
+      }
+
+      const newReportId = createResult.report.id;
+
+      // Upgrade to premium
+      const upgradeResponse = await fetch("/api/analyze/pro", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reportId: newReportId,
+        }),
+      });
+
+      const upgradeResult = await upgradeResponse.json();
+
+      if (!upgradeResponse.ok) {
+        throw new Error(upgradeResult.error || "Failed to upgrade report");
+      }
+
+      // Generate CV with fake it mode
+      const cvResponse = await fetch("/api/cv/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reportId: newReportId,
+          fakeItMode: true,
+        }),
+      });
+
+      const cvResult = await cvResponse.json();
+
+      if (!cvResponse.ok) {
+        throw new Error(cvResult.error || "Failed to generate CV");
+      }
+
+      // Redirect to new report
+      toast.success("New report created with Fake It Mode!");
+      router.push(`/reports/${newReportId}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      toast.error(errorMessage);
+    } finally {
+      setIsGeneratingCV(false);
     }
   };
 
@@ -3505,7 +3648,97 @@ export default function ReportDetailPage() {
                         Your professionally crafted CV is ready to download. Choose
                         your next action below.
                       </SuccessSubtext>
+                      {report?.fake_it_mode && (
+                        <div style={{
+                          marginTop: '20px',
+                          padding: '16px 20px',
+                          background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.2) 50%, rgba(251, 191, 36, 0.15) 100%)',
+                          border: '2px solid rgba(245, 158, 11, 0.5)',
+                          borderRadius: '12px',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: '12px',
+                          boxShadow: '0 4px 12px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                        }}>
+                          <div style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '1px',
+                            background: 'linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.6), transparent)',
+                          }} />
+                          <div style={{
+                            flexShrink: 0,
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '8px',
+                            background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
+                          }}>
+                            <SparklesIcon size="18" style={{ color: '#ffffff' }} />
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{
+                              fontSize: '15px',
+                              fontWeight: 600,
+                              color: '#fbbf24',
+                              marginBottom: '4px',
+                              letterSpacing: '0.3px',
+                            }}>
+                              Fake It Mode Enabled
+                            </div>
+                            <div style={{
+                              fontSize: '13px',
+                              color: '#fcd34d',
+                              lineHeight: '1.5',
+                              opacity: 0.9,
+                            }}>
+                              This CV includes learning paths for missing skills to help you transition into your target role
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </SuccessCelebration>
+
+                    {/* Fake It Mode Card - only show if premium and not already in fake it mode */}
+                    {report?.pro && !report?.fake_it_mode && (
+                      <ActionCard
+                        $variant="accent"
+                        onClick={handleCreateFakeItReport}
+                        style={{
+                          opacity: isGeneratingCV ? 0.6 : 1,
+                          cursor: isGeneratingCV ? 'not-allowed' : 'pointer',
+                          background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(245, 158, 11, 0.12) 100%)',
+                          border: '2px solid #f59e0b',
+                          marginBottom: '20px',
+                        }}
+                      >
+                        <ActionCardHeader>
+                          <ActionCardIcon $variant="accent">
+                            {isGeneratingCV ? <Spinner size="sm" /> : <SparklesIcon />}
+                          </ActionCardIcon>
+                          <ActionCardTitle style={{
+                            background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                          }}>
+                            {isGeneratingCV ? "Creating New Report..." : "Try Fake It Mode"}
+                          </ActionCardTitle>
+                        </ActionCardHeader>
+                        <ActionCardDescription>
+                          {isGeneratingCV
+                            ? "Creating a new report with Fake It Mode enabled. This will include missing skills and learning paths..."
+                            : "Create a new report with missing skills added to your CV. Get learning paths and project ideas to acquire these skills. Perfect for career transitions!"
+                          }
+                        </ActionCardDescription>
+                      </ActionCard>
+                    )}
 
                     <ActionCardsGrid>
                       <ActionCard
@@ -3526,11 +3759,17 @@ export default function ReportDetailPage() {
 
                       <ActionCard
                         $variant="secondary"
-                        onClick={() => setIsCoverLetterModalOpen(true)}
+                        onClick={() => {
+                          if (report?.pro) {
+                            setIsCoverLetterModalOpen(true);
+                          } else {
+                            setIsPremiumModalOpen(true);
+                          }
+                        }}
                       >
                         <ActionCardHeader>
                           <ActionCardIcon $variant="secondary">
-                            <span style={{ fontSize: '20px' }}>✉️</span>
+                            <EnvelopeIcon size="24" />
                           </ActionCardIcon>
                           <ActionCardTitle>Generate Cover Letter</ActionCardTitle>
                         </ActionCardHeader>
@@ -3640,6 +3879,130 @@ export default function ReportDetailPage() {
           </LoadingModalContent>
         </LoadingModalOverlay>
       )}
+
+      {/* Premium Upgrade Modal for Cover Letters */}
+      <Modal
+        isOpen={isPremiumModalOpen}
+        onClose={() => setIsPremiumModalOpen(false)}
+        title="✨ Premium Feature"
+        description="Upgrade to unlock AI-powered cover letters"
+        size="md"
+      >
+        <Modal.Body>
+          <div style={{
+            padding: '24px',
+            textAlign: 'center',
+          }}>
+            <div style={{
+              marginBottom: '20px',
+              display: 'flex',
+              justifyContent: 'center',
+            }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '16px',
+                padding: '16px',
+                display: 'inline-flex',
+              }}>
+                <EnvelopeIcon size="48" />
+              </div>
+            </div>
+            <h3 style={{
+              fontSize: '24px',
+              fontWeight: 600,
+              marginBottom: '16px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>
+              AI-Powered Cover Letters
+            </h3>
+            <p style={{
+              fontSize: '16px',
+              color: '#9ca3af',
+              marginBottom: '24px',
+              lineHeight: '1.6',
+            }}>
+              Create personalized, professional cover letters tailored to each job posting.
+              Choose from multiple templates, tones, and styles to make your application stand out.
+            </p>
+
+            <div style={{
+              background: 'rgba(102, 126, 234, 0.1)',
+              border: '2px solid rgba(102, 126, 234, 0.3)',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '24px',
+              textAlign: 'left',
+            }}>
+              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#667eea' }}>
+                ✨ What you'll get:
+              </div>
+              <ul style={{
+                listStyle: 'none',
+                padding: 0,
+                margin: 0,
+                fontSize: '14px',
+                color: '#d1d5db',
+              }}>
+                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                    <CheckCircleIcon />
+                  </div>
+                  <span>6 professional templates to choose from</span>
+                </li>
+                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                    <CheckCircleIcon />
+                  </div>
+                  <span>Multiple tones (Professional, Friendly, Formal)</span>
+                </li>
+                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                    <CheckCircleIcon />
+                  </div>
+                  <span>Customizable length and language (EN/TR)</span>
+                </li>
+                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                    <CheckCircleIcon />
+                  </div>
+                  <span>Interactive editor with alternative phrasings</span>
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                    <CheckCircleIcon />
+                  </div>
+                  <span>Tailored to your CV and job posting</span>
+                </li>
+              </ul>
+            </div>
+
+            <Button
+              size="lg"
+              onClick={handleUpgradeToPro}
+              isLoading={isUpgrading}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                fontSize: '16px',
+                padding: '14px 24px',
+                marginBottom: '12px',
+              }}
+            >
+              {isUpgrading ? 'Processing...' : 'Upgrade to Pro - $9'}
+            </Button>
+
+            <p style={{
+              fontSize: '12px',
+              color: '#6b7280',
+              marginTop: '12px',
+            }}>
+              One-time payment • Unlock all premium features
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
 
       {/* Cover Letter Generator Modal */}
       <CoverLetterGenerator

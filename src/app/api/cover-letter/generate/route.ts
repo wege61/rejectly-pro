@@ -45,6 +45,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Report not found" }, { status: 404 });
     }
 
+    // Check if report is premium
+    if (!report.pro) {
+      return NextResponse.json(
+        { error: "Cover letters are only available for premium reports" },
+        { status: 403 }
+      );
+    }
+
     // Fetch job documents
     const jobIds = report.job_ids as string[];
     const { data: jobDocs, error: jobError } = await supabase

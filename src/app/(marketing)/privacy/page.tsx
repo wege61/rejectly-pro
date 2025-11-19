@@ -3,6 +3,134 @@
 import styled from "styled-components";
 import { Footer } from "@/components/ui/Footer";
 
+// ==================== ICONS ====================
+const LockIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+    />
+  </svg>
+);
+
+const DocumentTextIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+    />
+  </svg>
+);
+
+const CogIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+    />
+  </svg>
+);
+
+const SparklesIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+    />
+  </svg>
+);
+
+const ShieldCheckIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+    />
+  </svg>
+);
+
+const CookieIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+    />
+  </svg>
+);
+
+const UserIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+    />
+  </svg>
+);
+
+const GlobeIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+const UsersIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+    />
+  </svg>
+);
+
+const RefreshIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+    />
+  </svg>
+);
+
+const MailIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+    />
+  </svg>
+);
+
 const Container = styled.div`
   min-height: 100vh;
   background-color: var(--bg-color);
@@ -35,7 +163,7 @@ const Title = styled.h1`
   font-size: 56px;
   font-weight: 900;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -79,11 +207,99 @@ const SectionTitle = styled.h2`
   }
 `;
 
-const SectionIcon = styled.span`
-  font-size: 32px;
+const SectionIcon = styled.div<{ $variant?: string }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex-shrink: 0;
+
+  ${({ $variant }) => {
+    switch ($variant) {
+      case 'lock':
+        return `
+          background: linear-gradient(135deg, rgba(191, 172, 226, 0.15) 0%, rgba(212, 197, 249, 0.15) 100%);
+          border: 1px solid rgba(191, 172, 226, 0.3);
+          svg { color: #9B87C4; }
+        `;
+      case 'document':
+        return `
+          background: linear-gradient(135deg, rgba(180, 231, 245, 0.15) 0%, rgba(199, 233, 251, 0.15) 100%);
+          border: 1px solid rgba(180, 231, 245, 0.3);
+          svg { color: #7BCAE3; }
+        `;
+      case 'cog':
+        return `
+          background: linear-gradient(135deg, rgba(185, 232, 216, 0.15) 0%, rgba(208, 240, 228, 0.15) 100%);
+          border: 1px solid rgba(185, 232, 216, 0.3);
+          svg { color: #6BBF9F; }
+        `;
+      case 'sparkles':
+        return `
+          background: linear-gradient(135deg, rgba(255, 179, 186, 0.15) 0%, rgba(255, 204, 229, 0.15) 100%);
+          border: 1px solid rgba(255, 179, 186, 0.3);
+          svg { color: #FF8FA3; }
+        `;
+      case 'shield':
+        return `
+          background: linear-gradient(135deg, rgba(255, 228, 181, 0.15) 0%, rgba(255, 240, 209, 0.15) 100%);
+          border: 1px solid rgba(255, 228, 181, 0.3);
+          svg { color: #E6B566; }
+        `;
+      case 'cookie':
+        return `
+          background: linear-gradient(135deg, rgba(226, 161, 111, 0.15) 0%, rgba(235, 190, 155, 0.15) 100%);
+          border: 1px solid rgba(226, 161, 111, 0.3);
+          svg { color: #D4A574; }
+        `;
+      case 'user':
+        return `
+          background: linear-gradient(135deg, rgba(180, 231, 245, 0.15) 0%, rgba(185, 232, 216, 0.15) 100%);
+          border: 1px solid rgba(180, 231, 245, 0.3);
+          svg { color: #7BCAE3; }
+        `;
+      case 'globe':
+        return `
+          background: linear-gradient(135deg, rgba(191, 172, 226, 0.15) 0%, rgba(180, 231, 245, 0.15) 100%);
+          border: 1px solid rgba(191, 172, 226, 0.3);
+          svg { color: #9B87C4; }
+        `;
+      case 'users':
+        return `
+          background: linear-gradient(135deg, rgba(255, 179, 186, 0.15) 0%, rgba(255, 198, 211, 0.15) 100%);
+          border: 1px solid rgba(255, 179, 186, 0.3);
+          svg { color: #FF8FA3; }
+        `;
+      case 'refresh':
+        return `
+          background: linear-gradient(135deg, rgba(185, 232, 216, 0.15) 0%, rgba(180, 231, 245, 0.15) 100%);
+          border: 1px solid rgba(185, 232, 216, 0.3);
+          svg { color: #6BBF9F; }
+        `;
+      default:
+        return `
+          background: linear-gradient(135deg, rgba(155, 135, 196, 0.1) 0%, rgba(180, 167, 214, 0.1) 100%);
+          border: 1px solid rgba(155, 135, 196, 0.2);
+          svg { color: #9B87C4; }
+        `;
+    }
+  }}
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
 
   @media (max-width: 768px) {
-    font-size: 28px;
+    width: 40px;
+    height: 40px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
   }
 `;
 
@@ -141,10 +357,10 @@ const ListItem = styled.li`
 const HighlightBox = styled.div`
   background: linear-gradient(
     135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
+    rgba(255, 179, 186, 0.08) 0%,
+    rgba(255, 204, 229, 0.08) 100%
   );
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(255, 179, 186, 0.25);
   border-radius: 12px;
   padding: 24px;
   margin: 24px 0;
@@ -155,8 +371,12 @@ const HighlightBox = styled.div`
 `;
 
 const ContactBox = styled.div`
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
+  background: linear-gradient(
+    135deg,
+    rgba(191, 172, 226, 0.08) 0%,
+    rgba(180, 167, 214, 0.08) 100%
+  );
+  border: 1px solid rgba(155, 135, 196, 0.2);
   border-radius: 16px;
   padding: 32px;
   margin-top: 64px;
@@ -179,7 +399,7 @@ const ContactBox = styled.div`
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #667eea;
+    background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
     color: white;
     padding: 14px 28px;
     border-radius: 20px;
@@ -187,9 +407,14 @@ const ContactBox = styled.div`
     text-decoration: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 10px 25px rgba(155, 135, 196, 0.3);
     }
   }
 
@@ -213,7 +438,9 @@ export default function PrivacyPage() {
 
         <Section>
           <SectionTitle>
-            <SectionIcon>🔒</SectionIcon>
+            <SectionIcon $variant="lock">
+              <LockIcon />
+            </SectionIcon>
             Introduction
           </SectionTitle>
           <Paragraph>
@@ -231,7 +458,9 @@ export default function PrivacyPage() {
 
         <Section>
           <SectionTitle>
-            <SectionIcon>📊</SectionIcon>
+            <SectionIcon $variant="document">
+              <DocumentTextIcon />
+            </SectionIcon>
             Information We Collect
           </SectionTitle>
           <Paragraph>
@@ -269,7 +498,9 @@ export default function PrivacyPage() {
 
         <Section>
           <SectionTitle>
-            <SectionIcon>⚙️</SectionIcon>
+            <SectionIcon $variant="cog">
+              <CogIcon />
+            </SectionIcon>
             How We Use Your Information
           </SectionTitle>
           <Paragraph>
@@ -306,7 +537,9 @@ export default function PrivacyPage() {
 
         <Section>
           <SectionTitle>
-            <SectionIcon>🤖</SectionIcon>
+            <SectionIcon $variant="sparkles">
+              <SparklesIcon />
+            </SectionIcon>
             AI and Data Processing
           </SectionTitle>
           <HighlightBox>
@@ -341,7 +574,9 @@ export default function PrivacyPage() {
 
         <Section>
           <SectionTitle>
-            <SectionIcon>💾</SectionIcon>
+            <SectionIcon $variant="shield">
+              <ShieldCheckIcon />
+            </SectionIcon>
             Data Storage and Security
           </SectionTitle>
           <Paragraph>
@@ -379,7 +614,9 @@ export default function PrivacyPage() {
 
         <Section>
           <SectionTitle>
-            <SectionIcon>🍪</SectionIcon>
+            <SectionIcon $variant="cookie">
+              <CookieIcon />
+            </SectionIcon>
             Cookies and Tracking
           </SectionTitle>
           <Paragraph>
@@ -408,7 +645,9 @@ export default function PrivacyPage() {
 
         <Section>
           <SectionTitle>
-            <SectionIcon>👤</SectionIcon>
+            <SectionIcon $variant="user">
+              <UserIcon />
+            </SectionIcon>
             Your Privacy Rights (GDPR)
           </SectionTitle>
           <Paragraph>
@@ -453,7 +692,9 @@ export default function PrivacyPage() {
 
         <Section>
           <SectionTitle>
-            <SectionIcon>🌍</SectionIcon>
+            <SectionIcon $variant="globe">
+              <GlobeIcon />
+            </SectionIcon>
             International Data Transfers
           </SectionTitle>
           <Paragraph>
@@ -466,7 +707,9 @@ export default function PrivacyPage() {
 
         <Section>
           <SectionTitle>
-            <SectionIcon>👶</SectionIcon>
+            <SectionIcon $variant="users">
+              <UsersIcon />
+            </SectionIcon>
             Children's Privacy
           </SectionTitle>
           <Paragraph>
@@ -479,7 +722,9 @@ export default function PrivacyPage() {
 
         <Section>
           <SectionTitle>
-            <SectionIcon>🔄</SectionIcon>
+            <SectionIcon $variant="refresh">
+              <RefreshIcon />
+            </SectionIcon>
             Changes to This Policy
           </SectionTitle>
           <Paragraph>
@@ -501,7 +746,7 @@ export default function PrivacyPage() {
             practices, we're here to help.
           </p>
           <a href="mailto:privacy@rejectly.pro">
-            <span>✉️</span>
+            <MailIcon />
             Contact Us
           </a>
         </ContactBox>

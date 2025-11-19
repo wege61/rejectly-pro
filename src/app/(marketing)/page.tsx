@@ -1549,48 +1549,124 @@ const FAQList = styled.div`
 const FAQItem = styled.div<{ $isOpen?: boolean }>`
   background: var(--bg-alt);
   border: 1px solid var(--border-color);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: 24px;
+  border-radius: 12px;
+  overflow: hidden;
   transition: all 0.3s ease;
 
   ${({ $isOpen }) =>
     $isOpen &&
     `
-    border-color: var(--primary-color);
-    background: rgba(102, 126, 234, 0.05);
+    border-color: rgba(155, 135, 196, 0.3);
+    box-shadow: 0 4px 12px rgba(155, 135, 196, 0.1);
   `}
 `;
 
 const FAQQuestion = styled.button<{ $isOpen?: boolean }>`
   width: 100%;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  font-size: 17px;
-  color: var(--text-color);
   background: none;
   border: none;
-  padding: 0;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
   text-align: left;
+  transition: background 0.2s ease;
 
-  svg {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
-    transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
-    color: var(--text-secondary);
+  &:hover {
+    background: rgba(155, 135, 196, 0.05);
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px 20px;
   }
 `;
 
+const FAQQuestionText = styled.span`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  flex: 1;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
+const FAQQuestionIcon = styled.span<{ $isOpen?: boolean }>`
+  font-size: 24px;
+  color: #9B87C4;
+  transition: transform 0.3s ease;
+  transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
+  flex-shrink: 0;
+`;
+
 const FAQAnswer = styled.div<{ $isOpen?: boolean }>`
-  margin-top: 16px;
+  max-height: ${({ $isOpen }) => ($isOpen ? "500px" : "0")};
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: ${({ $isOpen }) => ($isOpen ? "0 24px 20px 24px" : "0 24px")};
+
+  @media (max-width: 768px) {
+    padding: ${({ $isOpen }) => ($isOpen ? "0 20px 16px 20px" : "0 20px")};
+  }
+`;
+
+const FAQAnswerText = styled.p`
+  font-size: 16px;
+  line-height: 1.8;
   color: var(--text-secondary);
-  line-height: 1.7;
-  font-size: 15px;
-  display: ${({ $isOpen }) => ($isOpen ? "block" : "none")};
+
+  strong {
+    color: var(--text-color);
+    font-weight: 600;
+  }
+
+  a {
+    color: #9B87C4;
+    text-decoration: underline;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+`;
+
+const FAQButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+
+  @media (max-width: 768px) {
+    margin-top: 32px;
+  }
+`;
+
+const FAQButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(155, 135, 196, 0.2);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(155, 135, 196, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
 `;
 
 const LoadingState = styled.div`
@@ -2748,13 +2824,24 @@ export default function Page() {
                 $isOpen={openFaq === index}
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
               >
-                <span>{faq.question}</span>
-                <ChevronDownIcon />
+                <FAQQuestionText>{faq.question}</FAQQuestionText>
+                <FAQQuestionIcon $isOpen={openFaq === index}>
+                  {openFaq === index ? "−" : "+"}
+                </FAQQuestionIcon>
               </FAQQuestion>
-              <FAQAnswer $isOpen={openFaq === index}>{faq.answer}</FAQAnswer>
+              <FAQAnswer $isOpen={openFaq === index}>
+                <FAQAnswerText>{faq.answer}</FAQAnswerText>
+              </FAQAnswer>
             </FAQItem>
           ))}
         </FAQList>
+
+        <FAQButtonContainer>
+          <FAQButton href={ROUTES.PUBLIC.FAQ}>
+            View All FAQs
+            <ArrowRightIcon />
+          </FAQButton>
+        </FAQButtonContainer>
       </Section>
 
       <Divider />

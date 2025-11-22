@@ -2095,18 +2095,15 @@ export default function ReportDetailPage() {
     }
   }, [shouldAutoUpgrade, report, userCredits.canAnalyze, isLoading, router, reportId]);
 
-  // Funny loading messages
+  // Loading messages
   const loadingMessages = [
-    "Powering up your CV with AI magic... 🚀",
-    "Adding secret keywords to trick ATS robots... 🤖",
-    "Making your achievements sound more epic... 📖",
-    "Elevating your CV to Fortune 500 standards... 💼",
-    "Sprinkling some professional magic between the lines... ✨",
-    "Selecting words that will dazzle HR... 👀",
-    "Presenting your skills Hollywood-style... 🎬",
-    "Moving your CV to the top of the pile... 📑",
-    "Adding rocket fuel to your career goals... 🔥",
-    "Crafting a professional masterpiece... 🎨",
+    "Analyzing your experience and skills... 🔍",
+    "Optimizing keywords for ATS systems... 🤖",
+    "Enhancing your achievements... 🌟",
+    "Restructuring for maximum impact... 📊",
+    "Tailoring content to job requirements... 🎯",
+    "Polishing the final details... ✨",
+    "Almost there... 🚀",
   ];
 
   // Define analyzeOptimizedCV before useEffect that uses it
@@ -2315,17 +2312,17 @@ export default function ReportDetailPage() {
 
   // Rotate loading messages every 5 seconds
   useEffect(() => {
-    if (!isGeneratingCV) {
+    if (!isGeneratingCV && !isUpgrading) {
       setLoadingMessageIndex(0);
       return;
     }
 
     const interval = setInterval(() => {
       setLoadingMessageIndex((prev) => (prev + 1) % loadingMessages.length);
-    }, 5000);
+    }, 2500);
 
     return () => clearInterval(interval);
-  }, [isGeneratingCV, loadingMessages.length]);
+  }, [isGeneratingCV, isUpgrading, loadingMessages.length]);
 
   // Scroll to top when CV generation completes
   useEffect(() => {
@@ -4014,6 +4011,19 @@ export default function ReportDetailPage() {
           <LoadingModalContent>
             <LoadingSpinner />
             <LoadingTitle>Generating Your Optimized CV</LoadingTitle>
+            <LoadingMessage key={loadingMessageIndex}>
+              {loadingMessages[loadingMessageIndex]}
+            </LoadingMessage>
+          </LoadingModalContent>
+        </LoadingModalOverlay>
+      )}
+
+      {/* Pro Upgrade Loading Modal */}
+      {isUpgrading && (
+        <LoadingModalOverlay>
+          <LoadingModalContent>
+            <LoadingSpinner />
+            <LoadingTitle>Upgrading to Pro</LoadingTitle>
             <LoadingMessage key={loadingMessageIndex}>
               {loadingMessages[loadingMessageIndex]}
             </LoadingMessage>

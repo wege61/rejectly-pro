@@ -67,14 +67,14 @@ const PricingSection = styled.section`
 
 const PricingGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  max-width: 900px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1100px;
   margin: 0 auto;
 
-  @media (max-width: 968px) {
+  @media (max-width: 1024px) {
     grid-template-columns: 1fr;
-    max-width: 500px;
+    max-width: 400px;
   }
 `;
 
@@ -233,7 +233,7 @@ const ComparisonTable = styled.div`
 
 const TableRow = styled.div<{ $header?: boolean }>`
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   border-bottom: 1px solid var(--border-color);
 
   &:last-child {
@@ -248,7 +248,7 @@ const TableRow = styled.div<{ $header?: boolean }>`
   `}
 
   @media (max-width: 768px) {
-    grid-template-columns: 1.5fr 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
   }
 `;
 
@@ -436,40 +436,38 @@ const XIcon = () => (
 );
 
 const features = [
-  { name: "Analyses per month", free: "3", pro: "Unlimited" },
-  { name: "Match score analysis", free: true, pro: true },
-  { name: "Missing keywords", free: "5", pro: "All" },
-  { name: "AI summary", free: true, pro: true },
-  { name: "Job postings comparison", free: "Up to 3", pro: "Unlimited" },
-  { name: "Professional bullet rewriting", free: false, pro: "3 bullets" },
-  { name: "ATS optimization guide", free: false, pro: true },
-  { name: "Alternative role suggestions", free: false, pro: "3 roles" },
-  { name: "AI-generated optimized resume", free: false, pro: true },
-  { name: "PDF download", free: false, pro: true },
-  { name: "Improvement breakdown", free: false, pro: true },
-  { name: "Interactive resume preview", free: false, pro: true },
+  { name: "Pro analyses", single: "1", starter: "10", pro: "Unlimited" },
+  { name: "Match score analysis", single: true, starter: true, pro: true },
+  { name: "All missing keywords", single: true, starter: true, pro: true },
+  { name: "Job postings comparison", single: "Up to 10", starter: "Up to 10", pro: "Up to 10" },
+  { name: "Professional bullet rewriting", single: "3 bullets", starter: "3 bullets", pro: "3 bullets" },
+  { name: "ATS optimization guide", single: true, starter: true, pro: true },
+  { name: "Alternative role suggestions", single: "3 roles", starter: "3 roles", pro: "3 roles" },
+  { name: "AI-generated optimized resume", single: true, starter: true, pro: true },
+  { name: "PDF download", single: true, starter: true, pro: true },
+  { name: "Priority support", single: false, starter: false, pro: true },
 ];
 
 const pricingFAQs = [
   {
-    question: "Can I switch plans anytime?",
+    question: "What's the difference between credit packs and subscription?",
     answer:
-      "Yes! You can upgrade from Free to Pro at any time. When downgrading from Pro to Free, the change takes effect at the end of your current billing period, so you don't lose any paid time.",
+      "Single ($2) and Starter ($7) are one-time purchases that give you credits to use anytime - they never expire. Pro ($12/month) is a subscription with unlimited analyses as long as you're subscribed.",
+  },
+  {
+    question: "Do my credits expire?",
+    answer:
+      "No! Credits from Single and Starter packs never expire. Use them whenever you need them, at your own pace.",
   },
   {
     question: "What happens if I cancel my Pro subscription?",
     answer:
-      "You can cancel anytime with no penalty. After canceling, you'll continue to have Pro features until the end of your current billing period. Then your account will automatically switch to the Free plan.",
+      "You can cancel anytime with no penalty. After canceling, you'll continue to have unlimited access until the end of your current billing period.",
   },
   {
-    question: "Do you offer refunds?",
+    question: "Can I buy more credits while subscribed to Pro?",
     answer:
-      "We don't provide refunds for partial months or unused services. However, you can cancel anytime to stop future charges. We recommend trying our free plan first to ensure it meets your needs.",
-  },
-  {
-    question: "Is there a long-term commitment?",
-    answer:
-      "No! Our Pro plan is billed monthly with no long-term commitment. You can cancel anytime without any penalties or fees.",
+      "Pro subscribers have unlimited analyses, so there's no need to buy additional credits. If you cancel Pro, any previously purchased credits will still be available.",
   },
   {
     question: "What payment methods do you accept?",
@@ -477,9 +475,9 @@ const pricingFAQs = [
       "We accept all major credit cards (Visa, Mastercard, American Express) through our secure payment processor Stripe. Your payment information is encrypted and secure.",
   },
   {
-    question: "Can I try Pro before paying?",
+    question: "Which plan should I choose?",
     answer:
-      "Currently, we don't offer a trial period for Pro. However, our Free plan gives you 3 full analyses per month so you can experience the platform before upgrading. This lets you see the quality of our AI analysis firsthand.",
+      "If you're applying to a few specific jobs, Single ($2) is perfect. For active job seekers, Starter ($7) offers the best value at $0.70 per analysis. If you're applying to many positions, Pro ($12/month) gives you unlimited access.",
   },
 ];
 
@@ -493,60 +491,52 @@ export default function PricingPage() {
         <Header>
           <Title>Simple, Transparent Pricing</Title>
           <Subtitle>
-            Start free, upgrade when you're ready. No hidden fees, no surprises.
+            Pay per analysis or subscribe for unlimited access. No hidden fees.
           </Subtitle>
         </Header>
 
         <PricingSection>
           <PricingGrid>
-            {/* Free Plan */}
+            {/* Single Plan */}
             <PricingCard>
-              <PlanName>Free</PlanName>
+              <PlanName>Single</PlanName>
               <PlanPrice>
                 <Price>
-                  $0<span>/month</span>
+                  $2<span> one-time</span>
                 </Price>
-                <PriceSubtext>Perfect for trying out the platform</PriceSubtext>
+                <PriceSubtext>Try it out with 1 analysis</PriceSubtext>
               </PlanPrice>
               <FeatureList>
                 <Feature $enabled>
                   <CheckIcon />
-                  <span>3 analyses per month</span>
+                  <span>1 Pro analysis</span>
                 </Feature>
                 <Feature $enabled>
                   <CheckIcon />
-                  <span>Basic match score</span>
+                  <span>Detailed match insights</span>
                 </Feature>
                 <Feature $enabled>
                   <CheckIcon />
-                  <span>5 missing keywords</span>
+                  <span>All missing keywords</span>
                 </Feature>
                 <Feature $enabled>
                   <CheckIcon />
-                  <span>AI summary</span>
+                  <span>3 bullet points rewritten</span>
                 </Feature>
                 <Feature $enabled>
                   <CheckIcon />
-                  <span>Compare up to 3 jobs</span>
+                  <span>ATS optimization guide</span>
                 </Feature>
-                <Feature>
-                  <XIcon />
-                  <span>Professional rewriting</span>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>3 role recommendations</span>
                 </Feature>
-                <Feature>
-                  <XIcon />
-                  <span>ATS optimization</span>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>AI-optimized resume</span>
                 </Feature>
-                <Feature>
-                  <XIcon />
-                  <span>Role recommendations</span>
-                </Feature>
-                <Feature>
-                  <XIcon />
-                  <span>Resume generation</span>
-                </Feature>
-                <Feature>
-                  <XIcon />
+                <Feature $enabled>
+                  <CheckIcon />
                   <span>PDF download</span>
                 </Feature>
               </FeatureList>
@@ -556,24 +546,24 @@ export default function PricingPage() {
                 fullWidth
                 onClick={() => router.push("/signup")}
               >
-                Get Started Free
+                Buy Single
               </Button>
             </PricingCard>
 
-            {/* Pro Plan */}
+            {/* Starter Plan */}
             <PricingCard $featured>
-              <Badge>MOST POPULAR</Badge>
-              <PlanName>Pro</PlanName>
+              <Badge>BEST VALUE</Badge>
+              <PlanName>Starter</PlanName>
               <PlanPrice>
                 <Price>
-                  $9<span>/month</span>
+                  $7<span> one-time</span>
                 </Price>
-                <PriceSubtext>Everything you need to land your dream job</PriceSubtext>
+                <PriceSubtext>$0.70 per report - save 65%</PriceSubtext>
               </PlanPrice>
               <FeatureList>
                 <Feature $enabled>
                   <CheckIcon />
-                  <span>Unlimited analyses</span>
+                  <span>10 Pro analyses</span>
                 </Feature>
                 <Feature $enabled>
                   <CheckIcon />
@@ -581,15 +571,7 @@ export default function PricingPage() {
                 </Feature>
                 <Feature $enabled>
                   <CheckIcon />
-                  <span>All keywords + suggestions</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>AI-generated summaries</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>Compare unlimited jobs</span>
+                  <span>All missing keywords</span>
                 </Feature>
                 <Feature $enabled>
                   <CheckIcon />
@@ -618,7 +600,64 @@ export default function PricingPage() {
                 fullWidth
                 onClick={() => router.push("/signup")}
               >
-                Upgrade to Pro
+                Buy Starter
+              </Button>
+            </PricingCard>
+
+            {/* Pro Plan */}
+            <PricingCard>
+              <PlanName>Pro</PlanName>
+              <PlanPrice>
+                <Price>
+                  $12<span>/month</span>
+                </Price>
+                <PriceSubtext>Unlimited analyses for power users</PriceSubtext>
+              </PlanPrice>
+              <FeatureList>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>Unlimited Pro analyses</span>
+                </Feature>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>Detailed match insights</span>
+                </Feature>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>All missing keywords</span>
+                </Feature>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>3 bullet points rewritten</span>
+                </Feature>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>ATS optimization guide</span>
+                </Feature>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>3 role recommendations</span>
+                </Feature>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>AI-optimized resume</span>
+                </Feature>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>PDF download</span>
+                </Feature>
+                <Feature $enabled>
+                  <CheckIcon />
+                  <span>Priority support</span>
+                </Feature>
+              </FeatureList>
+              <Button
+                size="lg"
+                variant="secondary"
+                fullWidth
+                onClick={() => router.push("/signup")}
+              >
+                Subscribe to Pro
               </Button>
             </PricingCard>
           </PricingGrid>
@@ -638,7 +677,10 @@ export default function PricingPage() {
                 <FeatureName>Feature</FeatureName>
               </TableCell>
               <TableCell $center>
-                <FeatureName>Free</FeatureName>
+                <FeatureName>Single</FeatureName>
+              </TableCell>
+              <TableCell $center>
+                <FeatureName>Starter</FeatureName>
               </TableCell>
               <TableCell $center>
                 <FeatureName>Pro</FeatureName>
@@ -650,14 +692,25 @@ export default function PricingPage() {
                   <FeatureName>{feature.name}</FeatureName>
                 </TableCell>
                 <TableCell $center>
-                  {typeof feature.free === "boolean" ? (
-                    feature.free ? (
+                  {typeof feature.single === "boolean" ? (
+                    feature.single ? (
                       <CheckIcon />
                     ) : (
                       <XIcon />
                     )
                   ) : (
-                    <span>{feature.free}</span>
+                    <span>{feature.single}</span>
+                  )}
+                </TableCell>
+                <TableCell $center>
+                  {typeof feature.starter === "boolean" ? (
+                    feature.starter ? (
+                      <CheckIcon />
+                    ) : (
+                      <XIcon />
+                    )
+                  ) : (
+                    <span>{feature.starter}</span>
                   )}
                 </TableCell>
                 <TableCell $center>
@@ -704,12 +757,12 @@ export default function PricingPage() {
         <CTASection>
           <CTATitle>Ready to Boost Your Job Search?</CTATitle>
           <CTADescription>
-            Join 500+ professionals who improved their resumes and increased their
-            interview rates by 73%. Start free, upgrade when you're ready.
+            Join professionals who improved their resumes and increased their
+            interview rates. Start with just $2.
           </CTADescription>
           <CTAButtons>
             <Button size="lg" onClick={() => router.push("/signup")}>
-              Get Started Free
+              Get Started
             </Button>
             <Button
               size="lg"

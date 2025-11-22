@@ -1413,12 +1413,12 @@ const TestimonialHighlight = styled.div`
 const PricingGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 32px;
-  max-width: 900px;
+  gap: 24px;
+  max-width: 1100px;
   margin: 0 auto;
 
   @media (min-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 `;
 
@@ -1465,7 +1465,7 @@ const PricingTitle = styled.h3`
 const PricingPrice = styled.div`
   font-size: 56px;
   font-weight: 800;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   line-height: 1;
 
   span {
@@ -1473,6 +1473,13 @@ const PricingPrice = styled.div`
     color: var(--text-secondary);
     font-weight: 600;
   }
+`;
+
+const PricingSubtext = styled.p`
+  font-size: 14px;
+  color: #6BBF9F;
+  font-weight: 600;
+  margin-bottom: 24px;
 `;
 
 const PricingFeatures = styled.ul`
@@ -1963,19 +1970,19 @@ export default function Page() {
         "Our AI analysis typically takes 15-30 seconds to complete. For complex resumes and longer job descriptions, it may take up to 1 minute, but never longer.",
     },
     {
-      question: "How many analyses can I do with the free plan?",
+      question: "How does pricing work?",
       answer:
-        "The free plan allows 3 analyses per month. You can compare up to 3 job postings per analysis. Upgrade to Pro for unlimited analyses.",
+        "We offer flexible options: Single ($2) for 1 analysis, Starter ($7) for 10 analyses at best value, or Pro ($12/month) for unlimited access. Credits never expire!",
     },
     {
-      question: "What's included in the Pro plan?",
+      question: "What's included in every analysis?",
       answer:
-        "Pro includes unlimited analyses, detailed AI insights, professional rewriting of 3 bullet points, ATS optimization recommendations, and alternative role suggestions. Only $9/month.",
+        "Every Pro analysis includes detailed AI insights, all missing keywords, professional rewriting of 3 bullet points, ATS optimization guide, role recommendations, and AI-optimized resume generation.",
     },
     {
-      question: "Can I cancel anytime?",
+      question: "Can I cancel Pro anytime?",
       answer:
-        "Yes! No commitment required. You can cancel anytime. After canceling, you'll continue to have Pro features until the end of your billing period.",
+        "Yes! No commitment required. Cancel anytime and keep access until the end of your billing period. Your unused credits from packs never expire.",
     },
   ];
 
@@ -2735,47 +2742,83 @@ export default function Page() {
         </SectionHeader>
 
         <PricingGrid>
-          {/* Free Plan */}
+          {/* Single Plan */}
           <PricingCard>
-            <PricingTitle>Free</PricingTitle>
+            <PricingTitle>Single</PricingTitle>
             <PricingPrice>
-              $0<span>/month</span>
+              $2<span> one-time</span>
             </PricingPrice>
             <PricingFeatures>
               <PricingFeature $enabled>
                 <CheckIcon />
-                <span>3 analyses per month</span>
+                <span>1 Pro analysis</span>
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
-                <span>Basic match score</span>
+                <span>Detailed AI insights</span>
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
-                <span>Missing keywords</span>
+                <span>All missing keywords</span>
               </PricingFeature>
-              <PricingFeature>
-                <XIcon />
-                <span>Professional rewriting</span>
+              <PricingFeature $enabled>
+                <CheckIcon />
+                <span>3 bullet points rewritten</span>
               </PricingFeature>
-              <PricingFeature>
-                <XIcon />
-                <span>ATS optimization</span>
+              <PricingFeature $enabled>
+                <CheckIcon />
+                <span>ATS optimization guide</span>
               </PricingFeature>
-              <PricingFeature>
-                <XIcon />
-                <span>Role recommendations</span>
+              <PricingFeature $enabled>
+                <CheckIcon />
+                <span>AI-optimized resume</span>
               </PricingFeature>
             </PricingFeatures>
-            <PricingButton $variant="secondary">Start Free</PricingButton>
+            <PricingButton $variant="secondary">Buy Single</PricingButton>
+          </PricingCard>
+
+          {/* Starter Plan */}
+          <PricingCard $featured>
+            <PricingBadge>BEST VALUE</PricingBadge>
+            <PricingTitle>Starter</PricingTitle>
+            <PricingPrice>
+              $7<span> one-time</span>
+            </PricingPrice>
+            <PricingSubtext>$0.70 per report - save 65%</PricingSubtext>
+            <PricingFeatures>
+              <PricingFeature $enabled>
+                <CheckIcon />
+                <span>10 Pro analyses</span>
+              </PricingFeature>
+              <PricingFeature $enabled>
+                <CheckIcon />
+                <span>Detailed AI insights</span>
+              </PricingFeature>
+              <PricingFeature $enabled>
+                <CheckIcon />
+                <span>All missing keywords</span>
+              </PricingFeature>
+              <PricingFeature $enabled>
+                <CheckIcon />
+                <span>3 bullet points rewritten</span>
+              </PricingFeature>
+              <PricingFeature $enabled>
+                <CheckIcon />
+                <span>ATS optimization guide</span>
+              </PricingFeature>
+              <PricingFeature $enabled>
+                <CheckIcon />
+                <span>AI-optimized resume</span>
+              </PricingFeature>
+            </PricingFeatures>
+            <PricingButton $variant="primary">Buy Starter</PricingButton>
           </PricingCard>
 
           {/* Pro Plan */}
-          <PricingCard $featured>
-            <PricingBadge>MOST POPULAR</PricingBadge>
+          <PricingCard>
             <PricingTitle>Pro</PricingTitle>
             <PricingPrice>
-              $9<span>/month</span>
+              $12<span>/month</span>
             </PricingPrice>
             <PricingFeatures>
               <PricingFeature $enabled>
@@ -2788,11 +2831,11 @@ export default function Page() {
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
-                <span>Missing keywords + suggestions</span>
+                <span>All missing keywords</span>
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
-                <span>3 bullet points rewritten professionally</span>
+                <span>3 bullet points rewritten</span>
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
@@ -2800,10 +2843,10 @@ export default function Page() {
               </PricingFeature>
               <PricingFeature $enabled>
                 <CheckIcon />
-                <span>3 alternative role recommendations</span>
+                <span>Priority support</span>
               </PricingFeature>
             </PricingFeatures>
-            <PricingButton $variant="primary">Upgrade to Pro</PricingButton>
+            <PricingButton $variant="secondary">Subscribe</PricingButton>
           </PricingCard>
         </PricingGrid>
       </Section>

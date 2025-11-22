@@ -316,6 +316,106 @@ const LoadingText = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
+const LoadingSpinner = styled.div`
+  width: 80px;
+  height: 80px;
+  margin: 0 auto ${({ theme }) => theme.spacing.xl};
+  border: 4px solid ${({ theme }) => theme.colors.border};
+  border-top: 4px solid ${({ theme }) => theme.colors.primary};
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+const LoadingTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+`;
+
+const LoadingMessage = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.6;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 ${({ theme }) => theme.spacing.lg};
+  animation: messageSlide 0.5s ease-in-out;
+
+  @keyframes messageSlide {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+const LoadingModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+const LoadingModalContent = styled.div`
+  background: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 48px;
+  max-width: 600px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s ease-out;
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+`;
+
 interface Sentence {
   id: string;
   text: string;
@@ -351,8 +451,18 @@ interface CoverLetterGeneratorProps {
     paragraphs?: Paragraph[];
     keyHighlights?: string[];
   };
-  onSuccess?: () => void;
+  onSuccess?: (letterId?: string) => void;
 }
+
+const LOADING_MESSAGES = [
+  "Crafting your personalized introduction... ✍️",
+  "Analyzing job requirements... 🔍",
+  "Highlighting your best achievements... 🌟",
+  "Weaving your professional story... 📖",
+  "Optimizing tone and language... 🎯",
+  "Polishing the final touches... ✨",
+  "Almost there... 🚀",
+];
 
 const TEMPLATES = [
   {
@@ -413,6 +523,18 @@ export function CoverLetterGenerator({
   // Generation states
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedLetter, setGeneratedLetter] = useState<GeneratedLetter | null>(null);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+
+  // Rotate loading messages
+  useEffect(() => {
+    if (!isGenerating) return;
+
+    const interval = setInterval(() => {
+      setLoadingMessageIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [isGenerating]);
 
   // Load existing letter when modal opens in edit mode
   useEffect(() => {
@@ -483,7 +605,7 @@ export function CoverLetterGenerator({
 
       setGeneratedLetter(result.coverLetter);
       toast.success("Cover letter generated successfully!");
-      onSuccess?.();
+      onSuccess?.(result.coverLetter?.id);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
@@ -566,6 +688,21 @@ export function CoverLetterGenerator({
   const selectedSentenceData = getSelectedSentence();
   const activeParagraph = generatedLetter?.paragraphs?.find(p => p.id === activeParagraphId);
 
+  // Show full-screen loading overlay when generating
+  if (isGenerating) {
+    return (
+      <LoadingModalOverlay>
+        <LoadingModalContent>
+          <LoadingSpinner />
+          <LoadingTitle>Generating Your Cover Letter</LoadingTitle>
+          <LoadingMessage key={loadingMessageIndex}>
+            {LOADING_MESSAGES[loadingMessageIndex]}
+          </LoadingMessage>
+        </LoadingModalContent>
+      </LoadingModalOverlay>
+    );
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -576,18 +713,7 @@ export function CoverLetterGenerator({
     >
       <Modal.Body>
         <GeneratorContent>
-          {isGenerating ? (
-            <LoadingContainer>
-              <Spinner size="xl" />
-              <LoadingText>
-                Creating your personalized cover letter...
-                <br />
-                <span style={{ fontSize: '14px', marginTop: '8px', display: 'block' }}>
-                  This may take a few moments
-                </span>
-              </LoadingText>
-            </LoadingContainer>
-          ) : !generatedLetter ? (
+          {!generatedLetter ? (
             <>
               <OptionSection>
                 <OptionLabel>Template</OptionLabel>

@@ -109,9 +109,14 @@ export async function POST(request: NextRequest) {
     console.error("Free analysis error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
+    const errorStack = error instanceof Error ? error.stack : "";
 
     return NextResponse.json(
-      { error: `Failed to generate analysis: ${errorMessage}` },
+      {
+        error: `Failed to generate analysis: ${errorMessage}`,
+        stack: errorStack,
+        details: String(error)
+      },
       { status: 500 }
     );
   }

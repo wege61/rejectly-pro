@@ -10,6 +10,14 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/lib/constants";
+
+interface UserCredits {
+  credits: number;
+  hasSubscription: boolean;
+  canAnalyze: boolean;
+}
 
 // Icons
 const ViewIcon = () => (
@@ -190,6 +198,76 @@ const Description = styled.p`
   max-width: 600px;
 `;
 
+const HeaderRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const CreditsIndicator = styled.div<{ $low?: boolean; $subscription?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
+  background: ${({ $subscription, $low }) =>
+    $subscription
+      ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%)'
+      : $low
+        ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%)'
+        : 'linear-gradient(135deg, rgba(155, 135, 196, 0.2) 0%, rgba(180, 167, 214, 0.2) 100%)'
+  };
+  border: 2px solid ${({ $subscription, $low }) =>
+    $subscription
+      ? 'rgba(16, 185, 129, 0.5)'
+      : $low
+        ? 'rgba(245, 158, 11, 0.5)'
+        : 'rgba(155, 135, 196, 0.5)'
+  };
+  border-radius: ${({ theme }) => theme.radius.lg};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ $subscription, $low }) =>
+    $subscription
+      ? '#10b981'
+      : $low
+        ? '#f59e0b'
+        : '#e5e7eb'
+  };
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px ${({ $subscription, $low }) =>
+    $subscription
+      ? 'rgba(16, 185, 129, 0.2)'
+      : $low
+        ? 'rgba(245, 158, 11, 0.2)'
+        : 'rgba(155, 135, 196, 0.2)'
+  };
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px ${({ $subscription, $low }) =>
+      $subscription
+        ? 'rgba(16, 185, 129, 0.3)'
+        : $low
+          ? 'rgba(245, 158, 11, 0.3)'
+          : 'rgba(155, 135, 196, 0.3)'
+    };
+  }
+
+  .credit-value {
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+    color: ${({ $subscription, $low }) =>
+      $subscription
+        ? '#10b981'
+        : $low
+          ? '#f59e0b'
+          : '#9b87c4'
+    };
+  }
+`;
 
 const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
@@ -580,6 +658,7 @@ interface Report {
 
 export default function CoverLettersPage() {
   const toast = useToast();
+  const router = useRouter();
   const [coverLetters, setCoverLetters] = useState<CoverLetter[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -593,10 +672,30 @@ export default function CoverLettersPage() {
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
+  const [selectedFreeReportId, setSelectedFreeReportId] = useState<string | null>(null);
 
   // Cover letter editor
   const [selectedLetterForEdit, setSelectedLetterForEdit] = useState<CoverLetter | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+
+  // User credits
+  const [userCredits, setUserCredits] = useState<UserCredits>({
+    credits: 0,
+    hasSubscription: false,
+    canAnalyze: false,
+  });
+
+  const fetchCredits = useCallback(async () => {
+    try {
+      const response = await fetch("/api/user/credits");
+      if (response.ok) {
+        const data = await response.json();
+        setUserCredits(data);
+      }
+    } catch (error) {
+      console.error("Error fetching credits:", error);
+    }
+  }, []);
 
   const fetchCoverLetters = useCallback(async () => {
     try {
@@ -635,12 +734,12 @@ export default function CoverLettersPage() {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-      await Promise.all([fetchCoverLetters(), fetchReports()]);
+      await Promise.all([fetchCoverLetters(), fetchReports(), fetchCredits()]);
       setIsLoading(false);
     };
 
     loadData();
-  }, [fetchCoverLetters, fetchReports]);
+  }, [fetchCoverLetters, fetchReports, fetchCredits]);
 
   const handleReportClick = (reportId: string) => {
     const report = reports.find(r => r.id === reportId);
@@ -650,6 +749,7 @@ export default function CoverLettersPage() {
       setSelectedReportId(reportId);
       setIsGeneratorOpen(true);
     } else {
+      setSelectedFreeReportId(reportId);
       setIsPremiumModalOpen(true);
     }
   };
@@ -659,8 +759,30 @@ export default function CoverLettersPage() {
     setSelectedReportId(null);
   };
 
-  const handleGeneratorSuccess = () => {
-    fetchCoverLetters();
+  const handleGeneratorSuccess = async (letterId?: string) => {
+    await fetchCoverLetters();
+
+    // Auto-open the generated cover letter
+    if (letterId) {
+      const newLetter = coverLetters.find(l => l.id === letterId);
+      if (newLetter) {
+        setSelectedLetterForEdit(newLetter);
+        setIsEditorOpen(true);
+      } else {
+        // Refetch and find
+        const response = await fetch("/api/cover-letters");
+        if (response.ok) {
+          const data = await response.json();
+          const generated = data.coverLetters?.find((l: CoverLetter) => l.id === letterId);
+          if (generated) {
+            setSelectedLetterForEdit(generated);
+            setIsEditorOpen(true);
+          }
+        }
+      }
+    }
+
+    handleGeneratorClose();
     toast.success("Cover letter generated successfully!");
   };
 
@@ -767,10 +889,27 @@ export default function CoverLettersPage() {
   return (
     <Container>
       <Header>
-        <Title>Cover Letters</Title>
-        <Description>
-          Generate AI-powered cover letters from your reports and manage your applications.
-        </Description>
+        <HeaderRow>
+          <div>
+            <Title>Cover Letters</Title>
+            <Description>
+              Generate AI-powered cover letters from your reports and manage your applications.
+            </Description>
+          </div>
+          <CreditsIndicator
+            $subscription={userCredits.hasSubscription}
+            $low={!userCredits.hasSubscription && userCredits.credits <= 2}
+            onClick={() => router.push(ROUTES.APP.BILLING)}
+          >
+            {userCredits.hasSubscription ? (
+              <>✓ Pro Active</>
+            ) : (
+              <>
+                <span className="credit-value">{userCredits.credits}</span> credits
+              </>
+            )}
+          </CreditsIndicator>
+        </HeaderRow>
       </Header>
 
       <TwoColumnLayout>
@@ -1069,27 +1208,69 @@ export default function CoverLettersPage() {
               </ul>
             </div>
 
-            <Button
-              size="lg"
-              onClick={() => window.location.href = '/analyze'}
-              style={{
-                width: '100%',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                fontSize: '16px',
-                padding: '14px 24px',
-                marginBottom: '12px',
-              }}
-            >
-              Create Premium Report - $9
-            </Button>
-
-            <p style={{
-              fontSize: '12px',
-              color: '#6b7280',
-              marginTop: '12px',
-            }}>
-              One-time payment per report • Unlock all premium features
-            </p>
+            {userCredits.canAnalyze ? (
+              <>
+                <div style={{
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  marginBottom: '16px',
+                  fontSize: '14px',
+                  color: '#10b981',
+                }}>
+                  You have <strong>{userCredits.credits}</strong> credits available
+                </div>
+                <Button
+                  size="lg"
+                  onClick={() => {
+                    setIsPremiumModalOpen(false);
+                    if (selectedFreeReportId) {
+                      router.push(`/reports/${selectedFreeReportId}?upgrade=true`);
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    fontSize: '16px',
+                    padding: '14px 24px',
+                    marginBottom: '12px',
+                  }}
+                >
+                  Upgrade to Pro - Use 1 Credit
+                </Button>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#6b7280',
+                  marginTop: '12px',
+                }}>
+                  Uses 1 credit • Unlock all premium features
+                </p>
+              </>
+            ) : (
+              <>
+                <Button
+                  size="lg"
+                  onClick={() => router.push(ROUTES.APP.BILLING)}
+                  style={{
+                    width: '100%',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    fontSize: '16px',
+                    padding: '14px 24px',
+                    marginBottom: '12px',
+                  }}
+                >
+                  Buy Credits to Unlock
+                </Button>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#6b7280',
+                  marginTop: '12px',
+                }}>
+                  Starting at $2 for 1 credit • Best value: $7 for 10 credits
+                </p>
+              </>
+            )}
           </div>
         </Modal.Body>
       </Modal>

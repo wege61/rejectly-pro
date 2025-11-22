@@ -1,28 +1,62 @@
 // Pricing
 export const PRICING = {
-  FREE: {
-    name: "Free Summary",
-    price: 0,
+  SINGLE: {
+    id: "single",
+    name: "Single",
+    price: 2, // USD
+    priceInCents: 200,
+    credits: 1,
+    type: "one-time" as const,
+    description: "Try it out",
     features: [
-      "Upload 1 CV",
-      "Analyze up to 3 job postings",
-      "Basic keyword gap analysis",
-      "Free improved summary",
-      "Match score",
+      "1 Pro analysis",
+      "Detailed match insights",
+      "All missing keywords",
+      "3 bullet points rewritten",
+      "ATS optimization guide",
+      "3 role recommendations",
+      "AI-optimized resume",
+      "PDF download",
+    ],
+  },
+  STARTER: {
+    id: "starter",
+    name: "Starter",
+    price: 7, // USD
+    priceInCents: 700,
+    credits: 10,
+    type: "one-time" as const,
+    description: "Best value",
+    popular: true,
+    features: [
+      "10 Pro analyses",
+      "Detailed match insights",
+      "All missing keywords",
+      "3 bullet points rewritten",
+      "ATS optimization guide",
+      "3 role recommendations",
+      "AI-optimized resume",
+      "PDF download",
     ],
   },
   PRO: {
-    name: "Pro Report",
-    price: 9, // USD
-    priceInCents: 900,
+    id: "pro",
+    name: "Pro",
+    price: 12, // USD
+    priceInCents: 1200,
+    credits: -1, // unlimited
+    type: "subscription" as const,
+    description: "Unlimited access",
     features: [
-      "Everything in Free",
-      "Detailed keyword analysis",
-      "3 rewritten bullet points",
-      "5 missing keywords highlighted",
+      "Unlimited Pro analyses",
+      "Detailed match insights",
+      "All missing keywords",
+      "3 bullet points rewritten",
+      "ATS optimization guide",
       "3 role recommendations",
-      "ATS compatibility flags",
-      "Downloadable PDF report",
+      "AI-optimized resume",
+      "PDF download",
+      "Priority support",
     ],
   },
 } as const;
@@ -44,11 +78,15 @@ export const FILE_LIMITS = {
 export const ANALYSIS_LIMITS = {
   FREE_USER: {
     maxJobsPerAnalysis: 3,
-    maxAnalysesPerMonth: 5,
+    maxAnalysesPerMonth: 3, // Free tier
+  },
+  CREDIT_USER: {
+    maxJobsPerAnalysis: 10,
+    // Uses credits per analysis
   },
   PRO_USER: {
     maxJobsPerAnalysis: 10,
-    maxAnalysesPerMonth: -1, // unlimited
+    maxAnalysesPerMonth: -1, // unlimited with subscription
   },
 } as const;
 

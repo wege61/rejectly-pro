@@ -7,13 +7,20 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/contexts/ToastContext";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { GeneratedCV } from "@/types/cv";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
+import { ROUTES } from "@/lib/constants";
+
+interface UserCredits {
+  credits: number;
+  hasSubscription: boolean;
+  canAnalyze: boolean;
+}
 
 // Icons
 const TargetIcon = () => (
@@ -425,6 +432,69 @@ const HeaderMeta = styled.div`
   gap: ${({ theme }) => theme.spacing.md};
   flex-wrap: wrap;
   align-items: center;
+`;
+
+const CreditsIndicator = styled.div<{ $low?: boolean; $subscription?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
+  background: ${({ $subscription, $low }) =>
+    $subscription
+      ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%)'
+      : $low
+        ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%)'
+        : 'linear-gradient(135deg, rgba(155, 135, 196, 0.2) 0%, rgba(180, 167, 214, 0.2) 100%)'
+  };
+  border: 2px solid ${({ $subscription, $low }) =>
+    $subscription
+      ? 'rgba(16, 185, 129, 0.5)'
+      : $low
+        ? 'rgba(245, 158, 11, 0.5)'
+        : 'rgba(155, 135, 196, 0.5)'
+  };
+  border-radius: ${({ theme }) => theme.radius.lg};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ $subscription, $low }) =>
+    $subscription
+      ? '#10b981'
+      : $low
+        ? '#f59e0b'
+        : '#e5e7eb'
+  };
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px ${({ $subscription, $low }) =>
+    $subscription
+      ? 'rgba(16, 185, 129, 0.2)'
+      : $low
+        ? 'rgba(245, 158, 11, 0.2)'
+        : 'rgba(155, 135, 196, 0.2)'
+  };
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px ${({ $subscription, $low }) =>
+      $subscription
+        ? 'rgba(16, 185, 129, 0.3)'
+        : $low
+          ? 'rgba(245, 158, 11, 0.3)'
+          : 'rgba(155, 135, 196, 0.3)'
+    };
+  }
+
+  .credit-value {
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+    color: ${({ $subscription, $low }) =>
+      $subscription
+        ? '#10b981'
+        : $low
+          ? '#f59e0b'
+          : '#9b87c4'
+    };
+  }
 `;
 
 const Grid = styled.div`
@@ -1960,9 +2030,11 @@ interface Report {
 export default function ReportDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const toast = useToast();
   const { user } = useAuth();
   const reportId = params.id as string;
+  const shouldAutoUpgrade = searchParams.get('upgrade') === 'true';
 
   const [isLoading, setIsLoading] = useState(true);
   const [isUpgrading, setIsUpgrading] = useState(false);
@@ -1983,6 +2055,45 @@ export default function ReportDetailPage() {
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const wasGeneratingRef = useRef(false);
+  const [userCredits, setUserCredits] = useState<UserCredits>({
+    credits: 0,
+    hasSubscription: false,
+    canAnalyze: false,
+  });
+
+  // Fetch user credits
+  useEffect(() => {
+    async function fetchCredits() {
+      try {
+        const response = await fetch("/api/user/credits");
+        if (response.ok) {
+          const data = await response.json();
+          setUserCredits(data);
+        }
+      } catch (error) {
+        console.error("Error fetching credits:", error);
+      }
+    }
+
+    fetchCredits();
+  }, []);
+
+  // Auto-upgrade when coming from cover letters page
+  const autoUpgradeTriggered = useRef(false);
+  useEffect(() => {
+    if (shouldAutoUpgrade && report && !report.pro && userCredits.canAnalyze && !autoUpgradeTriggered.current && !isLoading) {
+      autoUpgradeTriggered.current = true;
+      // Remove upgrade param from URL
+      router.replace(`/reports/${reportId}`, { scroll: false });
+      // Trigger upgrade
+      setTimeout(() => {
+        const upgradeButton = document.querySelector('[data-upgrade-button]') as HTMLButtonElement;
+        if (upgradeButton) {
+          upgradeButton.click();
+        }
+      }, 500);
+    }
+  }, [shouldAutoUpgrade, report, userCredits.canAnalyze, isLoading, router, reportId]);
 
   // Funny loading messages
   const loadingMessages = [
@@ -2536,6 +2647,19 @@ export default function ReportDetailPage() {
           <span style={{ color: "#9ca3af", fontSize: "14px" }}>
             Created on {new Date(report.created_at).toLocaleDateString("tr-TR")}
           </span>
+          <CreditsIndicator
+            $subscription={userCredits.hasSubscription}
+            $low={!userCredits.hasSubscription && userCredits.credits <= 2}
+            onClick={() => router.push(ROUTES.APP.BILLING)}
+          >
+            {userCredits.hasSubscription ? (
+              <>✓ Pro Active</>
+            ) : (
+              <>
+                <span className="credit-value">{userCredits.credits}</span> credits
+              </>
+            )}
+          </CreditsIndicator>
         </HeaderMeta>
         {jobPostingTitles.length > 0 && (
           <div style={{ marginTop: "12px" }}>
@@ -2905,8 +3029,11 @@ export default function ReportDetailPage() {
                         Get additional expertly rewritten bullet points with
                         metrics and achievements
                       </UnlockDescription>
-                      <UnlockButton onClick={handleUpgradeToPro}>
-                        Unlock for $9
+                      <UnlockButton
+                        onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => router.push(ROUTES.APP.BILLING)}
+                        disabled={isUpgrading}
+                      >
+                        {isUpgrading ? "Unlocking..." : userCredits.canAnalyze ? "Unlock with 1 Credit" : "Buy Credits to Unlock"}
                       </UnlockButton>
                     </UnlockOverlay>
                   </div>
@@ -3049,8 +3176,11 @@ export default function ReportDetailPage() {
                         Discover additional roles tailored to your unique skills
                         and experience
                       </UnlockDescription>
-                      <UnlockButton onClick={handleUpgradeToPro}>
-                        Unlock for $9
+                      <UnlockButton
+                        onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => router.push(ROUTES.APP.BILLING)}
+                        disabled={isUpgrading}
+                      >
+                        {isUpgrading ? "Unlocking..." : userCredits.canAnalyze ? "Unlock with 1 Credit" : "Buy Credits to Unlock"}
                       </UnlockButton>
                     </UnlockOverlay>
                   </div>
@@ -3212,8 +3342,11 @@ export default function ReportDetailPage() {
                         Get comprehensive strategies to beat applicant tracking
                         systems and land more interviews
                       </UnlockDescription>
-                      <UnlockButton onClick={handleUpgradeToPro}>
-                        Unlock for $9
+                      <UnlockButton
+                        onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => router.push(ROUTES.APP.BILLING)}
+                        disabled={isUpgrading}
+                      >
+                        {isUpgrading ? "Unlocking..." : userCredits.canAnalyze ? "Unlock with 1 Credit" : "Buy Credits to Unlock"}
                       </UnlockButton>
                     </UnlockOverlay>
                   </div>
@@ -3275,25 +3408,28 @@ export default function ReportDetailPage() {
                   </SocialProofBadge>
                 </SocialProofContainer>
 
-                {/* Price Display with Urgency */}
+                {/* Credit Display */}
                 <PriceDisplay>
                   <div style={{ marginBottom: "12px" }}>
-                    <OldPrice>$15</OldPrice>
-                    <CurrentPrice>$9</CurrentPrice>
-                    <DiscountBadge>40% OFF - Limited Time</DiscountBadge>
+                    <CurrentPrice>1 Credit</CurrentPrice>
+                    {userCredits.canAnalyze && (
+                      <DiscountBadge>You have {userCredits.credits} credits</DiscountBadge>
+                    )}
                   </div>
-                  <div
-                    style={{
-                      fontSize: "14px",
-                      opacity: 0.9,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "6px",
-                    }}
-                  >
-                    <ClockIcon /> Special launch pricing - ends soon!
-                  </div>
+                  {!userCredits.canAnalyze && (
+                    <div
+                      style={{
+                        fontSize: "14px",
+                        opacity: 0.9,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                      }}
+                    >
+                      <ClockIcon /> Buy credits to unlock Pro features
+                    </div>
+                  )}
                 </PriceDisplay>
 
                 {/* Comparison Table */}
@@ -3388,7 +3524,8 @@ export default function ReportDetailPage() {
 
                 <Button
                   size="lg"
-                  onClick={handleUpgradeToPro}
+                  data-upgrade-button
+                  onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => router.push(ROUTES.APP.BILLING)}
                   isLoading={isUpgrading}
                   style={{
                     backgroundColor: "white",
@@ -3405,9 +3542,13 @@ export default function ReportDetailPage() {
                 >
                   {isUpgrading ? (
                     "Upgrading..."
+                  ) : userCredits.canAnalyze ? (
+                    <>
+                      <RocketIcon /> Upgrade to Pro - Use 1 Credit
+                    </>
                   ) : (
                     <>
-                      <RocketIcon /> Upgrade to Pro - Only $9
+                      <RocketIcon /> Buy Credits to Upgrade
                     </>
                   )}
                 </Button>
@@ -3980,7 +4121,7 @@ export default function ReportDetailPage() {
 
             <Button
               size="lg"
-              onClick={handleUpgradeToPro}
+              onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => router.push(ROUTES.APP.BILLING)}
               isLoading={isUpgrading}
               style={{
                 width: '100%',
@@ -3990,7 +4131,7 @@ export default function ReportDetailPage() {
                 marginBottom: '12px',
               }}
             >
-              {isUpgrading ? 'Processing...' : 'Upgrade to Pro - $9'}
+              {isUpgrading ? 'Processing...' : userCredits.canAnalyze ? 'Upgrade to Pro - Use 1 Credit' : 'Buy Credits to Upgrade'}
             </Button>
 
             <p style={{
@@ -3998,7 +4139,7 @@ export default function ReportDetailPage() {
               color: '#6b7280',
               marginTop: '12px',
             }}>
-              One-time payment • Unlock all premium features
+              {userCredits.canAnalyze ? `You have ${userCredits.credits} credits • Uses 1 credit` : 'Buy credits to unlock all premium features'}
             </p>
           </div>
         </Modal.Body>

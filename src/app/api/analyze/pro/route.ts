@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateProReportPrompt } from "@/lib/ai/prompts";
+import { getUserAccessStatus, consumeCredit } from "@/lib/credits";
 
 export async function POST(request: NextRequest) {
   try {
@@ -50,8 +51,32 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // TODO: Check payment status (Stripe integration)
-    // For now, we'll skip payment check for testing
+    // Check user access (subscription or credits)
+    console.log("Checking access for user:", user.id);
+    const accessStatus = await getUserAccessStatus(user.id);
+    console.log("Access status:", accessStatus);
+
+    if (!accessStatus.canAnalyze) {
+      return NextResponse.json(
+        {
+          error: "No credits or subscription available",
+          credits: accessStatus.credits,
+          hasSubscription: accessStatus.hasSubscription
+        },
+        { status: 402 } // Payment Required
+      );
+    }
+
+    // If user doesn't have subscription, consume a credit
+    if (!accessStatus.hasSubscription) {
+      const creditConsumed = await consumeCredit(user.id);
+      if (!creditConsumed) {
+        return NextResponse.json(
+          { error: "Failed to consume credit" },
+          { status: 500 }
+        );
+      }
+    }
 
     // Fetch job documents
     const jobIds = report.job_ids as string[];
@@ -112,9 +137,14 @@ export async function POST(request: NextRequest) {
     console.error("Pro analysis error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
+    const errorStack = error instanceof Error ? error.stack : "";
 
     return NextResponse.json(
-      { error: `Failed to generate Pro analysis: ${errorMessage}` },
+      {
+        error: `Failed to generate Pro analysis: ${errorMessage}`,
+        stack: errorStack,
+        details: String(error)
+      },
       { status: 500 }
     );
   }

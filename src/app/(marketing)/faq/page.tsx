@@ -426,14 +426,14 @@ export default function FAQPage() {
       variant: "credit",
       questions: [
         {
-          question: "How many analyses can I do with the free plan?",
+          question: "How does the credit system work?",
           answer:
-            "The free plan allows <strong>3 analyses per month</strong>. You can compare up to 3 job postings per analysis. Upgrade to Pro for unlimited analyses and advanced features.",
+            "You can purchase credits to unlock Pro analyses. <strong>Single credit: $2</strong>, <strong>Starter pack (10 credits): $7</strong> (best value at $0.70/report). Each Pro analysis uses 1 credit. Alternatively, subscribe for <strong>$12/month</strong> for unlimited analyses.",
         },
         {
-          question: "What's included in the Pro plan?",
+          question: "What's included in a Pro analysis?",
           answer:
-            "Pro includes <strong>unlimited analyses,  detailed AI insights, professional rewriting of 3 bullet points, cover letter generating, ATS optimization recommendations, and alternative role suggestions</strong>. Only $9/month with no long-term commitment.",
+            "Pro includes <strong>detailed AI insights, professional rewriting of 3 bullet points, cover letter generation, ATS optimization recommendations, alternative role suggestions, and AI-optimized resume PDF</strong>. Purchase credits starting at $2 or subscribe for unlimited access.",
         },
         {
           question: "Can I cancel anytime?",
@@ -497,7 +497,7 @@ export default function FAQPage() {
         {
           question: "Can I analyze multiple job postings at once?",
           answer:
-            "Currently, each analysis compares your resume to one job posting. However, you can run multiple analyses (3 per month on Free, unlimited on Pro) to compare your resume against different positions and track which roles you're best suited for.",
+            "Currently, each analysis compares your resume to one job posting. However, you can run multiple analyses with credits or unlimited analyses with a Pro subscription to compare your resume against different positions and track which roles you're best suited for.",
         },
         {
           question: "Do you provide cover letter generation?",

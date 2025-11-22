@@ -1,10 +1,17 @@
 'use client';
 
 import styled from 'styled-components';
+import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { PRICING } from '@/lib/constants';
+
+interface UserCredits {
+  credits: number;
+  hasSubscription: boolean;
+  canAnalyze: boolean;
+}
 
 const Container = styled.div`
   max-width: 1200px;
@@ -45,8 +52,67 @@ const SectionTitle = styled.h2`
 const PricingGrid = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.spacing.lg};
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const CreditsCard = styled(Card)`
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  background: linear-gradient(135deg, rgba(155, 135, 196, 0.1) 0%, rgba(180, 167, 214, 0.1) 100%);
+  border: 1px solid rgba(155, 135, 196, 0.3);
+`;
+
+const CreditsContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const CreditsInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.lg};
+`;
+
+const CreditsNumber = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const CreditsValue = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const CreditsLabel = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const SubscriptionBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: ${({ theme }) => theme.radius.md};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+`;
+
+const PriceSubtext = styled.p`
+  font-size: 13px;
+  color: #6BBF9F;
+  font-weight: 600;
+  margin-top: 4px;
 `;
 
 const PricingCard = styled(Card)<{ $featured?: boolean }>`
@@ -156,13 +222,61 @@ const CheckIcon = () => (
 );
 
 export default function BillingPage() {
+  const [userCredits, setUserCredits] = useState<UserCredits>({
+    credits: 0,
+    hasSubscription: false,
+    canAnalyze: false,
+  });
+
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+
+  const fetchCredits = async () => {
+    try {
+      const response = await fetch("/api/user/credits");
+      if (response.ok) {
+        const data = await response.json();
+        setUserCredits(data);
+      }
+    } catch (error) {
+      console.error("Error fetching credits:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCredits();
+  }, []);
+
+  // TEST ONLY - Simulates purchase
+  const handleBuy = async (planId: string, credits: number, planName: string) => {
+    setIsLoading(planId);
+    try {
+      const response = await fetch("/api/credits/add-test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credits, planName }),
+      });
+
+      if (response.ok) {
+        alert(`✅ Success! Added ${credits} credits (${planName})`);
+        fetchCredits(); // Refresh credits
+      } else {
+        alert("❌ Failed to add credits");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("❌ Error occurred");
+    } finally {
+      setIsLoading(null);
+    }
+  };
+
   // Mock data - gerçek data Supabase'den gelecek
   const transactions = [
     {
       id: '1',
-      title: 'Pro Report - Senior Frontend Developer',
+      title: 'Starter Pack - 10 Credits',
       date: '2025-10-17',
-      amount: 9,
+      amount: 7,
       status: 'success',
     },
   ];
@@ -171,42 +285,91 @@ export default function BillingPage() {
     <Container>
       <Header>
         <Title>Billing</Title>
-        <Subtitle>Manage your payments and view transaction history</Subtitle>
+        <Subtitle>Buy credits or subscribe for unlimited access</Subtitle>
       </Header>
 
+      {/* Current Credits */}
+      <CreditsCard variant="elevated">
+        <CreditsContent>
+          <CreditsInfo>
+            {userCredits.hasSubscription ? (
+              <SubscriptionBadge>
+                ✓ Pro Subscription Active
+              </SubscriptionBadge>
+            ) : (
+              <CreditsNumber>
+                <CreditsValue>{userCredits.credits}</CreditsValue>
+                <CreditsLabel>Credits remaining</CreditsLabel>
+              </CreditsNumber>
+            )}
+          </CreditsInfo>
+        </CreditsContent>
+      </CreditsCard>
+
       <Section>
-        <SectionTitle>Pricing Plans</SectionTitle>
+        <SectionTitle>Buy Credits</SectionTitle>
         <PricingGrid>
-          {/* Free Plan */}
+          {/* Single Plan */}
           <PricingCard variant="bordered">
             <PricingHeader>
-              <PricingName>{PRICING.FREE.name}</PricingName>
+              <PricingName>{PRICING.SINGLE.name}</PricingName>
               <PricingPrice>
-                ${PRICING.FREE.price}
+                ${PRICING.SINGLE.price} <span>one-time</span>
               </PricingPrice>
             </PricingHeader>
             <FeatureList>
-              {PRICING.FREE.features.map((feature) => (
+              {PRICING.SINGLE.features.map((feature) => (
                 <FeatureItem key={feature}>
                   <CheckIcon />
                   <span>{feature}</span>
                 </FeatureItem>
               ))}
             </FeatureList>
-            <Button variant="secondary" fullWidth disabled>
-              Current Plan
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => handleBuy('single', 1, 'Single')}
+              disabled={isLoading === 'single'}
+            >
+              {isLoading === 'single' ? 'Processing...' : 'Buy Single'}
+            </Button>
+          </PricingCard>
+
+          {/* Starter Plan */}
+          <PricingCard variant="elevated" $featured>
+            <FeaturedBadge>
+              <Badge variant="info">Best Value</Badge>
+            </FeaturedBadge>
+            <PricingHeader>
+              <PricingName>{PRICING.STARTER.name}</PricingName>
+              <PricingPrice>
+                ${PRICING.STARTER.price} <span>one-time</span>
+              </PricingPrice>
+              <PriceSubtext>$0.70 per report - save 65%</PriceSubtext>
+            </PricingHeader>
+            <FeatureList>
+              {PRICING.STARTER.features.map((feature) => (
+                <FeatureItem key={feature}>
+                  <CheckIcon />
+                  <span>{feature}</span>
+                </FeatureItem>
+              ))}
+            </FeatureList>
+            <Button
+              fullWidth
+              onClick={() => handleBuy('starter', 10, 'Starter')}
+              disabled={isLoading === 'starter'}
+            >
+              {isLoading === 'starter' ? 'Processing...' : 'Buy Starter'}
             </Button>
           </PricingCard>
 
           {/* Pro Plan */}
-          <PricingCard variant="elevated" $featured>
-            <FeaturedBadge>
-              <Badge variant="info">Recommended</Badge>
-            </FeaturedBadge>
+          <PricingCard variant="bordered">
             <PricingHeader>
               <PricingName>{PRICING.PRO.name}</PricingName>
               <PricingPrice>
-                ${PRICING.PRO.price} <span>per month</span>
+                ${PRICING.PRO.price} <span>/month</span>
               </PricingPrice>
             </PricingHeader>
             <FeatureList>
@@ -217,8 +380,12 @@ export default function BillingPage() {
                 </FeatureItem>
               ))}
             </FeatureList>
-            <Button fullWidth>
-              Purchase Pro Report
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => alert('⚠️ Subscription requires Stripe integration')}
+            >
+              Subscribe
             </Button>
           </PricingCard>
         </PricingGrid>

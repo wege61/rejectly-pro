@@ -574,13 +574,15 @@ export default function TermsPage() {
 
           <HighlightBox>
             <Paragraph>
-              <strong>Free Plan:</strong> Limited to 3 analyses per month with
-              basic features. No payment required.
+              <strong>Credit System:</strong> Purchase credits for Pro analyses.
+              Single credit: $2, Starter pack (10 credits): $7. Each Pro
+              analysis uses 1 credit.
             </Paragraph>
             <Paragraph>
-              <strong>Pro Plan ($9/month):</strong> Unlimited analyses with
-              advanced features including professional resume rewriting, ATS
-              optimization, and role recommendations.
+              <strong>Pro Subscription ($12/month):</strong> Unlimited analyses
+              with advanced features including professional resume rewriting,
+              ATS optimization, cover letter generation, and role
+              recommendations.
             </Paragraph>
           </HighlightBox>
 

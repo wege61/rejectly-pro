@@ -109,6 +109,63 @@ const Subtitle = styled.p`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
+const CreditsCard = styled(Card)`
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  background: linear-gradient(135deg, rgba(155, 135, 196, 0.1) 0%, rgba(180, 167, 214, 0.1) 100%);
+  border: 1px solid rgba(155, 135, 196, 0.3);
+`;
+
+const CreditsContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const CreditsInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.lg};
+`;
+
+const CreditsNumber = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const CreditsValue = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const CreditsLabel = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const SubscriptionBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+`;
+
+const LowCreditsWarning = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  color: #f59e0b;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+`;
+
 const Grid = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.spacing.lg};
@@ -621,6 +678,12 @@ interface Stats {
   totalCoverLetters: number;
 }
 
+interface UserCredits {
+  credits: number;
+  hasSubscription: boolean;
+  canAnalyze: boolean;
+}
+
 interface Report {
   id: string;
   created_at: string;
@@ -660,6 +723,11 @@ export default function DashboardPage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showFABHint, setShowFABHint] = useState(false);
   const [fabHintCompleted, setFabHintCompleted] = useState(false);
+  const [userCredits, setUserCredits] = useState<UserCredits>({
+    credits: 0,
+    hasSubscription: false,
+    canAnalyze: false,
+  });
 
   // Check if user has seen welcome modal and FAB hint
   useEffect(() => {
@@ -847,6 +915,17 @@ export default function DashboardPage() {
         if (coverLettersData.data) {
           setRecentCoverLetters(coverLettersData.data);
         }
+
+        // Fetch user credits
+        try {
+          const creditsResponse = await fetch("/api/user/credits");
+          if (creditsResponse.ok) {
+            const creditsData = await creditsResponse.json();
+            setUserCredits(creditsData);
+          }
+        } catch (creditsError) {
+          console.error("Error fetching credits:", creditsError);
+        }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -893,6 +972,37 @@ export default function DashboardPage() {
             your overview.
           </Subtitle>
         </Header>
+
+        {/* Credits Card */}
+        <CreditsCard variant="elevated">
+          <CreditsContent>
+            <CreditsInfo>
+              {userCredits.hasSubscription ? (
+                <SubscriptionBadge>
+                  ✓ Pro Subscription Active
+                </SubscriptionBadge>
+              ) : (
+                <CreditsNumber>
+                  <CreditsValue>{userCredits.credits}</CreditsValue>
+                  <CreditsLabel>Credits remaining</CreditsLabel>
+                </CreditsNumber>
+              )}
+              {!userCredits.hasSubscription && userCredits.credits <= 2 && userCredits.credits > 0 && (
+                <LowCreditsWarning>
+                  ⚠ Running low on credits
+                </LowCreditsWarning>
+              )}
+            </CreditsInfo>
+            {!userCredits.hasSubscription && (
+              <Button
+                size="sm"
+                onClick={() => router.push(ROUTES.APP.BILLING)}
+              >
+                {userCredits.credits === 0 ? "Buy Credits" : "Get More Credits"}
+              </Button>
+            )}
+          </CreditsContent>
+        </CreditsCard>
 
         {/* Stats */}
         <Grid>

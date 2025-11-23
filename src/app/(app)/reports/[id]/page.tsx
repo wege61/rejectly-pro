@@ -4080,21 +4080,6 @@ export default function ReportDetailPage() {
                   data-upgrade-button
                   onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
                   isLoading={isUpgrading}
-<<<<<<< Updated upstream
-=======
-                  style={{
-                    backgroundColor: "white",
-                    color: "var(--accent)",
-                    fontSize: "18px",
-                    padding: "16px 32px",
-                    width: "100%",
-                    marginTop: "24px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                  }}
->>>>>>> Stashed changes
                 >
                   {isUpgrading ? (
                     "Upgrading..."

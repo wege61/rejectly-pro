@@ -458,7 +458,7 @@ const CreditsIndicator = styled.div<{ $low?: boolean; $subscription?: boolean }>
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ $subscription, $low }) =>
     $subscription
-      ? '#10b981'
+      ? 'var(--success)'
       : $low
         ? '#f59e0b'
         : '#e5e7eb'
@@ -490,7 +490,7 @@ const CreditsIndicator = styled.div<{ $low?: boolean; $subscription?: boolean }>
     font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
     color: ${({ $subscription, $low }) =>
       $subscription
-        ? '#10b981'
+        ? 'var(--success)'
         : $low
           ? '#f59e0b'
           : '#9b87c4'
@@ -593,7 +593,7 @@ const ComparisonValue = styled.div<{ $isOptimized?: boolean }>`
   font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ $isOptimized, theme }) =>
-    $isOptimized ? "#10b981" : theme.colors.primary};
+    $isOptimized ? "var(--success)" : theme.colors.primary};
 `;
 
 const ScoreDivider = styled.div`
@@ -607,7 +607,7 @@ const ImprovementBadge = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
   color: white;
   border-radius: ${({ theme }) => theme.radius.full};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
@@ -660,7 +660,7 @@ const ImpactBadge = styled.div`
   justify-content: center;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
   color: white;
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
@@ -733,7 +733,7 @@ const ImpactPoints = styled.div`
 const ImpactValue = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: #10b981;
+  color: var(--success);
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     font-size: ${({ theme }) => theme.typography.fontSize.xl};
@@ -755,7 +755,7 @@ const TotalImpactSummary = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: ${({ theme }) => theme.spacing.lg};
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   border-radius: ${({ theme }) => theme.radius.lg};
   color: white;
   margin-top: ${({ theme }) => theme.spacing.md};
@@ -807,7 +807,7 @@ const BulletList = styled.ul`
 `;
 
 const ProUpgradeCard = styled(Card)`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   color: white;
   text-align: center;
 
@@ -1062,7 +1062,7 @@ const UnlockDescription = styled.p`
 
 const UnlockButton = styled(Button)`
   background: white !important;
-  color: #667eea !important;
+  color: var(--accent) !important;
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
 
   &:hover {
@@ -1489,7 +1489,7 @@ const PersonalizedAlert = styled.div<{
       return "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)";
     if ($variant === "warning")
       return "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)";
-    return "linear-gradient(135deg, #10b981 0%, #059669 100%)";
+    return "linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%)";
   }};
   color: white;
   font-size: ${({ theme }) => theme.typography.fontSize.base};
@@ -1556,7 +1556,7 @@ const CurrentPrice = styled.span`
 
 const DiscountBadge = styled.span`
   display: inline-block;
-  background: #10b981;
+  background: var(--success);
   color: white;
   padding: 4px 12px;
   border-radius: ${({ theme }) => theme.radius.full};
@@ -1588,7 +1588,7 @@ const ComparisonColumn = styled.div<{ $isAfter?: boolean }>`
     $isAfter
       ? "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)"
       : "rgba(239, 68, 68, 0.05)"};
-  border: 1px solid ${({ $isAfter }) => ($isAfter ? "#10b981" : "#ef4444")};
+  border: 1px solid ${({ $isAfter }) => ($isAfter ? "var(--success)" : "#ef4444")};
   border-radius: ${({ theme }) => theme.radius.md};
   position: relative;
 `;
@@ -1600,7 +1600,7 @@ const ColumnLabel = styled.div<{ $isAfter?: boolean }>`
   padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
   background: ${({ $isAfter }) =>
     $isAfter
-      ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+      ? "linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%)"
       : "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"};
   color: white;
   border-radius: ${({ theme }) => theme.radius.full};
@@ -1627,7 +1627,7 @@ const SampleBadge = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   color: white;
   border-radius: ${({ theme }) => theme.radius.md};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
@@ -1641,7 +1641,7 @@ const ArrowIcon = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  color: #10b981;
+  color: var(--success);
 
   @media (max-width: 768px) {
     transform: rotate(90deg);
@@ -1692,7 +1692,7 @@ const RoleFitBadge = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
   color: white;
   border-radius: ${({ theme }) => theme.radius.full};
   font-size: ${({ theme }) => theme.typography.fontSize.base};
@@ -1732,7 +1732,7 @@ const ATSIcon = styled.div`
   flex-shrink: 0;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
   color: white;
   border-radius: ${({ theme }) => theme.radius.md};
   display: flex;
@@ -1789,7 +1789,7 @@ const PreviewActions = styled.div`
 `;
 
 const ImprovementHighlight = styled.div`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   color: white;
   padding: ${({ theme }) => theme.spacing.lg};
   border-radius: ${({ theme }) => theme.radius.md};
@@ -1885,7 +1885,7 @@ const IntroHeading = styled.h3`
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
-  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1930,7 +1930,7 @@ const FeatureIcon = styled.div`
   width: 24px;
   height: 24px;
   border-radius: ${({ theme }) => theme.radius.full};
-  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   color: white;
   font-size: 12px;
   flex-shrink: 0;
@@ -1967,7 +1967,7 @@ const SuccessCelebration = styled.div`
   text-align: center;
   padding: ${({ theme }) => theme.spacing.xl} 0;
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
-  border: 2px solid #10b981;
+  border: 2px solid var(--success);
   border-radius: ${({ theme }) => theme.radius.lg};
   position: relative;
   overflow: hidden;
@@ -1997,7 +1997,7 @@ const SuccessIcon = styled.div`
   justify-content: center;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
   border-radius: ${({ theme }) => theme.radius.full};
   margin-bottom: ${({ theme }) => theme.spacing.md};
   box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
@@ -2012,7 +2012,7 @@ const SuccessIcon = styled.div`
 const SuccessTitle = styled.h3`
   font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: #10b981;
+  color: var(--success);
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
@@ -2073,7 +2073,7 @@ const ActionCardIcon = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost'
   border-radius: ${({ theme }) => theme.radius.md};
   background: ${({ theme, $variant }) =>
     $variant === 'primary'
-      ? `linear-gradient(135deg, ${theme.colors.primary} 0%, #764ba2 100%)`
+      ? `linear-gradient(135deg, ${theme.colors.primary} 0%, var(--primary-600) 100%)`
       : $variant === 'secondary'
       ? `${theme.colors.primary}15`
       : $variant === 'accent'
@@ -2175,7 +2175,7 @@ const LoadingTitle = styled.h3`
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
   margin-bottom: ${({ theme }) => theme.spacing.md};
-  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -2252,7 +2252,7 @@ const TimeEstimate = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
   padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
   color: white;
   border-radius: ${({ theme }) => theme.radius.full};
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
@@ -2407,13 +2407,13 @@ const RoleMatch = styled.div`
   gap: ${({ theme }) => theme.spacing.xs};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: #10b981;
+  color: var(--success);
 `;
 
 const RoleMatchIcon = styled.div`
   width: 20px;
   height: 20px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -2481,7 +2481,7 @@ const ChartCenter = styled.div`
 const CenterScore = styled.div`
   font-size: 48px;
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: #10b981;
+  color: var(--success);
   line-height: 1;
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
@@ -3635,7 +3635,7 @@ export default function ReportDetailPage() {
                         cy="140"
                         r="120"
                         fill="none"
-                        stroke="#10b981"
+                        stroke="var(--success)"
                         strokeWidth="20"
                         strokeDasharray={`${(optimizedScore / 100) * 754} 754`}
                         strokeLinecap="round"
@@ -3662,7 +3662,7 @@ export default function ReportDetailPage() {
                   <ImprovementsList>
                     {improvementBreakdown.map((improvement, index) => {
                       const colors = [
-                        "#10b981",
+                        "var(--success)",
                         "#3b82f6",
                         "#8b5cf6",
                         "#f59e0b",
@@ -4080,6 +4080,21 @@ export default function ReportDetailPage() {
                   data-upgrade-button
                   onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
                   isLoading={isUpgrading}
+<<<<<<< Updated upstream
+=======
+                  style={{
+                    backgroundColor: "white",
+                    color: "var(--accent)",
+                    fontSize: "18px",
+                    padding: "16px 32px",
+                    width: "100%",
+                    marginTop: "24px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                  }}
+>>>>>>> Stashed changes
                 >
                   {isUpgrading ? (
                     "Upgrading..."
@@ -4678,7 +4693,7 @@ export default function ReportDetailPage() {
               justifyContent: 'center',
             }}>
               <div style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'var(--gradient-primary)',
                 borderRadius: '16px',
                 padding: '16px',
                 display: 'inline-flex',
@@ -4690,7 +4705,7 @@ export default function ReportDetailPage() {
               fontSize: '24px',
               fontWeight: 600,
               marginBottom: '16px',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'var(--gradient-primary)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
@@ -4714,7 +4729,7 @@ export default function ReportDetailPage() {
               marginBottom: '24px',
               textAlign: 'left',
             }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#667eea' }}>
+              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: 'var(--accent)' }}>
                 ✨ What you'll get:
               </div>
               <ul style={{
@@ -4725,31 +4740,31 @@ export default function ReportDetailPage() {
                 color: '#d1d5db',
               }}>
                 <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
                     <CheckCircleIcon />
                   </div>
                   <span>6 professional templates to choose from</span>
                 </li>
                 <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
                     <CheckCircleIcon />
                   </div>
                   <span>Multiple tones (Professional, Friendly, Formal)</span>
                 </li>
                 <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
                     <CheckCircleIcon />
                   </div>
                   <span>Customizable length and language (EN/TR)</span>
                 </li>
                 <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
                     <CheckCircleIcon />
                   </div>
                   <span>Interactive editor with alternative phrasings</span>
                 </li>
                 <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
                     <CheckCircleIcon />
                   </div>
                   <span>Tailored to your CV and job posting</span>
@@ -4763,7 +4778,7 @@ export default function ReportDetailPage() {
               isLoading={isUpgrading}
               style={{
                 width: '100%',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'var(--gradient-primary)',
                 fontSize: '16px',
                 padding: '14px 24px',
                 marginBottom: '12px',

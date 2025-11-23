@@ -218,15 +218,15 @@ const GradientBackground = styled.div<{ $variant: number }>`
   background: ${({ $variant }) => {
     switch ($variant) {
       case 0:
-        return 'radial-gradient(circle at 30% 50%, #667eea 0%, transparent 50%)';
+        return 'radial-gradient(circle at 30% 50%, var(--primary-500) 0%, transparent 50%)';
       case 1:
-        return 'radial-gradient(circle at 70% 50%, #764ba2 0%, transparent 50%)';
+        return 'radial-gradient(circle at 70% 50%, var(--primary-600) 0%, transparent 50%)';
       case 2:
-        return 'radial-gradient(circle at 50% 30%, #f093fb 0%, transparent 50%)';
+        return 'radial-gradient(circle at 50% 30%, var(--primary-400) 0%, transparent 50%)';
       case 3:
-        return 'radial-gradient(circle at 50% 70%, #4facfe 0%, transparent 50%)';
+        return 'radial-gradient(circle at 50% 70%, var(--primary-500) 0%, transparent 50%)';
       default:
-        return 'radial-gradient(circle at 50% 50%, #667eea 0%, transparent 50%)';
+        return 'radial-gradient(circle at 50% 50%, var(--primary-500) 0%, transparent 50%)';
     }
   }};
 `;

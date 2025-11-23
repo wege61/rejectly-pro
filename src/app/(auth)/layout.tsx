@@ -8,7 +8,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-alt);
+  background-color: var(--bg-color);
   padding: ${({ theme }) => theme.spacing.lg};
 `;
 

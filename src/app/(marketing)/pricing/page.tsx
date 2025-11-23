@@ -35,11 +35,6 @@ const Title = styled.h1`
   font-size: 56px;
   font-weight: 900;
   margin-bottom: 24px;
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-
   @media (max-width: 768px) {
     font-size: 36px;
   }
@@ -80,7 +75,7 @@ const PricingGrid = styled.div`
 
 const PricingCard = styled.div<{ $featured?: boolean }>`
   background: var(--bg-alt);
-  border: 2px solid ${({ $featured }) => ($featured ? "#9B87C4" : "var(--border-color)")};
+  border: 2px solid ${({ $featured }) => ($featured ? "var(--accent)" : "var(--border-color)")};
   border-radius: 20px;
   padding: 48px;
   position: relative;
@@ -89,13 +84,13 @@ const PricingCard = styled.div<{ $featured?: boolean }>`
   ${({ $featured }) =>
     $featured &&
     `
-    box-shadow: 0 10px 40px rgba(155, 135, 196, 0.25);
+    box-shadow: 0 10px 40px rgba(var(--accent-rgb), 0.25);
     transform: scale(1.05);
   `}
 
   &:hover {
     transform: ${({ $featured }) => ($featured ? "scale(1.07)" : "translateY(-8px)")};
-    box-shadow: 0 15px 50px rgba(155, 135, 196, 0.2);
+    box-shadow: 0 15px 50px rgba(var(--accent-rgb), 0.2);
   }
 
   @media (max-width: 968px) {
@@ -113,7 +108,7 @@ const Badge = styled.div`
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
+  background: var(--accent);
   color: white;
   padding: 8px 20px;
   border-radius: 20px;
@@ -121,7 +116,7 @@ const Badge = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  box-shadow: 0 4px 12px rgba(155, 135, 196, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
 `;
 
 const PlanName = styled.h2`
@@ -178,7 +173,7 @@ const Feature = styled.li<{ $enabled?: boolean }>`
     width: 20px;
     height: 20px;
     margin-top: 2px;
-    color: ${({ $enabled }) => ($enabled ? "#6BBF9F" : "#FF8FA3")};
+    color: ${({ $enabled }) => ($enabled ? "var(--success)" : "var(--error)")};
   }
 `;
 
@@ -203,10 +198,6 @@ const SectionTitle = styled.h2`
   font-size: 42px;
   font-weight: 800;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 
   @media (max-width: 768px) {
     font-size: 32px;
@@ -243,7 +234,7 @@ const TableRow = styled.div<{ $header?: boolean }>`
   ${({ $header }) =>
     $header &&
     `
-    background: linear-gradient(135deg, rgba(191, 172, 226, 0.08) 0%, rgba(180, 167, 214, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.08) 0%, rgba(var(--primary-700-rgb), 0.08) 100%);
     font-weight: 700;
   `}
 
@@ -303,8 +294,8 @@ const FAQItem = styled.div<{ $isOpen: boolean }>`
   ${({ $isOpen }) =>
     $isOpen &&
     `
-    border-color: rgba(155, 135, 196, 0.4);
-    box-shadow: 0 4px 12px rgba(155, 135, 196, 0.15);
+    border-color: var(--primary-200);
+    box-shadow: 0 4px 12px rgba(var(--primary-500-rgb), 0.15);
   `}
 `;
 
@@ -322,7 +313,7 @@ const Question = styled.button`
   transition: background 0.2s ease;
 
   &:hover {
-    background: linear-gradient(135deg, rgba(191, 172, 226, 0.05) 0%, rgba(180, 167, 214, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.05) 0%, rgba(var(--primary-700-rgb), 0.05) 100%);
   }
 
   @media (max-width: 768px) {
@@ -343,7 +334,7 @@ const QuestionText = styled.span`
 
 const QuestionIcon = styled.span<{ $isOpen: boolean }>`
   font-size: 24px;
-  color: #9B87C4;
+  color: var(--primary-500);
   transition: transform 0.3s ease;
   transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
   flex-shrink: 0;
@@ -374,10 +365,10 @@ const AnswerText = styled.p`
 const CTASection = styled.section`
   background: linear-gradient(
     135deg,
-    rgba(191, 172, 226, 0.1) 0%,
-    rgba(180, 167, 214, 0.1) 100%
+    rgba(var(--primary-500-rgb), 0.1) 0%,
+    rgba(var(--primary-700-rgb), 0.1) 100%
   );
-  border: 1px solid rgba(155, 135, 196, 0.25);
+  border: 1px solid var(--primary-200);
   border-radius: 24px;
   padding: 64px 48px;
   text-align: center;
@@ -393,10 +384,7 @@ const CTATitle = styled.h2`
   font-size: 38px;
   font-weight: 800;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-color);
 
   @media (max-width: 768px) {
     font-size: 28px;
@@ -595,7 +583,7 @@ export default function PricingPage() {
                 </Feature>
               </FeatureList>
               <Button
-                style={{background: "linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%)"}}
+                style={{background: "var(--accent)"}}
                 size="lg"
                 fullWidth
                 onClick={() => router.push("/signup")}

@@ -202,10 +202,10 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
   border: 2px solid ${({ $isOptimized, theme }) =>
-    $isOptimized ? "rgba(34, 197, 94, 0.3)" : theme.colors.border};
+    $isOptimized ? "var(--success-light)" : theme.colors.border};
   background: ${({ $isOptimized, theme }) =>
     $isOptimized
-      ? "linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%)"
+      ? "var(--success-bg)"
       : theme.colors.surface};
   box-shadow: ${({ theme }) => theme.shadow.sm};
   position: relative;
@@ -220,8 +220,8 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
     height: 4px;
     background: ${({ $isOptimized, theme }) =>
       $isOptimized
-        ? "linear-gradient(90deg, #22c55e 0%, #10b981 100%)"
-        : `linear-gradient(90deg, ${theme.colors.primary} 0%, ${theme.colors.secondary} 100%)`};
+        ? "var(--success)"
+        : "var(--gradient-primary)"};
     opacity: 0;
     transition: opacity ${({ theme }) => theme.transitions.fast};
   }
@@ -230,7 +230,7 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
     transform: translateY(-4px);
     box-shadow: ${({ theme }) => theme.shadow.lg};
     border-color: ${({ $isOptimized, theme }) =>
-      $isOptimized ? "#22c55e" : theme.colors.primary};
+      $isOptimized ? "var(--success)" : "var(--accent)"};
 
     &::before {
       opacity: 1;
@@ -254,10 +254,10 @@ const CVCardIcon = styled.div<{ $isOptimized?: boolean }>`
   justify-content: center;
   background: ${({ $isOptimized, theme }) =>
     $isOptimized
-      ? "linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%)"
-      : `linear-gradient(135deg, ${theme.colors.primaryLight} 0%, rgba(99, 102, 241, 0.1) 100%)`};
+      ? "var(--success-light)"
+      : "var(--primary-50)"};
   color: ${({ $isOptimized, theme }) =>
-    $isOptimized ? "#22c55e" : theme.colors.primary};
+    $isOptimized ? "var(--success)" : "var(--accent)"};
   flex-shrink: 0;
 `;
 
@@ -428,14 +428,14 @@ const CVPreviewSidebarItem = styled.div<{ $active: boolean; $isOptimized?: boole
   border: 2px solid ${({ $active, $isOptimized, theme }) =>
     $active
       ? $isOptimized
-        ? "#22c55e"
-        : theme.colors.primary
+        ? "var(--success)"
+        : "var(--accent)"
       : "transparent"};
   background: ${({ $active, $isOptimized, theme }) =>
     $active
       ? $isOptimized
-        ? "rgba(34, 197, 94, 0.12)"
-        : theme.colors.primaryLight
+        ? "var(--success-light)"
+        : "var(--primary-50)"
       : theme.colors.surface};
   position: relative;
 
@@ -449,8 +449,8 @@ const CVPreviewSidebarItem = styled.div<{ $active: boolean; $isOptimized?: boole
     background: ${({ $active, $isOptimized, theme }) =>
       $active
         ? $isOptimized
-          ? "#22c55e"
-          : theme.colors.primary
+          ? "var(--success)"
+          : "var(--accent)"
         : "transparent"};
     border-radius: ${({ theme }) => theme.radius.sm} 0 0 ${({ theme }) => theme.radius.sm};
     transition: all ${({ theme }) => theme.transitions.fast};
@@ -460,8 +460,8 @@ const CVPreviewSidebarItem = styled.div<{ $active: boolean; $isOptimized?: boole
     background: ${({ $active, $isOptimized, theme }) =>
       $active
         ? $isOptimized
-          ? "rgba(34, 197, 94, 0.12)"
-          : theme.colors.primaryLight
+          ? "var(--success-light)"
+          : "var(--primary-50)"
         : "rgba(0, 0, 0, 0.03)"};
     transform: translateX(2px);
 
@@ -469,8 +469,8 @@ const CVPreviewSidebarItem = styled.div<{ $active: boolean; $isOptimized?: boole
       background: ${({ $active, $isOptimized, theme }) =>
         $active
           ? $isOptimized
-            ? "#22c55e"
-            : theme.colors.primary
+            ? "var(--success)"
+            : "var(--accent)"
           : theme.colors.textTertiary};
     }
   }
@@ -1218,6 +1218,7 @@ export default function CVPage() {
                     </CVPreviewSidebarItemTitle>
                     <CVPreviewSidebarItemMeta>
                       {isOptimized ? (
+<<<<<<< Updated upstream
                         <>
                           <span style={{ color: "#22c55e" }}>✨ Optimized</span>
                           {(cv as any).fake_it_mode && (
@@ -1227,6 +1228,9 @@ export default function CVPage() {
                             </>
                           )}
                         </>
+=======
+                        <span style={{ color: "var(--success)" }}>✨ Optimized</span>
+>>>>>>> Stashed changes
                       ) : (
                         <span>📄 Original</span>
                       )}

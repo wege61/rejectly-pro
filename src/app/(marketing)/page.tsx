@@ -274,6 +274,7 @@ const HeroSection = styled.section`
   justify-content: center;
   overflow: hidden;
   padding: 80px 24px 60px;
+  background-color: var(--bg-color);
 
   @media (max-width: 768px) {
     min-height: auto;
@@ -291,17 +292,45 @@ const BlurCircle = styled.div<{
   $delay?: string;
   $position: string;
   $color: string;
+  $isDarkMode?: boolean;
 }>`
   position: absolute;
-  width: 500px;
-  height: 500px;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.3;
-  animation: ${pulse} 4s ease-in-out infinite;
-  animation-delay: ${({ $delay }) => $delay || "0s"};
-  background: ${({ $color }) => $color};
+  filter: blur(120px);
   ${({ $position }) => $position}
+  background: ${({ $color }) => $color};
+  opacity: ${({ $isDarkMode }) => ($isDarkMode ? '0.6' : '0.6')};
+
+  /* Hide/show based on theme */
+  ${({ $isDarkMode }) => $isDarkMode ? `
+    display: none;
+
+    [data-theme="dark"] & {
+      display: block;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      display: block;
+    }
+
+    [data-theme="light"] & {
+      display: none;
+    }
+  ` : `
+    display: block;
+
+    [data-theme="dark"] & {
+      display: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      display: none;
+    }
+
+    [data-theme="light"] & {
+      display: block;
+    }
+  `}
 `;
 
 const HeroContent = styled.div`
@@ -317,8 +346,8 @@ const TrustBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(185, 232, 216, 0.15);
-  border: 1px solid rgba(185, 232, 216, 0.4);
+  background: rgba(0, 110, 129, 0.15);
+  border: 1px solid rgba(var(--primary-500-rgb), 0.4);
   border-radius: 9999px;
   padding: 6px 16px;
   margin-bottom: 24px;
@@ -329,11 +358,10 @@ const TrustBadge = styled.div`
   svg {
     width: 18px;
     height: 18px;
-    color: #6BBF9F;
+    
   }
 
   span {
-    color: #6BBF9F;
   }
 `;
 
@@ -343,22 +371,19 @@ const HeroTitle = styled.h1`
   margin-bottom: 20px;
   line-height: 1.1;
   animation: ${fadeIn} 0.6s ease-out 0.1s backwards;
-
   @media (max-width: 768px) {
     font-size: 36px;
   }
 `;
 
 const GradientText = styled.span`
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--landing);
+  font-weight: 900;
 `;
 
 const HeroSubtitle = styled.p`
   font-size: 20px;
-  color: var(--text-secondary);
+  color: #5C6570;
   margin-bottom: 40px;
   max-width: 700px;
   margin-left: auto;
@@ -366,8 +391,20 @@ const HeroSubtitle = styled.p`
   line-height: 1.6;
   animation: ${fadeIn} 0.6s ease-out 0.2s backwards;
 
+  [data-theme="dark"] & {
+    color: #A5A9B3;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color: #A5A9B3;
+  }
+
+  [data-theme="light"] & {
+    color: #5C6570;
+  }
+
   strong {
-    color: var(--text-color);
+    color: inherit;
     font-weight: 600;
   }
 
@@ -396,8 +433,8 @@ const PrimaryButton = styled.a`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
-  color: white;
+  background: var(--landing-button);
+  color: #FFFFFF;
   padding: 18px 40px;
   border-radius: 9999px;
   font-weight: 700;
@@ -405,10 +442,12 @@ const PrimaryButton = styled.a`
   transition: all 0.3s ease;
   cursor: pointer;
   text-decoration: none;
+  box-shadow: 0 8px 24px rgba(255, 122, 115, 0.25);
 
   &:hover {
+    background: #FF6A64;
     transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(155, 135, 196, 0.3);
+    box-shadow: 0 15px 40px rgba(255, 122, 115, 0.4);
   }
 
   svg {
@@ -429,9 +468,9 @@ const SecondaryButton = styled.a`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: var(--text-color);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #0B666A;
   padding: 18px 32px;
   border-radius: 9999px;
   font-weight: 600;
@@ -440,9 +479,33 @@ const SecondaryButton = styled.a`
   cursor: pointer;
   text-decoration: none;
 
+  [data-theme="dark"] & {
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  [data-theme="light"] & {
+    color: #0B666A;
+    border-color: rgba(11, 102, 106, 0.2);
+  }
+
   &:hover {
     background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.3);
+
+    [data-theme="dark"] & {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    [data-theme="light"] & {
+      background: rgba(11, 102, 106, 0.05);
+      border-color: rgba(11, 102, 106, 0.3);
+    }
   }
 
   svg {
@@ -480,13 +543,38 @@ const TrustItem = styled.div`
   .number {
     font-size: 32px;
     font-weight: 800;
-    color: #DEAA79;
+    color: #0B666A;
+
+    [data-theme="dark"] & {
+      color: #ea7a18;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      color: #97FEED;
+    }
+
+    [data-theme="light"] & {
+      color: #0B666A;
+    }
   }
 
   .label {
     font-size: 13px;
     text-align: center;
     line-height: 1.4;
+    color: #5C6570;
+
+    [data-theme="dark"] & {
+      color: #A5A9B3;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      color: #A5A9B3;
+    }
+
+    [data-theme="light"] & {
+      color: #5C6570;
+    }
   }
 
   @media (max-width: 768px) {
@@ -553,8 +641,8 @@ const SocialProofText = styled.div`
   svg {
     width: 16px;
     height: 16px;
-    color: #f59e0b;
-    fill: #f59e0b;
+    color: #ea7a18;;
+    fill: #ea7a18;;
   }
 
   strong {
@@ -593,10 +681,7 @@ const SectionTitle = styled.h2`
   font-weight: 800;
   margin-bottom: 16px;
 
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  
 
   svg {
     width: 48px;
@@ -647,10 +732,10 @@ const DemoSection = styled.section`
 
 const DemoCard = styled.div`
   background: var(--bg-alt);
-  border: 1px solid rgba(155, 135, 196, 0.15);
+  border: 1px solid var(--primary-500);
   border-radius: ${({ theme }) => theme.radius.xl};
   padding: 40px;
-  box-shadow: 0 4px 24px rgba(155, 135, 196, 0.08);
+  box-shadow: 0 4px 24px rgba(var(--primary-500-rgb), 0.08);
 
   @media (max-width: 768px) {
     padding: 24px;
@@ -682,9 +767,9 @@ const LoadSampleButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, rgba(191, 172, 226, 0.1) 0%, rgba(180, 167, 214, 0.1) 100%);
-  border: 1px solid rgba(155, 135, 196, 0.3);
-  color: #9B87C4;
+  background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.1) 0%, rgba(var(--primary-500-rgb), 0.1) 100%);
+  border: 1px solid var(--primary-500);
+  color: var(--accent);
   padding: 10px 20px;
   border-radius: 9999px;
   font-weight: 600;
@@ -698,8 +783,8 @@ const LoadSampleButton = styled.button`
   }
 
   &:hover {
-    background: linear-gradient(135deg, rgba(191, 172, 226, 0.15) 0%, rgba(180, 167, 214, 0.15) 100%);
-    border-color: rgba(155, 135, 196, 0.5);
+    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.15) 0%, rgba(var(--primary-500-rgb), 0.15) 100%);
+    border-color: var(--primary-500);
   }
 `;
 
@@ -719,7 +804,7 @@ const InputLabel = styled.label`
   svg {
     width: 18px;
     height: 18px;
-    color: #9B87C4;
+    color: var(--accent);
   }
 `;
 
@@ -742,10 +827,10 @@ const UploadBox = styled.label`
   justify-content: center;
   gap: 12px;
   padding: 32px 20px;
-  background: linear-gradient(135deg, rgba(180, 231, 245, 0.08) 0%, rgba(199, 233, 251, 0.08) 100%);
-  border: 2px dashed rgba(123, 202, 227, 0.3);
+  background: var(--bg-color);
+  border: 2px dashed var(--primary-200);
   border-radius: ${({ theme }) => theme.radius.lg};
-  color: #7BCAE3;
+  color: var(--primary-200);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -753,8 +838,8 @@ const UploadBox = styled.label`
   text-align: center;
 
   &:hover {
-    background: linear-gradient(135deg, rgba(180, 231, 245, 0.15) 0%, rgba(199, 233, 251, 0.15) 100%);
-    border-color: rgba(123, 202, 227, 0.6);
+    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.15) 0%, rgba(var(--primary-500-rgb), 0.15) 100%);
+    border-color: var(--primary-500);
     transform: translateY(-2px);
   }
 
@@ -770,7 +855,7 @@ const UploadBox = styled.label`
   .upload-text {
     font-weight: 700;
     font-size: 15px;
-    color: #7BCAE3;
+    color: var(--primary-500);
   }
 
   .upload-subtext {
@@ -838,10 +923,10 @@ const OrDivider = styled.div`
 const UploadedFileCard = styled.div`
   background: linear-gradient(
     135deg,
-    rgba(16, 185, 129, 0.05) 0%,
-    rgba(16, 185, 129, 0.1) 100%
+    rgba(var(--success-rgb), 0.05) 0%,
+    rgba(var(--success-rgb), 0.1) 100%
   );
-  border: 2px solid rgba(16, 185, 129, 0.3);
+  border: 2px solid var(--success);
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: 24px;
   display: flex;
@@ -859,7 +944,7 @@ const FileHeader = styled.div`
 const FileIconWrapper = styled.div`
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+  background: var(--success);
   border-radius: ${({ theme }) => theme.radius.lg};
   display: flex;
   align-items: center;
@@ -905,7 +990,7 @@ const FileStat = styled.span`
   svg {
     width: 16px;
     height: 16px;
-    color: #10b981;
+    color: var(--success);
   }
 `;
 
@@ -946,13 +1031,13 @@ const FileActionButton = styled.button<{ $variant?: "primary" | "danger" }>`
     }
   `
       : `
-    background: linear-gradient(135deg, rgba(191, 172, 226, 0.08) 0%, rgba(180, 167, 214, 0.08) 100%);
-    border-color: rgba(155, 135, 196, 0.3);
-    color: #9B87C4;
+    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.08) 0%, rgba(var(--primary-500-rgb), 0.08) 100%);
+    border-color: var(--primary-500);
+    color: var(--accent);
 
     &:hover {
-      background: linear-gradient(135deg, rgba(191, 172, 226, 0.15) 0%, rgba(180, 167, 214, 0.15) 100%);
-      border-color: rgba(155, 135, 196, 0.5);
+      background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.15) 0%, rgba(var(--primary-500-rgb), 0.15) 100%);
+      border-color: var(--primary-500);
     }
   `}
 
@@ -978,8 +1063,8 @@ const DemoTextarea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #9B87C4;
-    box-shadow: 0 0 0 3px rgba(155, 135, 196, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--primary-500-rgb), 0.1);
   }
 
   &::placeholder {
@@ -987,7 +1072,7 @@ const DemoTextarea = styled.textarea`
   }
 
   &:hover {
-    border-color: rgba(155, 135, 196, 0.3);
+    border-color: var(--primary-500);
   }
 `;
 
@@ -997,7 +1082,7 @@ const AnalyzeButton = styled.button<{ $isLoading?: boolean }>`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
+  background: var(--landing-button);
   color: white;
   padding: 16px 32px;
   border: none;
@@ -1010,7 +1095,7 @@ const AnalyzeButton = styled.button<{ $isLoading?: boolean }>`
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(155, 135, 196, 0.4);
+    box-shadow: 0 10px 25px rgba(var(--primary-500-rgb), 0.4);
   }
 
   &:disabled {
@@ -1036,8 +1121,8 @@ const Spinner = styled.div`
 const BigSpinner = styled.div`
   width: 48px;
   height: 48px;
-  border: 4px solid rgba(155, 135, 196, 0.2);
-  border-top-color: #9B87C4;
+  border: 4px solid rgba(var(--primary-500-rgb), 0.2);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: ${spin} 1s linear infinite;
   margin: 0 auto;
@@ -1062,17 +1147,17 @@ const ScoreDisplay = styled.div`
   margin-bottom: 32px;
   background: linear-gradient(
     135deg,
-    rgba(191, 172, 226, 0.1) 0%,
-    rgba(180, 167, 214, 0.1) 100%
+    rgba(var(--primary-500-rgb), 0.1) 0%,
+    rgba(var(--primary-500-rgb), 0.1) 100%
   );
   border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid rgba(155, 135, 196, 0.2);
+  border: 1px solid var(--primary-500);
 `;
 
 const ScoreValue = styled.div`
   font-size: 72px;
   font-weight: 900;
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
+  background: var(--accent);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1109,7 +1194,7 @@ const ResultTitle = styled.h4`
   svg {
     width: 24px;
     height: 24px;
-    color: #9B87C4;
+    color: var(--accent);
   }
 `;
 
@@ -1143,11 +1228,11 @@ const CTASection = styled.div`
   padding: 32px;
   background: linear-gradient(
     135deg,
-    rgba(191, 172, 226, 0.08) 0%,
-    rgba(180, 167, 214, 0.08) 100%
+    rgba(var(--primary-500-rgb), 0.08) 0%,
+    rgba(var(--primary-500-rgb), 0.08) 100%
   );
   border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid rgba(155, 135, 196, 0.2);
+  border: 1px solid var(--primary-500);
   margin-top: 32px;
 
   h3 {
@@ -1187,12 +1272,12 @@ const CTAButton = styled.button<{ $variant?: "primary" | "secondary" }>`
   ${({ $variant }) =>
     $variant === "primary"
       ? `
-    background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
+    background: var(--accent);
     color: white;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(155, 135, 196, 0.4);
+      box-shadow: 0 10px 25px rgba(var(--primary-500-rgb), 0.4);
     }
   `
       : `
@@ -1264,12 +1349,12 @@ const FeatureDescription = styled.p`
 const FeatureHighlight = styled.div`
   margin-top: 16px;
   padding: 12px;
-  background: rgba(191, 172, 226, 0.08);
+  background: rgba(var(--primary-500-rgb), 0.08);
   border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid rgba(191, 172, 226, 0.2);
+  border: 1px solid var(--primary-500);
 
   strong {
-    color: #9B87C4;
+    color: var(--accent);
     font-weight: 700;
   }
 `;
@@ -1352,8 +1437,8 @@ const TestimonialRating = styled.div`
   svg {
     width: 18px;
     height: 18px;
-    color: #f59e0b;
-    fill: #f59e0b;
+    color: #ea7a18;
+    fill: #ea7a18;
   }
 
   /* 🔥 1040px altında ismin altına taşı */
@@ -1394,9 +1479,9 @@ const TestimonialHighlight = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #10b981;
+  background: rgba(var(--success-rgb), 0.1);
+  border: 1px solid var(--success);
+  color: var(--success);
   padding: 8px 16px;
   border-radius: 9999px;
   font-size: 13px;
@@ -1426,7 +1511,7 @@ const PricingCard = styled.div<{ $featured?: boolean }>`
   background: var(--bg-alt);
   border: ${({ $featured }) =>
     $featured
-      ? "2px solid var(--primary-color)"
+      ? "2px solid #ff6a64"
       : "1px solid var(--border-color)"};
   border-radius: ${({ theme }) => theme.radius.xl};
   padding: 40px 32px;
@@ -1445,15 +1530,18 @@ const PricingCard = styled.div<{ $featured?: boolean }>`
 
 const PricingBadge = styled.div`
   position: absolute;
-  top: -12px;
-  right: 24px;
-  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
   color: white;
-  padding: 6px 16px;
-  border-radius: 9999px;
+  padding: 8px 20px;
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
 `;
 
 const PricingTitle = styled.h3`
@@ -1477,7 +1565,7 @@ const PricingPrice = styled.div`
 
 const PricingSubtext = styled.p`
   font-size: 14px;
-  color: #6BBF9F;
+  color: var(--success);
   font-weight: 600;
   margin-bottom: 24px;
 `;
@@ -1501,7 +1589,7 @@ const PricingFeature = styled.li<{ $enabled?: boolean }>`
     height: 20px;
     flex-shrink: 0;
     margin-top: 2px;
-    color: ${({ $enabled }) => ($enabled ? "#10b981" : "#71717a")};
+    color: ${({ $enabled }) => ($enabled ? "var(--success)" : "#71717a")};
   }
 
   span {
@@ -1525,12 +1613,12 @@ const PricingButton = styled.button<{ $variant?: "primary" | "secondary" }>`
   ${({ $variant }) =>
     $variant === "primary"
       ? `
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--accent);
     color: white;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 10px 25px rgba(var(--primary-500-rgb), 0.3);
     }
   `
       : `
@@ -1563,8 +1651,8 @@ const FAQItem = styled.div<{ $isOpen?: boolean }>`
   ${({ $isOpen }) =>
     $isOpen &&
     `
-    border-color: rgba(155, 135, 196, 0.3);
-    box-shadow: 0 4px 12px rgba(155, 135, 196, 0.1);
+    border-color: var(--primary-500);
+    box-shadow: 0 4px 12px rgba(var(--primary-500-rgb), 0.1);
   `}
 `;
 
@@ -1582,7 +1670,7 @@ const FAQQuestion = styled.button<{ $isOpen?: boolean }>`
   transition: background 0.2s ease;
 
   &:hover {
-    background: rgba(155, 135, 196, 0.05);
+    background: rgba(var(--primary-500-rgb), 0.05);
   }
 
   @media (max-width: 768px) {
@@ -1603,7 +1691,7 @@ const FAQQuestionText = styled.span`
 
 const FAQQuestionIcon = styled.span<{ $isOpen?: boolean }>`
   font-size: 24px;
-  color: #9B87C4;
+  color: var(--primary-500);
   transition: transform 0.3s ease;
   transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
   flex-shrink: 0;
@@ -1631,7 +1719,7 @@ const FAQAnswerText = styled.p`
   }
 
   a {
-    color: #9B87C4;
+    color: var(--accent);
     text-decoration: underline;
     transition: opacity 0.2s ease;
 
@@ -1656,18 +1744,18 @@ const FAQButton = styled.a`
   align-items: center;
   gap: 8px;
   padding: 14px 32px;
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
+  background: var(--primary-500);
   color: white;
   font-size: 16px;
   font-weight: 600;
   border-radius: 12px;
   text-decoration: none;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(155, 135, 196, 0.2);
+  box-shadow: 0 4px 12px rgba(var(--primary-500-rgb), 0.2);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(155, 135, 196, 0.3);
+    box-shadow: 0 8px 20px rgba(var(--primary-500-rgb), 0.3);
   }
 
   @media (max-width: 768px) {
@@ -1710,7 +1798,7 @@ const LoadingStep = styled.div<{ $completed?: boolean }>`
   border-radius: ${({ theme }) => theme.radius.md};
   font-size: 15px;
   color: ${({ $completed }) =>
-    $completed ? "#9B87C4" : "var(--text-secondary)"};
+    $completed ? "var(--accent)" : "var(--text-secondary)"};
   font-weight: ${({ $completed }) => ($completed ? 600 : 400)};
   transition: all 0.3s ease;
 
@@ -1718,14 +1806,14 @@ const LoadingStep = styled.div<{ $completed?: boolean }>`
     width: 20px;
     height: 20px;
     flex-shrink: 0;
-    color: ${({ $completed }) => ($completed ? "#6BBF9F" : "#9B87C4")};
+    color: ${({ $completed }) => ($completed ? "var(--success)" : "var(--accent)")};
   }
 
   .loading-icon {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(155, 135, 196, 0.3);
-    border-top-color: #9B87C4;
+    border: 2px solid var(--primary-500);
+    border-top-color: var(--accent);
     border-radius: 50%;
     animation: ${spin} 0.8s linear infinite;
   }
@@ -1757,7 +1845,7 @@ const ImprovementHeader = styled.div`
   svg {
     width: 24px;
     height: 24px;
-    color: #9B87C4;
+    color: var(--accent);
   }
 `;
 
@@ -1767,10 +1855,10 @@ const PotentialScoreBox = styled.div`
   justify-content: space-between;
   background: linear-gradient(
     135deg,
-    rgba(191, 172, 226, 0.1) 0%,
-    rgba(180, 167, 214, 0.1) 100%
+    rgba(var(--primary-500-rgb), 0.1) 0%,
+    rgba(var(--primary-500-rgb), 0.1) 100%
   );
-  border: 1px solid rgba(155, 135, 196, 0.2);
+  border: 1px solid var(--primary-500);
   border-radius: ${({ theme }) => theme.radius.md};
   padding: 16px 20px;
   margin-bottom: 24px;
@@ -1783,7 +1871,7 @@ const PotentialScoreBox = styled.div`
   .score {
     font-size: 32px;
     font-weight: 800;
-    background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
+    background: var(--accent);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1811,7 +1899,7 @@ const TipItem = styled.div`
     height: 20px;
     flex-shrink: 0;
     margin-top: 2px;
-    color: #10b981;
+    color: var(--success);
   }
 
   span {
@@ -1832,8 +1920,8 @@ const BlurredContent = styled.div`
 const UnlockOverlay = styled.div`
   text-align: center;
   padding: 20px;
-  background: linear-gradient(135deg, rgba(191, 172, 226, 0.05) 0%, rgba(180, 167, 214, 0.05) 100%);
-  border: 1px dashed rgba(155, 135, 196, 0.3);
+  background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.05) 0%, rgba(var(--primary-500-rgb), 0.05) 100%);
+  border: 1px dashed var(--primary-500);
   border-radius: ${({ theme }) => theme.radius.md};
 
   p {
@@ -1849,7 +1937,7 @@ const UnlockOverlay = styled.div`
   }
 
   strong {
-    color: #9B87C4;
+    color: var(--accent);
     font-weight: 600;
   }
 `;
@@ -1905,7 +1993,7 @@ const JobInfo = styled.div`
 `;
 
 const MatchBadge = styled.div`
-  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+  background: var(--success);
   color: white;
   padding: 6px 12px;
   border-radius: 9999px;
@@ -2118,20 +2206,28 @@ export default function Page() {
       {/* HERO SECTION */}
       <HeroSection>
         <BackgroundBlur>
+          {/* Light mode - Mint glow */}
           <BlurCircle
-            $position="top: -200px; left: -200px;"
-            $color="#a855f7"
-            $delay="0s"
+            $position="width: 320px; height: 320px; left: -128px; top: -128px;"
+            $color="#006e81"
+            $isDarkMode={false}
           />
           <BlurCircle
-            $position="top: -100px; right: -200px;"
-            $color="#3b82f6"
-            $delay="2s"
+            $position="width: 384px; height: 384px; right: -140px; bottom: -140px;"
+            $color="#006e81"
+            $isDarkMode={false}
+          />
+
+          {/* Dark mode - Teal / Navy glow */}
+          <BlurCircle
+            $position="width: 400px; height: 600px; left: -160px; top: -160px;"
+            $color="#118296ff"
+            $isDarkMode={true}
           />
           <BlurCircle
-            $position="bottom: -200px; left: 50%; transform: translateX(-50%);"
-            $color="#ec4899"
-            $delay="4s"
+            $position="width: 400px; height: 600px; right: -140px; bottom: -140px;"
+            $color="#006e81"
+            $isDarkMode={true}
           />
         </BackgroundBlur>
 

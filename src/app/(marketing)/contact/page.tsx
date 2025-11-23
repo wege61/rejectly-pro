@@ -3,6 +3,7 @@
 import styled from "styled-components";
 import { Footer } from "@/components/ui/Footer";
 import { useState } from "react";
+import { Mail, Zap, BookOpen } from "lucide-react";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -33,10 +34,6 @@ const Title = styled.h1`
   font-size: 56px;
   font-weight: 900;
   margin-bottom: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 
   @media (max-width: 768px) {
     font-size: 36px;
@@ -121,8 +118,8 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
   }
 
   &::placeholder {
@@ -144,8 +141,8 @@ const Textarea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
   }
 
   &::placeholder {
@@ -165,8 +162,8 @@ const Select = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
   }
 `;
 
@@ -174,7 +171,7 @@ const SubmitButton = styled.button`
   padding: 16px 32px;
   font-size: 16px;
   font-weight: 600;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent);
   color: white;
   border: none;
   border-radius: 8px;
@@ -183,7 +180,7 @@ const SubmitButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 25px rgba(var(--accent-rgb), 0.3);
   }
 
   &:disabled {
@@ -207,14 +204,19 @@ const InfoCard = styled.div`
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(102, 126, 234, 0.3);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    border-color: var(--primary-200);
+    box-shadow: 0 4px 12px rgba(var(--primary-500-rgb), 0.1);
   }
 `;
 
 const InfoIcon = styled.div`
-  font-size: 32px;
   margin-bottom: 16px;
+  color: var(--accent);
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
 `;
 
 const InfoTitle = styled.h3`
@@ -230,7 +232,7 @@ const InfoText = styled.p`
   line-height: 1.7;
 
   a {
-    color: #667eea;
+    color: var(--accent);
     text-decoration: none;
     transition: opacity 0.2s ease;
 
@@ -244,13 +246,13 @@ const InfoText = styled.p`
 const SuccessMessage = styled.div`
   background: linear-gradient(
     135deg,
-    rgba(16, 185, 129, 0.1) 0%,
-    rgba(16, 185, 129, 0.05) 100%
+    rgba(var(--success-rgb), 0.1) 0%,
+    rgba(var(--success-rgb), 0.05) 100%
   );
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(var(--success-rgb), 0.3);
   border-radius: 12px;
   padding: 16px 20px;
-  color: #10b981;
+  color: var(--success);
   font-size: 15px;
   font-weight: 500;
   display: flex;
@@ -267,13 +269,13 @@ const SuccessMessage = styled.div`
 const ErrorMessage = styled.div`
   background: linear-gradient(
     135deg,
-    rgba(239, 68, 68, 0.1) 0%,
-    rgba(239, 68, 68, 0.05) 100%
+    rgba(var(--error-rgb), 0.1) 0%,
+    rgba(var(--error-rgb), 0.05) 100%
   );
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(var(--error-rgb), 0.3);
   border-radius: 12px;
   padding: 16px 20px;
-  color: #ef4444;
+  color: var(--error);
   font-size: 15px;
   font-weight: 500;
 `;
@@ -423,7 +425,9 @@ export default function ContactPage() {
 
           <InfoSection>
             <InfoCard>
-              <InfoIcon>📧</InfoIcon>
+              <InfoIcon>
+                <Mail />
+              </InfoIcon>
               <InfoTitle>Email Us</InfoTitle>
               <InfoText>
                 For general inquiries:{" "}
@@ -434,10 +438,12 @@ export default function ContactPage() {
               </InfoText>
             </InfoCard>
 
-            
+
 
             <InfoCard>
-              <InfoIcon>⚡</InfoIcon>
+              <InfoIcon>
+                <Zap />
+              </InfoIcon>
               <InfoTitle>Response Time</InfoTitle>
               <InfoText>
                 We typically respond to all inquiries within 24 hours during business
@@ -447,7 +453,9 @@ export default function ContactPage() {
             </InfoCard>
 
             <InfoCard>
-              <InfoIcon>📚</InfoIcon>
+              <InfoIcon>
+                <BookOpen />
+              </InfoIcon>
               <InfoTitle>Help Center</InfoTitle>
               <InfoText>
                 Looking for quick answers? Check out our FAQ page for commonly asked

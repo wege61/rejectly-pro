@@ -17,7 +17,7 @@ const ThemeToggle = dynamic(
 const Header = styled.header`
   border-bottom: 1px solid var(--border-color);
   padding: ${({ theme }) => theme.spacing.lg} 0;
-  background-color: var(--bg-color);
+  background-color: var(--navbar);
   position: sticky;
   top: 0;
   z-index: ${({ theme }) => theme.zIndex.sticky};
@@ -35,7 +35,7 @@ const Nav = styled.nav`
 const Logo = styled.a`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  background: #696FC7;
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

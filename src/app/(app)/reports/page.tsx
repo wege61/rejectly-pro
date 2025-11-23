@@ -163,10 +163,10 @@ const ActionButton = styled.button<{ $variant?: 'primary' | 'danger' }>`
     color: ${theme.colors.textPrimary};
 
     &:hover {
-      background: ${theme.colors.primary};
+      background: var(--accent);
       color: white;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+      box-shadow: 0 4px 12px var(--accent-shadow);
     }
   `}
 
@@ -197,7 +197,7 @@ const MatchQualityBadge = styled.div<{ $quality: 'low' | 'medium' | 'high' }>`
   ${({ $quality, theme }) => {
     if ($quality === 'high') {
       return `
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: var(--success);
         color: white;
       `;
     } else if ($quality === 'medium') {
@@ -228,12 +228,12 @@ const BeforeScore = styled.span`
 `;
 
 const AfterScore = styled.span`
-  color: #10b981;
+  color: var(--success);
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
 `;
 
 const ImprovementArrow = styled.span`
-  color: #10b981;
+  color: var(--success);
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
 `;
 
@@ -513,7 +513,7 @@ export default function ReportsPage() {
                         <BeforeScore>{report.fit_score}%</BeforeScore>
                         <ImprovementArrow>→</ImprovementArrow>
                         <AfterScore>{report.optimized_score}%</AfterScore>
-                        <span style={{ fontSize: "11px", color: "#10b981" }}>
+                        <span style={{ fontSize: "11px", color: "var(--success)" }}>
                           (+{report.optimized_score - report.fit_score}%)
                         </span>
                       </ScoreImprovement>

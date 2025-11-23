@@ -111,8 +111,8 @@ const Subtitle = styled.p`
 
 const CreditsCard = styled(Card)`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
-  background: linear-gradient(135deg, rgba(155, 135, 196, 0.1) 0%, rgba(180, 167, 214, 0.1) 100%);
-  border: 1px solid rgba(155, 135, 196, 0.3);
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+  border: 1px solid var(--primary-200);
 `;
 
 const CreditsContent = styled.div`
@@ -137,7 +137,7 @@ const CreditsNumber = styled.div`
 const CreditsValue = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.primary};
+  color: var(--accent);
 `;
 
 const CreditsLabel = styled.span`
@@ -150,7 +150,7 @@ const SubscriptionBadge = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
   padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: var(--success);
   color: white;
   border-radius: ${({ theme }) => theme.radius.full};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
@@ -203,7 +203,7 @@ const StatIcon = styled.div`
   align-items: center;
   justify-content: center;
   margin-bottom: ${({ theme }) => theme.spacing.md};
-  color: ${({ theme }) => theme.colors.primary};
+  color: var(--accent);
 
   svg {
     width: 32px;
@@ -223,7 +223,7 @@ const StatIcon = styled.div`
 const StatValue = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.primary};
+  color: var(--accent);
   margin-bottom: ${({ theme }) => theme.spacing.sm};
 
   @media (max-width: 768px) {
@@ -401,7 +401,7 @@ const CoverLetterCard = styled(Card)<{ $tone: string }>`
       case 'professional':
         return '#3b82f6';
       case 'friendly':
-        return '#10b981';
+        return 'var(--success)';
       case 'formal':
         return '#8b5cf6';
       default:
@@ -438,12 +438,12 @@ const FAB = styled.button<{ $showHint?: boolean }>`
   width: 64px;
   height: 64px;
   border-radius: ${({ theme }) => theme.radius.full};
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 24px var(--accent-shadow);
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.normal};
   z-index: 10010;
@@ -451,13 +451,13 @@ const FAB = styled.button<{ $showHint?: boolean }>`
 
   ${({ $showHint }) => $showHint && css`
     box-shadow:
-      0 8px 24px rgba(102, 126, 234, 0.4),
+      0 8px 24px var(--accent-shadow),
       0 0 0 4px rgba(255, 255, 255, 0.3);
   `}
 
   &:hover {
     transform: scale(1.1) translateY(-2px);
-    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+    box-shadow: 0 12px 32px var(--accent-shadow);
   }
 
   &:active {
@@ -550,7 +550,7 @@ const SpotlightCircle = styled.div`
   );
   box-shadow:
     0 0 0 9999px rgba(15, 23, 42, 0.85),
-    0 0 80px 20px rgba(102, 126, 234, 0.5);
+    0 0 80px 20px var(--accent-shadow);
 
   &::before {
     content: '';
@@ -561,7 +561,7 @@ const SpotlightCircle = styled.div`
     width: 160%;
     height: 160%;
     border-radius: 50%;
-    border: 3px solid rgba(102, 126, 234, 0.6);
+    border: 3px solid var(--accent);
   }
 `;
 
@@ -597,7 +597,7 @@ const HintText = styled.div`
   line-height: ${({ theme }) => theme.typography.lineHeight.tight};
   text-shadow:
     0 2px 4px rgba(0, 0, 0, 0.3),
-    0 4px 12px rgba(102, 126, 234, 0.4);
+    0 4px 12px var(--accent-shadow);
   letter-spacing: -0.02em;
 `;
 
@@ -614,7 +614,16 @@ const ArrowContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
+<<<<<<< Updated upstream
   gap: ${({ theme }) => theme.spacing.sm};
+=======
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
+  background: var(--accent-light);
+  border-radius: ${({ theme }) => theme.radius.full};
+  border: 2px solid var(--accent);
+  backdrop-filter: blur(8px);
+>>>>>>> Stashed changes
 `;
 
 const ArrowText = styled.span`

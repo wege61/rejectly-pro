@@ -34,7 +34,7 @@ const Footer = styled.div`
   color: var(--text-secondary);
 
   a {
-    color: var(--primary-color);
+    color: var(--accent);
     font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
 
     &:hover {

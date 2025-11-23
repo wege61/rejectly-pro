@@ -101,7 +101,7 @@ const SubscriptionBadge = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
   padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: var(--success);
   color: white;
   border-radius: ${({ theme }) => theme.radius.md};
   font-size: ${({ theme }) => theme.typography.fontSize.base};
@@ -110,7 +110,7 @@ const SubscriptionBadge = styled.div`
 
 const PriceSubtext = styled.p`
   font-size: 13px;
-  color: #6BBF9F;
+  color: var(--success);
   font-weight: 600;
   margin-top: 4px;
 `;

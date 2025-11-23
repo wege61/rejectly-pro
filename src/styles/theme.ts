@@ -2,34 +2,34 @@ import { keyframes } from "styled-components";
 
 // Dark Theme Colors
 const darkColors = {
-  // Primary
-  primary: "#6366f1", // indigo-500
-  primaryHover: "#4f46e5", // indigo-600
-  primaryLight: "rgba(99, 102, 241, 0.1)", // indigo with opacity
+  // Primary - Cool Spectrum
+  primary: "#35A29F", // primary-500
+  primaryHover: "#0B666A", // primary-700
+  primaryLight: "rgba(53, 162, 159, 0.1)", // primary-500 with opacity
 
   // Secondary
-  secondary: "#1e293b", // slate-800
-  secondaryHover: "#334155", // slate-700
+  secondary: "#121623", // dark-card
+  secondaryHover: "#1a1f2e", // slightly lighter
 
   // Neutral - DARK MODE
-  background: "#0f172a", // slate-900
-  backgroundAlt: "#1e293b", // slate-800
-  surface: "#1e293b", // slate-800
-  surfaceHover: "#334155", // slate-700
+  background: "#0C0F18", // dark-bg
+  backgroundAlt: "#121623", // dark-card
+  surface: "#121623", // dark-card
+  surfaceHover: "#1a1f2e", // slightly lighter
 
   // Text - DARK MODE
-  textPrimary: "#f1f5f9", // slate-100
-  textSecondary: "#94a3b8", // slate-400
-  textTertiary: "#64748b", // slate-500
+  textPrimary: "#F3F4F8", // dark-text
+  textSecondary: "#A5A9B3", // dark-subtext
+  textTertiary: "#6B7280", // lighter grey
 
   // Borders - DARK MODE
-  border: "#334155", // slate-700
-  borderHover: "#475569", // slate-600
+  border: "rgba(255, 255, 255, 0.08)", // subtle border
+  borderHover: "rgba(255, 255, 255, 0.15)", // slightly more visible
 
   // Status
-  success: "#10b981",
-  successLight: "rgba(16, 185, 129, 0.1)",
-  successHover: "#059669",
+  success: "#6EE7B7",
+  successLight: "rgba(110, 231, 183, 0.1)",
+  successHover: "#4ade80",
 
   warning: "#f59e0b",
   warningLight: "rgba(245, 158, 11, 0.1)",
@@ -39,39 +39,39 @@ const darkColors = {
   errorLight: "rgba(239, 68, 68, 0.1)",
   errorHover: "#dc2626",
 
-  info: "#3b82f6",
-  infoLight: "rgba(59, 130, 246, 0.1)",
-  infoHover: "#2563eb",
+  info: "#35A29F",
+  infoLight: "rgba(53, 162, 159, 0.1)",
+  infoHover: "#0B666A",
 };
 
 // Light Theme Colors
 const lightColors = {
-  // Primary - Lighter purple for better contrast on light backgrounds
-  primary: "#5B5FCD",
-  primaryHover: "#4448B3",
-  primaryLight: "#E5E8FB",
+  // Primary - Cool Spectrum for light mode
+  primary: "#0B666A", // primary-700 for better contrast
+  primaryHover: "#071952", // primary-900
+  primaryLight: "rgba(151, 254, 237, 0.2)", // primary-200 with opacity
 
   // Secondary
-  secondary: "#F0F2F5",
+  secondary: "#F4F7FA", // light-bg
   secondaryHover: "#E5E7EB",
 
   // Neutral - LIGHT MODE
-  background: "#F5F7FA", // Very light neutral
-  backgroundAlt: "#F0F2F5", // Slightly darker for sidebar
-  surface: "#FFFFFF", // Pure white for cards
-  surfaceHover: "#F9FAFB", // Subtle hover state
+  background: "#F4F7FA", // light-bg
+  backgroundAlt: "#F4F7FA", // light-bg
+  surface: "#FFFFFF", // light-card
+  surfaceHover: "#F3F4F6", // Subtle hover state
 
   // Text - LIGHT MODE
-  textPrimary: "#1F2937", // Dark slate grey for headings
-  textSecondary: "#4B5563", // Mid-grey for body text
+  textPrimary: "#1E1E2A", // light-text
+  textSecondary: "#5C6570", // light-subtext
   textTertiary: "#6B7280", // Lighter grey for hints
 
   // Borders - LIGHT MODE
-  border: "#D1D5DB", // Soft grey borders
-  borderHover: "#9CA3AF", // Darker on hover
+  border: "#97FEED", // primary-200
+  borderHover: "#35A29F", // primary-500
 
   // Status - Adapted for light backgrounds
-  success: "#28A745", // Softer green
+  success: "#28A745", // Softer green for readability
   successLight: "#E9F7EF", // Light green background
   successHover: "#218838",
 
@@ -83,9 +83,9 @@ const lightColors = {
   errorLight: "#FDECEA", // Light red background
   errorHover: "#C0392B",
 
-  info: "#3b82f6",
-  infoLight: "#EFF6FF", // Light blue background
-  infoHover: "#2563eb",
+  info: "#35A29F", // primary-500
+  infoLight: "rgba(53, 162, 159, 0.1)", // primary-500 with opacity
+  infoHover: "#0B666A", // primary-700
 };
 
 const baseTheme = {

@@ -47,12 +47,12 @@ export const GlobalStyle = createGlobalStyle`
 
   /* Links */
   a {
-    color: var(--primary-color);
+    color: var(--accent);
     text-decoration: none;
     transition: color ${({ theme }) => theme.transitions.fast};
 
     &:focus-visible {
-      outline: 2px solid var(--primary-color);
+      outline: 2px solid var(--accent);
       outline-offset: 2px;
       border-radius: ${({ theme }) => theme.radius.sm};
     }
@@ -71,7 +71,7 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     &:focus-visible {
-      outline: 2px solid var(--primary-color);
+      outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
   }
@@ -82,7 +82,7 @@ export const GlobalStyle = createGlobalStyle`
     font-size: inherit;
 
     &:focus-visible {
-      outline: 2px solid var(--primary-color);
+      outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
   }
@@ -106,8 +106,8 @@ export const GlobalStyle = createGlobalStyle`
 
   /* Selection */
   ::selection {
-    background-color: ${({ theme }) => theme.colors.primaryLight};
-    color: var(--primary-color);
+    background-color: var(--accent-light);
+    color: var(--accent);
   }
 
   /* Scrollbar (webkit) */
@@ -125,7 +125,7 @@ export const GlobalStyle = createGlobalStyle`
     border-radius: ${({ theme }) => theme.radius.full};
 
     &:hover {
-      background: ${({ theme }) => theme.colors.borderHover};
+      background: var(--primary-500);
     }
   }
 `;

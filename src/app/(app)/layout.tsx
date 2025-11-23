@@ -39,7 +39,7 @@ const MobileHeader = styled.header`
 const MobileLogo = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.primary};
+  color: var(--accent);
 `;
 
 const HamburgerButton = styled.button`
@@ -105,7 +105,7 @@ const Sidebar = styled.aside<{ $isOpen?: boolean }>`
 const Logo = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.primary};
+  color: var(--accent);
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 
   @media (max-width: 768px) {
@@ -127,7 +127,7 @@ const MobileSidebarHeader = styled.div`
 const MobileSidebarLogo = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.primary};
+  color: var(--accent);
 `;
 
 const CloseButton = styled.button`
@@ -164,9 +164,9 @@ const NavLink = styled.a<{ $active: boolean }>`
   padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.md}`};
   border-radius: ${({ theme }) => theme.radius.md};
   color: ${({ theme, $active }) =>
-    $active ? theme.colors.primary : theme.colors.textSecondary};
+    $active ? "var(--accent)" : theme.colors.textSecondary};
   background-color: ${({ theme, $active }) =>
-    $active ? theme.colors.primaryLight : "transparent"};
+    $active ? "var(--primary-50)" : "transparent"};
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   font-weight: ${({ theme, $active }) =>
     $active
@@ -186,7 +186,7 @@ const NavLink = styled.a<{ $active: boolean }>`
     width: 0;
     height: 0;
     border-radius: 50%;
-    background-color: ${({ theme }) => theme.colors.primaryLight};
+    background-color: var(--primary-50);
     transform: translate(-50%, -50%);
     transition: width 0.6s, height 0.6s;
     z-index: 0;
@@ -199,7 +199,7 @@ const NavLink = styled.a<{ $active: boolean }>`
 
   &:hover {
     background-color: ${({ theme, $active }) =>
-      $active ? theme.colors.primaryLight : theme.colors.surfaceHover};
+      $active ? "var(--primary-50)" : theme.colors.surfaceHover};
     color: ${({ theme }) => theme.colors.textPrimary};
     transform: translateX(4px);
   }
@@ -220,7 +220,7 @@ const NavLink = styled.a<{ $active: boolean }>`
         transform: translateY(-50%);
         width: 3px;
         height: 60%;
-        background-color: ${theme.colors.primary};
+        background-color: var(--accent);
         border-radius: 0 ${theme.radius.sm} ${theme.radius.sm} 0;
         animation: ${theme.animations.slideInUp} 0.3s ease;
       }

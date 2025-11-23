@@ -46,11 +46,11 @@ const OptionButton = styled.button<{ $selected: boolean }>`
   padding: ${({ theme }) => theme.spacing.md};
   background: ${({ $selected, theme }) =>
     $selected
-      ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+      ? "var(--gradient-primary)"
       : theme.colors.surface};
   border: 2px solid
     ${({ $selected, theme }) =>
-      $selected ? "#667eea" : theme.colors.border};
+      $selected ? "var(--accent)" : theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
   color: ${({ $selected, theme }) =>
     $selected ? "white" : theme.colors.textPrimary};
@@ -62,7 +62,7 @@ const OptionButton = styled.button<{ $selected: boolean }>`
     transform: translateY(-2px);
     box-shadow: 0 4px 12px
       ${({ $selected }) =>
-        $selected ? "rgba(102, 126, 234, 0.3)" : "rgba(0, 0, 0, 0.1)"};
+        $selected ? "var(--accent-shadow)" : "rgba(0, 0, 0, 0.1)"};
   }
 
   &:disabled {
@@ -105,7 +105,7 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--accent);
   }
 
   &::placeholder {
@@ -170,7 +170,7 @@ const ParagraphType = styled.div<{ $type: string }>`
       case 'header': return '#64748b';
       case 'greeting': return '#06b6d4';
       case 'opening': return '#3b82f6';
-      case 'achievement': return '#10b981';
+      case 'achievement': return 'var(--success)';
       case 'motivation': return '#f59e0b';
       case 'closing': return '#8b5cf6';
       default: return '#6b7280';
@@ -196,9 +196,9 @@ const Sentence = styled.span<{ $isHighlight: boolean; $isSelected: boolean }>`
   border-radius: 4px;
   background: ${({ $isHighlight, $isSelected }) =>
     $isSelected ? '#fef3c7' :
-    $isHighlight ? 'rgba(16, 185, 129, 0.1)' : 'transparent'};
+    $isHighlight ? 'var(--success-light)' : 'transparent'};
   border-bottom: ${({ $isHighlight }) =>
-    $isHighlight ? '2px solid #10b981' : 'none'};
+    $isHighlight ? '2px solid var(--success)' : 'none'};
   transition: all 0.2s;
 
   &:hover {
@@ -271,15 +271,15 @@ const RationaleEmpty = styled.div`
 const HighlightsList = styled.div`
   margin-top: ${({ theme }) => theme.spacing.lg};
   padding: ${({ theme }) => theme.spacing.md};
-  background: rgba(16, 185, 129, 0.05);
-  border-left: 4px solid #10b981;
+  background: var(--success-bg);
+  border-left: 4px solid var(--success);
   border-radius: ${({ theme }) => theme.radius.md};
 `;
 
 const HighlightsTitle = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: #10b981;
+  color: var(--success);
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
@@ -290,7 +290,7 @@ const HighlightItem = styled.div`
 
   &::before {
     content: "✓ ";
-    color: #10b981;
+    color: var(--success);
     font-weight: bold;
   }
 `;
@@ -340,7 +340,7 @@ const LoadingTitle = styled.h3`
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
   margin-bottom: ${({ theme }) => theme.spacing.md};
-  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -976,7 +976,7 @@ export function CoverLetterGenerator({
                         // Keep current
                         setSelectedSentence(null);
                       }}
-                      style={{ fontWeight: 600, color: '#10b981' }}
+                      style={{ fontWeight: 600, color: 'var(--success)' }}
                     >
                       ✓ {selectedSentenceData.text}
                     </AlternativeOption>

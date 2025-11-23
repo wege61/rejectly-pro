@@ -73,10 +73,6 @@ const HeroTitle = styled.h1`
   font-size: 56px;
   font-weight: 900;
   margin-bottom: 24px;
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   line-height: 1.2;
 
   @media (max-width: 768px) {
@@ -110,8 +106,8 @@ const StatsGrid = styled.div`
 `;
 
 const StatCard = styled.div`
-  background: linear-gradient(135deg, rgba(191, 172, 226, 0.08) 0%, rgba(180, 167, 214, 0.08) 100%);
-  border: 1px solid rgba(155, 135, 196, 0.2);
+  background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.08) 0%, rgba(var(--primary-700-rgb), 0.08) 100%);
+  border: 1px solid var(--primary-200);
   border-radius: 16px;
   padding: 24px;
   text-align: center;
@@ -120,7 +116,7 @@ const StatCard = styled.div`
 const StatNumber = styled.div`
   font-size: 42px;
   font-weight: 900;
-  background: #FFB3BA;
+  background: var(--landing-button);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -160,10 +156,6 @@ const SectionTitle = styled.h2`
   font-size: 42px;
   font-weight: 800;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 
   @media (max-width: 768px) {
     font-size: 32px;
@@ -323,9 +315,9 @@ const BenefitCard = styled.div`
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(155, 135, 196, 0.3);
+    border-color: var(--primary-200);
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(155, 135, 196, 0.1);
+    box-shadow: 0 8px 24px rgba(var(--primary-500-rgb), 0.1);
   }
 
   @media (max-width: 768px) {
@@ -336,7 +328,7 @@ const BenefitCard = styled.div`
 const BenefitIcon = styled.div`
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, rgba(191, 172, 226, 0.1) 0%, rgba(180, 167, 214, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.1) 0%, rgba(var(--primary-700-rgb), 0.1) 100%);
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -346,7 +338,7 @@ const BenefitIcon = styled.div`
   svg {
     width: 32px;
     height: 32px;
-    color: #9B87C4;
+    color: var(--primary-500);
   }
 `;
 
@@ -376,10 +368,10 @@ const CTASection = styled.section`
 const CTACard = styled.div`
  background: linear-gradient(
     135deg,
-    rgba(191, 172, 226, 0.1) 0%,
-    rgba(180, 167, 214, 0.1) 100%
+    rgba(var(--primary-500-rgb), 0.1) 0%,
+    rgba(var(--primary-700-rgb), 0.1) 100%
   );
-  border: 1px solid rgba(155, 135, 196, 0.25);
+  border: 1px solid var(--primary-200);
   border-radius: 24px;
   padding: 64px 48px;
   text-align: center;
@@ -393,10 +385,6 @@ const CTATitle = styled.h2`
   font-size: 38px;
   font-weight: 800;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #9B87C4 0%, #B4A7D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 
   @media (max-width: 768px) {
     font-size: 28px;
@@ -446,7 +434,7 @@ export default function HowItWorksPage() {
       title: "Get Smart Recommendations",
       description: "Receive detailed AI-powered feedback with actionable suggestions to improve your resume and increase your match score.",
       icon: <SparklesIcon />,
-      color: "#7BCAE3",
+      color: "var(--primary-500)",
       bgGradient: "linear-gradient(135deg, rgba(180, 231, 245, 0.08) 0%, rgba(199, 233, 251, 0.08) 100%)",
       features: [
         "ATS optimization tips",
@@ -460,7 +448,7 @@ export default function HowItWorksPage() {
       title: "Generate Cover Letter",
       description: "Create compelling, personalized cover letters with AI. Get job recommendations tailored to your skills and experience.",
       icon: <DocumentTextIcon />,
-      color: "#9B87C4",
+      color: "var(--accent)",
       bgGradient: "linear-gradient(135deg, rgba(191, 172, 226, 0.08) 0%, rgba(212, 197, 249, 0.08) 100%)",
       features: [
         "AI-generated cover letters",
@@ -474,7 +462,7 @@ export default function HowItWorksPage() {
       title: "Download Optimized Resume",
       description: "Get a professionally optimized resume with all improvements. ATS-friendly formatting and 85% higher pass rate.",
       icon: <CheckCircleIcon />,
-      color: "#6BBF9F",
+      color: "var(--success)",
       bgGradient: "linear-gradient(135deg, rgba(185, 232, 216, 0.08) 0%, rgba(208, 240, 228, 0.08) 100%)",
       features: [
         "AI-optimized resume",

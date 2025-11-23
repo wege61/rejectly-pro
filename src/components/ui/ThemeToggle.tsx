@@ -7,9 +7,8 @@ const ToggleButton = styled.button`
   position: relative;
   width: 48px;
   height: 26px;
-  background: ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.full};
-  border: none;
+  border: 1px solid #006e81;
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.normal};
   display: flex;

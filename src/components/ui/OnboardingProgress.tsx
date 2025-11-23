@@ -44,7 +44,7 @@ const RocketIcon = () => (
 );
 
 const ProgressContainer = styled(Card)`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   color: white;
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 
@@ -99,7 +99,7 @@ const StepItem = styled.div<{ $completed: boolean; $active: boolean }>`
   padding: ${({ theme }) => theme.spacing.md};
   background-color: ${({ $completed, $active }) =>
     $completed
-      ? "rgba(16, 185, 129, 0.2)"
+      ? "rgba(22, 163, 74, 0.2)"
       : $active
       ? "rgba(255, 255, 255, 0.15)"
       : "rgba(255, 255, 255, 0.05)"};
@@ -107,7 +107,7 @@ const StepItem = styled.div<{ $completed: boolean; $active: boolean }>`
   border: 2px solid
     ${({ $completed, $active }) =>
       $completed
-        ? "rgba(16, 185, 129, 0.5)"
+        ? "rgba(22, 163, 74, 0.5)"
         : $active
         ? "rgba(255, 255, 255, 0.4)"
         : "transparent"};
@@ -117,7 +117,7 @@ const StepItem = styled.div<{ $completed: boolean; $active: boolean }>`
   &:hover {
     background-color: ${({ $completed }) =>
       $completed
-        ? "rgba(16, 185, 129, 0.25)"
+        ? "rgba(22, 163, 74, 0.25)"
         : "rgba(255, 255, 255, 0.2)"};
   }
 `;
@@ -128,7 +128,7 @@ const StepIcon = styled.div<{ $completed: boolean; $active: boolean }>`
   border-radius: 50%;
   background-color: ${({ $completed, $active }) =>
     $completed
-      ? "#10b981"
+      ? "var(--success)"
       : $active
       ? "rgba(255, 255, 255, 0.3)"
       : "rgba(255, 255, 255, 0.1)"};
@@ -157,7 +157,7 @@ const StepDescription = styled.div`
 
 const ActionButton = styled(Button)`
   background-color: white;
-  color: #667eea;
+  color: var(--accent);
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
 
   &:hover {

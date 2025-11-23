@@ -125,10 +125,6 @@ const Title = styled.h1`
   font-size: 56px;
   font-weight: 900;
   margin-bottom: 24px;
-  background: #E2A16F;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 
   @media (max-width: 768px) {
     font-size: 36px;
@@ -160,10 +156,6 @@ const SectionTitle = styled.h2`
   font-weight: 800;
   margin-bottom: 24px;
   text-align: center;
-  background: linear-gradient(135deg, #B4E7F5 0%, #BFACE2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 
   @media (max-width: 768px) {
     font-size: 32px;
@@ -204,10 +196,6 @@ const StoryTitle = styled.h2`
   font-size: 36px;
   font-weight: 800;
   margin-bottom: 24px;
-  background: linear-gradient(135deg, #FFB3BA 0%, #FFC6D3 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 
   @media (max-width: 768px) {
     font-size: 28px;
@@ -304,8 +292,8 @@ const ValueCard = styled.div`
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: rgba(191, 172, 226, 0.4);
-    box-shadow: 0 8px 30px rgba(191, 172, 226, 0.12);
+    border-color: var(--primary-200);
+    box-shadow: 0 8px 30px rgba(var(--primary-500-rgb), 0.12);
   }
 
   @media (max-width: 768px) {
@@ -361,7 +349,7 @@ const TeamTitle = styled.h2`
   font-size: 36px;
   font-weight: 800;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #B9E8D8 0%, #B4E7F5 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--primary-500) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -402,7 +390,7 @@ const StatCard = styled.div`
 const StatNumber = styled.div`
   font-size: 48px;
   font-weight: 900;
-  background: linear-gradient(135deg, #FFB3BA 0%, #FFC6D3 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--primary-200) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -420,31 +408,37 @@ const StatLabel = styled.div`
 `;
 
 const CTASection = styled.section`
-  background: linear-gradient(
-    135deg,
-    rgba(255, 179, 186, 0.15) 0%,
-    rgba(255, 198, 211, 0.15) 100%
-  );
-  border: 1px solid var(--border-color);
-  border-radius: 24px;
-  padding: 80px 48px;
-  text-align: center;
-  margin-bottom: 120px;
+  padding: 80px 24px;
+  max-width: 900px;
+  margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 48px 24px;
-    margin-bottom: 80px;
-  }
-`;
+    padding: 60px 16px;
+  }`;
+
+  const CTACard = styled.div`
+ background: linear-gradient(
+    135deg,
+    rgba(var(--primary-500-rgb), 0.1) 0%,
+    rgba(var(--primary-700-rgb), 0.1) 100%
+  );
+  border: 1px solid var(--primary-200);
+  border-radius: 24px;
+  padding: 64px 48px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 48px 32px;
+  }`;
 
 const CTATitle = styled.h2`
-  font-size: 40px;
+  font-size: 38px;
   font-weight: 800;
   margin-bottom: 16px;
-  background:  #FFB3BA ;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
 
   @media (max-width: 768px) {
     font-size: 32px;
@@ -454,14 +448,13 @@ const CTATitle = styled.h2`
 const CTAText = styled.p`
   font-size: 18px;
   color: var(--text-secondary);
-  margin-bottom: 40px;
+  margin-bottom: 32px;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
 
   @media (max-width: 768px) {
     font-size: 16px;
-    margin-bottom: 32px;
   }
 `;
 
@@ -640,6 +633,7 @@ export default function AboutPage() {
         </TeamSection>
 
         <CTASection>
+          <CTACard>
           <CTATitle>Ready to Transform Your Resume?</CTATitle>
           <CTAText>
             Join thousands of successful job seekers who've used Rejectly.pro to land
@@ -657,6 +651,7 @@ export default function AboutPage() {
               View Pricing
             </Button>
           </CTAButtons>
+          </CTACard>
         </CTASection>
       </Content>
       <Footer />

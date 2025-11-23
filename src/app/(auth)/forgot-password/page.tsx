@@ -33,7 +33,7 @@ const Footer = styled.div`
   color: var(--text-secondary);
 
   a {
-    color: var(--primary-color);
+    color: var(--accent);
     font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
 
     &:hover {
@@ -44,10 +44,10 @@ const Footer = styled.div`
 
 const SuccessMessage = styled.div`
   padding: ${({ theme }) => theme.spacing.md};
-  background-color: #dcfce7;
-  border: 1px solid #86efac;
+  background-color: var(--success-bg);
+  border: 1px solid var(--success-border);
   border-radius: ${({ theme }) => theme.radius.md};
-  color: #166534;
+  color: var(--success);
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   text-align: center;
 `;

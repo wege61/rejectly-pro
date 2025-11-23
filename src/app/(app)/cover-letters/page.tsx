@@ -229,7 +229,7 @@ const CreditsIndicator = styled.div<{ $low?: boolean; $subscription?: boolean }>
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ $subscription, $low }) =>
     $subscription
-      ? '#10b981'
+      ? 'var(--success)'
       : $low
         ? '#f59e0b'
         : '#e5e7eb'
@@ -261,7 +261,7 @@ const CreditsIndicator = styled.div<{ $low?: boolean; $subscription?: boolean }>
     font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
     color: ${({ $subscription, $low }) =>
       $subscription
-        ? '#10b981'
+        ? 'var(--success)'
         : $low
           ? '#f59e0b'
           : '#9b87c4'
@@ -313,7 +313,7 @@ const ReportCard = styled.div<{ $isPremium: boolean }>`
       position: absolute;
       top: 8px;
       right: 8px;
-      background: linear-gradient(135deg, ${theme.colors.primary} 0%, #764ba2 100%);
+      background: linear-gradient(135deg, ${theme.colors.primary} 0%, var(--primary-600) 100%);
       color: white;
       font-size: 9px;
       font-weight: 700;
@@ -369,7 +369,7 @@ const ReportScore = styled.div<{ $score: number }>`
   font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ $score }) => {
-    if ($score >= 80) return '#10b981';
+    if ($score >= 80) return 'var(--success)';
     if ($score >= 60) return '#f59e0b';
     return '#ef4444';
   }};
@@ -427,7 +427,7 @@ const CoverLetterCard = styled.div<{ $tone: string }>`
         case 'professional':
           return '#3b82f6';
         case 'friendly':
-          return '#10b981';
+          return 'var(--success)';
         case 'formal':
           return '#8b5cf6';
         default:
@@ -442,7 +442,7 @@ const CoverLetterCard = styled.div<{ $tone: string }>`
         case 'professional':
           return '#3b82f6';
         case 'friendly':
-          return '#10b981';
+          return 'var(--success)';
         case 'formal':
           return '#8b5cf6';
         default:
@@ -515,11 +515,11 @@ const Tag = styled.div<{ $tone?: string }>`
       case 'professional':
         return '#3b82f6';
       case 'friendly':
-        return '#10b981';
+        return 'var(--success)';
       case 'formal':
         return '#8b5cf6';
       default:
-        return '#667eea';
+        return 'var(--accent)';
     }
   }};
 `;
@@ -1135,7 +1135,7 @@ export default function CoverLettersPage() {
               justifyContent: 'center',
             }}>
               <div style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'var(--gradient-primary)',
                 borderRadius: '16px',
                 padding: '16px',
                 display: 'inline-flex',
@@ -1147,7 +1147,7 @@ export default function CoverLettersPage() {
               fontSize: '24px',
               fontWeight: 600,
               marginBottom: '16px',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'var(--gradient-primary)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
@@ -1171,7 +1171,7 @@ export default function CoverLettersPage() {
               marginBottom: '24px',
               textAlign: 'left',
             }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#667eea' }}>
+              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: 'var(--accent)' }}>
                 ✨ What you'll get with premium:
               </div>
               <ul style={{
@@ -1182,25 +1182,25 @@ export default function CoverLettersPage() {
                 color: '#d1d5db',
               }}>
                 <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
                     <CheckCircleIcon />
                   </div>
                   <span>AI-generated cover letters with 6 templates</span>
                 </li>
                 <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
                     <CheckCircleIcon />
                   </div>
                   <span>Optimized CV with improved ATS score</span>
                 </li>
                 <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
                     <CheckCircleIcon />
                   </div>
                   <span>Detailed improvement breakdown</span>
                 </li>
                 <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: '#10b981', flexShrink: 0 }}>
+                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
                     <CheckCircleIcon />
                   </div>
                   <span>Alternative role recommendations</span>
@@ -1217,7 +1217,7 @@ export default function CoverLettersPage() {
                   padding: '12px',
                   marginBottom: '16px',
                   fontSize: '14px',
-                  color: '#10b981',
+                  color: 'var(--success)',
                 }}>
                   You have <strong>{userCredits.credits}</strong> credits available
                 </div>
@@ -1231,7 +1231,7 @@ export default function CoverLettersPage() {
                   }}
                   style={{
                     width: '100%',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: 'var(--gradient-primary)',
                     fontSize: '16px',
                     padding: '14px 24px',
                     marginBottom: '12px',
@@ -1254,7 +1254,7 @@ export default function CoverLettersPage() {
                   onClick={() => router.push(ROUTES.APP.BILLING)}
                   style={{
                     width: '100%',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: 'var(--gradient-primary)',
                     fontSize: '16px',
                     padding: '14px 24px',
                     marginBottom: '12px',

@@ -66,7 +66,7 @@ const ApplicationCard = styled.div<{ $isDragging?: boolean }>`
   opacity: ${({ $isDragging }) => ($isDragging ? 0.5 : 1)};
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: var(--accent);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
   }
@@ -104,7 +104,7 @@ const MetaTag = styled.div<{ $variant?: "default" | "success" | "warning" | "dan
   background: ${({ $variant }) => {
     switch ($variant) {
       case "success":
-        return "rgba(16, 185, 129, 0.1)";
+        return "var(--success-light)";
       case "warning":
         return "rgba(245, 158, 11, 0.1)";
       case "danger":
@@ -113,10 +113,10 @@ const MetaTag = styled.div<{ $variant?: "default" | "success" | "warning" | "dan
         return "rgba(107, 114, 128, 0.1)";
     }
   }};
-  color: ${({ $variant }) => {
+  color: ${({ $variant, theme }) => {
     switch ($variant) {
       case "success":
-        return "#10b981";
+        return "var(--success)";
       case "warning":
         return "#f59e0b";
       case "danger":

@@ -33,7 +33,7 @@ const Footer = styled.div`
   color: var(--text-secondary);
 
   a {
-    color: var(--primary-color);
+    color: var(--accent);
     font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
 
     &:hover {
@@ -48,7 +48,7 @@ const TermsText = styled.p`
   text-align: center;
 
   a {
-    color: var(--primary-color);
+    color: var(--accent);
 
     &:hover {
       text-decoration: underline;

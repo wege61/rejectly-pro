@@ -117,13 +117,12 @@ const StyledButton = styled.button<{
         `;
       default: // primary
         return css`
-          background-color: var(--primary-color);
+          background-color: var(--landing-button);
           color: white;
           border: none;
 
           &:hover:not(:disabled) {
-            background-color: var(--primary-color);
-            filter: brightness(0.9);
+            background-color: var(--accent-hover);
             transform: translateY(-2px);
             box-shadow: ${theme.shadow.md};
           }
@@ -142,7 +141,7 @@ const StyledButton = styled.button<{
   }
 
   &:focus-visible {
-    outline: 2px solid var(--primary-color);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 `;

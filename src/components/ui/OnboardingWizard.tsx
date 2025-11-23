@@ -182,7 +182,7 @@ const WizardCloseButton = styled.button`
 const ProgressFill = styled.div<{ $progress: number }>`
   width: ${({ $progress }) => $progress}%;
   height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   border-radius: 999px;
   transition: width 0.3s ease;
 `;
@@ -372,7 +372,7 @@ const ResultSummary = styled.div`
 const ResultScore = styled.div`
   font-size: 80px;
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

@@ -1218,7 +1218,6 @@ export default function CVPage() {
                     </CVPreviewSidebarItemTitle>
                     <CVPreviewSidebarItemMeta>
                       {isOptimized ? (
-<<<<<<< Updated upstream
                         <>
                           <span style={{ color: "#22c55e" }}>✨ Optimized</span>
                           {(cv as any).fake_it_mode && (
@@ -1228,9 +1227,6 @@ export default function CVPage() {
                             </>
                           )}
                         </>
-=======
-                        <span style={{ color: "var(--success)" }}>✨ Optimized</span>
->>>>>>> Stashed changes
                       ) : (
                         <span>📄 Original</span>
                       )}

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateOptimizedCVPrompt, generateFakeSkillsRecommendationsPrompt } from "@/lib/ai/prompts";
+import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 
 export async function POST(request: NextRequest) {
   try {
@@ -180,6 +181,73 @@ export async function POST(request: NextRequest) {
     } catch (cacheError) {
       // Ignore if columns don't exist yet - cache clearing is optional
       console.log("Cache clearing skipped (columns may not exist yet):", cacheError);
+    }
+
+    // Generate PDF and save to optimized_cvs table for My CVs page
+    try {
+      const pdf = await generateCVPDF(generatedCV);
+      const pdfArrayBuffer = pdf.output('arraybuffer');
+      const pdfBuffer = Buffer.from(pdfArrayBuffer);
+
+      // Create filename using user's name from generated CV
+      const userName = generatedCV.contact?.name;
+      console.log('📝 Generated CV contact name:', userName);
+
+      if (!userName) {
+        console.log('⚠️ No contact name in generated CV, using fallback');
+      }
+
+      const displayName = userName || 'Optimized CV';
+      const sanitizedName = displayName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
+      const fileName = `${user.id}/${reportId}/${sanitizedName}.pdf`;
+
+      // Upload to Supabase storage
+      const { error: uploadError } = await supabase.storage
+        .from('cv-files')
+        .upload(fileName, pdfBuffer, {
+          contentType: 'application/pdf',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.log('PDF upload error:', uploadError);
+      } else {
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('cv-files')
+          .getPublicUrl(fileName);
+
+        // Save to optimized_cvs table - use just the name as title
+        const cvTitle = userName ? `${userName} - Optimized CV` : 'Optimized CV';
+        console.log('📝 Saving to optimized_cvs with title:', cvTitle);
+
+        // First try to delete existing entry, then insert new one
+        await supabase
+          .from('optimized_cvs')
+          .delete()
+          .eq('report_id', reportId);
+
+        const { error: insertError } = await supabase
+          .from('optimized_cvs')
+          .insert({
+            user_id: user.id,
+            report_id: reportId,
+            original_cv_id: report.cv_id,
+            title: cvTitle,
+            file_url: urlData.publicUrl,
+            text: JSON.stringify(generatedCV),
+            lang: report.cv?.lang || 'en',
+          });
+
+        if (insertError) {
+          console.log('optimized_cvs insert error:', insertError);
+        } else {
+          console.log('✅ Optimized CV saved to My CVs with title:', cvTitle);
+        }
+      }
+    } catch (pdfError) {
+      // PDF generation is optional - don't fail the request
+      console.log('PDF generation for My CVs failed:', pdfError);
     }
 
     return NextResponse.json({

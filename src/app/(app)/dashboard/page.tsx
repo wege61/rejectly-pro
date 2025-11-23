@@ -614,12 +614,7 @@ const ArrowContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
-  background: rgba(102, 126, 234, 0.15);
-  border-radius: ${({ theme }) => theme.radius.full};
-  border: 2px solid rgba(102, 126, 234, 0.4);
-  backdrop-filter: blur(8px);
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
 
 const ArrowText = styled.span`

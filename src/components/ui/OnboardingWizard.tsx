@@ -112,23 +112,71 @@ const EditIcon = () => (
   </svg>
 );
 
+const CloseIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M6 18L18 6M6 6l12 12"
+    />
+  </svg>
+);
+
 const WizardContainer = styled.div`
-  height: 70vh;
+  height: 80vh;
   min-height: 500px;
-  max-height: 800px;
+  max-height: 900px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin-top: -${({ theme }) => theme.spacing.md};
+`;
+
+const WizardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  flex-shrink: 0;
 `;
 
 const ProgressBar = styled.div`
-  width: 100%;
+  flex: 1;
   height: 4px;
   background-color: ${({ theme }) => theme.colors.border};
   border-radius: 999px;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
   overflow: hidden;
+`;
+
+const WizardCloseButton = styled.button`
+  width: 32px;
+  height: 32px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
   flex-shrink: 0;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.surfaceHover};
+    color: ${({ theme }) => theme.colors.textPrimary};
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 `;
 
 const ProgressFill = styled.div<{ $progress: number }>`
@@ -1448,12 +1496,17 @@ export function OnboardingWizard({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="lg">
+    <Modal isOpen={isOpen} onClose={handleClose} size="lg" showCloseButton={false}>
       <Modal.Body>
         <WizardContainer>
-          <ProgressBar>
-            <ProgressFill $progress={progress} />
-          </ProgressBar>
+          <WizardHeader>
+            <ProgressBar>
+              <ProgressFill $progress={progress} />
+            </ProgressBar>
+            <WizardCloseButton onClick={handleClose} aria-label="Close">
+              <CloseIcon />
+            </WizardCloseButton>
+          </WizardHeader>
 
           {isLoading ? (
             <LoadingContainer>

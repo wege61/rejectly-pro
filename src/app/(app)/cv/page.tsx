@@ -108,6 +108,8 @@ interface OptimizedCV {
   lang: string;
   created_at: string;
   updated_at: string;
+  job_title?: string;
+  fake_it_mode?: boolean;
 }
 
 type CVItem =
@@ -287,6 +289,23 @@ const CVCardDate = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const CVCardJobInfo = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-top: ${({ theme }) => theme.spacing.xs};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: ${({ theme }) => theme.radius.sm};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+
+  span {
+    color: #22c55e;
+    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  }
 `;
 
 const CVCardActions = styled.div`
@@ -482,35 +501,48 @@ const CVPreviewMain = styled.div`
 `;
 
 const CVPreviewHeader = styled.div`
-  padding: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.lg};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: ${({ theme }) => theme.spacing.sm};
   flex-shrink: 0;
   background: ${({ theme }) => theme.colors.surface};
 
   @media (max-width: 768px) {
-    padding: ${({ theme }) => theme.spacing.lg};
+    padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   }
 `;
 
 const CVPreviewTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.textPrimary};
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: ${({ theme }) => theme.spacing.xs};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
 
   @media (max-width: 768px) {
-    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
   }
+`;
+
+const CVPreviewTitleWrapper = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const CVPreviewJobInfo = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
 `;
 
 const CVPreviewActions = styled.div`
@@ -718,21 +750,52 @@ export default function CVPage() {
         .eq("type", "cv")
         .order("created_at", { ascending: false });
 
-      // Fetch optimized CVs from optimized_cvs table
+      // Fetch optimized CVs from optimized_cvs table with report info
       const { data: optimizedCVs } = await supabase
         .from("optimized_cvs")
-        .select("*")
+        .select(`
+          *,
+          reports:report_id (
+            job_ids,
+            fake_it_mode
+          )
+        `)
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
+
+      // Get job titles from documents for all job_ids
+      const allJobIds = (optimizedCVs || [])
+        .flatMap((cv: any) => cv.reports?.job_ids || [])
+        .filter(Boolean);
+
+      let jobTitlesMap: Record<string, string> = {};
+      if (allJobIds.length > 0) {
+        const { data: jobDocs } = await supabase
+          .from("documents")
+          .select("id, title")
+          .in("id", allJobIds);
+
+        if (jobDocs) {
+          jobTitlesMap = Object.fromEntries(
+            jobDocs.map((doc) => [doc.id, doc.title])
+          );
+        }
+      }
 
       // Combine all lists (only original and optimized with PDFs)
       const combined: CVItem[] = [
         ...(originalCVs || []),
-        ...(optimizedCVs || []).map((cv) => ({
-          ...cv,
-          isOptimized: true as const,
-          reportId: cv.report_id,
-        })),
+        ...(optimizedCVs || []).map((cv: any) => {
+          const jobIds = cv.reports?.job_ids || [];
+          const jobTitle = jobIds.map((id: string) => jobTitlesMap[id]).filter(Boolean).join(', ');
+          return {
+            ...cv,
+            isOptimized: true as const,
+            reportId: cv.report_id,
+            job_title: jobTitle || undefined,
+            fake_it_mode: cv.reports?.fake_it_mode || false,
+          };
+        }),
       ];
 
       // Sort by created_at desc
@@ -817,6 +880,18 @@ export default function CVPage() {
 
       if (error) throw error;
 
+      // If optimized CV, also clear generated_cv from reports table
+      if (isOptimized && "reportId" in cvToDelete) {
+        await supabase
+          .from("reports")
+          .update({
+            generated_cv: null,
+            optimized_score: null,
+            improvement_breakdown: null
+          })
+          .eq("id", cvToDelete.reportId);
+      }
+
       toast.success("CV deleted successfully!");
       setAllCVs((prev) => prev.filter((cv) => cv.id !== cvToDelete.id));
 
@@ -862,9 +937,41 @@ export default function CVPage() {
       const a = document.createElement("a");
       a.href = url;
 
-      // Clean filename and ensure proper .pdf extension
-      // Remove .pdf and anything after it, then add clean .pdf extension
-      const filename = (cv.title || "cv").replace(/\.pdf.*/i, "") + ".pdf";
+      let filename: string;
+
+      // For optimized CVs, try to extract name from the CV data for ATS compatibility
+      if ("isOptimized" in cv && cv.isOptimized) {
+        let extractedName: string | null = null;
+
+        // Try to get name from cv.text (JSON data)
+        if (cv.text) {
+          try {
+            const cvData = JSON.parse(cv.text);
+            if (cvData.contact?.name) {
+              extractedName = cvData.contact.name;
+            }
+          } catch (e) {
+            console.log("Failed to parse CV text:", e);
+          }
+        }
+
+        // Fallback: extract name from title (e.g., "John Doe - Optimized CV" -> "John Doe")
+        if (!extractedName && cv.title) {
+          const titleMatch = cv.title.match(/^(.+?)\s*-\s*Optimized CV$/i);
+          if (titleMatch) {
+            extractedName = titleMatch[1].trim();
+          }
+        }
+
+        if (extractedName) {
+          filename = extractedName.replace(/\s+/g, "_") + ".pdf";
+        } else {
+          filename = (cv.title || "cv").replace(/\.pdf.*/i, "").replace(/ - Optimized CV$/i, "") + ".pdf";
+        }
+      } else {
+        // Original CV - use title
+        filename = (cv.title || "cv").replace(/\.pdf.*/i, "") + ".pdf";
+      }
 
       a.download = filename;
       document.body.appendChild(a);
@@ -943,7 +1050,9 @@ export default function CVPage() {
                 <CVGrid>
                   {allCVs
                     .filter((cv) => "isOptimized" in cv && cv.isOptimized)
-                    .map((cv) => (
+                    .map((cv) => {
+                      const optimizedCV = cv as OptimizedCV & { isOptimized: true; reportId: string };
+                      return (
                       <CVCard key={cv.id} $isOptimized={true} onClick={() => setPreviewCV(cv)}>
                         <CVCardHeader>
                           <CVCardIcon $isOptimized={true}>
@@ -955,6 +1064,11 @@ export default function CVPage() {
                               <Badge size="sm" variant="success">
                                 ✨ Optimized
                               </Badge>
+                              {optimizedCV.fake_it_mode && (
+                                <Badge size="sm" variant="warning">
+                                  🎭 Fake It
+                                </Badge>
+                              )}
                               <Badge size="sm" variant="info">
                                 {cv.lang === "tr" ? "🇹🇷 Turkish" : "🇬🇧 English"}
                               </Badge>
@@ -962,6 +1076,11 @@ export default function CVPage() {
                             <CVCardDate>
                               Generated {formatDate(cv.created_at)}
                             </CVCardDate>
+                            {optimizedCV.job_title && (
+                              <CVCardJobInfo>
+                                For: <span>{optimizedCV.job_title}</span>
+                              </CVCardJobInfo>
+                            )}
                           </CVCardContent>
                         </CVCardHeader>
                         <CVCardActions>
@@ -995,7 +1114,8 @@ export default function CVPage() {
                           </Button>
                         </CVCardActions>
                       </CVCard>
-                    ))}
+                    );
+                    })}
                 </CVGrid>
               </CVSection>
             )}
@@ -1098,7 +1218,15 @@ export default function CVPage() {
                     </CVPreviewSidebarItemTitle>
                     <CVPreviewSidebarItemMeta>
                       {isOptimized ? (
-                        <span style={{ color: "#22c55e" }}>✨ Optimized</span>
+                        <>
+                          <span style={{ color: "#22c55e" }}>✨ Optimized</span>
+                          {(cv as any).fake_it_mode && (
+                            <>
+                              <span>•</span>
+                              <span style={{ color: "#f59e0b" }}>🎭</span>
+                            </>
+                          )}
+                        </>
                       ) : (
                         <span>📄 Original</span>
                       )}
@@ -1147,14 +1275,27 @@ export default function CVPage() {
             </CVPreviewNavigation>
 
             <CVPreviewHeader>
-              <CVPreviewTitle>
-                {previewCV?.title}
-                {"isOptimized" in (previewCV || {}) && (previewCV as any).isOptimized && (
-                  <Badge size="sm" variant="success">
-                    ✨ Optimized
-                  </Badge>
+              <CVPreviewTitleWrapper>
+                <CVPreviewTitle>
+                  {previewCV?.title}
+                  {"isOptimized" in (previewCV || {}) && (previewCV as any).isOptimized && (
+                    <Badge size="sm" variant="success">
+                      ✨ Optimized
+                    </Badge>
+                  )}
+                  {"isOptimized" in (previewCV || {}) && (previewCV as any).fake_it_mode && (
+                    <Badge size="sm" variant="warning">
+                      🎭 Fake It
+                    </Badge>
+                  )}
+                </CVPreviewTitle>
+                {"isOptimized" in (previewCV || {}) && (previewCV as any).job_title && (
+                  <CVPreviewJobInfo>
+                    <span>Created for:</span>
+                    <strong style={{ color: '#22c55e' }}>{(previewCV as any).job_title}</strong>
+                  </CVPreviewJobInfo>
                 )}
-              </CVPreviewTitle>
+              </CVPreviewTitleWrapper>
               <CVPreviewActions>
                 <Button
                   variant="ghost"

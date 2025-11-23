@@ -2,6 +2,7 @@
 
 import styled from "styled-components";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -14,7 +15,7 @@ import { createClient } from "@/lib/supabase/client";
 import { GeneratedCV } from "@/types/cv";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
-import { ROUTES } from "@/lib/constants";
+import { PRICING } from "@/lib/constants";
 
 interface UserCredits {
   credits: number;
@@ -508,17 +509,58 @@ const ScoreCard = styled(Card)`
   text-align: center;
 `;
 
-const ScoreValue = styled.div`
+const ScoreValue = styled.div<{ $score?: number }>`
   font-size: ${({ theme }) => theme.typography.fontSize["5xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.primary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  color: ${({ $score }) =>
+    $score !== undefined
+      ? $score >= 80
+        ? '#10b981'
+        : $score >= 60
+          ? '#f59e0b'
+          : '#ef4444'
+      : '#667eea'
+  };
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
 const ScoreLabel = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
+
+const ScoreContext = styled.div<{ $score?: number }>`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ $score }) =>
+    $score !== undefined
+      ? $score >= 80
+        ? '#10b981'
+        : $score >= 60
+          ? '#f59e0b'
+          : '#ef4444'
+      : '#667eea'
+  };
+  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
+  background: ${({ $score }) =>
+    $score !== undefined
+      ? $score >= 80
+        ? 'rgba(16, 185, 129, 0.1)'
+        : $score >= 60
+          ? 'rgba(245, 158, 11, 0.1)'
+          : 'rgba(239, 68, 68, 0.1)'
+      : 'rgba(102, 126, 234, 0.1)'
+  };
+  border-radius: ${({ theme }) => theme.radius.full};
+  display: inline-block;
+`;
+
+const getScoreLabel = (score: number): string => {
+  if (score >= 80) return 'Excellent Match';
+  if (score >= 60) return 'Good Match';
+  return 'Needs Improvement';
+};
 
 const ComparisonScoreCard = styled(Card)`
   text-align: center;
@@ -774,6 +816,42 @@ const ProUpgradeCard = styled(Card)`
   }
 `;
 
+const MainCTAButton = styled(Button)`
+  background: white !important;
+  color: #667eea !important;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  padding: ${({ theme }) => `${theme.spacing.lg} ${theme.spacing.xl}`};
+  width: 100%;
+  margin-top: ${({ theme }) => theme.spacing.xl};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.5);
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+    }
+    50% {
+      box-shadow: 0 4px 30px rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  animation: glow 2s ease-in-out infinite;
+`;
+
 const UpgradeTitle = styled.h3`
   font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
   margin-bottom: ${({ theme }) => theme.spacing.md};
@@ -799,7 +877,7 @@ const UpgradeFeatures = styled.ul`
 `;
 
 // Blurred Preview Components for Free Users
-const BlurredPreviewSection = styled.div`
+const BlurredPreviewSection = styled.div<{ $isVisible?: boolean }>`
   position: relative;
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
@@ -810,6 +888,108 @@ const BlurredContent = styled.div`
   user-select: none;
   pointer-events: none;
   opacity: 0.6;
+`;
+
+const SeeMoreButton = styled.button`
+  position: absolute;
+  bottom: ${({ theme }) => theme.spacing.md};
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.xl}`};
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(102, 126, 234, 0.4);
+  border-radius: ${({ theme }) => theme.radius.full};
+  color: #a5b4fc;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.normal};
+  z-index: 10;
+
+  &:hover {
+    border-color: #667eea;
+    color: white;
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateX(-50%) translateY(-2px);
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover svg {
+    transform: translateY(2px);
+  }
+`;
+
+const AnimatedUnlockOverlay = styled.div<{ $isVisible: boolean }>`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) ${({ $isVisible }) => $isVisible ? 'scale(1)' : 'scale(0.8)'};
+  z-index: 10;
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.95) 0%,
+    rgba(118, 75, 162, 0.95) 100%
+  );
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  opacity: ${({ $isVisible }) => $isVisible ? 1 : 0};
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+`;
+
+const BeforeAfterContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const BeforeAfterBox = styled.div<{ $type: 'before' | 'after' }>`
+  padding: ${({ theme }) => theme.spacing.md};
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ $type }) =>
+    $type === 'before'
+      ? 'rgba(239, 68, 68, 0.1)'
+      : 'rgba(16, 185, 129, 0.1)'
+  };
+  border: 1px solid ${({ $type }) =>
+    $type === 'before'
+      ? 'rgba(239, 68, 68, 0.3)'
+      : 'rgba(16, 185, 129, 0.3)'
+  };
+`;
+
+const BeforeAfterLabel = styled.div<{ $type: 'before' | 'after' }>`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  color: ${({ $type }) =>
+    $type === 'before' ? '#ef4444' : '#10b981'
+  };
+`;
+
+const BeforeAfterText = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const UnlockOverlay = styled.div`
@@ -824,17 +1004,21 @@ const UnlockOverlay = styled.div`
     rgba(102, 126, 234, 0.95) 0%,
     rgba(118, 75, 162, 0.95) 100%
   );
-  padding: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing.lg};
   border-radius: ${({ theme }) => theme.radius.lg};
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  min-width: 300px;
   backdrop-filter: blur(10px);
 `;
 
-const UnlockIcon = styled.div`
-  font-size: 48px;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+const UnlockIconWrapper = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
   animation: pulse 2s ease-in-out infinite;
+  color: white;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
 
   @keyframes pulse {
     0%,
@@ -846,6 +1030,22 @@ const UnlockIcon = styled.div`
     }
   }
 `;
+
+const LockIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+    />
+  </svg>
+);
 
 const UnlockTitle = styled.h4`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
@@ -871,12 +1071,387 @@ const UnlockButton = styled(Button)`
   }
 `;
 
+// Testimonial Carousel
+const TestimonialCarousel = styled.div`
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  min-height: 100px;
+`;
+
+const TestimonialSlide = styled.div<{ $isActive: boolean }>`
+  position: ${({ $isActive }) => $isActive ? 'relative' : 'absolute'};
+  top: 0;
+  left: 0;
+  right: 0;
+  opacity: ${({ $isActive }) => $isActive ? 1 : 0};
+  transform: ${({ $isActive }) => $isActive ? 'translateY(0)' : 'translateY(10px)'};
+  transition: all 0.5s ease-in-out;
+  pointer-events: ${({ $isActive }) => $isActive ? 'auto' : 'none'};
+`;
+
+const TestimonialText = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-style: italic;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  line-height: 1.5;
+`;
+
+const TestimonialAuthor = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  opacity: 0.8;
+  text-align: center;
+  margin-top: ${({ theme }) => theme.spacing.sm};
+`;
+
+const TestimonialDots = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: ${({ theme }) => theme.spacing.sm};
+`;
+
+const TestimonialDot = styled.div<{ $isActive: boolean }>`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: ${({ $isActive }) => $isActive ? 'white' : 'rgba(255, 255, 255, 0.3)'};
+  transition: all 0.3s ease;
+`;
+
+const testimonials = [
+  {
+    text: "Fresh out of college with no experience, I was getting zero callbacks. After upgrading, I landed my first dev job in 2 weeks!",
+    author: "Alex K.",
+    role: "Junior Developer, 22"
+  },
+  {
+    text: "6 months unemployed and losing hope. This tool rewrote my CV and I got 4 interviews in one week. Now happily employed!",
+    author: "Maria S.",
+    role: "Marketing Associate, 28"
+  },
+  {
+    text: "As a recent graduate competing with experienced candidates, the optimized bullets made my internships shine. Got my dream job!",
+    author: "James L.",
+    role: "Business Analyst, 23"
+  },
+  {
+    text: "Was laid off and struggling for 4 months. The Pro analysis showed exactly why I wasn't getting callbacks. Employed within 3 weeks!",
+    author: "David R.",
+    role: "Sales Rep, 31"
+  },
+  {
+    text: "No one was looking at my applications. After the upgrade, recruiters started reaching out to ME. Life-changing!",
+    author: "Sophie T.",
+    role: "Junior Designer, 24"
+  },
+  {
+    text: "Graduated during tough times with zero responses. This tool helped me land a role at a Fortune 500 company!",
+    author: "Ryan M.",
+    role: "Data Analyst, 25"
+  },
+  {
+    text: "8 months of unemployment depression ended after using Pro. The rewritten CV got me 5 callbacks in the first week.",
+    author: "Emma W.",
+    role: "HR Coordinator, 29"
+  },
+  {
+    text: "First job hunt after university was brutal. The ATS optimization made all the difference. Finally working in tech!",
+    author: "Chris P.",
+    role: "Software Engineer, 23"
+  }
+];
+
+// Buy Credits Modal Components
+const PricingGrid = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.md};
+  grid-template-columns: repeat(3, 1fr);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const PricingCard = styled.div<{ $featured?: boolean }>`
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: ${({ $featured }) => $featured ? '2px solid #667eea' : '1px solid'};
+  border-color: ${({ $featured, theme }) => $featured ? '#667eea' : theme.colors.border};
+  position: relative;
+`;
+
+const PricingFeaturedBadge = styled.div`
+  position: absolute;
+  top: -10px;
+  right: 16px;
+`;
+
+const PricingHeader = styled.div`
+  text-align: center;
+  padding-bottom: ${({ theme }) => theme.spacing.md};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const PricingName = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const PricingPrice = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: #667eea;
+
+  span {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.normal};
+    color: ${({ theme }) => theme.colors.textSecondary};
+  }
+`;
+
+const PricingSubtext = styled.p`
+  font-size: 12px;
+  color: #10b981;
+  font-weight: 600;
+  margin-top: 4px;
+`;
+
+// Windows 10 style fullscreen success overlay
+const FullscreenSuccessOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInOverlay 0.8s ease;
+
+  @keyframes fadeInOverlay {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+const SuccessContent = styled.div`
+  text-align: center;
+  max-width: 600px;
+  padding: 40px;
+  animation: slideUpContent 1s ease 0.3s both;
+
+  @keyframes slideUpContent {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+const WelcomeSuccessIcon = styled.div`
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 40px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scaleInIcon 0.6s ease 0.5s both;
+  box-shadow: 0 20px 60px rgba(16, 185, 129, 0.4);
+
+  @keyframes scaleInIcon {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  svg {
+    width: 60px;
+    height: 60px;
+    stroke: white;
+    stroke-width: 3;
+  }
+`;
+
+const WelcomeSuccessTitle = styled.h1`
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #a78bfa 50%, #f472b6 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fadeInText 0.8s ease 0.8s both;
+
+  @keyframes fadeInText {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
+`;
+
+const SuccessMessage = styled.p`
+  font-size: 20px;
+  color: #cbd5e1;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  animation: fadeInText 0.8s ease 1s both;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
+const SuccessQuote = styled.div`
+  padding: 24px 32px;
+  background: rgba(102, 126, 234, 0.15);
+  border-radius: 16px;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  animation: fadeInText 0.8s ease 1.2s both;
+
+  p {
+    font-size: 16px;
+    color: #a5b4fc;
+    font-style: italic;
+    margin: 0;
+    line-height: 1.6;
+  }
+`;
+
+const LoadingDots = styled.div`
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 40px;
+  animation: fadeInText 0.8s ease 1.4s both;
+
+  span {
+    width: 8px;
+    height: 8px;
+    background: #667eea;
+    border-radius: 50%;
+    animation: dotPulse 1.4s ease infinite;
+
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  }
+
+  @keyframes dotPulse {
+    0%, 80%, 100% {
+      transform: scale(0.6);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+`;
+
+const PricingFeatureList = styled.ul`
+  list-style: none;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  padding: 0;
+`;
+
+const PricingFeatureItem = styled.li`
+  display: flex;
+  align-items: start;
+  gap: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #10b981;
+    margin-top: 1px;
+  }
+`;
+
+const PricingCheckIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+    <path
+      fillRule="evenodd"
+      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+// Guarantee Badge
+const GuaranteeBadge = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: ${({ theme }) => theme.spacing.sm};
+`;
+
 // Social Proof Components
+const HeroStat = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: ${({ theme }) => theme.radius.md};
+  backdrop-filter: blur(10px);
+`;
+
+const HeroStatNumber = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: white;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const HeroStatLabel = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: rgba(255, 255, 255, 0.9);
+`;
+
 const SocialProofContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: ${({ theme }) => theme.spacing.md};
-  margin: ${({ theme }) => theme.spacing.lg} 0;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
 
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
@@ -924,10 +1499,11 @@ const PersonalizedAlert = styled.div<{
 
 // Comparison Table
 const ComparisonTable = styled.div`
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: ${({ theme }) => theme.radius.lg};
   overflow: hidden;
   margin: ${({ theme }) => theme.spacing.lg} 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
 const ComparisonRow = styled.div<{ $isHeader?: boolean }>`
@@ -948,14 +1524,15 @@ const ComparisonRow = styled.div<{ $isHeader?: boolean }>`
 `;
 
 const ComparisonCell = styled.div`
-  padding: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.lg}`};
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
 
   &:first-child {
     justify-content: flex-start;
+    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   }
 `;
 
@@ -1433,7 +2010,7 @@ const SuccessIcon = styled.div`
 `;
 
 const SuccessTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.xxl};
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: #10b981;
   margin-bottom: ${({ theme }) => theme.spacing.xs};
@@ -1555,7 +2132,7 @@ const LoadingModalContent = styled.div`
   background: ${({ theme }) => theme.colors.background};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.xl};
-  padding: ${({ theme }) => theme.spacing.xxl};
+  padding: ${({ theme }) => theme.spacing["2xl"]};
   max-width: 600px;
   width: 90%;
   text-align: center;
@@ -2038,6 +2615,14 @@ export default function ReportDetailPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isUpgrading, setIsUpgrading] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  // Ref for upgrade section scroll
+  const upgradeRef = useRef<HTMLDivElement>(null);
+
+  const scrollToUpgrade = () => {
+    upgradeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
   const [isGeneratingCV, setIsGeneratingCV] = useState(false);
   const [isAnalyzingOptimized, setIsAnalyzingOptimized] = useState(false);
   const [optimizedScore, setOptimizedScore] = useState<number | null>(null);
@@ -2053,6 +2638,9 @@ export default function ReportDetailPage() {
   const [fakeItMode, setFakeItMode] = useState(false);
   const [isCoverLetterModalOpen, setIsCoverLetterModalOpen] = useState(false);
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
+  const [isBuyCreditsModalOpen, setIsBuyCreditsModalOpen] = useState(false);
+  const [isBuyingCredits, setIsBuyingCredits] = useState<string | null>(null);
+  const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const wasGeneratingRef = useRef(false);
   const [userCredits, setUserCredits] = useState<UserCredits>({
@@ -2062,21 +2650,51 @@ export default function ReportDetailPage() {
   });
 
   // Fetch user credits
-  useEffect(() => {
-    async function fetchCredits() {
-      try {
-        const response = await fetch("/api/user/credits");
-        if (response.ok) {
-          const data = await response.json();
-          setUserCredits(data);
-        }
-      } catch (error) {
-        console.error("Error fetching credits:", error);
+  const fetchCredits = async () => {
+    try {
+      const response = await fetch("/api/user/credits");
+      if (response.ok) {
+        const data = await response.json();
+        setUserCredits(data);
       }
+    } catch (error) {
+      console.error("Error fetching credits:", error);
     }
+  };
 
+  useEffect(() => {
     fetchCredits();
   }, []);
+
+  // Buy credits handler
+  const handleBuyCredits = async (planId: string, credits: number, planName: string) => {
+    setIsBuyingCredits(planId);
+    try {
+      const response = await fetch("/api/credits/add-test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credits, planName }),
+      });
+
+      if (response.ok) {
+        await fetchCredits();
+        setPurchaseSuccess(true);
+
+        // Close modal after 5 seconds
+        setTimeout(() => {
+          setIsBuyCreditsModalOpen(false);
+          setPurchaseSuccess(false);
+        }, 5000);
+      } else {
+        alert("Failed to add credits");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error occurred");
+    } finally {
+      setIsBuyingCredits(null);
+    }
+  };
 
   // Auto-upgrade when coming from cover letters page
   const autoUpgradeTriggered = useRef(false);
@@ -2279,6 +2897,14 @@ export default function ReportDetailPage() {
     fetchReport();
   }, [user, reportId, router, toast]);
 
+  // Testimonial carousel auto-rotate
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Auto-analyze when CV exists but no score
   useEffect(() => {
     const shouldAnalyze =
@@ -2360,42 +2986,13 @@ export default function ReportDetailPage() {
 
     setIsGeneratingCV(true);
     try {
-      // Create a new premium report with the same CV and jobs
-      const createResponse = await fetch("/api/analyze/free", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cvId: report.cv_id,
-          jobIds: report.job_ids,
-        }),
-      });
-
-      const createResult = await createResponse.json();
-
-      if (!createResponse.ok) {
-        throw new Error(createResult.error || "Failed to create report");
-      }
-
-      const newReportId = createResult.report.id;
-
-      // Upgrade to premium
-      const upgradeResponse = await fetch("/api/analyze/pro", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          reportId: newReportId,
-        }),
-      });
-
-      const upgradeResult = await upgradeResponse.json();
-
-      if (!upgradeResponse.ok) {
-        throw new Error(upgradeResult.error || "Failed to upgrade report");
-      }
+      // Report is already pro, just regenerate CV with fake it mode (no credit cost)
+      // First clear the existing generated_cv to allow regeneration
+      const supabase = createClient();
+      await supabase
+        .from("reports")
+        .update({ generated_cv: null, fake_it_mode: true })
+        .eq("id", report.id);
 
       // Generate CV with fake it mode
       const cvResponse = await fetch("/api/cv/generate", {
@@ -2404,7 +3001,7 @@ export default function ReportDetailPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          reportId: newReportId,
+          reportId: report.id,
           fakeItMode: true,
         }),
       });
@@ -2415,9 +3012,74 @@ export default function ReportDetailPage() {
         throw new Error(cvResult.error || "Failed to generate CV");
       }
 
-      // Redirect to new report
-      toast.success("New report created with Fake It Mode!");
-      router.push(`/reports/${newReportId}`);
+      // Refresh the report data
+      const { data: updatedReport } = await supabase
+        .from("reports")
+        .select("*")
+        .eq("id", report.id)
+        .single();
+
+      if (updatedReport) {
+        setReport(updatedReport);
+
+        // Generate PDF on client and save to optimized_cvs
+        if (updatedReport.generated_cv) {
+          try {
+            const pdf = await generateCVPDF(updatedReport.generated_cv);
+            const pdfBlob = pdf.output('blob');
+
+            const userName = updatedReport.generated_cv.contact?.name || 'Optimized';
+            const sanitizedName = userName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
+            const fileName = `optimized/${user?.id}/${updatedReport.id}/${sanitizedName}.pdf`;
+
+            // Upload to storage
+            const { error: uploadError } = await supabase.storage
+              .from('cv-files')
+              .upload(fileName, pdfBlob, {
+                contentType: 'application/pdf',
+                upsert: true,
+              });
+
+            if (uploadError) {
+              console.error('Upload error:', uploadError);
+              throw uploadError;
+            }
+
+            const { data: urlData } = supabase.storage
+              .from('cv-files')
+              .getPublicUrl(fileName);
+
+            // Save to optimized_cvs
+            await supabase
+              .from('optimized_cvs')
+              .delete()
+              .eq('report_id', updatedReport.id);
+
+            const { error: insertError } = await supabase
+              .from('optimized_cvs')
+              .insert({
+                user_id: user?.id,
+                report_id: updatedReport.id,
+                original_cv_id: updatedReport.cv_id,
+                title: `${userName} - Optimized CV`,
+                file_url: urlData.publicUrl,
+                text: JSON.stringify(updatedReport.generated_cv),
+                lang: 'en',
+              });
+
+            if (insertError) {
+              console.error('Insert error:', insertError);
+            } else {
+              console.log('✅ CV saved to My CVs');
+            }
+          } catch (saveError) {
+            console.error('Error saving to My CVs:', saveError);
+          }
+        }
+      }
+
+      toast.success("CV regenerated with Fake It Mode!");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       toast.error(errorMessage);
@@ -2447,8 +3109,6 @@ export default function ReportDetailPage() {
         throw new Error(result.error || "Upgrade failed");
       }
 
-      toast.success("Upgraded to Pro!");
-
       // Refresh report
       const supabase = createClient();
       const { data } = await supabase
@@ -2459,6 +3119,111 @@ export default function ReportDetailPage() {
 
       if (data) {
         setReport(data);
+
+        // Automatically generate optimized CV
+        try {
+          const cvResponse = await fetch("/api/cv/generate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              reportId: data.id,
+              fakeItMode: false,
+            }),
+          });
+
+          if (cvResponse.ok) {
+            // Refresh report again to get generated_cv
+            const { data: updatedData } = await supabase
+              .from("reports")
+              .select("*")
+              .eq("id", reportId)
+              .single();
+
+            if (updatedData) {
+              setReport(updatedData);
+
+              // Generate PDF on client and save to optimized_cvs
+              if (updatedData.generated_cv) {
+                try {
+                  const pdf = await generateCVPDF(updatedData.generated_cv);
+                  const pdfBlob = pdf.output('blob');
+
+                  const userName = updatedData.generated_cv.contact?.name || 'Optimized';
+                  const sanitizedName = userName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
+                  const fileName = `optimized/${user?.id}/${updatedData.id}/${sanitizedName}.pdf`;
+
+                  // Upload to storage
+                  const { error: uploadError } = await supabase.storage
+                    .from('cv-files')
+                    .upload(fileName, pdfBlob, {
+                      contentType: 'application/pdf',
+                      upsert: true,
+                    });
+
+                  if (uploadError) {
+                    console.error('Upload error:', uploadError);
+                    throw uploadError;
+                  }
+
+                  const { data: urlData } = supabase.storage
+                    .from('cv-files')
+                    .getPublicUrl(fileName);
+
+                  // Save to optimized_cvs
+                  await supabase
+                    .from('optimized_cvs')
+                    .delete()
+                    .eq('report_id', updatedData.id);
+
+                  const { error: insertError } = await supabase
+                    .from('optimized_cvs')
+                    .insert({
+                      user_id: user?.id,
+                      report_id: updatedData.id,
+                      original_cv_id: updatedData.cv_id,
+                      title: `${userName} - Optimized CV`,
+                      file_url: urlData.publicUrl,
+                      text: JSON.stringify(updatedData.generated_cv),
+                      lang: 'en',
+                    });
+
+                  if (insertError) {
+                    console.error('Insert error:', insertError);
+                  } else {
+                    console.log('✅ CV saved to My CVs');
+                  }
+                } catch (saveError) {
+                  console.error('Error saving to My CVs:', saveError);
+                }
+              }
+
+              // Analyze optimized CV to get score improvement
+              const analyzeResponse = await fetch("/api/cv/analyze-optimized", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  reportId: updatedData.id,
+                }),
+              });
+
+              if (analyzeResponse.ok) {
+                const analysisResult = await analyzeResponse.json();
+                setOptimizedScore(analysisResult.optimizedScore);
+                setImprovementBreakdown(analysisResult.improvements || []);
+              }
+            }
+          }
+        } catch (cvError) {
+          console.error("CV generation error:", cvError);
+        }
+
+        // Scroll to top after everything completes
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        toast.success("Your optimized CV is ready!");
       }
     } catch (error) {
       const errorMessage =
@@ -2573,10 +3338,11 @@ export default function ReportDetailPage() {
 
     try {
       const pdf = await generateCVPDF(report.generated_cv);
+      // Use just the name for better ATS compatibility
       const fileName = `${report.generated_cv.contact.name.replace(
         /\s+/g,
         "_"
-      )}_CV_Optimized.pdf`;
+      )}.pdf`;
       pdf.save(fileName);
       toast.success("CV downloaded successfully! Check your downloads folder.");
       handleClosePreview(); // Close modal after download
@@ -2647,7 +3413,7 @@ export default function ReportDetailPage() {
           <CreditsIndicator
             $subscription={userCredits.hasSubscription}
             $low={!userCredits.hasSubscription && userCredits.credits <= 2}
-            onClick={() => router.push(ROUTES.APP.BILLING)}
+            onClick={() => setIsBuyCreditsModalOpen(true)}
           >
             {userCredits.hasSubscription ? (
               <>✓ Pro Active</>
@@ -2701,8 +3467,9 @@ export default function ReportDetailPage() {
           </ComparisonScoreCard>
         ) : (
           <ScoreCard variant="elevated">
-            <ScoreValue>{report.fit_score}%</ScoreValue>
+            <ScoreValue $score={report.fit_score}>{report.fit_score}%</ScoreValue>
             <ScoreLabel>Match Score</ScoreLabel>
+            <ScoreContext $score={report.fit_score}>{getScoreLabel(report.fit_score)}</ScoreContext>
             {report.generated_cv && isAnalyzingOptimized && (
               <LoadingText>Analyzing optimized CV...</LoadingText>
             )}
@@ -2722,12 +3489,21 @@ export default function ReportDetailPage() {
         )}
       </Grid>
 
+      {/* Personalized Alert - Show immediately after scores for free users */}
+      {!report.pro && (
+        <PersonalizedAlert
+          $variant={getPersonalizedMessage(report.fit_score).variant}
+        >
+          {getPersonalizedMessage(report.fit_score).message}
+        </PersonalizedAlert>
+      )}
+
       {report.fit_score < 50 &&
         roleRecommendations.length > 0 &&
         report.pro && (
           <CareerInsightCard>
             <InsightHeader>
-              <InsightIcon>💡</InsightIcon>
+              <InsightIcon><LightBulbIcon /></InsightIcon>
               <InsightContent>
                 <InsightTitle>We Found Better Matches For You</InsightTitle>
                 <InsightSubtitle>
@@ -2999,41 +3775,23 @@ export default function ReportDetailPage() {
                   </div>
                 )}
 
-                <BlurredPreviewSection style={{ marginTop: "24px" }}>
-                  <div style={{ position: "relative", minHeight: "180px" }}>
-                    <BlurredContent>
-                      <BulletList>
-                        <li>
-                          Spearheaded the development of microservices
-                          architecture that improved system scalability by 45%,
-                          reducing server costs by $15K/month while maintaining
-                          99.9% uptime
-                        </li>
-                        <li>
-                          Led cross-functional teams of 8 developers to deliver
-                          high-impact projects, reducing time-to-market by 40%
-                          through implementation of agile methodologies and
-                          CI/CD pipelines
-                        </li>
-                      </BulletList>
-                    </BlurredContent>
-                    <UnlockOverlay>
-                      <UnlockIcon>🔒</UnlockIcon>
-                      <UnlockTitle>
-                        Unlock 2 More Professional Rewrites
-                      </UnlockTitle>
-                      <UnlockDescription>
-                        Get additional expertly rewritten bullet points with
-                        metrics and achievements
-                      </UnlockDescription>
-                      <UnlockButton
-                        onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => router.push(ROUTES.APP.BILLING)}
-                        disabled={isUpgrading}
-                      >
-                        {isUpgrading ? "Unlocking..." : userCredits.canAnalyze ? "Unlock with 1 Credit" : "Buy Credits to Unlock"}
-                      </UnlockButton>
-                    </UnlockOverlay>
-                  </div>
+                <BlurredPreviewSection style={{ marginTop: "16px", paddingBottom: "48px" }}>
+                  <BlurredContent>
+                    <BulletList>
+                      <li>
+                        Spearheaded the development of microservices architecture that improved system scalability by 45%, reducing server costs by $15K/month while maintaining 99.9% uptime
+                      </li>
+                      <li>
+                        Led cross-functional teams of 8 developers to deliver high-impact projects, reducing time-to-market by 40% through implementation of agile methodologies
+                      </li>
+                    </BulletList>
+                  </BlurredContent>
+                  <SeeMoreButton onClick={scrollToUpgrade}>
+                    See all professional rewrites
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </SeeMoreButton>
                 </BlurredPreviewSection>
               </Card.Content>
             </Card>
@@ -3079,108 +3837,59 @@ export default function ReportDetailPage() {
                   </div>
                 )}
 
-                <BlurredPreviewSection style={{ marginTop: "24px" }}>
-                  <div style={{ position: "relative", minHeight: "200px" }}>
-                    <BlurredContent>
+                <BlurredPreviewSection style={{ marginTop: "16px", paddingBottom: "48px" }}>
+                  <BlurredContent>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "10px",
+                      }}
+                    >
                       <div
                         style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "12px",
+                          padding: "14px",
+                          backgroundColor: "#1e293b",
+                          border: "1px solid #334155",
+                          borderRadius: "10px",
                         }}
                       >
-                        <div
-                          style={{
-                            padding: "16px",
-                            backgroundColor: "#1e293b",
-                            border: "2px solid #334155",
-                            borderRadius: "12px",
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              marginBottom: "8px",
-                            }}
-                          >
-                            <span
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "18px",
-                                color: "#f1f5f9",
-                              }}
-                            >
-                              Technical Lead
-                            </span>
-                            <Badge variant="success">85% Match</Badge>
-                          </div>
-                          <p
-                            style={{
-                              fontSize: "14px",
-                              color: "#94a3b8",
-                              margin: 0,
-                            }}
-                          >
-                            Your leadership experience and technical depth make
-                            you an excellent candidate for this role...
-                          </p>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                          <span style={{ fontWeight: 600, fontSize: "15px", color: "#f1f5f9" }}>
+                            Technical Lead
+                          </span>
+                          <Badge variant="success">85% Match</Badge>
                         </div>
-                        <div
-                          style={{
-                            padding: "16px",
-                            backgroundColor: "#1e293b",
-                            border: "2px solid #334155",
-                            borderRadius: "12px",
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              marginBottom: "8px",
-                            }}
-                          >
-                            <span
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "18px",
-                                color: "#f1f5f9",
-                              }}
-                            >
-                              Solutions Architect
-                            </span>
-                            <Badge variant="success">82% Match</Badge>
-                          </div>
-                          <p
-                            style={{
-                              fontSize: "14px",
-                              color: "#94a3b8",
-                              margin: 0,
-                            }}
-                          >
-                            Your system design skills and cross-functional
-                            experience position you well for this strategic
-                            role...
-                          </p>
-                        </div>
+                        <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>
+                          Your leadership experience and technical depth make you an excellent candidate...
+                        </p>
                       </div>
-                    </BlurredContent>
-                    <UnlockOverlay>
-                      <UnlockIcon>🔒</UnlockIcon>
-                      <UnlockTitle>Unlock 2 More Perfect Matches</UnlockTitle>
-                      <UnlockDescription>
-                        Discover additional roles tailored to your unique skills
-                        and experience
-                      </UnlockDescription>
-                      <UnlockButton
-                        onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => router.push(ROUTES.APP.BILLING)}
-                        disabled={isUpgrading}
+                      <div
+                        style={{
+                          padding: "14px",
+                          backgroundColor: "#1e293b",
+                          border: "1px solid #334155",
+                          borderRadius: "10px",
+                        }}
                       >
-                        {isUpgrading ? "Unlocking..." : userCredits.canAnalyze ? "Unlock with 1 Credit" : "Buy Credits to Unlock"}
-                      </UnlockButton>
-                    </UnlockOverlay>
-                  </div>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                          <span style={{ fontWeight: 600, fontSize: "15px", color: "#f1f5f9" }}>
+                            Solutions Architect
+                          </span>
+                          <Badge variant="success">82% Match</Badge>
+                        </div>
+                        <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>
+                          Your system design skills position you well for this strategic role...
+                        </p>
+                      </div>
+                    </div>
+                  </BlurredContent>
+                  <SeeMoreButton onClick={scrollToUpgrade}>
+                    See all role recommendations
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </SeeMoreButton>
                 </BlurredPreviewSection>
               </Card.Content>
             </Card>
@@ -3214,271 +3923,124 @@ export default function ReportDetailPage() {
                   </ATSTipContent>
                 </ATSTipCard>
 
-                <BlurredPreviewSection style={{ marginTop: "24px" }}>
-                  <div style={{ position: "relative", minHeight: "220px" }}>
-                    <BlurredContent>
+                <BlurredPreviewSection style={{ marginTop: "16px", paddingBottom: "48px" }}>
+                  <BlurredContent>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "10px",
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",
-                          flexDirection: "column",
-                          gap: "16px",
+                          gap: "12px",
+                          padding: "14px",
+                          backgroundColor: "#1e293b",
+                          border: "1px solid #334155",
+                          borderRadius: "10px",
                         }}
                       >
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "16px",
-                            padding: "16px",
-                            backgroundColor: "#1e293b",
-                            border: "2px solid #334155",
-                            borderRadius: "12px",
-                          }}
-                        >
-                          <div style={{ fontSize: "24px" }}>🎯</div>
-                          <div>
-                            <div
-                              style={{
-                                fontWeight: 600,
-                                marginBottom: "4px",
-                                color: "#f1f5f9",
-                              }}
-                            >
-                              Add Quantifiable Achievements
-                            </div>
-                            <p
-                              style={{
-                                fontSize: "14px",
-                                color: "#94a3b8",
-                                margin: 0,
-                                lineHeight: 1.6,
-                              }}
-                            >
-                              Include specific metrics and percentages to
-                              demonstrate impact. ATS systems prioritize
-                              candidates who show measurable results...
-                            </p>
+                        <div style={{ fontSize: "20px" }}>🎯</div>
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: "14px", color: "#f1f5f9", marginBottom: "4px" }}>
+                            Add Quantifiable Achievements
                           </div>
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "16px",
-                            padding: "16px",
-                            backgroundColor: "#1e293b",
-                            border: "2px solid #334155",
-                            borderRadius: "12px",
-                          }}
-                        >
-                          <div style={{ fontSize: "24px" }}>🔑</div>
-                          <div>
-                            <div
-                              style={{
-                                fontWeight: 600,
-                                marginBottom: "4px",
-                                color: "#f1f5f9",
-                              }}
-                            >
-                              Strategic Keyword Placement
-                            </div>
-                            <p
-                              style={{
-                                fontSize: "14px",
-                                color: "#94a3b8",
-                                margin: 0,
-                                lineHeight: 1.6,
-                              }}
-                            >
-                              Place important keywords in your professional
-                              summary, skills section, and throughout experience
-                              bullets. Mirror the exact terminology...
-                            </p>
-                          </div>
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "16px",
-                            padding: "16px",
-                            backgroundColor: "#1e293b",
-                            border: "2px solid #334155",
-                            borderRadius: "12px",
-                          }}
-                        >
-                          <div style={{ fontSize: "24px" }}>📊</div>
-                          <div>
-                            <div
-                              style={{
-                                fontWeight: 600,
-                                marginBottom: "4px",
-                                color: "#f1f5f9",
-                              }}
-                            >
-                              Formatting Best Practices
-                            </div>
-                            <p
-                              style={{
-                                fontSize: "14px",
-                                color: "#94a3b8",
-                                margin: 0,
-                                lineHeight: 1.6,
-                              }}
-                            >
-                              Use standard section headers like
-                              &quot;Experience&quot;, &quot;Education&quot;, and
-                              "Skills". Avoid tables, text boxes, and graphics
-                              that confuse ATS parsers...
-                            </p>
-                          </div>
+                          <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>
+                            Include specific metrics and percentages to demonstrate impact...
+                          </p>
                         </div>
                       </div>
-                    </BlurredContent>
-                    <UnlockOverlay>
-                      <UnlockIcon>🔒</UnlockIcon>
-                      <UnlockTitle>Unlock 3+ Detailed ATS Tips</UnlockTitle>
-                      <UnlockDescription>
-                        Get comprehensive strategies to beat applicant tracking
-                        systems and land more interviews
-                      </UnlockDescription>
-                      <UnlockButton
-                        onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => router.push(ROUTES.APP.BILLING)}
-                        disabled={isUpgrading}
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "12px",
+                          padding: "14px",
+                          backgroundColor: "#1e293b",
+                          border: "1px solid #334155",
+                          borderRadius: "10px",
+                        }}
                       >
-                        {isUpgrading ? "Unlocking..." : userCredits.canAnalyze ? "Unlock with 1 Credit" : "Buy Credits to Unlock"}
-                      </UnlockButton>
-                    </UnlockOverlay>
-                  </div>
+                        <div style={{ fontSize: "20px" }}>🔑</div>
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: "14px", color: "#f1f5f9", marginBottom: "4px" }}>
+                            Strategic Keyword Placement
+                          </div>
+                          <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>
+                            Place important keywords in your professional summary...
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </BlurredContent>
+                  <SeeMoreButton onClick={scrollToUpgrade}>
+                    See all ATS optimization tips
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </SeeMoreButton>
                 </BlurredPreviewSection>
               </Card.Content>
             </Card>
           </Section>
 
-          {/* Personalized Pain Point Message */}
-          <Section>
-            <PersonalizedAlert
-              $variant={getPersonalizedMessage(report.fit_score).variant}
-            >
-              {getPersonalizedMessage(report.fit_score).message}
-            </PersonalizedAlert>
-          </Section>
-
           {/* Main Upgrade Card */}
-          <Section>
+          <Section ref={upgradeRef}>
             <ProUpgradeCard variant="elevated">
               <Card.Content>
-                <UpgradeTitle>
-                  <RocketIcon /> Unlock Your Full Potential
-                </UpgradeTitle>
+                <UpgradeTitle>Unlock Your Full Potential</UpgradeTitle>
 
-                {/* Social Proof */}
-                <SocialProofContainer>
-                  <SocialProofBadge>
-                    <ProofIcon>
-                      <FireIcon />
-                    </ProofIcon>
-                    <ProofText>
-                      <strong>487 users</strong> upgraded in the last 7 days
-                    </ProofText>
-                  </SocialProofBadge>
-                  <SocialProofBadge>
-                    <ProofIcon>
-                      <StarIcon />
-                    </ProofIcon>
-                    <ProofText>
-                      <strong>94%</strong> of users who upgraded got interviews
-                    </ProofText>
-                  </SocialProofBadge>
-                  <SocialProofBadge>
-                    <ProofIcon>
-                      <BriefcaseIcon />
-                    </ProofIcon>
-                    <ProofText>
-                      Join <strong>12,483 professionals</strong> who upgraded
-                    </ProofText>
-                  </SocialProofBadge>
-                  <SocialProofBadge>
-                    <ProofIcon>
-                      <LightningIcon />
-                    </ProofIcon>
-                    <ProofText>
-                      <strong>3x</strong> more interview callbacks on average
-                    </ProofText>
-                  </SocialProofBadge>
-                </SocialProofContainer>
+                {/* Hero Stat */}
+                <HeroStat>
+                  <HeroStatNumber>94%</HeroStatNumber>
+                  <HeroStatLabel>of Pro users get more interviews</HeroStatLabel>
+                </HeroStat>
 
-                {/* Credit Display */}
-                <PriceDisplay>
-                  <div style={{ marginBottom: "12px" }}>
-                    <CurrentPrice>1 Credit</CurrentPrice>
-                    {userCredits.canAnalyze && (
-                      <DiscountBadge>You have {userCredits.credits} credits</DiscountBadge>
-                    )}
-                  </div>
-                  {!userCredits.canAnalyze && (
-                    <div
-                      style={{
-                        fontSize: "14px",
-                        opacity: 0.9,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                      }}
-                    >
-                      <ClockIcon /> Buy credits to unlock Pro features
-                    </div>
-                  )}
-                </PriceDisplay>
+                {/* Testimonial Carousel */}
+                <TestimonialCarousel>
+                  {testimonials.map((testimonial, index) => (
+                    <TestimonialSlide key={index} $isActive={index === currentTestimonial}>
+                      <TestimonialText>&quot;{testimonial.text}&quot;</TestimonialText>
+                      <TestimonialAuthor>
+                        — {testimonial.author}, {testimonial.role}
+                      </TestimonialAuthor>
+                    </TestimonialSlide>
+                  ))}
+                </TestimonialCarousel>
 
-                {/* Comparison Table */}
+                {/* Compact Comparison */}
                 <ComparisonTable>
                   <ComparisonRow $isHeader>
-                    <ComparisonCell>Feature</ComparisonCell>
+                    <ComparisonCell>What You Get</ComparisonCell>
                     <ComparisonCell>FREE</ComparisonCell>
                     <ComparisonCell>PRO</ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
-                    <ComparisonCell>Fit Score Analysis</ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                  </ComparisonRow>
-                  <ComparisonRow>
-                    <ComparisonCell>Missing Keywords</ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                  </ComparisonRow>
-                  <ComparisonRow>
-                    <ComparisonCell>AI Summary</ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon /> Enhanced
-                    </ComparisonCell>
-                  </ComparisonRow>
-                  <ComparisonRow>
-                    <ComparisonCell>Rewritten Bullets</ComparisonCell>
+                    <ComparisonCell>AI-Optimized CV PDF</ComparisonCell>
                     <ComparisonCell>
                       <XMarkIcon />
                     </ComparisonCell>
                     <ComparisonCell>
-                      <CheckCircleIcon /> 3x
+                      <CheckCircleIcon />
                     </ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
-                    <ComparisonCell>Role Recommendations</ComparisonCell>
+                    <ComparisonCell>Rewritten Bullet Points</ComparisonCell>
                     <ComparisonCell>
                       <XMarkIcon />
                     </ComparisonCell>
                     <ComparisonCell>
-                      <CheckCircleIcon /> 3x
+                      <CheckCircleIcon />
+                    </ComparisonCell>
+                  </ComparisonRow>
+                  <ComparisonRow>
+                    <ComparisonCell>ATS Optimization Tips</ComparisonCell>
+                    <ComparisonCell>
+                      <XMarkIcon />
+                    </ComparisonCell>
+                    <ComparisonCell>
+                      <CheckCircleIcon />
                     </ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
@@ -3490,65 +4052,52 @@ export default function ReportDetailPage() {
                       <CheckCircleIcon />
                     </ComparisonCell>
                   </ComparisonRow>
-                  <ComparisonRow>
-                    <ComparisonCell>ATS Tips</ComparisonCell>
-                    <ComparisonCell>
-                      <XMarkIcon />
-                    </ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                  </ComparisonRow>
-                  <ComparisonRow>
-                    <ComparisonCell>Optimized CV PDF</ComparisonCell>
-                    <ComparisonCell>
-                      <XMarkIcon />
-                    </ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                  </ComparisonRow>
-                  <ComparisonRow>
-                    <ComparisonCell>Priority Support</ComparisonCell>
-                    <ComparisonCell>
-                      <XMarkIcon />
-                    </ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                  </ComparisonRow>
                 </ComparisonTable>
 
-                <Button
+                {/* Social Proof - Compact */}
+                <SocialProofContainer>
+                  <SocialProofBadge>
+                    <ProofIcon>
+                      <FireIcon />
+                    </ProofIcon>
+                    <ProofText>
+                      <strong>487</strong> upgraded this week
+                    </ProofText>
+                  </SocialProofBadge>
+                  <SocialProofBadge>
+                    <ProofIcon>
+                      <BriefcaseIcon />
+                    </ProofIcon>
+                    <ProofText>
+                      <strong>12,483+</strong> professionals
+                    </ProofText>
+                  </SocialProofBadge>
+                </SocialProofContainer>
+
+                {/* CTA Button */}
+                <MainCTAButton
                   size="lg"
                   data-upgrade-button
-                  onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => router.push(ROUTES.APP.BILLING)}
+                  onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
                   isLoading={isUpgrading}
-                  style={{
-                    backgroundColor: "white",
-                    color: "#667eea",
-                    fontSize: "18px",
-                    padding: "16px 32px",
-                    width: "100%",
-                    marginTop: "24px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                  }}
                 >
                   {isUpgrading ? (
                     "Upgrading..."
                   ) : userCredits.canAnalyze ? (
                     <>
-                      <RocketIcon /> Upgrade to Pro - Use 1 Credit
+                      <RocketIcon /> Upgrade Now - Use 1 Credit
                     </>
                   ) : (
                     <>
-                      <RocketIcon /> Buy Credits to Upgrade
+                      <RocketIcon /> Get Credits & Upgrade
                     </>
                   )}
-                </Button>
+                </MainCTAButton>
+
+                {/* Guarantee */}
+                <GuaranteeBadge>
+                  <CheckCircleIcon /> 100% Satisfaction Guaranteed
+                </GuaranteeBadge>
               </Card.Content>
             </ProUpgradeCard>
           </Section>
@@ -3703,78 +4252,156 @@ export default function ReportDetailPage() {
               </Card.Header>
               <Card.Content>
                 {!report.generated_cv ? (
-                  <CVGenerationSection>
-                    <CVGenerationIntro>
-                      <IntroHeading>
-                        Transform Your CV Into an ATS Powerhouse
-                      </IntroHeading>
-                      <IntroSubtext>
-                        Generate a professionally optimized CV that incorporates all
-                        analysis insights and dramatically improves your chances
-                      </IntroSubtext>
-                    </CVGenerationIntro>
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '48px 24px',
+                  }}>
+                    <div style={{
+                      width: '64px',
+                      height: '64px',
+                      margin: '0 auto 20px',
+                      background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%)',
+                      borderRadius: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <TargetIcon />
+                    </div>
+                    <h3 style={{
+                      fontSize: '18px',
+                      fontWeight: 600,
+                      color: '#f1f5f9',
+                      marginBottom: '8px'
+                    }}>
+                      Generate Your Optimized CV
+                    </h3>
+                    <p style={{
+                      color: '#9ca3af',
+                      fontSize: '14px',
+                      marginBottom: '24px',
+                      maxWidth: '400px',
+                      margin: '0 auto 24px'
+                    }}>
+                      Create an ATS-optimized CV tailored for this job position with all improvements applied.
+                    </p>
+                    <Button
+                      onClick={async () => {
+                        setIsUpgrading(true);
+                        try {
+                          // Generate CV
+                          const response = await fetch("/api/cv/generate", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              reportId: report.id,
+                              fakeItMode: false,
+                            }),
+                          });
 
-                    <FeaturesGrid>
-                      <FeatureCard>
-                        <FeatureIcon>✓</FeatureIcon>
-                        <FeatureText>
-                          Missing keywords naturally integrated
-                        </FeatureText>
-                      </FeatureCard>
-                      <FeatureCard>
-                        <FeatureIcon>✓</FeatureIcon>
-                        <FeatureText>
-                          Rewritten bullet points with achievements
-                        </FeatureText>
-                      </FeatureCard>
-                      <FeatureCard>
-                        <FeatureIcon>✓</FeatureIcon>
-                        <FeatureText>ATS-optimized formatting</FeatureText>
-                      </FeatureCard>
-                      <FeatureCard>
-                        <FeatureIcon>✓</FeatureIcon>
-                        <FeatureText>Professional design and layout</FeatureText>
-                      </FeatureCard>
-                    </FeaturesGrid>
+                          const cvResult = await response.json();
 
-                    <FakeItSection>
-                      <FakeItToggleContainer
-                        onClick={() => setFakeItMode(!fakeItMode)}
-                      >
-                        <FakeItCheckbox
-                          type="checkbox"
-                          checked={fakeItMode}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            setFakeItMode(e.target.checked);
-                          }}
-                        />
-                        <FakeItContent>
-                          <FakeItTitle>
-                            🚀 Fake it until you make it!
-                          </FakeItTitle>
-                          <FakeItDescription>
-                            Add missing skills to your CV even if you don't have
-                            them yet. We'll provide you with personalized learning
-                            paths and project ideas to actually acquire these
-                            skills. Perfect for career transitions!
-                          </FakeItDescription>
-                        </FakeItContent>
-                      </FakeItToggleContainer>
-                    </FakeItSection>
+                          if (!response.ok) {
+                            throw new Error(cvResult.error || "Failed to generate CV");
+                          }
 
-                    <GenerateCTAContainer>
-                      <Button
-                        onClick={handleGenerateCV}
-                        isLoading={isGeneratingCV}
-                        size="lg"
-                      >
-                        {isGeneratingCV
-                          ? "Generating CV..."
-                          : "Generate Optimized CV"}
-                      </Button>
-                    </GenerateCTAContainer>
-                  </CVGenerationSection>
+                          // Refresh report data
+                          const supabase = createClient();
+                          const { data: updatedReport } = await supabase
+                            .from("reports")
+                            .select("*")
+                            .eq("id", report.id)
+                            .single();
+
+                          if (updatedReport) {
+                            setReport(updatedReport);
+
+                            // Generate PDF on client and save to optimized_cvs
+                            if (updatedReport.generated_cv) {
+                              try {
+                                const pdf = await generateCVPDF(updatedReport.generated_cv);
+                                const pdfBlob = pdf.output('blob');
+
+                                const userName = updatedReport.generated_cv.contact?.name || 'Optimized';
+                                const sanitizedName = userName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
+                                const fileName = `optimized/${user?.id}/${updatedReport.id}/${sanitizedName}.pdf`;
+
+                                // Upload to storage
+                                const { error: uploadError } = await supabase.storage
+                                  .from('cv-files')
+                                  .upload(fileName, pdfBlob, {
+                                    contentType: 'application/pdf',
+                                    upsert: true,
+                                  });
+
+                                if (uploadError) {
+                                  console.error('Upload error:', uploadError);
+                                  throw uploadError;
+                                }
+
+                                const { data: urlData } = supabase.storage
+                                  .from('cv-files')
+                                  .getPublicUrl(fileName);
+
+                                // Save to optimized_cvs
+                                await supabase
+                                  .from('optimized_cvs')
+                                  .delete()
+                                  .eq('report_id', updatedReport.id);
+
+                                await supabase
+                                  .from('optimized_cvs')
+                                  .insert({
+                                    user_id: user?.id,
+                                    report_id: updatedReport.id,
+                                    original_cv_id: updatedReport.cv_id,
+                                    title: `${userName} - Optimized CV`,
+                                    file_url: urlData.publicUrl,
+                                    text: JSON.stringify(updatedReport.generated_cv),
+                                    lang: 'en',
+                                  });
+
+                                console.log('✅ CV saved to My CVs');
+                              } catch (saveError) {
+                                console.error('Error saving to My CVs:', saveError);
+                              }
+                            }
+
+                            // Analyze the optimized CV score
+                            try {
+                              const analyzeResponse = await fetch("/api/cv/analyze-optimized", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ reportId: updatedReport.id }),
+                              });
+
+                              if (analyzeResponse.ok) {
+                                const analysisResult = await analyzeResponse.json();
+                                setOptimizedScore(analysisResult.optimizedScore);
+                                setImprovementBreakdown(analysisResult.improvements || []);
+                              }
+                            } catch (analyzeError) {
+                              console.error("Score analysis error:", analyzeError);
+                            }
+                          }
+
+                          toast.success("Your optimized CV is ready!");
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        } catch (error) {
+                          const errorMessage = error instanceof Error ? error.message : "Unknown error";
+                          toast.error(errorMessage);
+                        } finally {
+                          setIsUpgrading(false);
+                        }
+                      }}
+                      isLoading={isUpgrading}
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      }}
+                    >
+                      {isUpgrading ? "Generating..." : "Generate Optimized CV"}
+                    </Button>
+                  </div>
                 ) : (
                   <CVSuccessSection>
                     <SuccessCelebration>
@@ -3818,8 +4445,9 @@ export default function ReportDetailPage() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
+                            color: '#ffffff',
                           }}>
-                            <SparklesIcon size="18" style={{ color: '#ffffff' }} />
+                            <SparklesIcon />
                           </div>
                           <div style={{ flex: 1 }}>
                             <div style={{
@@ -4131,7 +4759,7 @@ export default function ReportDetailPage() {
 
             <Button
               size="lg"
-              onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => router.push(ROUTES.APP.BILLING)}
+              onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
               isLoading={isUpgrading}
               style={{
                 width: '100%',
@@ -4154,6 +4782,131 @@ export default function ReportDetailPage() {
           </div>
         </Modal.Body>
       </Modal>
+
+      {/* Buy Credits Modal */}
+      <Modal
+        isOpen={isBuyCreditsModalOpen && !purchaseSuccess}
+        onClose={() => setIsBuyCreditsModalOpen(false)}
+        title="Buy Credits"
+        description="Choose a plan to unlock premium features"
+        size="lg"
+      >
+        <Modal.Body>
+          <PricingGrid>
+              {/* Single */}
+              <PricingCard>
+                <PricingHeader>
+                  <PricingName>{PRICING.SINGLE.name}</PricingName>
+                  <PricingPrice>
+                    ${PRICING.SINGLE.price} <span>one-time</span>
+                  </PricingPrice>
+                </PricingHeader>
+                <PricingFeatureList>
+                  {PRICING.SINGLE.features.map((feature) => (
+                    <PricingFeatureItem key={feature}>
+                      <PricingCheckIcon />
+                      <span>{feature}</span>
+                    </PricingFeatureItem>
+                  ))}
+                </PricingFeatureList>
+                <Button
+                  variant="secondary"
+                  fullWidth
+                  onClick={() => handleBuyCredits('single', 1, 'Single')}
+                  disabled={isBuyingCredits === 'single'}
+                >
+                  {isBuyingCredits === 'single' ? 'Processing...' : 'Buy Single'}
+                </Button>
+              </PricingCard>
+
+              {/* Starter - Featured */}
+              <PricingCard $featured>
+                <PricingFeaturedBadge>
+                  <Badge variant="info">Best Value</Badge>
+                </PricingFeaturedBadge>
+                <PricingHeader>
+                  <PricingName>{PRICING.STARTER.name}</PricingName>
+                  <PricingPrice>
+                    ${PRICING.STARTER.price} <span>one-time</span>
+                  </PricingPrice>
+                  <PricingSubtext>$0.70 per report - save 65%</PricingSubtext>
+                </PricingHeader>
+                <PricingFeatureList>
+                  {PRICING.STARTER.features.map((feature) => (
+                    <PricingFeatureItem key={feature}>
+                      <PricingCheckIcon />
+                      <span>{feature}</span>
+                    </PricingFeatureItem>
+                  ))}
+                </PricingFeatureList>
+                <Button
+                  fullWidth
+                  onClick={() => handleBuyCredits('starter', 10, 'Starter')}
+                  disabled={isBuyingCredits === 'starter'}
+                >
+                  {isBuyingCredits === 'starter' ? 'Processing...' : 'Buy Starter'}
+                </Button>
+              </PricingCard>
+
+              {/* Pro */}
+              <PricingCard>
+                <PricingHeader>
+                  <PricingName>{PRICING.PRO.name}</PricingName>
+                  <PricingPrice>
+                    ${PRICING.PRO.price} <span>/month</span>
+                  </PricingPrice>
+                </PricingHeader>
+                <PricingFeatureList>
+                  {PRICING.PRO.features.map((feature) => (
+                    <PricingFeatureItem key={feature}>
+                      <PricingCheckIcon />
+                      <span>{feature}</span>
+                    </PricingFeatureItem>
+                  ))}
+                </PricingFeatureList>
+                <Button
+                  variant="secondary"
+                  fullWidth
+                  onClick={() => alert('Subscription requires Stripe integration')}
+                >
+                  Subscribe
+                </Button>
+              </PricingCard>
+            </PricingGrid>
+        </Modal.Body>
+      </Modal>
+
+      {/* Fullscreen Success Overlay - Windows 10 Style */}
+      {purchaseSuccess && typeof document !== "undefined" && createPortal(
+        <FullscreenSuccessOverlay>
+          <SuccessContent>
+            <WelcomeSuccessIcon>
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </WelcomeSuccessIcon>
+
+            <WelcomeSuccessTitle>
+              You're One Step Closer!
+            </WelcomeSuccessTitle>
+
+            <SuccessMessage>
+              Your investment in yourself will pay off. Every optimized CV brings you closer to your dream job.
+            </SuccessMessage>
+
+            <SuccessQuote>
+              <p>"The only way to do great work is to love what you do. Keep pushing forward!"</p>
+            </SuccessQuote>
+
+            <LoadingDots>
+              <span />
+              <span />
+              <span />
+            </LoadingDots>
+          </SuccessContent>
+        </FullscreenSuccessOverlay>,
+        document.body
+      )}
 
       {/* Cover Letter Generator Modal */}
       <CoverLetterGenerator

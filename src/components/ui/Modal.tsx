@@ -40,7 +40,8 @@ const Backdrop = styled.div<{ $isOpen: boolean }>`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,6 +57,7 @@ const ModalContainer = styled.div<{ $size: string }>`
   box-shadow: ${({ theme }) => theme.shadow.xl};
   width: 100%;
   max-height: 90vh;
+  margin: auto;
   display: flex;
   flex-direction: column;
   animation: ${slideUp} 0.3s ease;

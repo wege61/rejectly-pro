@@ -3520,7 +3520,9 @@ export default function ReportDetailPage() {
 
         <ScoreCard variant="elevated">
           <ScoreValue>{missingKeywords.length}</ScoreValue>
-          <ScoreLabel>Missing Keywords</ScoreLabel>
+          <ScoreLabel>
+            {report.pro && report.generated_cv ? "Keywords Added" : "Missing Keywords"}
+          </ScoreLabel>
         </ScoreCard>
 
         {report.pro && (
@@ -3753,15 +3755,24 @@ export default function ReportDetailPage() {
       <Section>
         <Card variant="bordered">
           <Card.Header>
-            <Card.Title>Missing Keywords</Card.Title>
+            <Card.Title>
+              {report.pro && report.generated_cv
+                ? "Keywords Successfully Added ✓"
+                : "Missing Keywords"}
+            </Card.Title>
             <Card.Description>
-              Add these keywords to improve your match score
+              {report.pro && report.generated_cv
+                ? "These keywords have been strategically integrated into your optimized CV to improve ATS matching"
+                : "Add these keywords to improve your match score"}
             </Card.Description>
           </Card.Header>
           <Card.Content>
             <KeywordList>
               {missingKeywords.map((keyword: string) => (
-                <Badge key={keyword} variant="warning">
+                <Badge
+                  key={keyword}
+                  variant={report.pro && report.generated_cv ? "success" : "warning"}
+                >
                   {keyword}
                 </Badge>
               ))}
@@ -4149,9 +4160,15 @@ export default function ReportDetailPage() {
           <Section>
             <Card variant="bordered">
               <Card.Header>
-                <Card.Title>Rewritten Bullet Points</Card.Title>
+                <Card.Title>
+                  {report.generated_cv
+                    ? "Professional Bullet Points Applied ✓"
+                    : "Rewritten Bullet Points"}
+                </Card.Title>
                 <Card.Description>
-                  Improved versions of your experience bullets
+                  {report.generated_cv
+                    ? "These achievement-focused bullets are now integrated in your optimized CV"
+                    : "Improved versions of your experience bullets"}
                 </Card.Description>
               </Card.Header>
               <Card.Content>
@@ -4207,9 +4224,15 @@ export default function ReportDetailPage() {
           <Section>
             <Card variant="bordered">
               <Card.Header>
-                <Card.Title>ATS Optimization Tips</Card.Title>
+                <Card.Title>
+                  {report.generated_cv
+                    ? "ATS Optimizations Applied ✓"
+                    : "ATS Optimization Tips"}
+                </Card.Title>
                 <Card.Description>
-                  Improve your chances with applicant tracking systems
+                  {report.generated_cv
+                    ? "Your optimized CV has been enhanced with these ATS-friendly improvements"
+                    : "Improve your chances with applicant tracking systems"}
                 </Card.Description>
               </Card.Header>
               <Card.Content>

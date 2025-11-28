@@ -2,18 +2,22 @@ export function generateFreeSummaryPrompt(
   cvText: string,
   jobTexts: string[]
 ): string {
-  return `You are an expert career coach and CV analyzer. Analyze the match between a candidate's CV and job postings.
+  return `You are an elite career coach with 15+ years of experience. Analyze how well this CV matches the target job(s).
 
-CV:
+=============================================================================
+CANDIDATE'S CV (YOUR SINGLE SOURCE OF TRUTH)
+=============================================================================
 """
 ${cvText}
 """
 
-Job Postings:
+=============================================================================
+TARGET JOB POSTING(S)
+=============================================================================
 ${jobTexts
   .map(
     (text, i) => `
-Job ${i + 1}:
+--- JOB ${i + 1} ---
 """
 ${text}
 """
@@ -21,85 +25,117 @@ ${text}
   )
   .join("\n")}
 
-Analyze the match and provide:
+=============================================================================
+CRITICAL ANTI-HALLUCINATION RULES
+=============================================================================
+⛔ ONLY reference skills, experiences, and achievements EXPLICITLY written in the CV
+⛔ NEVER invent years of experience - if CV says "2 years" you say "2 years"
+⛔ NEVER add technologies or skills not mentioned in the CV
+⛔ Every claim must be traceable to a specific line in the CV
+⛔ If CV is vague, acknowledge limitation rather than filling gaps
 
-1. **Match Score** (0-100): Overall compatibility score
-2. **Summary** (3-4 sentences, 350-450 characters): Professional summary explaining the match, highlighting strengths and gaps
-3. **Missing Keywords** (exactly 5): Critical keywords from job postings that are missing in the CV
-4. **Sample Rewrite**: Select ONE bullet point from the candidate's CV experience section and rewrite it professionally. This should:
-   - Be an actual bullet from their CV (don't make one up)
-   - Include quantifiable achievements where possible
-   - Incorporate relevant keywords from job postings
-   - Follow achievement-focused format
-   - Be significantly improved compared to original
-5. **Sample Role Recommendation**: Analyze the candidate's CV and suggest ONE alternative role based on their ACTUAL experience, skills, and background. CRITICAL REQUIREMENTS:
-   - Analyze their work history, education, and demonstrated skills in the CV
-   - Role title must be realistic and aligned with their actual background
-   - Fit score must be realistic (75-95% for well-matched roles, lower if pivoting)
-   - Write a 2-3 sentence PERSONALIZED description that:
-     * References SPECIFIC skills/technologies from their CV
-     * Mentions ACTUAL years of experience or level of seniority
-     * Explains WHY this role fits based on THEIR unique background
-   - DO NOT use generic descriptions - make it personal to THIS candidate
+=============================================================================
+SCORING GUIDELINES (BE BALANCED AND FAIR)
+=============================================================================
+90-100%: Excellent match - ALL required skills, matching experience level, same industry
+80-89%: Strong match - Most required skills present, relevant experience, minor gaps
+70-79%: Good match - Core skills present, transferable experience, some learning needed
+60-69%: Moderate match - Solid foundation with transferable skills, noticeable gaps
+50-59%: Fair match - Some relevant background, requires skill development
+40-49%: Limited match - Career pivot with some transferable elements
+Below 40%: Poor match - Substantial reskilling required
 
-Respond in JSON format:
+Calculate: skill match (40%) + experience level (30%) + industry relevance (20%) + education (10%)
+
+IMPORTANT: Be fair and encouraging. Most candidates applying to jobs they're interested in fall in 60-85% range.
+
+=============================================================================
+RESPONSE FORMAT (STRICT JSON)
+=============================================================================
 {
-  "fitScore": 85,
-  "summary": "Your detailed 3-4 sentence summary here...",
-  "missingKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
+  "fitScore": <number 0-100 following scoring guidelines>,
+  "summary": "<3-4 sentences, 350-450 characters, professional tone, specific to THIS candidate>",
+  "missingKeywords": ["<keyword1>", "<keyword2>", "<keyword3>", "<keyword4>", "<keyword5>"],
   "sampleRewrite": {
-    "original": "Exact original bullet point from their CV...",
-    "rewritten": "Professionally enhanced version with achievements and keywords..."
+    "original": "<EXACT bullet point copied from CV - do not paraphrase>",
+    "rewritten": "<enhanced version with metrics and impact>"
   },
   "sampleRole": {
-    "title": "Senior Backend Developer",
-    "fit": 92,
-    "description": "Your 4 years of Python/Django experience and proven track record with microservices architecture make you an ideal candidate. Your API design skills and database optimization expertise are highly sought after in this role."
+    "title": "<realistic job title based on ACTUAL experience>",
+    "fit": <realistic percentage based on CV content>,
+    "description": "<2-3 sentences referencing SPECIFIC skills/experiences FROM THE CV>"
   }
 }
 
-CRITICAL NOTE FOR SAMPLE ROLE:
-- The description MUST reference SPECIFIC technologies, skills, or experiences from the candidate's CV
-- Use ACTUAL years of experience if mentioned in CV
-- Role title should be based on their CURRENT level and experience
-- Examples of GOOD personalization:
-  * "Your 5 years of React expertise and experience leading a team of 4 developers..."
-  * "Your background in electrical engineering combined with recent Python projects..."
-  * "Your proven track record with AWS, Docker, and CI/CD pipelines..."
-- Examples of BAD (too generic):
-  * "Your development experience makes you a good fit..."
-  * "You have the skills needed for this role..."
-  * "This is a natural career progression..."
+=============================================================================
+FIELD INSTRUCTIONS
+=============================================================================
 
-Guidelines:
-- Be honest and constructive
-- Focus on actionable insights
-- Use professional tone
-- Summary should be encouraging yet realistic
-- Keywords should be specific technical skills or requirements
-- For sample rewrite: Pick a weak/generic bullet point from their CV that can be dramatically improved
-- The rewritten version should showcase the value of upgrading to Pro
-- For sample role: Base recommendation on candidate's ACTUAL background (same rules as Pro role recommendations)
-- Sample role should be the BEST match - typically 75-95% fit score
-- Description should be personalized to their specific experience and skills`;
+### fitScore
+- Be honest - junior applying for senior should score below 50%
+- Compare ACTUAL years of experience if mentioned
+
+### summary
+- Start with candidate's strongest relevant qualification
+- Mention 1-2 specific strengths FROM THE CV
+- Acknowledge most critical gap honestly
+- End with realistic assessment of competitiveness
+
+### missingKeywords
+- List EXACTLY 5 keywords/skills from job posting NOT in CV
+- Be specific: "Kubernetes" not "container orchestration"
+- Only list genuinely missing items
+
+### sampleRewrite
+- ORIGINAL: Copy ACTUAL bullet from CV verbatim (pick a weak one)
+- REWRITTEN: Transform using STAR format (Situation, Task, Action, Result)
+- Add metrics only if reasonably inferred
+- Incorporate job keywords naturally
+- Make it achievement-focused
+
+### sampleRole
+- Title must be realistic for someone with THIS CV's background
+- Base fit % on concrete evidence in CV
+- Description MUST reference:
+  * At least ONE specific technology/skill from CV
+  * Candidate's apparent experience level
+  * Why this role fits their background
+- BAD: "Your skills make you a great fit" (too vague)
+- GOOD: "Your 3 years of React development and experience building e-commerce platforms align well with this role's frontend architecture focus"
+
+=============================================================================
+QUALITY CHECKLIST
+=============================================================================
+□ Every skill mentioned is actually in the CV
+□ Fit score reflects realistic assessment
+□ Summary contains specific details from THIS CV
+□ Original bullet copied exactly from CV
+□ Role recommendation makes sense for this person's background
+□ No invented information
+
+Respond with ONLY the JSON object. No markdown, no explanations.`;
 }
 
 export function generateProReportPrompt(
   cvText: string,
   jobTexts: string[]
 ): string {
-  return `You are an expert career coach and CV optimizer. Provide a detailed analysis to improve the candidate's CV for the target job postings.
+  return `You are an elite CV optimization specialist with expertise in ATS systems and modern hiring practices.
 
-CV:
+=============================================================================
+CANDIDATE'S CV (YOUR SINGLE SOURCE OF TRUTH)
+=============================================================================
 """
 ${cvText}
 """
 
-Job Postings:
+=============================================================================
+TARGET JOB POSTING(S)
+=============================================================================
 ${jobTexts
   .map(
     (text, i) => `
-Job ${i + 1}:
+--- JOB ${i + 1} ---
 """
 ${text}
 """
@@ -107,60 +143,122 @@ ${text}
   )
   .join("\n")}
 
-Provide a detailed analysis:
+=============================================================================
+CRITICAL ANTI-HALLUCINATION RULES
+=============================================================================
+⛔ Rewritten bullets must be based on ACTUAL content from CV
+⛔ Role recommendations must match candidate's REAL background
+⛔ ATS flags must address issues actually present in THIS CV
+⛔ NEVER invent achievements, metrics, or experiences
+⛔ If enhancing bullets, metrics must be plausible based on context
 
-1. **Rewritten Bullets** (exactly 3): Transform existing CV experience bullets to better match job requirements. Make them:
-   - Start with strong action verbs
-   - Include quantifiable achievements
-   - Incorporate relevant keywords
-   - Follow STAR format where possible
+=============================================================================
+ROLE RECOMMENDATION SCORING (BE BRUTALLY HONEST)
+=============================================================================
+Use these guidelines strictly:
 
-2. **Role Recommendations** (exactly 3): Alternative job titles the candidate should REALISTICALLY consider based on their ACTUAL background and skills. CRITICAL RULES:
-   - Analyze candidate's education, work experience, and demonstrated skills
-   - DO NOT recommend roles that are completely unrelated to their background
-   - Match scores MUST reflect realistic alignment (e.g., electrical engineer → UX designer = max 30-40%, not 90%)
-   - For career transitions, recommend intermediate stepping-stone roles
-   - Prioritize roles that leverage transferable skills
-   - Consider candidate's seniority level (entry-level, mid-level, senior)
+SAME/SIMILAR ROLE (85-95%):
+- Software Engineer → Senior Software Engineer (if experience supports it)
+- Marketing Manager → Marketing Director (if leadership exists)
+- Only if CV shows clear progression path
 
-3. **ATS Flags** (3-5 items): Specific recommendations to improve ATS (Applicant Tracking System) compatibility
+RELATED ROLE, SAME INDUSTRY (70-84%):
+- Software Engineer → DevOps Engineer (overlapping skills)
+- Marketing Manager → Product Marketing Manager
+- Requires some transferable skills present in CV
 
-Respond in JSON format:
+CAREER PIVOT WITH TRANSFERABLES (50-69%):
+- Software Engineer → Product Manager (technical background helps)
+- Teacher → Corporate Trainer (pedagogy transfers)
+- Significant learning curve acknowledged
+
+DIFFERENT FIELD (30-49%):
+- Accountant → UX Designer (minimal overlap)
+- Be honest about gap and required upskilling
+
+NEVER give 80%+ to:
+- Roles requiring skills not demonstrated in CV
+- Significant seniority jumps without evidence
+- Complete industry changes
+
+=============================================================================
+RESPONSE FORMAT (STRICT JSON)
+=============================================================================
 {
   "rewrittenBullets": [
-    "Bullet point 1...",
-    "Bullet point 2...",
-    "Bullet point 3..."
+    "<enhanced bullet 1 based on actual CV content>",
+    "<enhanced bullet 2 based on actual CV content>",
+    "<enhanced bullet 3 based on actual CV content>"
   ],
   "roleRecommendations": [
-    { "title": "Role Title 1", "fit": 90 },
-    { "title": "Role Title 2", "fit": 85 },
-    { "title": "Role Title 3", "fit": 75 }
+    { "title": "<role 1>", "fit": <percentage> },
+    { "title": "<role 2>", "fit": <percentage> },
+    { "title": "<role 3>", "fit": <percentage> }
   ],
   "atsFlags": [
-    "Tip 1...",
-    "Tip 2...",
-    "Tip 3..."
+    "<specific, actionable tip 1>",
+    "<specific, actionable tip 2>",
+    "<specific, actionable tip 3>"
   ]
 }
 
+=============================================================================
+FIELD INSTRUCTIONS
+=============================================================================
+
+### rewrittenBullets (exactly 3)
+Transform existing CV bullets using achievement-focused format:
+
+WEAK → STRONG example:
+"Responsible for managing customer accounts"
+→ "Managed portfolio of 50+ enterprise accounts, achieving 95% retention rate and identifying $200K in upsell opportunities"
+
 Guidelines:
-- Rewritten bullets must be impressive and achievement-focused
-- **CRITICAL FOR ROLE RECOMMENDATIONS:**
-  - Base recommendations on candidate's ACTUAL background, not aspirations
-  - Same/similar roles: 85-95% match
-  - Related roles in same industry: 70-84% match
-  - Career pivot with transferable skills: 50-69% match
-  - Completely different field: 30-49% match (be honest about gaps)
-  - NEVER give 90%+ match to unrelated roles
-  - Examples:
-    * Software Engineer → Senior Software Engineer: 90%
-    * Software Engineer → DevOps Engineer: 75%
-    * Software Engineer → Product Manager: 55%
-    * Electrical Engineer → Software Engineer: 40%
-    * Electrical Engineer → UX Designer: 25% (too different)
-- ATS tips should be specific and actionable
-- Maintain professional tone throughout`;
+- Start with powerful action verbs: Spearheaded, Orchestrated, Transformed, Accelerated
+- Include metrics where plausible (don't invent)
+- Incorporate 1-2 keywords from job posting naturally
+- Show IMPACT not just activity
+- Each bullet 1-2 lines, scannable
+- Pick bullets that are currently weak and can be significantly improved
+
+### roleRecommendations (exactly 3, ordered by fit)
+For each role, verify:
+□ Does CV show relevant skills for this role?
+□ Does experience level match?
+□ Is fit percentage justified by concrete CV evidence?
+
+Example analysis:
+- CV: 3 years Python, Django, REST APIs, team lead of 4 people
+- Role: "Senior Backend Developer" → 88% (strong technical match + leadership)
+- Role: "Engineering Manager" → 65% (leadership shown but limited scope)
+- Role: "Solutions Architect" → 55% (needs more system design evidence)
+
+### atsFlags (3-5 items)
+Provide specific, actionable tips based on THIS CV's actual issues.
+
+BAD (too generic):
+"Use keywords from the job description"
+
+GOOD (specific and actionable):
+"Add 'CI/CD' and 'Docker' to your skills section - these appear 4 times in the job posting but are missing from your CV"
+
+Types of ATS flags:
+1. Missing critical keywords that ARE in job posting but NOT in CV
+2. Formatting issues (if detectable from text)
+3. Skills section optimization opportunities
+4. Experience bullet improvements for ATS parsing
+5. Job title alignment suggestions
+
+=============================================================================
+QUALITY CHECKLIST
+=============================================================================
+□ All 3 rewritten bullets based on actual CV content
+□ Role fit percentages realistic and justified
+□ ATS flags address specific issues in THIS CV
+□ No invented skills, metrics, or experiences
+□ Recommendations actionable and specific
+
+Respond with ONLY the JSON object. No markdown, no explanations.`;
 }
 
 export function generateImprovementBreakdownPrompt(
@@ -173,23 +271,29 @@ export function generateImprovementBreakdownPrompt(
 ): string {
   const actualDifference = optimizedScore - originalScore;
 
-  return `You are an expert CV analyzer. Compare the original CV with the optimized CV and explain how each improvement contributes to the overall score increase.
+  return `You are a CV optimization analyst. Explain exactly how the optimized CV improved upon the original.
 
-ORIGINAL CV:
+=============================================================================
+ORIGINAL CV
+=============================================================================
 """
 ${originalCVText}
 """
 
-OPTIMIZED CV:
+=============================================================================
+OPTIMIZED CV
+=============================================================================
 """
 ${optimizedCVText}
 """
 
-TARGET JOB POSTINGS:
+=============================================================================
+TARGET JOB POSTING(S)
+=============================================================================
 ${jobTexts
   .map(
     (text, i) => `
-Job ${i + 1}:
+--- JOB ${i + 1} ---
 """
 ${text}
 """
@@ -197,68 +301,115 @@ ${text}
   )
   .join("\n")}
 
-MISSING KEYWORDS THAT SHOULD BE ADDRESSED: ${missingKeywords.join(", ")}
+=============================================================================
+ANALYSIS CONTEXT
+=============================================================================
+- Missing Keywords Addressed: ${missingKeywords.join(", ")}
+- Original Match Score: ${originalScore}%
+- Optimized Match Score: ${optimizedScore}%
+- Total Improvement: ${actualDifference}%
 
-SCORE CHANGE:
-- Original Score: ${originalScore}%
-- Optimized Score: ${optimizedScore}%
-- Actual Difference: ${actualDifference}%
+=============================================================================
+🚨 CRITICAL MATHEMATICAL CONSTRAINT 🚨
+=============================================================================
+The sum of ALL impact values MUST EQUAL EXACTLY ${actualDifference}%
 
-CRITICAL: The total impact of all improvements MUST equal exactly ${actualDifference}%. Do not exceed this total.
+This is NON-NEGOTIABLE. Examples:
+- If ${actualDifference} = 15: impacts might be [5, 4, 3, 2, 1] = 15 ✓
+- If ${actualDifference} = 8: impacts might be [3, 2, 1.5, 1, 0.5] = 8 ✓
+- If ${actualDifference} = 25: impacts might be [8, 6, 5, 4, 2] = 25 ✓
 
-TASK: Analyze how the optimized CV improved compared to the original and break down the improvements into actionable categories with estimated score impact.
+ALWAYS verify: sum of all impacts = ${actualDifference}
 
-Respond in JSON format:
+=============================================================================
+IMPACT DISTRIBUTION GUIDELINES
+=============================================================================
+Prioritize by typical ATS/recruiter importance:
+
+HIGH IMPACT (3-8% each):
+- Adding critical missing keywords appearing multiple times in job posting
+- Rewriting bullets to include key requirements
+- Adding job-specific technical skills
+
+MEDIUM IMPACT (1.5-3% each):
+- Professional summary improvements
+- Skills section reorganization
+- Secondary keyword additions
+
+LOW IMPACT (0.5-1.5% each):
+- Minor formatting improvements
+- Additional context additions
+- Soft skill additions
+
+=============================================================================
+RESPONSE FORMAT (STRICT JSON)
+=============================================================================
 {
   "improvements": [
     {
-      "category": "Keyword Addition",
-      "action": "Added 'C#' to technical skills section",
-      "impact": 10,
-      "reason": "Critical keyword from job posting that was missing",
-      "section": "skills"
-    },
-    {
-      "category": "Keyword Addition",
-      "action": "Added 'SQL Server' to experience bullets",
-      "impact": 8,
-      "reason": "Required database technology mentioned in job posting",
-      "section": "experience"
-    },
-    {
-      "category": "Bullet Rewriting",
-      "action": "Quantified achievement in project management bullet",
-      "impact": 7,
-      "reason": "Added measurable results (30% efficiency increase)",
-      "section": "experience"
-    },
-    {
-      "category": "ATS Optimization",
-      "action": "Restructured experience section with clear job titles",
-      "impact": 5,
-      "reason": "Better ATS parsing and keyword matching",
-      "section": "experience"
-    },
-    {
-      "category": "Professional Summary",
-      "action": "Added summary incorporating target role keywords",
-      "impact": 5,
-      "reason": "Improved initial impression and keyword density",
-      "section": "summary"
+      "category": "<one of: Keyword Addition, Bullet Rewriting, ATS Optimization, Professional Summary, Skills Organization, Formatting, Other>",
+      "action": "<specific change made - be precise>",
+      "impact": <number - contribution to total ${actualDifference}%>,
+      "reason": "<why this change improves match score>",
+      "section": "<one of: summary, experience, skills, education, certifications, languages, contact>"
     }
   ]
 }
 
-Guidelines:
-- List 5-8 most impactful improvements (prioritize by impact)
-- Impact values must be realistic and their SUM must equal EXACTLY ${actualDifference}%
-- Categories: "Keyword Addition", "Bullet Rewriting", "ATS Optimization", "Professional Summary", "Skills Organization", "Other"
-- Section must be one of: "summary", "experience", "skills", "education", "certifications", "languages", "contact"
-- Be specific about what changed
-- Distribute the ${actualDifference}% across improvements proportionally
-- Most impactful changes get higher values, smaller changes get 1-2%
-- Focus on concrete, actionable improvements that were made
-- Example: If total is 5%, you might have: [2%, 1%, 1%, 1%] = 5% total`;
+=============================================================================
+EXAMPLE (if total improvement was 12%)
+=============================================================================
+{
+  "improvements": [
+    {
+      "category": "Keyword Addition",
+      "action": "Added 'Kubernetes' and 'Docker' to technical skills section",
+      "impact": 4,
+      "reason": "These container technologies appear 6 times in job posting and are listed as required skills",
+      "section": "skills"
+    },
+    {
+      "category": "Bullet Rewriting",
+      "action": "Transformed 'worked on backend systems' to 'Architected microservices handling 10K+ requests/second using Python and FastAPI'",
+      "impact": 3,
+      "reason": "Added specific metrics and technologies matching job requirements",
+      "section": "experience"
+    },
+    {
+      "category": "Professional Summary",
+      "action": "Added 'cloud-native development' and 'CI/CD pipelines' terminology",
+      "impact": 2.5,
+      "reason": "Summary now immediately signals relevant expertise to ATS",
+      "section": "summary"
+    },
+    {
+      "category": "Keyword Addition",
+      "action": "Added 'Agile' and 'Scrum' methodologies",
+      "impact": 1.5,
+      "reason": "Job posting mentions agile environment",
+      "section": "skills"
+    },
+    {
+      "category": "ATS Optimization",
+      "action": "Standardized job titles to match industry conventions",
+      "impact": 1,
+      "reason": "ATS systems better recognize standard titles",
+      "section": "experience"
+    }
+  ]
+}
+// Total: 4 + 3 + 2.5 + 1.5 + 1 = 12% ✓
+
+=============================================================================
+QUALITY CHECKLIST
+=============================================================================
+□ Sum of all impact values = exactly ${actualDifference}
+□ Each improvement references actual changes between CVs
+□ Impact values proportional to importance
+□ Categories and sections from allowed lists
+□ Reasons explain WHY change improves matching
+
+Respond with ONLY the JSON object. Verify math: impacts must sum to ${actualDifference}.`;
 }
 
 export function generateOptimizedCVPrompt(
@@ -315,21 +466,32 @@ YOU MUST:
 TASK: Create an optimized CV that includes ALL missing keywords.
 ` : `
 ═══════════════════════════════════════════════════════
-🛡️ HONEST MODE - DO NOT ADD FAKE SKILLS
+🛡️ SMART HONEST MODE - OPTIMIZE WITH INTEGRITY
 ═══════════════════════════════════════════════════════
-The candidate wants an honest, realistic CV optimization.
+The candidate wants CV optimization that improves match score while staying truthful.
 
-KEYWORDS MISSING FROM CV (DO NOT ADD THESE): ${analysisResults.missingKeywords.join(", ")}
+MISSING KEYWORDS TO CONSIDER: ${analysisResults.missingKeywords.join(", ")}
 
-⛔ CRITICAL RULES:
-❌ DO NOT add these missing keywords to the CV
-❌ DO NOT add skills/technologies the candidate has never used
-❌ DO NOT fabricate experience or capabilities
-✅ ONLY optimize and improve presentation of EXISTING skills
-✅ ONLY add keywords that already align with their background
-✅ Be conservative and truthful
+⚖️ SMART INTEGRATION RULES:
+You CAN add missing keywords IF:
+✅ They are RELATED/SIMILAR to existing skills (e.g., CV has "JavaScript" → can add "TypeScript")
+✅ They are TOOLS in the same ecosystem (e.g., CV has "React" → can add "Next.js")
+✅ They are TRANSFERABLE from demonstrated experience (e.g., "Project Management" → can add "Agile")
+✅ They fit naturally in a "Familiar with" or "Exposure to" context
 
-TASK: Create an optimized CV using ONLY the candidate's real skills and experience.
+You CANNOT add:
+❌ Completely unrelated technologies (e.g., "Python developer" → don't add "3D modeling")
+❌ Fabricated job titles, companies, or dates
+❌ Invented projects or achievements
+❌ Skills with zero connection to their background
+
+OPTIMIZATION STRATEGY:
+1. Enhance existing experience bullets with relevant keywords
+2. Add related skills to skills section with honest framing (e.g., "Proficient: React, Node.js" + "Familiar: Next.js, GraphQL")
+3. Integrate keywords naturally in professional summary if plausible
+4. Focus on making existing skills more discoverable by ATS
+
+TASK: Create an optimized CV that IMPROVES the match score by strategic keyword integration while maintaining honesty.
 `}
 
 IMPORTANT INSTRUCTIONS:
@@ -339,6 +501,53 @@ IMPORTANT INSTRUCTIONS:
 - Add a compelling professional summary tailored to target jobs
 - Organize skills by relevance to target roles
 - Keep formatting clean and ATS-friendly
+
+=============================================================================
+PROFESSIONAL SUMMARY GUIDE (3-4 powerful sentences)
+=============================================================================
+Structure:
+1. Lead with years of experience + primary expertise
+2. Mention 2-3 key technologies/skills matching job requirements
+3. Include a quantified achievement if available
+4. End with value proposition or career focus
+
+Example:
+"Results-driven Software Engineer with 5+ years building scalable web applications using React, Node.js, and AWS. Proven track record of reducing page load times by 40% and leading teams of up to 8 developers. Passionate about clean code architecture and mentoring junior developers."
+
+=============================================================================
+BULLET TRANSFORMATION EXAMPLES
+=============================================================================
+Transform weak bullets into achievement-focused statements:
+
+WEAK → STRONG:
+
+"Responsible for customer support"
+→ "Resolved 50+ customer inquiries daily, maintaining 98% satisfaction rating and reducing average response time by 30%"
+
+"Worked on web development projects"
+→ "Developed and deployed 5 responsive web applications using React and Node.js, serving 10,000+ monthly active users"
+
+"Managed social media accounts"
+→ "Grew social media following by 150% across 3 platforms, generating 2M+ impressions and driving 25% increase in website traffic"
+
+"Helped with data analysis"
+→ "Analyzed datasets of 100K+ records using Python and SQL, delivering insights that informed $500K in cost-saving decisions"
+
+Structure: [Action Verb] + [What you did] + [Result/Impact]
+
+NOTE: Only use specific numbers if they appear in or can be reasonably inferred from original CV.
+
+=============================================================================
+ATS OPTIMIZATION CHECKLIST
+=============================================================================
+Your optimized CV must:
+□ Use standard section headings (Experience, Education, Skills)
+□ Avoid tables, graphics, or complex formatting
+□ Include relevant keywords from job posting naturally
+□ Use standard date formats (Month Year)
+□ Spell out acronyms at least once
+□ Use standard fonts and simple formatting
+□ Keep bullet points concise (1-2 lines each)
 
 Respond in JSON format:
 {
@@ -403,13 +612,14 @@ ${fakeItMode ? `
 - Add missing keywords primarily to: skills section, professional summary, experience bullets
 - Be bold with keyword placement - that's the point of this mode
 ` : `
-🛡️ HONEST MODE GUIDELINES:
-- Preserve ALL factual information from original CV
-- ABSOLUTELY DO NOT add skills/technologies not in original CV
-- ABSOLUTELY DO NOT add the missing keywords listed above
-- Be conservative - only enhance existing skills and experience
-- Focus on better wording and presentation of real capabilities
-- If a skill/keyword is not in the original CV, DO NOT add it
+🛡️ SMART HONEST MODE GUIDELINES:
+- Preserve ALL factual information from original CV (companies, titles, dates, degrees)
+- ADD related/transferable skills that connect to existing background
+- INTEGRATE missing keywords strategically where they fit naturally
+- Use honest framing: "Proficient in X" vs "Familiar with Y" vs "Exposure to Z"
+- Enhance existing bullets to include relevant keywords from job posting
+- Focus on making existing capabilities more discoverable while maintaining integrity
+- When adding skills, ensure they're plausible given candidate's background
 `}
 - Enhance wording and presentation, not fabricate facts
 - Ensure every experience bullet demonstrates impact
@@ -417,22 +627,44 @@ ${fakeItMode ? `
 - All dates should be in "Month Year" format
 - Keep professional tone throughout
 - Use standard ASCII characters only (avoid special Unicode symbols, emojis, or fancy characters)
-- Use simple quotes (""), not smart quotes or other variants`;
+- Use simple quotes (""), not smart quotes or other variants
+
+=============================================================================
+FINAL QUALITY VERIFICATION
+=============================================================================
+Before responding, verify:
+□ All contact information preserved from original
+□ All job titles, companies, and dates are EXACT from original
+${fakeItMode ? '□ All missing keywords aggressively added per Fake It Mode' : '□ Related/transferable keywords strategically integrated to IMPROVE MATCH SCORE'}
+□ Bullets enhanced but based on real content
+□ Summary accurately represents the candidate
+□ JSON is valid and complete
+□ Professional summary follows guide structure
+□ Experience bullets follow transformation examples
+□ ATS checklist requirements met
+${!fakeItMode ? '□ CRITICAL: Optimized CV should score HIGHER than original (aim for +10-20% improvement)' : ''}
+
+Respond with ONLY the JSON object. No explanations, no markdown.`;
 }
 
 export function generateFakeSkillsRecommendationsPrompt(
   missingKeywords: string[],
   jobTexts: string[]
 ): string {
-  return `You are an expert career coach and learning advisor. The candidate has chosen to add missing skills to their CV (even though they don't currently possess them) to increase their chances of getting interviews. Your job is to create a realistic, actionable learning path for each fake skill so they can actually acquire these skills.
+  return `You are an expert career coach and technical learning advisor. A candidate has added skills to their CV that they don't currently possess, with commitment to learn them. Create realistic, actionable learning paths.
 
-MISSING KEYWORDS/SKILLS: ${missingKeywords.join(", ")}
+=============================================================================
+SKILLS THE CANDIDATE NEEDS TO LEARN
+=============================================================================
+${missingKeywords.map((kw, i) => `${i + 1}. ${kw}`).join("\n")}
 
-TARGET JOB POSTINGS:
+=============================================================================
+TARGET JOB POSTING(S) (Context for relevance)
+=============================================================================
 ${jobTexts
   .map(
     (text, i) => `
-Job ${i + 1}:
+--- JOB ${i + 1} ---
 """
 ${text}
 """
@@ -440,63 +672,114 @@ ${text}
   )
   .join("\n")}
 
-TASK: For each missing keyword/skill, create a comprehensive learning recommendation that will help the candidate actually acquire this skill within a reasonable timeframe.
+=============================================================================
+YOUR TASK
+=============================================================================
+Create a comprehensive, realistic learning plan for each missing skill that takes the candidate from zero to interview-ready.
 
-Respond in JSON format:
+=============================================================================
+TIME ESTIMATES (Be Realistic)
+=============================================================================
+- Simple tools (Figma, Notion, Slack): 1-2 weeks
+- Programming languages (basics): 4-8 weeks
+- Frameworks (React, Django): 4-6 weeks
+- Complex systems (Kubernetes, AWS): 6-12 weeks
+- Certifications: 4-12 weeks depending on complexity
+
+=============================================================================
+LEARNING PATH STRUCTURE
+=============================================================================
+Each path should include:
+1. Foundation (understand concepts): ~20% of time
+2. Hands-on tutorials: ~30% of time
+3. Building projects: ~40% of time
+4. Interview prep: ~10% of time
+
+=============================================================================
+RESOURCE PRIORITIES
+=============================================================================
+1. Official documentation (always free, always current)
+2. Free courses (YouTube, freeCodeCamp, official tutorials)
+3. Interactive platforms (Codecademy, Exercism, Kaggle)
+4. Paid courses only if significantly better (Udemy, Coursera)
+5. Books for deep understanding
+
+=============================================================================
+PROJECT IDEAS REQUIREMENTS
+=============================================================================
+Projects should be:
+- Portfolio-worthy (can show in interviews)
+- Demonstrable (can deploy or demo)
+- Relevant to target job
+- Progressively challenging
+- Completable within time estimate
+
+=============================================================================
+RESPONSE FORMAT (STRICT JSON)
+=============================================================================
 {
   "recommendations": [
     {
-      "skill": "Figma",
-      "category": "Design Tool",
+      "skill": "<skill name>",
+      "category": "<one of: Programming Language, Framework, Library, Cloud Platform, DevOps Tool, Design Tool, Database, Methodology, Soft Skill, Certification>",
+      "difficulty": "<Beginner, Intermediate, Advanced>",
       "learningPath": [
-        "Complete Figma official tutorial series (2-3 hours)",
-        "Take 'UI Design with Figma' course on Coursera or Udemy (8-10 hours)",
-        "Practice by redesigning 3 existing websites/apps",
-        "Study design systems and component libraries",
-        "Learn about prototyping and animation in Figma"
+        "<Step 1: specific action with resource>",
+        "<Step 2: specific action with resource>",
+        "<Step 3: specific action with resource>",
+        "<Step 4: specific action with resource>",
+        "<Step 5: specific action with resource>"
       ],
       "projectIdeas": [
-        "Redesign a popular mobile app (e.g., Instagram, Twitter) with improved UX",
-        "Create a complete design system for a fictional startup",
-        "Design a portfolio website for yourself in Figma",
-        "Participate in Daily UI Challenge for 30 days",
-        "Create interactive prototypes for 3 different products"
+        "<Project 1: specific, achievable project with clear deliverable>",
+        "<Project 2: project that builds on first>",
+        "<Project 3: portfolio-worthy capstone project>",
+        "<Project 4: stretch project demonstrating advanced understanding>"
       ],
-      "estimatedTime": "2-3 weeks"
-    },
-    {
-      "skill": "Adobe XD",
-      "category": "Design Tool",
-      "learningPath": [
-        "Watch Adobe XD Quick Start tutorial (1 hour)",
-        "Complete Adobe XD Masterclass on YouTube (3-4 hours)",
-        "Learn about wireframing and mockups",
-        "Practice creating responsive designs",
-        "Master XD's prototyping features"
-      ],
-      "projectIdeas": [
-        "Design a complete e-commerce website with XD",
-        "Create a mobile app prototype with micro-interactions",
-        "Design a SaaS dashboard with complex user flows",
-        "Build a design portfolio showcasing your XD work"
-      ],
-      "estimatedTime": "1-2 weeks"
+      "estimatedTime": "<realistic time range>",
+      "interviewTips": "<what interviewers typically ask about this skill and how to prepare>",
+      "quickWins": "<what candidate can honestly say after just 1 week of learning>"
     }
   ]
 }
 
-Guidelines:
-- Create recommendations for ALL missing keywords (typically 5 keywords)
-- Each learning path should have 4-6 actionable steps
-- Each skill should have 3-5 realistic project ideas
-- Estimated time should be realistic: 1-2 weeks for simple tools, 2-4 weeks for frameworks/languages, 1-3 months for complex skills
-- Categories: "Design Tool", "Programming Language", "Framework", "Library", "Methodology", "Soft Skill", "Technical Skill", "Platform", etc.
-- Be specific and actionable - avoid vague advice
-- Learning path should go from beginner to competent (not expert)
-- Project ideas should be practical and portfolio-worthy
-- Consider free resources when possible (YouTube, official docs, free courses)
-- Focus on hands-on learning and building real projects
-- Make sure recommendations are tailored to the job requirements`;
+=============================================================================
+EXAMPLE FOR "KUBERNETES"
+=============================================================================
+{
+  "skill": "Kubernetes",
+  "category": "DevOps Tool",
+  "difficulty": "Intermediate",
+  "learningPath": [
+    "Week 1-2: Complete Kubernetes official tutorials and understand core concepts (Pods, Deployments, Services) - kubernetes.io/docs/tutorials",
+    "Week 3-4: Take 'Kubernetes for Beginners' on KodeKloud or similar hands-on platform",
+    "Week 5-6: Set up local cluster using Minikube and deploy sample applications",
+    "Week 7-8: Learn Helm charts and implement CI/CD pipeline with GitHub Actions + Kubernetes",
+    "Week 9-10: Study for CKA certification (optional but valuable) using killer.sh practice exams"
+  ],
+  "projectIdeas": [
+    "Deploy a simple Node.js app to Minikube with 3 replicas and LoadBalancer service",
+    "Create multi-container application (frontend + backend + database) with proper networking",
+    "Build complete CI/CD pipeline that auto-deploys to Kubernetes on git push",
+    "Implement auto-scaling based on CPU usage with horizontal pod autoscaler"
+  ],
+  "estimatedTime": "8-10 weeks for job-ready proficiency",
+  "interviewTips": "Be ready to explain: Pod lifecycle, difference between Deployment and StatefulSet, how Services work, basic troubleshooting (kubectl logs, describe, exec). Draw architecture diagrams.",
+  "quickWins": "After 1 week: 'I understand container orchestration concepts and have deployed applications to a local Kubernetes cluster using Minikube'"
+}
+
+=============================================================================
+QUALITY REQUIREMENTS
+=============================================================================
+□ Every learning step includes specific resource or action
+□ Time estimates are realistic (not optimistic)
+□ Project ideas are concrete and achievable
+□ Interview tips based on actual common questions
+□ Quick wins give candidate honest talking points
+
+Create recommendations for ALL ${missingKeywords.length} skills listed above.
+
+Respond with ONLY the JSON object. No explanations.`;
 }
 
 export function generateCoverLetterPrompt(
@@ -615,17 +898,32 @@ FORMAT REQUIREMENTS:
 - End with professional closing (Best regards, Sincerely, etc.) and candidate name
 - Each paragraph should be visually distinct with proper spacing
 
-CRITICAL RULES:
-- Target word count: ${wordCounts[length]} words
-- Use specific examples and quantifiable achievements from the CV
-- Match keywords from job posting naturally
-- Avoid generic phrases like "I am writing to apply"
-- Be authentic and passionate
-- Show you researched the company
-- DO NOT use placeholder text - use actual candidate name: ${candidateName}
-- Address specific requirements mentioned in job posting
-- ${languageInstruction}
-- Format with proper line breaks between sections
+CRITICAL RULES (Non-Negotiable):
+1. NEVER use these clichés:
+   - "I am writing to apply for..."
+   - "I believe I would be a great fit..."
+   - "I am excited about this opportunity..."
+   - "I have always been passionate about..."
+   - "Please find attached my resume..."
+   - "Thank you for considering my application..."
+
+2. EVERY claim must trace back to the CV:
+   - If you mention "5 years of experience," the CV must show 5 years
+   - If you cite a metric, it must be in CV or reasonably inferred
+   - Never invent achievements, projects, or skills
+
+3. COMPANY SPECIFICITY:
+   - Reference something specific about ${companyName} (product, mission, news, culture)
+   - Don't just say "your company" - show research
+   - Connect their needs to candidate's specific capabilities
+
+4. FORMAT & CONTENT:
+   - Target word count: ${wordCounts[length]} words
+   - Use specific examples and quantifiable achievements from CV
+   - Match keywords from job posting naturally
+   - DO NOT use placeholder text - use actual candidate name: ${candidateName}
+   - ${languageInstruction}
+   - Format with proper line breaks between sections
 
 RESPONSE FORMAT:
 You must respond with a structured JSON that breaks down the cover letter into paragraphs with explanations and sentence-level alternatives.
@@ -704,5 +1002,20 @@ IMPORTANT NOTES:
 - Mark 2-3 most impactful sentences per paragraph as "isHighlight": true
 - Provide 2 alternative phrasings for highlighted sentences only
 - "rationale" explains WHY that paragraph was chosen based on job requirements
-- Paragraph "type": "header", "greeting", "opening", "achievement", "motivation", "closing"`;
+- Paragraph "type": "header", "greeting", "opening", "achievement", "motivation", "closing"
+
+=============================================================================
+QUALITY CHECKLIST
+=============================================================================
+Before responding, verify:
+□ Word count within ${wordCounts[length]} range
+□ No clichéd openings or closings
+□ At least one specific metric or achievement from CV
+□ Company name (${companyName}) appears with specific context
+□ Tone matches "${tone}" specification
+□ Template structure matches "${template}"
+□ Every claim supported by CV content
+□ Letter would make YOU want to interview this person
+
+Respond with ONLY the JSON object. Create a letter that demands an interview.`;
 }

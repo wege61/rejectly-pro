@@ -3423,6 +3423,48 @@ export default function ReportDetailPage() {
               </>
             )}
           </CreditsIndicator>
+
+          {/* CV Action Button */}
+          {report.pro && report.generated_cv ? (
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={handlePreviewCV}
+              style={{
+                marginLeft: 'auto',
+                background: 'var(--gradient-primary)',
+                padding: '12px 24px',
+                fontSize: '15px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+              }}
+            >
+              <EyeIcon /> View Optimized CV
+            </Button>
+          ) : !report.pro ? (
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
+              isLoading={isUpgrading}
+              style={{
+                marginLeft: 'auto',
+                background: 'var(--gradient-primary)',
+                padding: '12px 24px',
+                fontSize: '15px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+              }}
+            >
+              <RocketIcon /> Generate Optimized CV
+            </Button>
+          ) : null}
         </HeaderMeta>
         {jobPostingTitles.length > 0 && (
           <div style={{ marginTop: "12px" }}>

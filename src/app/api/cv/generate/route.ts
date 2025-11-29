@@ -46,12 +46,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Report not found" }, { status: 404 });
     }
 
-    // Check if CV already generated
-    if (report.generated_cv) {
+    // Check if CV already generated with same fake it mode setting
+    if (report.generated_cv && report.fake_it_mode === fakeItMode) {
+      console.log('✅ CV already generated with same fake_it_mode, returning cached version');
       return NextResponse.json({
         success: true,
         message: "CV already generated",
         cv: report.generated_cv,
+      });
+    }
+
+    // If fake it mode changed, regenerate CV
+    if (report.generated_cv && report.fake_it_mode !== fakeItMode) {
+      console.log('🔄 Regenerating CV with different fake_it_mode:', {
+        old: report.fake_it_mode,
+        new: fakeItMode
       });
     }
 
@@ -130,27 +139,37 @@ export async function POST(request: NextRequest) {
     );
 
     // Save generated CV to database (always succeeds)
-    const updateData: { generated_cv: any; fake_it_mode?: boolean } = {
+    const updateData: { generated_cv: any; fake_it_mode: boolean } = {
       generated_cv: generatedCV,
+      fake_it_mode: fakeItMode,
     };
 
-    // Try to save fake_it_mode flag (optional - may fail if column doesn't exist)
-    try {
-      updateData.fake_it_mode = fakeItMode;
-    } catch {
-      // Column doesn't exist yet - ignore
-    }
+    console.log('💾 Saving to database:', {
+      reportId,
+      fakeItMode,
+      updateData: {
+        hasGeneratedCV: !!updateData.generated_cv,
+        fakeItMode: updateData.fake_it_mode
+      }
+    });
 
-    const { error: updateError } = await supabase
+    const { data: updatedReport, error: updateError } = await supabase
       .from("reports")
       .update(updateData)
       .eq("id", reportId)
-      .select()
+      .select('id, fake_it_mode, generated_cv')
       .single();
 
     if (updateError) {
+      console.error('❌ Database update error:', updateError);
       throw new Error(`Failed to save generated CV: ${updateError.message}`);
     }
+
+    console.log('✅ Successfully saved to database:', {
+      reportId: updatedReport.id,
+      fakeItMode: updatedReport.fake_it_mode,
+      hasGeneratedCV: !!updatedReport.generated_cv
+    });
 
     // Try to save fake skills recommendations (optional - may fail if column doesn't exist)
     if (fakeSkillsRecommendations && fakeSkillsRecommendations.length > 0) {

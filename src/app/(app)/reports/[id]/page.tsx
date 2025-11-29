@@ -498,6 +498,27 @@ const CreditsIndicator = styled.div<{ $low?: boolean; $subscription?: boolean }>
   }
 `;
 
+const CVActionButtonWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  margin-top: ${({ theme }) => theme.spacing.sm};
+
+  @media (min-width: 1024px) {
+    width: auto;
+    margin-top: 0;
+    margin-left: auto;
+  }
+
+  button {
+    width: 100%;
+    justify-content: center;
+
+    @media (min-width: 1024px) {
+      width: auto;
+    }
+  }
+`;
+
 const Grid = styled.div`
   display: grid;
   gap: ${({ theme }) => theme.spacing.lg};
@@ -784,6 +805,290 @@ const TotalValue = styled.div`
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     font-size: ${({ theme }) => theme.typography.fontSize.xl};
   }
+`;
+
+// Problem Summary Components - Enhanced Modern Design
+const ProblemSummaryCard = styled.div`
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24px;
+  padding: 48px;
+  color: white;
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: 32px 24px;
+  }
+`;
+
+const ProblemSummaryHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 24px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
+const ProblemSummaryTitleSection = styled.div`
+  flex: 1;
+  min-width: 300px;
+`;
+
+const ProblemSummaryTitle = styled.h3`
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 24px;
+  }
+`;
+
+const ProblemSummarySubtitle = styled.p`
+  font-size: 16px;
+  opacity: 0.95;
+  font-weight: 400;
+  line-height: 1.5;
+`;
+
+const BeforeAfterScore = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  padding: 16px 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    width: 100%;
+    justify-content: center;
+  }
+`;
+
+const BeforeAfterScoreValue = styled.div<{ $highlight?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  .score-number {
+    font-size: ${({ $highlight }) => ($highlight ? '36px' : '28px')};
+    font-weight: 900;
+    line-height: 1;
+    color: ${({ $highlight }) => ($highlight ? '#fff' : 'rgba(255, 255, 255, 0.7)')};
+  }
+
+  .score-label {
+    font-size: 11px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+`;
+
+const BeforeAfterScoreArrow = styled.div`
+  font-size: 24px;
+  opacity: 0.8;
+`;
+
+const ProblemStats = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const StatCard = styled.div<{ $severity: 'critical' | 'important' | 'minor' }>`
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: ${({ $severity }) => {
+      if ($severity === 'critical') return 'linear-gradient(90deg, #ef4444, #dc2626)';
+      if ($severity === 'important') return 'linear-gradient(90deg, #f59e0b, #d97706)';
+      return 'linear-gradient(90deg, #22c55e, #16a34a)';
+    }};
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+`;
+
+const StatIcon = styled.div`
+  font-size: 32px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+`;
+
+const StatCount = styled.div`
+  font-size: 48px;
+  font-weight: 900;
+  margin-bottom: 8px;
+  line-height: 1;
+  letter-spacing: -1px;
+`;
+
+const StatLabel = styled.div`
+  font-size: 14px;
+  opacity: 0.95;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const StatImpact = styled.div`
+  font-size: 13px;
+  opacity: 0.85;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-block;
+`;
+
+const ResultMessage = styled.div`
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.2px;
+  line-height: 1.4;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 18px;
+    padding: 20px;
+  }
+`;
+
+// Fake It Mode Warning Banner
+const FakeItModeWarning = styled.div`
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+
+  .warning-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .warning-content {
+    flex: 1;
+  }
+
+  .warning-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: white;
+  }
+
+  .warning-text {
+    font-size: 13px;
+    opacity: 0.95;
+    line-height: 1.4;
+    color: white;
+  }
+`;
+
+// Problem Severity Badge
+const ProblemSeverityBadge = styled.span<{ $severity: "critical" | "important" | "minor" }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+
+  ${({ $severity }) => {
+    if ($severity === "critical") {
+      return `
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      `;
+    } else if ($severity === "important") {
+      return `
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      `;
+    } else {
+      return `
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+      `;
+    }
+  }}
+`;
+
+// Problem Text Components
+const ProblemText = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  padding: ${({ theme }) => theme.spacing.sm};
+  background: rgba(239, 68, 68, 0.05);
+  border-left: 3px solid #ef4444;
+  border-radius: ${({ theme }) => theme.radius.sm};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
 const Section = styled.section`
@@ -2559,6 +2864,10 @@ interface Improvement {
   impact: number;
   reason: string;
   section?: string; // Optional for backward compatibility with existing data
+  problem?: string; // What was wrong in the original CV
+  before?: string; // Original text/content before optimization
+  after?: string; // Optimized text/content after changes
+  severity?: "critical" | "important" | "minor"; // Problem severity level
 }
 
 interface FakeSkillRecommendation {
@@ -2750,6 +3059,8 @@ export default function ReportDetailPage() {
 
       console.log("📊 Analysis result:", {
         ...result,
+        fakeItMode: result.fakeItMode,
+        cached: result.cached,
         improvementBreakdownType: typeof result.improvementBreakdown,
         improvementBreakdownValue: result.improvementBreakdown,
         isArray: Array.isArray(result.improvementBreakdown),
@@ -2848,6 +3159,7 @@ export default function ReportDetailPage() {
       console.log("📋 Report loaded from database:", {
         reportId: data.id,
         hasGeneratedCV: !!data.generated_cv,
+        fakeItMode: data.fake_it_mode,
         optimizedScore: {
           type: typeof data.optimized_score,
           value: data.optimized_score,
@@ -2863,6 +3175,12 @@ export default function ReportDetailPage() {
 
       setReport(data);
 
+      // Load fake it mode from report
+      if (data.fake_it_mode !== undefined) {
+        setFakeItMode(data.fake_it_mode);
+        console.log('📌 Loaded fake_it_mode from database:', data.fake_it_mode);
+      }
+
       // Load cached analysis results from database if available
       const hasValidScore = typeof data.optimized_score === "number";
       const hasValidBreakdown =
@@ -2873,12 +3191,14 @@ export default function ReportDetailPage() {
       console.log("🔍 Cache validation:", {
         hasValidScore,
         hasValidBreakdown,
+        fakeItMode: data.fake_it_mode,
         willLoadFromCache: hasValidScore && hasValidBreakdown,
       });
 
       if (hasValidScore && hasValidBreakdown) {
         console.log("✅ Loading from cache:", {
           score: data.optimized_score,
+          fakeItMode: data.fake_it_mode,
           breakdownCount: data.improvement_breakdown.length,
           breakdown: data.improvement_breakdown,
         });
@@ -2987,14 +3307,9 @@ export default function ReportDetailPage() {
     setIsGeneratingCV(true);
     try {
       // Report is already pro, just regenerate CV with fake it mode (no credit cost)
-      // First clear the existing generated_cv to allow regeneration
-      const supabase = createClient();
-      await supabase
-        .from("reports")
-        .update({ generated_cv: null, fake_it_mode: true })
-        .eq("id", report.id);
+      // The API will handle updating both generated_cv and fake_it_mode
+      console.log('🚀 Starting fake it mode CV generation...');
 
-      // Generate CV with fake it mode
       const cvResponse = await fetch("/api/cv/generate", {
         method: "POST",
         headers: {
@@ -3013,6 +3328,7 @@ export default function ReportDetailPage() {
       }
 
       // Refresh the report data
+      const supabase = createClient();
       const { data: updatedReport } = await supabase
         .from("reports")
         .select("*")
@@ -3021,8 +3337,13 @@ export default function ReportDetailPage() {
 
       if (updatedReport) {
         setReport(updatedReport);
+        // Update fake_it_mode state from database
+        if (updatedReport.fake_it_mode !== undefined) {
+          setFakeItMode(updatedReport.fake_it_mode);
+          console.log('📌 Updated fake_it_mode in handleUpgradeToPro:', updatedReport.fake_it_mode);
+        }
 
-        // Generate PDF on client and save to optimized_cvs
+        // Generate PDF on client and save to optimized_cvs via API
         if (updatedReport.generated_cv) {
           try {
             const pdf = await generateCVPDF(updatedReport.generated_cv);
@@ -3030,51 +3351,71 @@ export default function ReportDetailPage() {
 
             const userName = updatedReport.generated_cv.contact?.name || 'Optimized';
             const sanitizedName = userName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
-            const fileName = `optimized/${user?.id}/${updatedReport.id}/${sanitizedName}.pdf`;
+            const pdfFile = new File([pdfBlob], `${sanitizedName}.pdf`, { type: 'application/pdf' });
 
-            // Upload to storage
-            const { error: uploadError } = await supabase.storage
-              .from('cv-files')
-              .upload(fileName, pdfBlob, {
-                contentType: 'application/pdf',
-                upsert: true,
-              });
+            // Use API to upload with service role (bypasses RLS)
+            const formData = new FormData();
+            formData.append('pdf', pdfFile);
+            formData.append('reportId', updatedReport.id);
 
-            if (uploadError) {
-              console.error('Upload error:', uploadError);
-              throw uploadError;
+            const saveResponse = await fetch('/api/cv/save-optimized', {
+              method: 'POST',
+              body: formData,
+            });
+
+            const saveResult = await saveResponse.json();
+
+            if (!saveResponse.ok) {
+              console.error('Save error:', saveResult.error);
+              throw new Error(saveResult.error);
             }
 
-            const { data: urlData } = supabase.storage
-              .from('cv-files')
-              .getPublicUrl(fileName);
-
-            // Save to optimized_cvs
-            await supabase
-              .from('optimized_cvs')
-              .delete()
-              .eq('report_id', updatedReport.id);
-
-            const { error: insertError } = await supabase
-              .from('optimized_cvs')
-              .insert({
-                user_id: user?.id,
-                report_id: updatedReport.id,
-                original_cv_id: updatedReport.cv_id,
-                title: `${userName} - Optimized CV`,
-                file_url: urlData.publicUrl,
-                text: JSON.stringify(updatedReport.generated_cv),
-                lang: 'en',
-              });
-
-            if (insertError) {
-              console.error('Insert error:', insertError);
-            } else {
-              console.log('✅ CV saved to My CVs');
-            }
+            console.log('✅ CV saved to My CVs via API (fake it mode)');
           } catch (saveError) {
             console.error('Error saving to My CVs:', saveError);
           }
+        }
+
+        // Analyze the optimized CV to populate cache
+        console.log('📊 Analyzing optimized CV to populate cache...');
+        const analyzeResponse = await fetch("/api/cv/analyze-optimized", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            reportId: updatedReport.id,
+          }),
+        });
+
+        if (analyzeResponse.ok) {
+          const analysisResult = await analyzeResponse.json();
+          console.log('✅ Analysis complete:', {
+            optimizedScore: analysisResult.fitScore,
+            originalScore: analysisResult.originalScore,
+            fakeItMode: analysisResult.fakeItMode,
+            breakdownCount: analysisResult.improvementBreakdown?.length
+          });
+          setOptimizedScore(analysisResult.fitScore);
+          setImprovementBreakdown(analysisResult.improvementBreakdown || []);
+
+          // Refresh report to get updated cache from database
+          const { data: finalReport } = await supabase
+            .from("reports")
+            .select("*")
+            .eq("id", report.id)
+            .single();
+
+          if (finalReport) {
+            setReport(finalReport);
+            console.log('✅ Report refreshed with cache:', {
+              optimizedScore: finalReport.optimized_score,
+              fakeItMode: finalReport.fake_it_mode,
+              hasBreakdown: !!finalReport.improvement_breakdown
+            });
+          }
+        } else {
+          console.error('❌ Analysis failed:', await analyzeResponse.text());
         }
       }
 
@@ -3142,9 +3483,14 @@ export default function ReportDetailPage() {
               .single();
 
             if (updatedData) {
+              // Update fake_it_mode state from database
+              if (updatedData.fake_it_mode !== undefined) {
+                setFakeItMode(updatedData.fake_it_mode);
+                console.log('📌 Updated fake_it_mode after upgrade:', updatedData.fake_it_mode);
+              }
               setReport(updatedData);
 
-              // Generate PDF on client and save to optimized_cvs
+              // Generate PDF on client and save to optimized_cvs via API
               if (updatedData.generated_cv) {
                 try {
                   const pdf = await generateCVPDF(updatedData.generated_cv);
@@ -3152,48 +3498,26 @@ export default function ReportDetailPage() {
 
                   const userName = updatedData.generated_cv.contact?.name || 'Optimized';
                   const sanitizedName = userName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
-                  const fileName = `optimized/${user?.id}/${updatedData.id}/${sanitizedName}.pdf`;
+                  const pdfFile = new File([pdfBlob], `${sanitizedName}.pdf`, { type: 'application/pdf' });
 
-                  // Upload to storage
-                  const { error: uploadError } = await supabase.storage
-                    .from('cv-files')
-                    .upload(fileName, pdfBlob, {
-                      contentType: 'application/pdf',
-                      upsert: true,
-                    });
+                  // Use API to upload with service role (bypasses RLS)
+                  const formData = new FormData();
+                  formData.append('pdf', pdfFile);
+                  formData.append('reportId', updatedData.id);
 
-                  if (uploadError) {
-                    console.error('Upload error:', uploadError);
-                    throw uploadError;
+                  const saveResponse = await fetch('/api/cv/save-optimized', {
+                    method: 'POST',
+                    body: formData,
+                  });
+
+                  const saveResult = await saveResponse.json();
+
+                  if (!saveResponse.ok) {
+                    console.error('Save error:', saveResult.error);
+                    throw new Error(saveResult.error);
                   }
 
-                  const { data: urlData } = supabase.storage
-                    .from('cv-files')
-                    .getPublicUrl(fileName);
-
-                  // Save to optimized_cvs
-                  await supabase
-                    .from('optimized_cvs')
-                    .delete()
-                    .eq('report_id', updatedData.id);
-
-                  const { error: insertError } = await supabase
-                    .from('optimized_cvs')
-                    .insert({
-                      user_id: user?.id,
-                      report_id: updatedData.id,
-                      original_cv_id: updatedData.cv_id,
-                      title: `${userName} - Optimized CV`,
-                      file_url: urlData.publicUrl,
-                      text: JSON.stringify(updatedData.generated_cv),
-                      lang: 'en',
-                    });
-
-                  if (insertError) {
-                    console.error('Insert error:', insertError);
-                  } else {
-                    console.log('✅ CV saved to My CVs');
-                  }
+                  console.log('✅ CV saved to My CVs via API');
                 } catch (saveError) {
                   console.error('Error saving to My CVs:', saveError);
                 }
@@ -3274,6 +3598,11 @@ export default function ReportDetailPage() {
 
       if (data) {
         setReport(data);
+        // Update fake_it_mode state from database
+        if (data.fake_it_mode !== undefined) {
+          setFakeItMode(data.fake_it_mode);
+          console.log('📌 Updated fake_it_mode after CV generation:', data.fake_it_mode);
+        }
       }
 
       // Analyze the optimized CV to get new match score
@@ -3352,6 +3681,39 @@ export default function ReportDetailPage() {
     }
   };
 
+  // Helper function to get severity badge emoji and text
+  const getSeverityInfo = (severity?: string) => {
+    switch (severity) {
+      case "critical":
+        return { emoji: "🔴", text: "Critical Issue" };
+      case "important":
+        return { emoji: "🟡", text: "Important Gap" };
+      case "minor":
+        return { emoji: "🟢", text: "Minor Tweak" };
+      default:
+        return { emoji: "⚪", text: "Improvement" };
+    }
+  };
+
+  // Helper function to calculate problem statistics
+  const getProblemStats = (improvements: Improvement[]) => {
+    const critical = improvements.filter((imp) => imp.severity === "critical");
+    const important = improvements.filter((imp) => imp.severity === "important");
+    const minor = improvements.filter((imp) => imp.severity === "minor");
+
+    const criticalImpact = critical.reduce((sum, imp) => sum + imp.impact, 0);
+    const importantImpact = important.reduce((sum, imp) => sum + imp.impact, 0);
+    const minorImpact = minor.reduce((sum, imp) => sum + imp.impact, 0);
+
+    return {
+      critical: { count: critical.length, impact: criticalImpact },
+      important: { count: important.length, impact: importantImpact },
+      minor: { count: minor.length, impact: minorImpact },
+      total: improvements.length,
+      totalImpact: criticalImpact + importantImpact + minorImpact,
+    };
+  };
+
   const handleClosePreview = () => {
     setIsPreviewOpen(false);
     setSelectedImprovement(null);
@@ -3425,45 +3787,47 @@ export default function ReportDetailPage() {
           </CreditsIndicator>
 
           {/* CV Action Button */}
-          {report.pro && report.generated_cv ? (
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={handlePreviewCV}
-              style={{
-                marginLeft: 'auto',
-                background: 'var(--gradient-primary)',
-                padding: '12px 24px',
-                fontSize: '15px',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-              }}
-            >
-              <EyeIcon /> View Optimized CV
-            </Button>
-          ) : !report.pro ? (
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
-              isLoading={isUpgrading}
-              style={{
-                marginLeft: 'auto',
-                background: 'var(--gradient-primary)',
-                padding: '12px 24px',
-                fontSize: '15px',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-              }}
-            >
-              <RocketIcon /> Generate Optimized CV
-            </Button>
+          {(report.pro && report.generated_cv) || !report.pro ? (
+            <CVActionButtonWrapper>
+              {report.pro && report.generated_cv ? (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={handlePreviewCV}
+                  style={{
+                    background: 'var(--gradient-primary)',
+                    padding: '12px 24px',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                  }}
+                >
+                  <EyeIcon /> View Optimized CV
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
+                  isLoading={isUpgrading}
+                  style={{
+                    background: 'var(--gradient-primary)',
+                    padding: '12px 24px',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                  }}
+                >
+                  <RocketIcon /> Generate Optimized CV
+                </Button>
+              )}
+            </CVActionButtonWrapper>
           ) : null}
         </HeaderMeta>
         {jobPostingTitles.length > 0 && (
@@ -3597,45 +3961,198 @@ export default function ReportDetailPage() {
         optimizedScore !== null &&
         !isAnalyzingOptimized && (
           <>
+            {/* Problem Summary Card */}
+            <Section>
+              <ProblemSummaryCard>
+                <ProblemSummaryHeader>
+                  <ProblemSummaryTitleSection>
+                    <ProblemSummaryTitle>
+                      🔍 {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed in Your CV
+                    </ProblemSummaryTitle>
+                    <ProblemSummarySubtitle>
+                      Your original CV had these critical issues - we solved all of them
+                    </ProblemSummarySubtitle>
+                  </ProblemSummaryTitleSection>
+
+                  <BeforeAfterScore>
+                    <BeforeAfterScoreValue>
+                      <div className="score-number">{report.fit_score}%</div>
+                      <div className="score-label">Before</div>
+                    </BeforeAfterScoreValue>
+                    <BeforeAfterScoreArrow>→</BeforeAfterScoreArrow>
+                    <BeforeAfterScoreValue $highlight>
+                      <div className="score-number">{optimizedScore}%</div>
+                      <div className="score-label">After</div>
+                    </BeforeAfterScoreValue>
+                  </BeforeAfterScore>
+                </ProblemSummaryHeader>
+
+                <ProblemStats>
+                  {getProblemStats(improvementBreakdown).critical.count > 0 && (
+                    <StatCard $severity="critical">
+                      <StatIcon>🔴</StatIcon>
+                      <StatCount>{getProblemStats(improvementBreakdown).critical.count}</StatCount>
+                      <StatLabel>Critical Issues</StatLabel>
+                      <StatImpact>
+                        +{Math.round(getProblemStats(improvementBreakdown).critical.impact * 10) / 10}% recovered
+                      </StatImpact>
+                    </StatCard>
+                  )}
+                  {getProblemStats(improvementBreakdown).important.count > 0 && (
+                    <StatCard $severity="important">
+                      <StatIcon>🟡</StatIcon>
+                      <StatCount>{getProblemStats(improvementBreakdown).important.count}</StatCount>
+                      <StatLabel>Important Gaps</StatLabel>
+                      <StatImpact>
+                        +{Math.round(getProblemStats(improvementBreakdown).important.impact * 10) / 10}% recovered
+                      </StatImpact>
+                    </StatCard>
+                  )}
+                  {getProblemStats(improvementBreakdown).minor.count > 0 && (
+                    <StatCard $severity="minor">
+                      <StatIcon>🟢</StatIcon>
+                      <StatCount>{getProblemStats(improvementBreakdown).minor.count}</StatCount>
+                      <StatLabel>Minor Tweaks</StatLabel>
+                      <StatImpact>
+                        +{Math.round(getProblemStats(improvementBreakdown).minor.impact * 10) / 10}% recovered
+                      </StatImpact>
+                    </StatCard>
+                  )}
+                </ProblemStats>
+
+                {report.fake_it_mode && (
+                  <FakeItModeWarning>
+                    <div className="warning-icon">⚠️</div>
+                    <div className="warning-content">
+                      <div className="warning-title">🚀 Fake It Mode Active</div>
+                      <div className="warning-text">
+                        This CV was optimized with aggressive keyword addition. ALL missing keywords were added, even without verified experience. Use responsibly and be prepared to discuss these skills in interviews.
+                      </div>
+                    </div>
+                  </FakeItModeWarning>
+                )}
+
+                <ResultMessage>
+                  ✅ All Problems Solved! Your new CV recovered +{Math.round(getProblemStats(improvementBreakdown).totalImpact * 10) / 10}% match score
+                </ResultMessage>
+              </ProblemSummaryCard>
+            </Section>
+
+            {/* Individual Problems */}
             <Section>
               <Card variant="bordered">
                 <Card.Header>
                   <Card.Title>
-                    <TargetIcon /> How We Improved Your Score
+                    <TargetIcon /> Problems We Fixed
                   </Card.Title>
                   <Card.Description>
-                    Detailed breakdown of each optimization and its impact
+                    See exactly what was wrong and how we fixed it
                   </Card.Description>
                 </Card.Header>
                 <Card.Content>
                   <BreakdownContainer>
-                    {improvementBreakdown.map((improvement, index) => (
-                      <BreakdownItem
-                        key={index}
-                        onClick={() => handleImprovementClick(improvement)}
-                        title="Click to view this improvement in your CV"
-                      >
-                        <ImpactBadge>
-                          +{Math.round(improvement.impact * 10) / 10}
-                        </ImpactBadge>
-                        <ImpactContent>
-                          <ImpactCategory>
-                            {improvement.category}
-                          </ImpactCategory>
-                          <ImpactAction>{improvement.action}</ImpactAction>
-                          <ImpactReason>{improvement.reason}</ImpactReason>
-                        </ImpactContent>
-                        <ImpactPoints>
-                          <ImpactValue>
-                            +{Math.round(improvement.impact * 10) / 10}%
-                          </ImpactValue>
-                          <ImpactLabel>Score</ImpactLabel>
-                        </ImpactPoints>
-                      </BreakdownItem>
-                    ))}
+                    {improvementBreakdown.map((improvement, index) => {
+                      const severityInfo = getSeverityInfo(improvement.severity);
+                      return (
+                        <BreakdownItem
+                          key={index}
+                          onClick={() => handleImprovementClick(improvement)}
+                          title="Click to view this fix in your CV"
+                        >
+                          <ImpactBadge>
+                            {severityInfo.emoji}
+                          </ImpactBadge>
+                          <ImpactContent>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                              <ProblemSeverityBadge $severity={improvement.severity || "minor"}>
+                                {severityInfo.text}
+                              </ProblemSeverityBadge>
+                              <ImpactCategory>
+                                {improvement.category}
+                              </ImpactCategory>
+                            </div>
+
+                            {improvement.problem && (
+                              <ProblemText>
+                                ❌ Problem: {improvement.problem}
+                              </ProblemText>
+                            )}
+
+                            {improvement.before && improvement.after && (
+                              <div style={{ marginTop: "12px", marginBottom: "8px" }}>
+                                <div style={{
+                                  padding: "8px",
+                                  background: "rgba(239, 68, 68, 0.05)",
+                                  borderRadius: "6px",
+                                  borderLeft: "3px solid #ef4444",
+                                  marginBottom: "8px",
+                                  fontSize: "13px"
+                                }}>
+                                  <div style={{
+                                    fontSize: "11px",
+                                    fontWeight: 600,
+                                    color: "#ef4444",
+                                    marginBottom: "4px"
+                                  }}>
+                                    BEFORE (Original)
+                                  </div>
+                                  <div style={{ fontFamily: "monospace", lineHeight: "1.6" }}>
+                                    {improvement.before}
+                                  </div>
+                                </div>
+                                <div style={{
+                                  padding: "8px",
+                                  background: "rgba(34, 197, 94, 0.05)",
+                                  borderRadius: "6px",
+                                  borderLeft: "3px solid #22c55e",
+                                  fontSize: "13px"
+                                }}>
+                                  <div style={{
+                                    fontSize: "11px",
+                                    fontWeight: 600,
+                                    color: "#22c55e",
+                                    marginBottom: "4px"
+                                  }}>
+                                    AFTER (Optimized)
+                                  </div>
+                                  <div style={{ fontFamily: "monospace", lineHeight: "1.6" }}>
+                                    {improvement.after}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {!improvement.before && !improvement.after && (
+                              <ImpactAction>{improvement.action}</ImpactAction>
+                            )}
+
+                            <ImpactReason>
+                              💪 Why this matters: {improvement.reason}
+                            </ImpactReason>
+
+                            {improvement.section && (
+                              <div style={{
+                                marginTop: "8px",
+                                fontSize: "12px",
+                                color: "#6b7280",
+                                fontStyle: "italic"
+                              }}>
+                                📍 Location: {improvement.section.charAt(0).toUpperCase() + improvement.section.slice(1)} Section
+                              </div>
+                            )}
+                          </ImpactContent>
+                          <ImpactPoints>
+                            <ImpactValue>
+                              +{Math.round(improvement.impact * 10) / 10}%
+                            </ImpactValue>
+                            <ImpactLabel>Fixed</ImpactLabel>
+                          </ImpactPoints>
+                        </BreakdownItem>
+                      );
+                    })}
                   </BreakdownContainer>
                   <TotalImpactSummary>
-                    <TotalLabel>Total Impact</TotalLabel>
+                    <TotalLabel>Total Recovery</TotalLabel>
                     <TotalValue>
                       +
                       {Math.round(
@@ -4380,8 +4897,13 @@ export default function ReportDetailPage() {
 
                           if (updatedReport) {
                             setReport(updatedReport);
+                            // Update fake_it_mode state from database
+                            if (updatedReport.fake_it_mode !== undefined) {
+                              setFakeItMode(updatedReport.fake_it_mode);
+                              console.log('📌 Updated fake_it_mode in modal:', updatedReport.fake_it_mode);
+                            }
 
-                            // Generate PDF on client and save to optimized_cvs
+                            // Generate PDF on client and save to optimized_cvs via API
                             if (updatedReport.generated_cv) {
                               try {
                                 const pdf = await generateCVPDF(updatedReport.generated_cv);
@@ -4389,44 +4911,26 @@ export default function ReportDetailPage() {
 
                                 const userName = updatedReport.generated_cv.contact?.name || 'Optimized';
                                 const sanitizedName = userName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
-                                const fileName = `optimized/${user?.id}/${updatedReport.id}/${sanitizedName}.pdf`;
+                                const pdfFile = new File([pdfBlob], `${sanitizedName}.pdf`, { type: 'application/pdf' });
 
-                                // Upload to storage
-                                const { error: uploadError } = await supabase.storage
-                                  .from('cv-files')
-                                  .upload(fileName, pdfBlob, {
-                                    contentType: 'application/pdf',
-                                    upsert: true,
-                                  });
+                                // Use API to upload with service role (bypasses RLS)
+                                const formData = new FormData();
+                                formData.append('pdf', pdfFile);
+                                formData.append('reportId', updatedReport.id);
 
-                                if (uploadError) {
-                                  console.error('Upload error:', uploadError);
-                                  throw uploadError;
+                                const saveResponse = await fetch('/api/cv/save-optimized', {
+                                  method: 'POST',
+                                  body: formData,
+                                });
+
+                                const saveResult = await saveResponse.json();
+
+                                if (!saveResponse.ok) {
+                                  console.error('Save error:', saveResult.error);
+                                  throw new Error(saveResult.error);
                                 }
 
-                                const { data: urlData } = supabase.storage
-                                  .from('cv-files')
-                                  .getPublicUrl(fileName);
-
-                                // Save to optimized_cvs
-                                await supabase
-                                  .from('optimized_cvs')
-                                  .delete()
-                                  .eq('report_id', updatedReport.id);
-
-                                await supabase
-                                  .from('optimized_cvs')
-                                  .insert({
-                                    user_id: user?.id,
-                                    report_id: updatedReport.id,
-                                    original_cv_id: updatedReport.cv_id,
-                                    title: `${userName} - Optimized CV`,
-                                    file_url: urlData.publicUrl,
-                                    text: JSON.stringify(updatedReport.generated_cv),
-                                    lang: 'en',
-                                  });
-
-                                console.log('✅ CV saved to My CVs');
+                                console.log('✅ CV saved to My CVs via API (modal)');
                               } catch (saveError) {
                                 console.error('Error saving to My CVs:', saveError);
                               }

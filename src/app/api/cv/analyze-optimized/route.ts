@@ -140,6 +140,7 @@ export async function POST(request: NextRequest) {
         improvementBreakdown: report.improvement_breakdown,
         originalScore: report.fit_score,
         actualScoreDifference: report.optimized_score - report.fit_score,
+        fakeItMode: report.fake_it_mode || false,
         cached: true,
       });
     }
@@ -205,6 +206,8 @@ export async function POST(request: NextRequest) {
       cvId: report.cv_id
     });
 
+    // Get fake it mode flag from report
+    const fakeItMode = report.fake_it_mode || false;
     let improvementBreakdown = null;
 
     if (!cvError && cvDoc && actualScoreDifference > 0) {
@@ -216,7 +219,8 @@ export async function POST(request: NextRequest) {
         jobDocs.map((job) => job.text),
         (report.keywords as { missing?: string[] })?.missing || [],
         originalScore,
-        optimizedScore
+        optimizedScore,
+        fakeItMode
       );
 
       const breakdownCompletion = await openai.chat.completions.create({
@@ -271,6 +275,7 @@ export async function POST(request: NextRequest) {
       improvementBreakdown,
       originalScore,
       actualScoreDifference,
+      fakeItMode,
       cached: false,
     });
   } catch (error) {

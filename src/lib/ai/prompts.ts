@@ -267,11 +267,17 @@ export function generateImprovementBreakdownPrompt(
   jobTexts: string[],
   missingKeywords: string[],
   originalScore: number,
-  optimizedScore: number
+  optimizedScore: number,
+  fakeItMode: boolean = false
 ): string {
   const actualDifference = optimizedScore - originalScore;
 
   return `You are a CV optimization analyst. Explain exactly how the optimized CV improved upon the original.
+
+${fakeItMode ? `
+⚠️ FAKE IT MODE ANALYSIS ⚠️
+This CV was optimized in "Fake It Until You Make It" mode, meaning ALL missing keywords were aggressively added, even if the candidate doesn't have real experience with them. Frame problems and solutions accordingly.
+` : ''}
 
 =============================================================================
 ORIGINAL CV
@@ -348,8 +354,12 @@ RESPONSE FORMAT (STRICT JSON)
   "improvements": [
     {
       "category": "<one of: Keyword Addition, Bullet Rewriting, ATS Optimization, Professional Summary, Skills Organization, Formatting, Other>",
+      "problem": "<what was wrong in the original CV - be specific>",
+      "before": "<original text/content before optimization (optional but recommended)>",
+      "after": "<optimized text/content after changes (optional but recommended)>",
       "action": "<specific change made - be precise>",
       "impact": <number - contribution to total ${actualDifference}%>,
+      "severity": "<one of: critical, important, minor - based on impact (≥3: critical, ≥1.5: important, <1.5: minor)>",
       "reason": "<why this change improves match score>",
       "section": "<one of: summary, experience, skills, education, certifications, languages, contact>"
     }
@@ -363,36 +373,56 @@ EXAMPLE (if total improvement was 12%)
   "improvements": [
     {
       "category": "Keyword Addition",
+      "problem": "Missing critical keywords 'Kubernetes' and 'Docker' that appear 6 times in job posting",
+      "before": "Technical Skills: Python, Django, PostgreSQL, Redis",
+      "after": "Technical Skills: Python, Django, PostgreSQL, Redis, Kubernetes, Docker",
       "action": "Added 'Kubernetes' and 'Docker' to technical skills section",
       "impact": 4,
+      "severity": "critical",
       "reason": "These container technologies appear 6 times in job posting and are listed as required skills",
       "section": "skills"
     },
     {
       "category": "Bullet Rewriting",
-      "action": "Transformed 'worked on backend systems' to 'Architected microservices handling 10K+ requests/second using Python and FastAPI'",
+      "problem": "Vague bullet point lacking metrics and specific technologies",
+      "before": "• Worked on backend systems",
+      "after": "• Architected microservices handling 10K+ requests/second using Python and FastAPI",
+      "action": "Transformed weak bullet to achievement-focused format with metrics",
       "impact": 3,
+      "severity": "critical",
       "reason": "Added specific metrics and technologies matching job requirements",
       "section": "experience"
     },
     {
       "category": "Professional Summary",
+      "problem": "Summary missing key terminology from job description",
+      "before": "Backend developer with experience in Python and web applications",
+      "after": "Backend developer specializing in cloud-native development and CI/CD pipelines, with experience in Python and scalable web applications",
       "action": "Added 'cloud-native development' and 'CI/CD pipelines' terminology",
       "impact": 2.5,
+      "severity": "important",
       "reason": "Summary now immediately signals relevant expertise to ATS",
       "section": "summary"
     },
     {
       "category": "Keyword Addition",
+      "problem": "No mention of Agile/Scrum methodologies despite job requirement",
+      "before": "Soft Skills: Team collaboration, Problem solving",
+      "after": "Soft Skills: Team collaboration, Problem solving, Agile, Scrum",
       "action": "Added 'Agile' and 'Scrum' methodologies",
       "impact": 1.5,
+      "severity": "important",
       "reason": "Job posting mentions agile environment",
       "section": "skills"
     },
     {
       "category": "ATS Optimization",
-      "action": "Standardized job titles to match industry conventions",
+      "problem": "Non-standard job title confuses ATS parsing",
+      "before": "Code Writer",
+      "after": "Software Engineer",
+      "action": "Standardized job title to match industry conventions",
       "impact": 1,
+      "severity": "minor",
       "reason": "ATS systems better recognize standard titles",
       "section": "experience"
     }
@@ -404,10 +434,27 @@ EXAMPLE (if total improvement was 12%)
 QUALITY CHECKLIST
 =============================================================================
 □ Sum of all impact values = exactly ${actualDifference}
+□ Each improvement has a clear "problem" description
+□ Before/after examples provided where applicable
+□ Severity matches impact level (≥3: critical, ≥1.5: important, <1.5: minor)
 □ Each improvement references actual changes between CVs
 □ Impact values proportional to importance
 □ Categories and sections from allowed lists
 □ Reasons explain WHY change improves matching
+${fakeItMode ? '□ Problem descriptions acknowledge aggressive keyword addition without real experience' : ''}
+
+${fakeItMode ? `
+=============================================================================
+FAKE IT MODE SPECIFIC GUIDELINES
+=============================================================================
+When describing problems and solutions in Fake It Mode:
+- Problem descriptions should mention "missing keywords despite no real experience"
+- Use phrases like "aggressively added", "strategically placed without verification"
+- Be honest that keywords were added even without candidate experience
+- Example problem: "CV completely missing 'Machine Learning' keywords despite candidate having no ML experience"
+- Example solution: "Added ML keywords throughout skills and experience to match job requirements"
+- Severity should reflect keyword importance to job posting, not candidate's actual experience
+` : ''}
 
 Respond with ONLY the JSON object. Verify math: impacts must sum to ${actualDifference}.`;
 }

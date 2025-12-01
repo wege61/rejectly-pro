@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Contact - Get Resume Optimizer Support | Rejectly.pro",
     description: "Contact Rejectly.pro support team for help with AI resume optimization, billing questions, or feature requests. 24-hour response time.",
-    url: "https://rejectly.pro/contact",
+    url: "https://www.rejectly.pro/contact",
     type: "website",
     images: [
       {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://rejectly.pro/contact",
+    canonical: "https://www.rejectly.pro/contact",
   },
 };
 
@@ -44,8 +44,8 @@ export default function ContactLayout({
     <>
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://rejectly.pro" },
-          { name: "Contact", url: "https://rejectly.pro/contact" },
+          { name: "Home", url: "https://www.rejectly.pro" },
+          { name: "Contact", url: "https://www.rejectly.pro/contact" },
         ]}
       />
       {children}

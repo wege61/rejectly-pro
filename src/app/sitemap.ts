@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://rejectly.pro'
+  const baseUrl = 'https://www.rejectly.pro'
   const currentDate = new Date()
 
   // Static routes with their priorities and change frequencies

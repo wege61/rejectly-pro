@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Pricing - Affordable AI Resume Optimization | Rejectly.pro",
     description: "Simple, transparent pricing for AI resume optimization. Start at $2 for single analysis or get unlimited access for $12/month. No hidden fees.",
-    url: "https://rejectly.pro/pricing",
+    url: "https://www.rejectly.pro/pricing",
     type: "website",
     images: [
       {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://rejectly.pro/pricing",
+    canonical: "https://www.rejectly.pro/pricing",
   },
 };
 
@@ -44,8 +44,8 @@ export default function PricingLayout({
     <>
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://rejectly.pro" },
-          { name: "Pricing", url: "https://rejectly.pro/pricing" },
+          { name: "Home", url: "https://www.rejectly.pro" },
+          { name: "Pricing", url: "https://www.rejectly.pro/pricing" },
         ]}
       />
       {children}

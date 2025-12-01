@@ -5,7 +5,7 @@ import Providers from "@/components/Providers";
 import { OrganizationSchema, WebSiteSchema, ProductSchema, ReviewSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://rejectly.pro'),
+  metadataBase: new URL('https://www.rejectly.pro'),
   title: {
     default: "Rejectly.pro - AI Resume Optimizer | Get 3x More Interviews",
     template: "%s | Rejectly.pro"

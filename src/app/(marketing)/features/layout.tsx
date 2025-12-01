@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Features - GPT-4 Powered Resume Analysis Tools | Rejectly.pro",
     description: "Discover powerful AI resume features: ATS optimization, keyword analysis, professional rewriting, and instant job matching. Try free demo now.",
-    url: "https://rejectly.pro/features",
+    url: "https://www.rejectly.pro/features",
     type: "website",
     images: [
       {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://rejectly.pro/features",
+    canonical: "https://www.rejectly.pro/features",
   },
 };
 
@@ -44,8 +44,8 @@ export default function FeaturesLayout({
     <>
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://rejectly.pro" },
-          { name: "Features", url: "https://rejectly.pro/features" },
+          { name: "Home", url: "https://www.rejectly.pro" },
+          { name: "Features", url: "https://www.rejectly.pro/features" },
         ]}
       />
       {children}

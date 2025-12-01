@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "FAQ - Resume Optimizer Questions Answered | Rejectly.pro",
     description: "Get answers to common questions about AI resume optimization, ATS checkers, pricing, privacy, and features. Complete FAQ guide.",
-    url: "https://rejectly.pro/faq",
+    url: "https://www.rejectly.pro/faq",
     type: "website",
     images: [
       {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://rejectly.pro/faq",
+    canonical: "https://www.rejectly.pro/faq",
   },
 };
 
@@ -44,8 +44,8 @@ export default function FAQLayout({
     <>
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://rejectly.pro" },
-          { name: "FAQ", url: "https://rejectly.pro/faq" },
+          { name: "Home", url: "https://www.rejectly.pro" },
+          { name: "FAQ", url: "https://www.rejectly.pro/faq" },
         ]}
       />
       {children}

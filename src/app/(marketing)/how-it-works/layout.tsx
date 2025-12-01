@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "How It Works - AI Resume Analysis Process | Rejectly.pro",
     description: "Learn how our AI analyzes your resume in 4 simple steps: Upload, get smart recommendations, generate cover letters, and download optimized resume.",
-    url: "https://rejectly.pro/how-it-works",
+    url: "https://www.rejectly.pro/how-it-works",
     type: "website",
     images: [
       {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://rejectly.pro/how-it-works",
+    canonical: "https://www.rejectly.pro/how-it-works",
   },
 };
 
@@ -44,8 +44,8 @@ export default function HowItWorksLayout({
     <>
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://rejectly.pro" },
-          { name: "How It Works", url: "https://rejectly.pro/how-it-works" },
+          { name: "Home", url: "https://www.rejectly.pro" },
+          { name: "How It Works", url: "https://www.rejectly.pro/how-it-works" },
         ]}
       />
       {children}

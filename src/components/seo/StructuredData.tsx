@@ -5,8 +5,8 @@ export function OrganizationSchema() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Rejectly.pro',
-    url: 'https://rejectly.pro',
-    logo: 'https://rejectly.pro/logo.png',
+    url: 'https://www.rejectly.pro',
+    logo: 'https://www.rejectly.pro/logo.png',
     description: 'AI-powered resume optimization platform that helps job seekers get past ATS systems and land more interviews.',
     foundingDate: '2024',
     sameAs: [
@@ -35,13 +35,13 @@ export function WebSiteSchema() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Rejectly.pro',
-    url: 'https://rejectly.pro',
+    url: 'https://www.rejectly.pro',
     description: 'AI-powered resume optimization and ATS checker. Transform your resume and get 3x more interviews.',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://rejectly.pro/?s={search_term_string}',
+        urlTemplate: 'https://www.rejectly.pro/?s={search_term_string}',
       },
       'query-input': 'required name=search_term_string',
     },
@@ -105,7 +105,7 @@ export function ProductSchema() {
       'Keyword Targeting',
       'Resume Rewriting',
     ],
-    screenshot: 'https://rejectly.pro/screenshot.png',
+    screenshot: 'https://www.rejectly.pro/screenshot.png',
   }
 
   return (

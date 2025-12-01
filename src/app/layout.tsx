@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://rejectly.pro",
+    url: "https://www.rejectly.pro",
     siteName: "Rejectly.pro",
     title: "Rejectly.pro - AI Resume Optimizer | Get 3x More Interviews",
     description: "Transform your resume with AI-powered analysis. Beat ATS systems, find perfect job matches, and boost your interview rate by 300%. Free 30-second analysis.",
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
   alternates: {
-    canonical: "https://rejectly.pro",
+    canonical: "https://www.rejectly.pro",
   },
 };
 

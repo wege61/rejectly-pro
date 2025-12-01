@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import StyledComponentsRegistry from "@/lib/registry";
 import Providers from "@/components/Providers";
-import { OrganizationSchema, WebSiteSchema, ProductSchema } from "@/components/seo/StructuredData";
+import { OrganizationSchema, WebSiteSchema, ProductSchema, ReviewSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://rejectly.pro'),
@@ -225,6 +225,7 @@ export default function RootLayout({
         <OrganizationSchema />
         <WebSiteSchema />
         <ProductSchema />
+        <ReviewSchema />
 
         <StyledComponentsRegistry>
           <Providers>{children}</Providers>

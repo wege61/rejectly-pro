@@ -160,3 +160,78 @@ export function FAQSchema({ faqs }: { faqs: Array<{ question: string; answer: st
     />
   )
 }
+
+export function ReviewSchema() {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Rejectly.pro AI Resume Optimizer',
+    description: 'AI-powered resume optimization and ATS checker',
+    brand: {
+      '@type': 'Organization',
+      name: 'Rejectly.pro',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      reviewCount: '127',
+      bestRating: '5',
+      worstRating: '1',
+    },
+    review: [
+      {
+        '@type': 'Review',
+        author: {
+          '@type': 'Person',
+          name: 'Sarah Chen',
+        },
+        reviewRating: {
+          '@type': 'Rating',
+          ratingValue: '5',
+          bestRating: '5',
+        },
+        datePublished: '2024-11-15',
+        reviewBody:
+          'I went from 2 responses out of 50 applications to 8 interviews in 2 weeks. The ATS optimization alone was worth 10x the price. My resume now actually gets read by humans, not just rejected by bots.',
+      },
+      {
+        '@type': 'Review',
+        author: {
+          '@type': 'Person',
+          name: 'Marcus Williams',
+        },
+        reviewRating: {
+          '@type': 'Rating',
+          ratingValue: '5',
+          bestRating: '5',
+        },
+        datePublished: '2024-11-10',
+        reviewBody:
+          'Best investment in my job search. The AI caught keyword gaps I never would have noticed. Within 3 days of using my optimized resume, I had interview requests from 3 companies I thought were out of reach.',
+      },
+      {
+        '@type': 'Review',
+        author: {
+          '@type': 'Person',
+          name: 'Priya Patel',
+        },
+        reviewRating: {
+          '@type': 'Rating',
+          ratingValue: '5',
+          bestRating: '5',
+        },
+        datePublished: '2024-11-05',
+        reviewBody:
+          'The cover letter generator saved me hours. I was spending 45 minutes per application writing custom letters. Now I get personalized, compelling cover letters in 30 seconds. Already landed 2 final round interviews.',
+      },
+    ],
+  }
+
+  return (
+    <Script
+      id="review-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}

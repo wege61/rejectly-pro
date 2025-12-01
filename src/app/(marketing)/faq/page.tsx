@@ -3,6 +3,7 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { Footer } from "@/components/ui/Footer";
+import { FAQSchema } from "@/components/seo/StructuredData";
 
 // ==================== ICONS ====================
 const RocketIcon = () => (
@@ -502,8 +503,17 @@ export default function FAQPage() {
     },
   ];
 
+  // Flatten all FAQs for schema with HTML stripped from answers
+  const allFAQs = faqCategories.flatMap(category =>
+    category.questions.map(faq => ({
+      question: faq.question,
+      answer: faq.answer.replace(/<[^>]*>/g, '') // Strip HTML tags
+    }))
+  );
+
   return (
     <Container>
+      <FAQSchema faqs={allFAQs} />
       <Content>
         <Header>
           <Title>Frequently Asked Questions</Title>

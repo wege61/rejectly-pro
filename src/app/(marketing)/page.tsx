@@ -2015,6 +2015,590 @@ const JobDescription = styled.p`
   margin-bottom: 12px;
 `;
 
+// ==================== PROBLEM-AGITATE SECTION ====================
+const ProblemSection = styled(Section)`
+  background: linear-gradient(
+    135deg,
+    rgba(255, 107, 107, 0.03) 0%,
+    rgba(255, 179, 186, 0.03) 100%
+  );
+  border-top: 1px solid rgba(255, 107, 107, 0.1);
+  border-bottom: 1px solid rgba(255, 107, 107, 0.1);
+`;
+
+const ProblemGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 48px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+`;
+
+const ProblemCard = styled.div`
+  background: var(--bg-alt);
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 32px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #FF6B6B 0%, #FFB3BA 100%);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: ${({ theme }) => theme.shadow.lg};
+    border-color: rgba(255, 107, 107, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
+`;
+
+const ProblemIcon = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  background: linear-gradient(135deg, #FF6B6B 0%, #FFB3BA 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+
+  svg {
+    width: 28px;
+    height: 28px;
+    color: white;
+  }
+`;
+
+const ProblemTitle = styled.h3`
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-color);
+`;
+
+const ProblemDescription = styled.p`
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 15px;
+  margin-bottom: 16px;
+`;
+
+const ProblemAgitation = styled.div`
+  background: rgba(255, 107, 107, 0.1);
+  border-left: 3px solid #FF6B6B;
+  padding: 12px 16px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-color);
+`;
+
+const TransitionBox = styled.div`
+  background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.1) 0%, rgba(var(--accent-rgb), 0.1) 100%);
+  border: 2px solid var(--primary-500);
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 32px;
+  text-align: center;
+  margin-top: 48px;
+
+  h3 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--landing) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  p {
+    font-size: 18px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    padding: 24px;
+
+    h3 {
+      font-size: 22px;
+    }
+
+    p {
+      font-size: 16px;
+    }
+  }
+`;
+
+// ==================== TRANSFORMATION SECTION ====================
+const TransformationSection = styled(Section)`
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(var(--primary-500-rgb), 0.03) 50%,
+    transparent 100%
+  );
+`;
+
+const TransformationTimeline = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+`;
+
+const TransformationStage = styled.div<{ $index: number }>`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @media (min-width: 768px) {
+    flex-direction: ${({ $index }) => ($index % 2 === 0 ? 'row' : 'row-reverse')};
+    align-items: center;
+  }
+`;
+
+const TransformationContent = styled.div`
+  flex: 1;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 32px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: var(--primary-500);
+    transform: translateY(-4px);
+    box-shadow: ${({ theme }) => theme.shadow.lg};
+  }
+
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
+`;
+
+const TransformationBadge = styled.div<{ $color: string }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: ${({ $color }) => $color};
+  color: white;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 16px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const TransformationTitle = styled.h3`
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: var(--text-color);
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+`;
+
+const TransformationDescription = styled.p`
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 16px;
+  margin-bottom: 16px;
+`;
+
+const TransformationMetrics = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+`;
+
+const TransformationMetric = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(var(--success-rgb), 0.1);
+  border: 1px solid var(--success);
+  color: var(--success);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 14px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const TransformationIcon = styled.div`
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--accent) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  box-shadow: 0 8px 24px rgba(var(--primary-500-rgb), 0.3);
+
+  svg {
+    width: 40px;
+    height: 40px;
+    color: white;
+  }
+
+  @media (min-width: 768px) {
+    margin: 0 32px;
+  }
+
+  @media (max-width: 768px) {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+`;
+
+// ==================== VALUE STACK (Enhanced Pricing) ====================
+const ValueStackHeader = styled.div`
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.05) 0%, rgba(var(--primary-500-rgb), 0.05) 100%);
+  border: 1px solid var(--primary-500);
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 32px;
+  margin-bottom: 48px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
+`;
+
+const ValueStackTitle = styled.h3`
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: var(--text-color);
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+`;
+
+const ValueStackList = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+  text-align: left;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`;
+
+const ValueStackItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  border-radius: ${({ theme }) => theme.radius.md};
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: var(--success);
+    flex-shrink: 0;
+  }
+`;
+
+const ValueStackItemText = styled.div`
+  flex: 1;
+
+  .feature-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 4px;
+  }
+
+  .feature-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+`;
+
+const ValueStackTotal = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.1) 0%, rgba(var(--primary-500-rgb), 0.1) 100%);
+  border: 2px solid var(--accent);
+  border-radius: ${({ theme }) => theme.radius.lg};
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+`;
+
+const ValueStackTotalItem = styled.div<{ $emphasized?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  .amount {
+    font-size: ${({ $emphasized }) => ($emphasized ? '48px' : '32px')};
+    font-weight: 900;
+    color: ${({ $emphasized }) => ($emphasized ? 'var(--accent)' : 'var(--text-color)')};
+    line-height: 1;
+
+    ${({ $emphasized }) =>
+      $emphasized &&
+      `
+      background: linear-gradient(135deg, var(--landing) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    `}
+
+    span {
+      font-size: 24px;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 640px) {
+      font-size: ${({ $emphasized }) => ($emphasized ? '40px' : '28px')};
+    }
+  }
+
+  .savings {
+    font-size: 16px;
+    color: var(--success);
+    font-weight: 700;
+  }
+`;
+
+// ==================== SECONDARY CTA SECTION ====================
+const SecondaryCTASection = styled(Section)`
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-rgb), 0.05) 0%,
+    rgba(var(--primary-500-rgb), 0.05) 100%
+  );
+  border-top: 1px solid var(--primary-500);
+  border-bottom: 1px solid var(--primary-500);
+`;
+
+const SecondaryCTACard = styled.div`
+  background: var(--bg-alt);
+  border: 2px solid var(--accent);
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 64px 48px;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: 0 20px 60px rgba(var(--accent-rgb), 0.15);
+
+  @media (max-width: 768px) {
+    padding: 40px 24px;
+  }
+`;
+
+const SecondaryCTAAvatarStack = styled(AvatarStack)`
+  justify-content: center;
+  margin-bottom: 24px;
+`;
+
+const SecondaryCTATitle = styled.h2`
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: var(--text-color);
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+`;
+
+const SecondaryCTASubtitle = styled.p`
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  line-height: 1.6;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
+const SecondaryCTAButton = styled(PrimaryButton)`
+  font-size: 20px;
+  padding: 20px 48px;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+    padding: 18px 36px;
+    width: 100%;
+  }
+`;
+
+const SecondaryCTAFeatures = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    gap: 16px;
+  }
+`;
+
+const SecondaryCTAFeature = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 14px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    color: var(--success);
+  }
+`;
+
+// ==================== SUCCESS SECTION (Conditional) ====================
+const SuccessSection = styled.div`
+  background: linear-gradient(135deg, rgba(var(--success-rgb), 0.1) 0%, rgba(var(--primary-500-rgb), 0.1) 100%);
+  border: 2px solid var(--success);
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 40px;
+  margin: 32px auto;
+  max-width: 700px;
+  text-align: center;
+  animation: ${fadeIn} 0.6s ease-out;
+
+  @media (max-width: 768px) {
+    padding: 24px;
+    margin: 24px 16px;
+  }
+`;
+
+const SuccessIcon = styled.div`
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  animation: ${pulse} 2s infinite;
+
+  svg {
+    width: 48px;
+    height: 48px;
+    color: white;
+  }
+`;
+
+const SuccessTitle = styled.h2`
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: var(--text-color);
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
+`;
+
+const SuccessSubtitle = styled.p`
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  line-height: 1.6;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
+const SuccessDeliverables = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+  margin-bottom: 32px;
+`;
+
+const SuccessDeliverable = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: 16px;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: var(--success);
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 16px;
+    color: var(--text-color);
+    font-weight: 500;
+  }
+`;
+
 // ==================== MAIN COMPONENT ====================
 export default function Page() {
   const [step, setStep] = useState<"upload" | "loading" | "analyzing">(
@@ -2292,6 +2876,78 @@ export default function Page() {
           </SocialProof>
         </HeroContent>
       </HeroSection>
+
+      <Divider />
+
+      {/* PROBLEM-AGITATE SECTION */}
+      <ProblemSection>
+        <SectionHeader>
+          <SectionTitle>Why Your Applications Keep Getting Rejected</SectionTitle>
+          <SectionSubtitle>
+            The brutal truth about modern job hunting that nobody tells you
+          </SectionSubtitle>
+        </SectionHeader>
+
+        <ProblemGrid>
+          <ProblemCard>
+            <ProblemIcon>
+              <XIcon />
+            </ProblemIcon>
+            <ProblemTitle>ATS Robots Kill Your Resume Before Human Eyes See It</ProblemTitle>
+            <ProblemDescription>
+              98% of Fortune 500 companies use Applicant Tracking Systems that automatically
+              filter resumes. Your perfectly crafted CV gets rejected in 7.4 seconds by
+              algorithms that can't parse your format or find the right keywords.
+            </ProblemDescription>
+            <ProblemAgitation>
+              "You could be the perfect candidate, but if the ATS can't read your resume,
+              you're invisible. It's like showing up to an interview in the wrong language."
+            </ProblemAgitation>
+          </ProblemCard>
+
+          <ProblemCard>
+            <ProblemIcon>
+              <TargetIcon />
+            </ProblemIcon>
+            <ProblemTitle>You're Applying to Jobs You'll Never Get</ProblemTitle>
+            <ProblemDescription>
+              Without AI analysis, you can't see the 30-40% skills gap between your resume
+              and the job posting. You waste hours applying to positions where you have zero
+              chance, while missing roles you'd actually excel at.
+            </ProblemDescription>
+            <ProblemAgitation>
+              "Sent 150 applications. Got 4 responses. The problem isn't you—it's your
+              targeting. Every bad-fit application is time stolen from finding your dream job."
+            </ProblemAgitation>
+          </ProblemCard>
+
+          <ProblemCard>
+            <ProblemIcon>
+              <RobotIcon />
+            </ProblemIcon>
+            <ProblemTitle>Your Resume Speaks Human, But Hiring is Done by Machines</ProblemTitle>
+            <ProblemDescription>
+              What impresses humans (creative formatting, personality, storytelling) confuses
+              ATS systems. Your resume needs to be bilingual: machine-readable for ATS,
+              compelling for humans. Most resumes fail at both.
+            </ProblemDescription>
+            <ProblemAgitation>
+              "Your skills are real. Your experience is solid. But if your resume doesn't
+              speak 'ATS language' with the exact keywords recruiters search for, you're
+              screaming into a void."
+            </ProblemAgitation>
+          </ProblemCard>
+        </ProblemGrid>
+
+        <TransitionBox>
+          <h3>If This Sounds Familiar, You're in the Right Place</h3>
+          <p>
+            Every day you wait is another day of wasted applications. Rejectly.pro uses
+            GPT-4 to transform your resume from "auto-rejected" to "interview-ready" in
+            30 seconds. Stop guessing. Start getting interviews.
+          </p>
+        </TransitionBox>
+      </ProblemSection>
 
       <Divider />
 
@@ -2725,6 +3381,156 @@ export default function Page() {
 
       <Divider />
 
+      {/* TRANSFORMATION SECTION */}
+      <TransformationSection>
+        <SectionHeader>
+          <SectionTitle>Your Career Transformation Journey</SectionTitle>
+          <SectionSubtitle>
+            From "auto-rejected" to "dream job offer" in 4 proven stages
+          </SectionSubtitle>
+        </SectionHeader>
+
+        <TransformationTimeline>
+          {/* Stage 1: Quick Win */}
+          <TransformationStage $index={0}>
+            <TransformationContent>
+              <TransformationBadge $color="#10B981">
+                <ZapIcon />
+                Day 1 - Quick Win
+              </TransformationBadge>
+              <TransformationTitle>Your First Optimized Resume Goes Live</TransformationTitle>
+              <TransformationDescription>
+                Get instant AI analysis revealing exactly why your resume was failing. Within
+                15 minutes, you'll have an ATS-optimized version with the right keywords,
+                format, and compelling bullet points that actually get read.
+              </TransformationDescription>
+              <TransformationMetrics>
+                <TransformationMetric>
+                  <CheckIcon />
+                  +85% ATS pass rate
+                </TransformationMetric>
+                <TransformationMetric>
+                  <CheckIcon />
+                  Ready in 15 minutes
+                </TransformationMetric>
+                <TransformationMetric>
+                  <CheckIcon />
+                  15+ keyword gaps fixed
+                </TransformationMetric>
+              </TransformationMetrics>
+            </TransformationContent>
+            <TransformationIcon>
+              <ZapIcon />
+            </TransformationIcon>
+          </TransformationStage>
+
+          {/* Stage 2: Compound */}
+          <TransformationStage $index={1}>
+            <TransformationContent>
+              <TransformationBadge $color="#F59E0B">
+                <RefreshIcon />
+                Week 1 - Compound Effect
+              </TransformationBadge>
+              <TransformationTitle>3x More Interview Invitations Start Rolling In</TransformationTitle>
+              <TransformationDescription>
+                Your optimized resume cuts through the ATS noise. Recruiters actually read it
+                and reach out. Every application now targets roles where you have 70%+ skill
+                match, tripling your response rate from 2% to 7-10%.
+              </TransformationDescription>
+              <TransformationMetrics>
+                <TransformationMetric>
+                  <CheckIcon />
+                  5-8 interview requests
+                </TransformationMetric>
+                <TransformationMetric>
+                  <CheckIcon />
+                  +300% response rate
+                </TransformationMetric>
+                <TransformationMetric>
+                  <CheckIcon />
+                  Better-fit positions
+                </TransformationMetric>
+              </TransformationMetrics>
+            </TransformationContent>
+            <TransformationIcon>
+              <RefreshIcon />
+            </TransformationIcon>
+          </TransformationStage>
+
+          {/* Stage 3: Advantage */}
+          <TransformationStage $index={2}>
+            <TransformationContent>
+              <TransformationBadge $color="#8B5CF6">
+                <BriefcaseIcon />
+                Month 1 - Competitive Advantage
+              </TransformationBadge>
+              <TransformationTitle>Multiple Offers, Better Leverage</TransformationTitle>
+              <TransformationDescription>
+                Because you're targeting the right roles, your interviews convert at higher
+                rates. You get 2-3 competing offers, giving you negotiation power. One of
+                them is your dream company—and they want you.
+              </TransformationDescription>
+              <TransformationMetrics>
+                <TransformationMetric>
+                  <CheckIcon />
+                  2-3 job offers
+                </TransformationMetric>
+                <TransformationMetric>
+                  <CheckIcon />
+                  15-25% salary boost
+                </TransformationMetric>
+                <TransformationMetric>
+                  <CheckIcon />
+                  Dream company YES
+                </TransformationMetric>
+              </TransformationMetrics>
+            </TransformationContent>
+            <TransformationIcon>
+              <BriefcaseIcon />
+            </TransformationIcon>
+          </TransformationStage>
+
+          {/* Stage 4: 10x */}
+          <TransformationStage $index={3}>
+            <TransformationContent>
+              <TransformationBadge $color="#EF4444">
+                <SparklesIcon />
+                Year 1 - 10x Career Momentum
+              </TransformationBadge>
+              <TransformationTitle>Your Career Trajectory Changes Forever</TransformationTitle>
+              <TransformationDescription>
+                You're thriving at your new job. The confidence from landing it carries over
+                into faster promotions. You know how to position yourself for any opportunity.
+                Your network grows. Your earning power compounds year over year.
+              </TransformationDescription>
+              <TransformationMetrics>
+                <TransformationMetric>
+                  <CheckIcon />
+                  +40-60% total comp
+                </TransformationMetric>
+                <TransformationMetric>
+                  <CheckIcon />
+                  Promotion-ready profile
+                </TransformationMetric>
+                <TransformationMetric>
+                  <CheckIcon />
+                  Career confidence
+                </TransformationMetric>
+                <TransformationMetric>
+                  <CheckIcon />
+                  Industry reputation
+                </TransformationMetric>
+              </TransformationMetrics>
+            </TransformationContent>
+            <TransformationIcon>
+              <SparklesIcon />
+            </TransformationIcon>
+          </TransformationStage>
+        </TransformationTimeline>
+      </TransformationSection>
+
+      <Divider />
+
       {/* TESTIMONIALS - WHAT OUR USERS SAY */}
       <Section id="testimonials">
         <SectionHeader>
@@ -2836,6 +3642,52 @@ export default function Page() {
             Affordable plans to help you succeed
           </SectionSubtitle>
         </SectionHeader>
+
+        {/* VALUE STACK */}
+        <ValueStackHeader>
+          <ValueStackTitle>Everything You Get in Each Analysis</ValueStackTitle>
+          <ValueStackList>
+            <ValueStackItem>
+              <CheckIcon />
+              <ValueStackItemText>
+                <div className="feature-name">Professional Resume Writer</div>
+                <div className="feature-value">$75 per resume</div>
+              </ValueStackItemText>
+            </ValueStackItem>
+            <ValueStackItem>
+              <CheckIcon />
+              <ValueStackItemText>
+                <div className="feature-name">Career Coach Consultation</div>
+                <div className="feature-value">$120/hour</div>
+              </ValueStackItemText>
+            </ValueStackItem>
+            <ValueStackItem>
+              <CheckIcon />
+              <ValueStackItemText>
+                <div className="feature-name">ATS Optimization Service</div>
+                <div className="feature-value">$45 per resume</div>
+              </ValueStackItemText>
+            </ValueStackItem>
+            <ValueStackItem>
+              <CheckIcon />
+              <ValueStackItemText>
+                <div className="feature-name">Custom Cover Letter</div>
+                <div className="feature-value">$35 per letter</div>
+              </ValueStackItemText>
+            </ValueStackItem>
+          </ValueStackList>
+          <ValueStackTotal>
+            <ValueStackTotalItem>
+              <div className="label">If You Hired Humans</div>
+              <div className="amount">$275<span>+</span></div>
+            </ValueStackTotalItem>
+            <ValueStackTotalItem $emphasized>
+              <div className="label">With Rejectly.pro</div>
+              <div className="amount">$2</div>
+              <div className="savings">Save 99% • AI does it in 30 seconds</div>
+            </ValueStackTotalItem>
+          </ValueStackTotal>
+        </ValueStackHeader>
 
         <PricingGrid>
           {/* Single Plan */}
@@ -2982,6 +3834,56 @@ export default function Page() {
           </FAQButton>
         </FAQButtonContainer>
       </Section>
+
+      <Divider />
+
+      {/* SECONDARY CTA SECTION */}
+      <SecondaryCTASection>
+        <SecondaryCTACard>
+          <SecondaryCTAAvatarStack>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://i.pravatar.cc/150?img=1" alt="User 1" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://i.pravatar.cc/150?img=2" alt="User 2" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://i.pravatar.cc/150?img=3" alt="User 3" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://i.pravatar.cc/150?img=4" alt="User 4" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://i.pravatar.cc/150?img=5" alt="User 5" />
+          </SecondaryCTAAvatarStack>
+
+          <SecondaryCTATitle>
+            Still Deciding? Every Day You Wait is Another Day of Rejections.
+          </SecondaryCTATitle>
+
+          <SecondaryCTASubtitle>
+            Join 500+ professionals who transformed their job search with Rejectly.pro.
+            Stop wasting hours on applications that go nowhere. Start getting interviews
+            within 7 days—or your money back.
+          </SecondaryCTASubtitle>
+
+          <SecondaryCTAButton href={ROUTES.AUTH.SIGNUP}>
+            <RocketIcon />
+            Yes, I Want to Fix My Resume Now
+          </SecondaryCTAButton>
+
+          <SecondaryCTAFeatures>
+            <SecondaryCTAFeature>
+              <CheckIcon />
+              No credit card required
+            </SecondaryCTAFeature>
+            <SecondaryCTAFeature>
+              <CheckIcon />
+              Results in 30 seconds
+            </SecondaryCTAFeature>
+            <SecondaryCTAFeature>
+              <CheckIcon />
+              Cancel anytime, no questions
+            </SecondaryCTAFeature>
+          </SecondaryCTAFeatures>
+        </SecondaryCTACard>
+      </SecondaryCTASection>
 
       <Divider />
 

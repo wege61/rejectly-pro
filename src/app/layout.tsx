@@ -2,23 +2,81 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import StyledComponentsRegistry from "@/lib/registry";
 import Providers from "@/components/Providers";
+import { OrganizationSchema, WebSiteSchema, ProductSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "Rejectly.pro - AI-Powered Resume Analysis | Why Was I Rejected?",
+  metadataBase: new URL('https://rejectly.pro'),
+  title: {
+    default: "Rejectly.pro - AI Resume Optimizer | Get 3x More Interviews",
+    template: "%s | Rejectly.pro"
+  },
   description:
-    "Get instant AI-powered insights on why your resume didn't match the job. Improve your applications with data-driven analysis. Free demo available!",
+    "Transform your resume with AI. Get past ATS systems, find your perfect job match, and land 3x more interviews. Free analysis in 30 seconds. Used by 500+ professionals.",
   keywords: [
-    "Resume analysis",
-    "job matching",
-    "AI career coach",
-    "resume optimizer",
-    "ATS checker",
+    "AI resume optimizer",
+    "ATS resume checker",
+    "resume analysis",
+    "job matching AI",
+    "career coach",
+    "resume improvement",
+    "ATS optimization",
+    "resume keywords",
+    "job application success",
+    "interview rate boost",
+    "GPT-4 resume",
+    "professional resume",
   ],
-  authors: [{ name: "Rejectly.pro" }],
+  authors: [{ name: "Rejectly.pro", url: "https://rejectly.pro" }],
+  creator: "Rejectly.pro",
+  publisher: "Rejectly.pro",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
-    title: "Rejectly.pro - Why Was I Rejected?",
-    description: "AI-powered resume & job posting match analysis",
     type: "website",
+    locale: "en_US",
+    url: "https://rejectly.pro",
+    siteName: "Rejectly.pro",
+    title: "Rejectly.pro - AI Resume Optimizer | Get 3x More Interviews",
+    description: "Transform your resume with AI-powered analysis. Beat ATS systems, find perfect job matches, and boost your interview rate by 300%. Free 30-second analysis.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Rejectly.pro - AI-Powered Resume Optimization",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@rejectlypro",
+    creator: "@rejectlypro",
+    title: "Rejectly.pro - AI Resume Optimizer | Get 3x More Interviews",
+    description: "Transform your resume with AI. Beat ATS systems and land 3x more interviews in 7 days.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
+  alternates: {
+    canonical: "https://rejectly.pro",
   },
 };
 
@@ -28,7 +86,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -162,6 +220,11 @@ export default function RootLayout({
             gtag('config', 'G-8P38Q6H1DG');
           `}
         </Script>
+
+        {/* Structured Data (JSON-LD) */}
+        <OrganizationSchema />
+        <WebSiteSchema />
+        <ProductSchema />
 
         <StyledComponentsRegistry>
           <Providers>{children}</Providers>

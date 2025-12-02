@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
+    "postbuild": "npm run verify-sitemap",
+    "verify-sitemap": "test -f .next/server/app/sitemap.xml.body && echo '✓ Sitemap generated successfully' || echo '✗ Sitemap generation failed'",
     "start": "next start",
     "lint": "eslint"
   },

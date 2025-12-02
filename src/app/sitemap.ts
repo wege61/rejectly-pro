@@ -2,38 +2,45 @@ import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.rejectly.pro'
-  const currentDate = new Date()
+
+  // Use ISO string format for better compatibility
+  const now = new Date().toISOString()
+
+  // Different dates for different update frequencies
+  const today = new Date()
+  const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+  const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
   // Static routes with their priorities and change frequencies
-  const routes = [
+  const routes: MetadataRoute.Sitemap = [
     // High priority pages (landing, core features)
     {
       url: baseUrl,
-      lastModified: currentDate,
+      lastModified: now,
       changeFrequency: 'daily' as const,
       priority: 1.0,
     },
     {
       url: `${baseUrl}/pricing`,
-      lastModified: currentDate,
+      lastModified: lastWeek,
       changeFrequency: 'weekly' as const,
       priority: 0.9,
     },
     {
       url: `${baseUrl}/how-it-works`,
-      lastModified: currentDate,
+      lastModified: lastMonth,
       changeFrequency: 'monthly' as const,
       priority: 0.8,
     },
     {
       url: `${baseUrl}/features`,
-      lastModified: currentDate,
+      lastModified: lastMonth,
       changeFrequency: 'monthly' as const,
       priority: 0.8,
     },
     {
       url: `${baseUrl}/faq`,
-      lastModified: currentDate,
+      lastModified: lastMonth,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     },
@@ -41,13 +48,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Auth pages (lower priority, but still indexed)
     {
       url: `${baseUrl}/signup`,
-      lastModified: currentDate,
+      lastModified: lastMonth,
       changeFrequency: 'yearly' as const,
       priority: 0.6,
     },
     {
       url: `${baseUrl}/login`,
-      lastModified: currentDate,
+      lastModified: lastMonth,
       changeFrequency: 'yearly' as const,
       priority: 0.5,
     },
@@ -55,13 +62,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Informational pages
     {
       url: `${baseUrl}/about`,
-      lastModified: currentDate,
+      lastModified: lastMonth,
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     },
     {
       url: `${baseUrl}/contact`,
-      lastModified: currentDate,
+      lastModified: lastMonth,
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     },
@@ -69,13 +76,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Legal pages
     {
       url: `${baseUrl}/terms`,
-      lastModified: currentDate,
+      lastModified: lastMonth,
       changeFrequency: 'yearly' as const,
       priority: 0.3,
     },
     {
       url: `${baseUrl}/privacy`,
-      lastModified: currentDate,
+      lastModified: lastMonth,
       changeFrequency: 'yearly' as const,
       priority: 0.3,
     },

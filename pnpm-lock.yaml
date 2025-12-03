@@ -47,6 +47,9 @@ importers:
       styled-components:
         specifier: ^6.1.19
         version: 6.1.19(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      web-vitals:
+        specifier: ^5.1.0
+        version: 5.1.0
       xml2js:
         specifier: ^0.6.2
         version: 0.6.2
@@ -1664,7 +1667,6 @@ packages:
     resolution: {integrity: sha512-WkezNsLK8sGpuFC7+PPP0DsXROwdoOxmXPBTtUWWkCwCi/Vi97MRC52Ly6FWIJjOKIywpm/L2oaUgSrmtU+7ZQ==}
     engines: {node: '>=20.18.0'}
     hasBin: true
-    bundledDependencies: []
 
   performance-now@2.1.0:
     resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==}
@@ -2012,6 +2014,9 @@ packages:
 
   utrie@1.0.2:
     resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
+
+  web-vitals@5.1.0:
+    resolution: {integrity: sha512-ArI3kx5jI0atlTtmV0fWU3fjpLmq/nD3Zr1iFFlJLaqa5wLBkUSzINwBPySCX/8jRyjlmy1Volw1kz1g9XE4Jg==}
 
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
@@ -4316,6 +4321,8 @@ snapshots:
     dependencies:
       base64-arraybuffer: 1.0.2
     optional: true
+
+  web-vitals@5.1.0: {}
 
   webidl-conversions@3.0.1: {}
 

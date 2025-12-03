@@ -482,6 +482,69 @@ export default function HowItWorksPage() {
           { name: 'How It Works', url: 'https://www.rejectly.pro/how-it-works' }
         ]}
       />
+      {/* HowTo Schema */}
+      <script
+        id="howto-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'HowTo',
+            name: 'How to Optimize Your Resume with Rejectly.pro',
+            description: 'Step-by-step guide to transform your resume and get 3x more interviews using AI-powered optimization',
+            totalTime: 'PT2M',
+            estimatedCost: {
+              '@type': 'MonetaryAmount',
+              currency: 'USD',
+              value: '2.00',
+            },
+            step: [
+              {
+                '@type': 'HowToStep',
+                position: 1,
+                name: 'Upload Your Resume',
+                text: 'Upload your current resume in PDF or DOCX format, or paste your resume text directly. Our AI can parse any format.',
+                url: 'https://www.rejectly.pro/how-it-works#step-1',
+                image: 'https://www.rejectly.pro/og-image.png',
+              },
+              {
+                '@type': 'HowToStep',
+                position: 2,
+                name: 'Paste Job Description',
+                text: 'Copy and paste the job description for the position you want to apply to. Our AI will analyze the match between your resume and the job requirements.',
+                url: 'https://www.rejectly.pro/how-it-works#step-2',
+                image: 'https://www.rejectly.pro/og-image.png',
+              },
+              {
+                '@type': 'HowToStep',
+                position: 3,
+                name: 'AI Analysis & Insights',
+                text: 'Our GPT-4 powered AI analyzes your resume in 15-30 seconds, identifying gaps, ATS compatibility issues, and providing actionable recommendations.',
+                url: 'https://www.rejectly.pro/how-it-works#step-3',
+                image: 'https://www.rejectly.pro/og-image.png',
+              },
+              {
+                '@type': 'HowToStep',
+                position: 4,
+                name: 'Get Optimized Resume',
+                text: 'Download your AI-optimized resume with improved keywords, rewritten bullet points, and ATS-friendly formatting. Start applying and get 3x more interviews.',
+                url: 'https://www.rejectly.pro/how-it-works#step-4',
+                image: 'https://www.rejectly.pro/og-image.png',
+              },
+            ],
+            tool: [
+              {
+                '@type': 'HowToTool',
+                name: 'Resume (PDF or DOCX)',
+              },
+              {
+                '@type': 'HowToTool',
+                name: 'Job Description',
+              },
+            ],
+          })
+        }}
+      />
       <Container>
         <HeroSection>
           <HeroTitle>Transform Your Job Search</HeroTitle>

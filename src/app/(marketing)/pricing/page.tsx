@@ -482,6 +482,67 @@ export default function PricingPage() {
           { name: 'Pricing', url: 'https://www.rejectly.pro/pricing' }
         ]}
       />
+      {/* Pricing Offers Schema */}
+      <script
+        id="pricing-offers-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: 'Rejectly.pro Resume Optimizer',
+            description: 'AI-powered resume optimization and ATS checker with multiple pricing options',
+            offers: [
+              {
+                '@type': 'Offer',
+                name: 'Single Analysis',
+                description: 'One-time resume analysis with AI optimization',
+                price: '2.00',
+                priceCurrency: 'USD',
+                availability: 'https://schema.org/InStock',
+                url: 'https://www.rejectly.pro/pricing',
+                priceValidUntil: '2025-12-31',
+                itemOffered: {
+                  '@type': 'Service',
+                  name: 'AI Resume Analysis',
+                  serviceType: 'Resume Optimization',
+                },
+              },
+              {
+                '@type': 'Offer',
+                name: 'Starter Pack',
+                description: '10 resume analysis credits - Best value at $0.70 per analysis',
+                price: '7.00',
+                priceCurrency: 'USD',
+                availability: 'https://schema.org/InStock',
+                url: 'https://www.rejectly.pro/pricing',
+                priceValidUntil: '2025-12-31',
+                itemOffered: {
+                  '@type': 'Service',
+                  name: '10 AI Resume Analyses',
+                  serviceType: 'Resume Optimization Package',
+                },
+              },
+              {
+                '@type': 'Offer',
+                name: 'Pro Monthly',
+                description: 'Unlimited resume analyses and premium features',
+                price: '12.00',
+                priceCurrency: 'USD',
+                availability: 'https://schema.org/InStock',
+                url: 'https://www.rejectly.pro/pricing',
+                priceValidUntil: '2025-12-31',
+                billingDuration: 'P1M',
+                itemOffered: {
+                  '@type': 'Service',
+                  name: 'Unlimited AI Resume Analyses',
+                  serviceType: 'Premium Resume Optimization',
+                },
+              },
+            ],
+          })
+        }}
+      />
       <Container>
         <Content>
           <Header>

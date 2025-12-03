@@ -340,6 +340,52 @@ export default function ContactPage() {
           { name: 'Contact', url: 'https://www.rejectly.pro/contact' }
         ]}
       />
+      {/* ContactPage Schema */}
+      <script
+        id="contact-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'ContactPage',
+            name: 'Contact Rejectly.pro',
+            description: 'Get in touch with Rejectly.pro support team. We respond within 24 hours.',
+            url: 'https://www.rejectly.pro/contact',
+            mainEntity: {
+              '@type': 'Organization',
+              name: 'Rejectly.pro',
+              url: 'https://www.rejectly.pro',
+              contactPoint: [
+                {
+                  '@type': 'ContactPoint',
+                  contactType: 'Customer Support',
+                  email: 'support@rejectly.pro',
+                  availableLanguage: ['English', 'Turkish'],
+                  areaServed: 'Worldwide',
+                },
+                {
+                  '@type': 'ContactPoint',
+                  contactType: 'Sales',
+                  email: 'enterprise@rejectly.pro',
+                  availableLanguage: ['English'],
+                  areaServed: 'Worldwide',
+                },
+                {
+                  '@type': 'ContactPoint',
+                  contactType: 'Feedback',
+                  email: 'feedback@rejectly.pro',
+                  availableLanguage: ['English', 'Turkish'],
+                  areaServed: 'Worldwide',
+                },
+              ],
+              sameAs: [
+                'https://twitter.com/rejectlypro',
+                'https://linkedin.com/company/rejectlypro',
+              ],
+            },
+          })
+        }}
+      />
       <Container>
         <Content>
           <Header>

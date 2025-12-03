@@ -3,7 +3,6 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { Footer } from "@/components/ui/Footer";
-import { FAQSchema } from "@/components/seo/StructuredData";
 
 // ==================== ICONS ====================
 const RocketIcon = () => (
@@ -513,7 +512,24 @@ export default function FAQPage() {
 
   return (
     <Container>
-      <FAQSchema faqs={allFAQs} />
+      <script
+        id="faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: allFAQs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.question,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer,
+              },
+            })),
+          })
+        }}
+      />
       <Content>
         <Header>
           <Title>Frequently Asked Questions</Title>

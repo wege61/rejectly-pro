@@ -27,7 +27,6 @@ const nextConfig = {
     styledComponents: true,
   },
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: ['lucide-react', 'styled-components'],
   },
   poweredByHeader: false,

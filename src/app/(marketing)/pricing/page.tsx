@@ -492,6 +492,11 @@ export default function PricingPage() {
             '@type': 'Product',
             name: 'Rejectly.pro Resume Optimizer',
             description: 'AI-powered resume optimization and ATS checker with multiple pricing options',
+            image: 'https://www.rejectly.pro/logo.png',
+            brand: {
+              '@type': 'Brand',
+              name: 'Rejectly.pro',
+            },
             offers: [
               {
                 '@type': 'Offer',

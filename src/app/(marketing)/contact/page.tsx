@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Footer } from "@/components/ui/Footer";
 import { useState } from "react";
 import { Mail, Zap, BookOpen } from "lucide-react";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -332,10 +333,17 @@ export default function ContactPage() {
   };
 
   return (
-    <Container>
-      <Content>
-        <Header>
-          <Title>Get in Touch</Title>
+    <>
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: 'https://www.rejectly.pro' },
+          { name: 'Contact', url: 'https://www.rejectly.pro/contact' }
+        ]}
+      />
+      <Container>
+        <Content>
+          <Header>
+            <Title>Get in Touch</Title>
           <Subtitle>
             Have a question or feedback? We'd love to hear from you. Send us a message
             and we'll respond as soon as possible.
@@ -467,5 +475,6 @@ export default function ContactPage() {
       </Content>
       <Footer />
     </Container>
+    </>
   );
 }

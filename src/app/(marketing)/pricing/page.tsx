@@ -5,6 +5,7 @@ import { Footer } from "@/components/ui/Footer";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -474,10 +475,17 @@ export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <Container>
-      <Content>
-        <Header>
-          <Title>Simple, Transparent Pricing</Title>
+    <>
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: 'https://www.rejectly.pro' },
+          { name: 'Pricing', url: 'https://www.rejectly.pro/pricing' }
+        ]}
+      />
+      <Container>
+        <Content>
+          <Header>
+            <Title>Simple, Transparent Pricing</Title>
           <Subtitle>
             Pay per analysis or subscribe for unlimited access. No hidden fees.
           </Subtitle>
@@ -764,5 +772,6 @@ export default function PricingPage() {
       </Content>
       <Footer />
     </Container>
+    </>
   );
 }

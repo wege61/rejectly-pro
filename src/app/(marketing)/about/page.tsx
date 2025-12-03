@@ -5,6 +5,7 @@ import { Footer } from "@/components/ui/Footer";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 // ==================== ICONS ====================
 const TargetIcon = () => (
@@ -469,10 +470,17 @@ export default function AboutPage() {
   const router = useRouter();
 
   return (
-    <Container>
-      <Content>
-        <Header>
-          <Title>About Rejectly.pro</Title>
+    <>
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: 'https://www.rejectly.pro' },
+          { name: 'About', url: 'https://www.rejectly.pro/about' }
+        ]}
+      />
+      <Container>
+        <Content>
+          <Header>
+            <Title>About Rejectly.pro</Title>
           <Subtitle>
             Empowering job seekers with AI-driven insights to land their dream careers
           </Subtitle>
@@ -656,5 +664,6 @@ export default function AboutPage() {
       </Content>
       <Footer />
     </Container>
+    </>
   );
 }

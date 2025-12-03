@@ -1,6 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
+import { BreadcrumbSchema } from '@/components/seo/StructuredData';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -16,11 +17,19 @@ const Title = styled.h1`
 
 export default function FeaturesPage() {
   return (
-    <Container>
-      <Title>Features</Title>
-      <p style={{ textAlign: 'center', color: '#6b7280' }}>
-        Features page coming soon...
-      </p>
-    </Container>
+    <>
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: 'https://www.rejectly.pro' },
+          { name: 'Features', url: 'https://www.rejectly.pro/features' }
+        ]}
+      />
+      <Container>
+        <Title>Features</Title>
+        <p style={{ textAlign: 'center', color: '#6b7280' }}>
+          Features page coming soon...
+        </p>
+      </Container>
+    </>
   );
 }

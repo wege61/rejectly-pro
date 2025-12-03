@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Footer } from "@/components/ui/Footer";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 // ==================== ICONS ====================
 const UploadIcon = () => (
@@ -474,9 +475,16 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <Container>
-      <HeroSection>
-        <HeroTitle>Transform Your Job Search</HeroTitle>
+    <>
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: 'https://www.rejectly.pro' },
+          { name: 'How It Works', url: 'https://www.rejectly.pro/how-it-works' }
+        ]}
+      />
+      <Container>
+        <HeroSection>
+          <HeroTitle>Transform Your Job Search</HeroTitle>
         <HeroSubtitle>
           From resume upload to your dream job in 4 simple steps. Our AI-powered
           platform helps you create resumes that get noticed.
@@ -620,5 +628,6 @@ export default function HowItWorksPage() {
 
       <Footer />
     </Container>
+    </>
   );
 }

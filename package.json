@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "postbuild": "npm run verify-sitemap",
-    "verify-sitemap": "test -f public/sitemap.xml && echo '✓ Static sitemap exists' || echo '✗ Sitemap not found'",
+    "postbuild": "echo '✓ Build completed. Sitemap is generated dynamically at /sitemap.xml'",
     "start": "next start",
     "lint": "eslint"
   },
@@ -35,6 +34,7 @@
     "@types/styled-components": "^5.1.34",
     "@types/xml2js": "^0.4.14",
     "babel-plugin-styled-components": "^2.1.4",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "15.5.5",
     "typescript": "^5"

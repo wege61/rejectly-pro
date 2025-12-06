@@ -111,6 +111,8 @@ export const ROUTES = {
     TERMS: "/terms",
     ABOUT: "/about",
     CONTACT: "/contact",
+    BLOG: "/blog",
+    BLOG_POST: (slug: string) => `/blog/${slug}`,
   },
   AUTH: {
     LOGIN: "/login",

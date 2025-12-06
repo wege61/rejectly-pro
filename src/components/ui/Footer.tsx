@@ -133,7 +133,7 @@ export function Footer() {
                 <Link href={ROUTES.PUBLIC.ABOUT}>About</Link>
               </li>
               <li>
-                <a href="#">Blog</a>
+                <Link href={ROUTES.PUBLIC.BLOG}>Blog</Link>
               </li>
               <li>
                 <Link href={ROUTES.PUBLIC.CONTACT}>Contact</Link>

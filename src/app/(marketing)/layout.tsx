@@ -145,6 +145,7 @@ export default function MarketingLayout({
           <DesktopNav>
             <a href={ROUTES.PUBLIC.HOW_IT_WORKS}>How it Works</a>
             <a href={ROUTES.PUBLIC.PRICING}>Pricing</a>
+            <a href={ROUTES.PUBLIC.BLOG}>Blog</a>
             <a href={ROUTES.PUBLIC.FAQ}>FAQ</a>
             <ThemeToggleWrapper>
               <ThemeToggle />
@@ -199,6 +200,9 @@ export default function MarketingLayout({
           </a>
           <a href={ROUTES.PUBLIC.PRICING} onClick={closeMobileMenu}>
             Pricing
+          </a>
+          <a href={ROUTES.PUBLIC.BLOG} onClick={closeMobileMenu}>
+            Blog
           </a>
           <a href={ROUTES.PUBLIC.FAQ} onClick={closeMobileMenu}>
             FAQ

@@ -19,6 +19,8 @@ export default function robots(): MetadataRoute.Robots {
           '/privacy',
           '/signup',
           '/login',
+          '/blog',
+          '/blog/*',
           '/favicon.ico',
           '/favicon.svg',
           '/favicon-*.png',

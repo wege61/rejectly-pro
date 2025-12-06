@@ -161,6 +161,100 @@ export function FAQSchema({ faqs }: { faqs: Array<{ question: string; answer: st
   )
 }
 
+export function BlogPostingSchema({
+  title,
+  description,
+  image,
+  datePublished,
+  dateModified,
+  authorName,
+  slug,
+}: {
+  title: string;
+  description: string;
+  image?: string;
+  datePublished: string;
+  dateModified: string;
+  authorName: string;
+  slug: string;
+}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description: description,
+    image: image || 'https://www.rejectly.pro/og-image.png',
+    datePublished: datePublished,
+    dateModified: dateModified,
+    author: {
+      '@type': 'Person',
+      name: authorName,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Rejectly.pro',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://www.rejectly.pro/logo.png',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://www.rejectly.pro/blog/${slug}`,
+    },
+  }
+
+  return (
+    <Script
+      id="blogposting-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
+export function BlogListSchema({
+  posts,
+}: {
+  posts: Array<{
+    title: string;
+    slug: string;
+    excerpt: string;
+    datePublished: string;
+  }>;
+}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'Rejectly.pro Blog',
+    description: 'Expert tips on resume optimization, ATS systems, career advice, and job search strategies.',
+    url: 'https://www.rejectly.pro/blog',
+    publisher: {
+      '@type': 'Organization',
+      name: 'Rejectly.pro',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://www.rejectly.pro/logo.png',
+      },
+    },
+    blogPost: posts.map((post) => ({
+      '@type': 'BlogPosting',
+      headline: post.title,
+      description: post.excerpt,
+      url: `https://www.rejectly.pro/blog/${post.slug}`,
+      datePublished: post.datePublished,
+    })),
+  }
+
+  return (
+    <Script
+      id="blog-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
+
 export function ReviewSchema() {
   const schema = {
     '@context': 'https://schema.org',

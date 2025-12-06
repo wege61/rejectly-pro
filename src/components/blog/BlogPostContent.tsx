@@ -1,10 +1,18 @@
 "use client";
 
+import { useMemo } from "react";
 import styled from "styled-components";
 import { Calendar, Clock, User, Tag, ArrowLeft, Share2 } from "lucide-react";
+import { marked } from "marked";
 import { BlogCard } from "./BlogCard";
 import { Footer } from "@/components/ui/Footer";
 import type { BlogPostWithRelations } from "@/types/blog";
+
+// Configure marked for better output
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+});
 
 const Container = styled.div`
   min-height: 100vh;
@@ -15,14 +23,13 @@ const Container = styled.div`
 const HeroSection = styled.div`
   background: linear-gradient(
     135deg,
-    rgba(var(--primary-500-rgb), 0.05) 0%,
-    rgba(var(--primary-700-rgb), 0.05) 100%
+    rgba(var(--primary-500-rgb), 0.03) 0%,
+    rgba(var(--primary-700-rgb), 0.06) 100%
   );
-  padding: 80px 24px 60px;
-  border-bottom: 1px solid var(--border-color);
+  padding: 100px 24px 70px;
 
   @media (max-width: 768px) {
-    padding: 60px 16px 40px;
+    padding: 80px 16px 50px;
   }
 `;
 
@@ -38,7 +45,6 @@ const BackLink = styled.a`
   font-size: 14px;
   color: var(--text-secondary);
   text-decoration: none;
-  margin-bottom: 24px;
   transition: color 0.2s ease;
 
   &:hover {
@@ -51,9 +57,16 @@ const BackLink = styled.a`
   }
 `;
 
+const TitleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+`;
+
 const CategoryBadge = styled.span`
   display: inline-block;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--primary-500);
   background: rgba(var(--primary-500-rgb), 0.1);
@@ -61,17 +74,18 @@ const CategoryBadge = styled.span`
   border-radius: 20px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 16px;
+  white-space: nowrap;
+  margin-bottom: 8px;
 `;
 
 const Title = styled.h1`
-  font-size: 48px;
-  font-weight: 900;
-  line-height: 1.2;
-  margin-bottom: 24px;
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0;
 
   @media (max-width: 768px) {
-    font-size: 32px;
+    font-size: 28px;
   }
 `;
 
@@ -79,9 +93,10 @@ const Meta = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
   font-size: 14px;
   color: var(--text-secondary);
+  padding-top: 8px;
 `;
 
 const MetaItem = styled.span`
@@ -95,22 +110,27 @@ const MetaItem = styled.span`
   }
 `;
 
+const FeaturedImageWrapper = styled.div`
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--primary-500-rgb), 0.03) 0%,
+    var(--bg-color) 50%
+  );
+  padding: 40px 24px 60px;
+
+  @media (max-width: 768px) {
+    padding: 30px 16px 40px;
+  }
+`;
+
 const FeaturedImage = styled.div`
   max-width: 900px;
-  margin: -40px auto 0;
-  padding: 0 24px;
-  position: relative;
-  z-index: 1;
+  margin: 0 auto;
 
   img {
     width: 100%;
     border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  }
-
-  @media (max-width: 768px) {
-    margin-top: -20px;
-    padding: 0 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
   }
 `;
 
@@ -151,14 +171,46 @@ const Content = styled.div`
     color: var(--text-secondary);
   }
 
-  ul,
+  strong {
+    color: var(--text-color);
+    font-weight: 600;
+  }
+
+  em {
+    font-style: italic;
+    color: var(--text-secondary);
+  }
+
+  ul {
+    margin-bottom: 24px;
+    padding-left: 24px;
+    color: var(--text-secondary);
+    list-style-type: disc;
+
+    li {
+      margin-bottom: 12px;
+      padding-left: 8px;
+
+      &::marker {
+        color: var(--primary-500);
+      }
+    }
+  }
+
   ol {
     margin-bottom: 24px;
     padding-left: 24px;
     color: var(--text-secondary);
+    list-style-type: decimal;
 
     li {
       margin-bottom: 12px;
+      padding-left: 8px;
+
+      &::marker {
+        color: var(--primary-500);
+        font-weight: 600;
+      }
     }
   }
 
@@ -369,6 +421,11 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
 
   const shareUrl = `https://www.rejectly.pro/blog/${post.slug}`;
 
+  // Convert markdown content to HTML
+  const htmlContent = useMemo(() => {
+    return marked(post.content) as string;
+  }, [post.content]);
+
   return (
     <Container>
       <HeroSection>
@@ -378,41 +435,46 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
             Back to Blog
           </BackLink>
 
-          {post.category && <CategoryBadge>{post.category.name}</CategoryBadge>}
-
-          <Title>{post.title}</Title>
-
-          <Meta>
-            <MetaItem>
-              <User />
-              {post.author_name}
-            </MetaItem>
-            {formattedDate && (
-              <MetaItem>
-                <Calendar />
-                {formattedDate}
-              </MetaItem>
+          <TitleWrapper>
+            {post.category && (
+              <CategoryBadge>{post.category.name}</CategoryBadge>
             )}
-            <MetaItem>
-              <Clock />
-              {post.reading_time_minutes} min read
-            </MetaItem>
-          </Meta>
+            <Title>{post.title}</Title>
+
+            <Meta>
+              <MetaItem>
+                <User />
+                {post.author_name}
+              </MetaItem>
+              {formattedDate && (
+                <MetaItem>
+                  <Calendar />
+                  {formattedDate}
+                </MetaItem>
+              )}
+              <MetaItem>
+                <Clock />
+                {post.reading_time_minutes} min read
+              </MetaItem>
+            </Meta>
+          </TitleWrapper>
         </HeroContent>
       </HeroSection>
 
       {post.featured_image && (
-        <FeaturedImage>
-          <img
-            src={post.featured_image}
-            alt={post.featured_image_alt || post.title}
-          />
-        </FeaturedImage>
+        <FeaturedImageWrapper>
+          <FeaturedImage>
+            <img
+              src={post.featured_image}
+              alt={post.featured_image_alt || post.title}
+            />
+          </FeaturedImage>
+        </FeaturedImageWrapper>
       )}
 
       <ArticleSection>
         <ArticleContent>
-          <Content dangerouslySetInnerHTML={{ __html: post.content }} />
+          <Content dangerouslySetInnerHTML={{ __html: htmlContent }} />
 
           {post.tags && post.tags.length > 0 && (
             <TagsSection>

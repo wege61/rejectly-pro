@@ -66,6 +66,11 @@ const Content = styled.div`
   flex: 1;
 `;
 
+const TopSection = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const Category = styled.span`
   display: inline-block;
   font-size: 12px;
@@ -74,6 +79,7 @@ const Category = styled.span`
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 12px;
+  min-height: 18px;
 `;
 
 const Title = styled.h3`
@@ -86,9 +92,11 @@ const Title = styled.h3`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: 56px;
 
   @media (max-width: 768px) {
     font-size: 18px;
+    min-height: 50px;
   }
 `;
 
@@ -101,7 +109,13 @@ const Excerpt = styled.p`
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  flex: 1;
+  min-height: 72px;
+`;
+
+const BottomSection = styled.div`
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Meta = styled.div`
@@ -130,6 +144,9 @@ const Tags = styled.div`
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--border-color);
+  min-height: 44px;
+  align-items: flex-start;
+  align-content: flex-start;
 `;
 
 const Tag = styled.span`
@@ -196,38 +213,44 @@ export function BlogCard({ post }: BlogCardProps) {
       </a>
 
       <Content>
-        {post.category && <Category>{post.category.name}</Category>}
+        <TopSection>
+          <Category>{post.category?.name || "\u00A0"}</Category>
 
-        <a href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
-          <Title>{post.title}</Title>
-        </a>
+          <a href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
+            <Title>{post.title}</Title>
+          </a>
 
-        {post.excerpt && <Excerpt>{post.excerpt}</Excerpt>}
+          <Excerpt>{post.excerpt || "\u00A0"}</Excerpt>
+        </TopSection>
 
-        <Meta>
-          {formattedDate && (
+        <BottomSection>
+          <Meta>
+            {formattedDate && (
+              <MetaItem>
+                <Calendar />
+                {formattedDate}
+              </MetaItem>
+            )}
             <MetaItem>
-              <Calendar />
-              {formattedDate}
+              <Clock />
+              {post.reading_time_minutes} min read
             </MetaItem>
-          )}
-          <MetaItem>
-            <Clock />
-            {post.reading_time_minutes} min read
-          </MetaItem>
-        </Meta>
+          </Meta>
 
-        {post.tags && post.tags.length > 0 && (
           <Tags>
-            {post.tags.slice(0, 3).map((tag) => (
-              <Tag key={tag.id}>{tag.name}</Tag>
-            ))}
+            {post.tags && post.tags.length > 0 ? (
+              post.tags.slice(0, 3).map((tag) => (
+                <Tag key={tag.id}>{tag.name}</Tag>
+              ))
+            ) : (
+              <Tag style={{ visibility: "hidden" }}>Placeholder</Tag>
+            )}
           </Tags>
-        )}
 
-        <ReadMore href={`/blog/${post.slug}`}>
-          Read More <ArrowRight />
-        </ReadMore>
+          <ReadMore href={`/blog/${post.slug}`}>
+            Read More <ArrowRight />
+          </ReadMore>
+        </BottomSection>
       </Content>
     </Card>
   );

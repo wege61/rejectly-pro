@@ -19,6 +19,13 @@ export default function robots(): MetadataRoute.Robots {
           '/privacy',
           '/signup',
           '/login',
+          '/favicon.ico',
+          '/favicon.svg',
+          '/favicon-*.png',
+          '/apple-touch-icon.png',
+          '/android-chrome-*.png',
+          '/og-image.png',
+          '/logo.png',
         ],
         disallow: [
           '/dashboard',

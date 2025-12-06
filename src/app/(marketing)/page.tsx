@@ -2,6 +2,7 @@
 
 import styled, { keyframes } from "styled-components";
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { ROUTES } from "@/lib/constants";
 import { Footer } from "@/components/ui/Footer";
 
@@ -604,30 +605,27 @@ const SocialProof = styled.div`
 const AvatarStack = styled.div`
   display: flex;
   align-items: center;
+`;
 
-  img {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 3px solid var(--bg-color);
-    margin-left: -12px;
-    transition: transform 0.2s ease;
+const AvatarWrapper = styled.div<{ $isFirst?: boolean }>`
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid var(--bg-color);
+  margin-left: ${({ $isFirst }) => ($isFirst ? "0" : "-12px")};
+  transition: transform 0.2s ease;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
 
-    &:first-child {
-      margin-left: 0;
-    }
-
-    &:hover {
-      transform: scale(1.1);
-      z-index: 10;
-    }
+  &:hover {
+    transform: scale(1.1);
+    z-index: 10;
   }
 
   @media (max-width: 640px) {
-    img {
-      width: 40px;
-      height: 40px;
-    }
+    width: 40px;
+    height: 40px;
   }
 `;
 
@@ -1402,14 +1400,17 @@ const TestimonialHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
-  flex-wrap: wrap; /* 🔥 Wrap eklendi */
+  flex-wrap: wrap;
+`;
 
-  img {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: 2px solid var(--border-color);
-  }
+const TestimonialAvatar = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
 `;
 
 const TestimonialAuthor = styled.div`
@@ -3032,16 +3033,21 @@ export default function Page() {
 
           <SocialProof>
             <AvatarStack>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://i.pravatar.cc/150?img=1" alt="Software Engineer who beat ATS systems with Rejectly AI resume optimizer" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://i.pravatar.cc/150?img=2" alt="Product Manager who achieved career transformation using Rejectly ATS optimization" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://i.pravatar.cc/150?img=3" alt="Data Scientist who landed dream job with Rejectly AI-powered resume analysis" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://i.pravatar.cc/150?img=4" alt="UX Designer who improved interview success rate with Rejectly resume optimizer" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://i.pravatar.cc/150?img=5" alt="Marketing Professional who got 5x more interviews using Rejectly ATS-friendly resumes" />
+              <AvatarWrapper $isFirst>
+                <Image src="https://i.pravatar.cc/150?img=1" alt="Software Engineer who beat ATS systems with Rejectly AI resume optimizer" fill sizes="44px" style={{ objectFit: "cover" }} />
+              </AvatarWrapper>
+              <AvatarWrapper>
+                <Image src="https://i.pravatar.cc/150?img=2" alt="Product Manager who achieved career transformation using Rejectly ATS optimization" fill sizes="44px" style={{ objectFit: "cover" }} />
+              </AvatarWrapper>
+              <AvatarWrapper>
+                <Image src="https://i.pravatar.cc/150?img=3" alt="Data Scientist who landed dream job with Rejectly AI-powered resume analysis" fill sizes="44px" style={{ objectFit: "cover" }} />
+              </AvatarWrapper>
+              <AvatarWrapper>
+                <Image src="https://i.pravatar.cc/150?img=4" alt="UX Designer who improved interview success rate with Rejectly resume optimizer" fill sizes="44px" style={{ objectFit: "cover" }} />
+              </AvatarWrapper>
+              <AvatarWrapper>
+                <Image src="https://i.pravatar.cc/150?img=5" alt="Marketing Professional who got 5x more interviews using Rejectly ATS-friendly resumes" fill sizes="44px" style={{ objectFit: "cover" }} />
+              </AvatarWrapper>
             </AvatarStack>
             <SocialProofText>
               <StarIcon />
@@ -3717,8 +3723,9 @@ export default function Page() {
         <TestimonialGrid>
           <TestimonialCard>
             <TestimonialHeader>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://i.pravatar.cc/150?img=12" alt="Sarah Chen - Frontend Developer who got 5 interviews in 2 weeks with Rejectly AI resume optimization" />
+              <TestimonialAvatar>
+                <Image src="https://i.pravatar.cc/150?img=12" alt="Sarah Chen - Frontend Developer who got 5 interviews in 2 weeks with Rejectly AI resume optimization" fill sizes="56px" style={{ objectFit: "cover" }} />
+              </TestimonialAvatar>
               <TestimonialAuthor>
                 <div className="name">Sarah Chen</div>
                 <div className="role">Frontend Developer</div>
@@ -3744,11 +3751,9 @@ export default function Page() {
 
           <TestimonialCard>
             <TestimonialHeader>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://i.pravatar.cc/150?img=33"
-                alt="Marcus Johnson - Product Manager who achieved 85% ATS pass rate improvement with Rejectly resume optimizer"
-              />
+              <TestimonialAvatar>
+                <Image src="https://i.pravatar.cc/150?img=33" alt="Marcus Johnson - Product Manager who achieved 85% ATS pass rate improvement with Rejectly resume optimizer" fill sizes="56px" style={{ objectFit: "cover" }} />
+              </TestimonialAvatar>
               <TestimonialAuthor>
                 <div className="name">Marcus Johnson</div>
                 <div className="role">Product Manager</div>
@@ -3775,11 +3780,9 @@ export default function Page() {
 
           <TestimonialCard>
             <TestimonialHeader>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://i.pravatar.cc/150?img=47"
-                alt="Emily Rodriguez - Data Analyst success story using Rejectly AI-powered resume analysis and ATS optimization"
-              />
+              <TestimonialAvatar>
+                <Image src="https://i.pravatar.cc/150?img=47" alt="Emily Rodriguez - Data Analyst success story using Rejectly AI-powered resume analysis and ATS optimization" fill sizes="56px" style={{ objectFit: "cover" }} />
+              </TestimonialAvatar>
               <TestimonialAuthor>
                 <div className="name">Emily Rodriguez</div>
                 <div className="role">Data Analyst</div>
@@ -4015,16 +4018,21 @@ export default function Page() {
       <SecondaryCTASection>
         <SecondaryCTACard>
           <SecondaryCTAAvatarStack>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://i.pravatar.cc/150?img=1" alt="Professional who achieved interview success with Rejectly AI resume optimizer and ATS optimization" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://i.pravatar.cc/150?img=2" alt="Job seeker who transformed career using Rejectly ATS-friendly resume builder" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://i.pravatar.cc/150?img=3" alt="Tech professional who landed interviews at top companies with Rejectly resume analysis" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://i.pravatar.cc/150?img=4" alt="Career changer who beat applicant tracking systems using Rejectly AI optimization" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://i.pravatar.cc/150?img=5" alt="Success story from 500+ professionals who transformed job search with Rejectly AI resume optimizer" />
+            <AvatarWrapper $isFirst>
+              <Image src="https://i.pravatar.cc/150?img=1" alt="Professional who achieved interview success with Rejectly AI resume optimizer and ATS optimization" fill sizes="44px" style={{ objectFit: "cover" }} />
+            </AvatarWrapper>
+            <AvatarWrapper>
+              <Image src="https://i.pravatar.cc/150?img=2" alt="Job seeker who transformed career using Rejectly ATS-friendly resume builder" fill sizes="44px" style={{ objectFit: "cover" }} />
+            </AvatarWrapper>
+            <AvatarWrapper>
+              <Image src="https://i.pravatar.cc/150?img=3" alt="Tech professional who landed interviews at top companies with Rejectly resume analysis" fill sizes="44px" style={{ objectFit: "cover" }} />
+            </AvatarWrapper>
+            <AvatarWrapper>
+              <Image src="https://i.pravatar.cc/150?img=4" alt="Career changer who beat applicant tracking systems using Rejectly AI optimization" fill sizes="44px" style={{ objectFit: "cover" }} />
+            </AvatarWrapper>
+            <AvatarWrapper>
+              <Image src="https://i.pravatar.cc/150?img=5" alt="Success story from 500+ professionals who transformed job search with Rejectly AI resume optimizer" fill sizes="44px" style={{ objectFit: "cover" }} />
+            </AvatarWrapper>
           </SecondaryCTAAvatarStack>
 
           <SecondaryCTATitle>

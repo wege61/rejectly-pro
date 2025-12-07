@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { AuroraBackground } from "@/components/ui/AuroraBackground";
 
 // BentoGrid styled components
 const BentoGridWrapper = styled.div`
@@ -905,37 +906,51 @@ const SectionSubtitle = styled.p`
   }
 `;
 
-const TransitionBox = styled.div`
-  text-align: center;
+const TransitionBoxWrapper = styled.div`
   margin-top: 64px;
-  padding-top: 48px;
-  border-top: 1px solid var(--border-color);
-  max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
+  /* Full viewport width - break out of container */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    margin-top: 48px;
+  }
+`;
+
+const TransitionBoxContent = styled.div`
+  text-align: center;
+  padding: 80px 32px;
+  position: relative;
+  z-index: 10;
+  max-width: 700px;
+  margin: 0 auto;
 
   h3 {
-    font-size: 36px;
+    font-size: 42px;
     font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--landing);
+    margin-bottom: 24px;
+    color: var(--text-color);
     letter-spacing: -0.02em;
   }
 
   p {
     font-size: 20px;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.7;
     max-width: 540px;
     margin: 0 auto;
   }
 
   @media (max-width: 768px) {
-    margin-top: 48px;
-    padding-top: 32px;
+    padding: 60px 24px;
 
     h3 {
-      font-size: 26px;
+      font-size: 28px;
     }
 
     p {
@@ -1027,13 +1042,17 @@ export function ProblemBentoGrid() {
         ))}
       </BentoGrid>
 
-      <TransitionBox>
-        <h3>There&apos;s a better way.</h3>
-        <p>
-          Stop sending applications into the void.
-          Let AI show you exactly what&apos;s missing—in 30 seconds.
-        </p>
-      </TransitionBox>
+      <TransitionBoxWrapper>
+        <AuroraBackground showRadialGradient={true}>
+          <TransitionBoxContent>
+            <h3>There&apos;s a better way.</h3>
+            <p>
+              Stop sending applications into the void.
+              Let AI show you exactly what&apos;s missing—in 30 seconds.
+            </p>
+          </TransitionBoxContent>
+        </AuroraBackground>
+      </TransitionBoxWrapper>
     </ProblemSectionWrapper>
   );
 }

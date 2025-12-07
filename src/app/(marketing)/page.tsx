@@ -8,6 +8,7 @@ import { Footer } from "@/components/ui/Footer";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
 import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
 import { ProblemBentoGrid } from "@/components/marketing/ProblemBentoGrid";
+import { LampContainer } from "@/components/ui/LampContainer";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -675,13 +676,26 @@ const Divider = styled.div`
 `;
 
 // ==================== DEMO SECTION - SIMPLIFIED ====================
+const DemoSectionWrapper = styled.div`
+  /* Full viewport width */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  overflow: hidden;
+`;
+
 const DemoSection = styled.section`
   max-width: 900px;
   margin: 0 auto;
-  padding: 80px 24px;
+  padding: 0 24px 80px;
+  position: relative;
+  z-index: 10;
 
   @media (max-width: 768px) {
-    padding: 60px 16px;
+    padding: 0 16px 60px;
   }
 `;
 
@@ -2835,16 +2849,18 @@ export default function Page() {
       <Divider />
 
       {/* DEMO SECTION - SIMPLIFIED */}
-      <DemoSection id="demo">
-        <SectionHeader>
-          <SectionTitle style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-          
-            Try It Now - Free
-          </SectionTitle>
-          <SectionSubtitle>
-            Paste your resume and job description, get instant AI feedback
-          </SectionSubtitle>
-        </SectionHeader>
+      <DemoSectionWrapper>
+        <LampContainer>
+          <DemoSection id="demo">
+            <SectionHeader>
+              <SectionTitle style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+
+                Try It Now - Free
+              </SectionTitle>
+              <SectionSubtitle>
+                Paste your resume and job description, get instant AI feedback
+              </SectionSubtitle>
+            </SectionHeader>
 
         <DemoCard>
           {step === "upload" && !result && (
@@ -3189,8 +3205,10 @@ export default function Page() {
               </CTASection>
             </ResultsCard>
           )}
-        </DemoCard>
-      </DemoSection>
+          </DemoCard>
+          </DemoSection>
+        </LampContainer>
+      </DemoSectionWrapper>
 
       <Divider />
 

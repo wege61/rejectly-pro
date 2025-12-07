@@ -5,6 +5,7 @@ import { Footer } from "@/components/ui/Footer";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { FlipWords } from "@/components/ui/FlipWords";
 
 // ==================== ICONS ====================
 const UploadIcon = () => (
@@ -547,7 +548,10 @@ export default function HowItWorksPage() {
       />
       <Container>
         <HeroSection>
-          <HeroTitle>Transform Your Job Search</HeroTitle>
+          <HeroTitle>
+            Transform Your{" "}
+            <FlipWords words={["Job Search", "Career", "Resume", "Future"]} duration={2500} />
+          </HeroTitle>
         <HeroSubtitle>
           From resume upload to your dream job in 4 simple steps. Our AI-powered
           platform helps you create resumes that get noticed.

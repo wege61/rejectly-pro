@@ -28,7 +28,7 @@ const float = keyframes`
 
 // ==================== ICONS ====================
 const CheckIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg fill="none" stroke="var(--primary-500)" viewBox="0 0 24 24">
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -1293,7 +1293,7 @@ const CTAButton = styled.button<{ $variant?: "primary" | "secondary" }>`
 const FeatureGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 32px;
+  gap: 20px;
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -1301,33 +1301,29 @@ const FeatureGrid = styled.div`
 `;
 
 const FeatureCard = styled.div`
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: 32px;
-  transition: all 0.3s ease;
+  padding: 40px;
   text-align: center;
+  background: var(--bg-alt);
+  border-radius: ${({ theme }) => theme.radius.xl};
 
-  &:hover {
-    border-color: var(--primary-color);
-    transform: translateY(-4px);
-    box-shadow: ${({ theme }) => theme.shadow.lg};
+  @media (max-width: 767px) {
+    padding: 32px 24px;
   }
 `;
 
-const FeatureIcon = styled.div<{ $gradient: string }>`
-  width: 64px;
-  height: 64px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ $gradient }) => $gradient};
+const FeatureIcon = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--primary-500);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
 
   svg {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     color: white;
   }
 `;
@@ -1336,6 +1332,7 @@ const FeatureTitle = styled.h3`
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 12px;
+  color: var(--text-color);
 `;
 
 const FeatureDescription = styled.p`
@@ -1344,17 +1341,15 @@ const FeatureDescription = styled.p`
   font-size: 15px;
 `;
 
-const FeatureHighlight = styled.div`
+const FeatureHighlight = styled.span`
+  display: inline-block;
   margin-top: 16px;
-  padding: 12px;
-  background: rgba(var(--primary-500-rgb), 0.08);
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid var(--primary-500);
-
-  strong {
-    color: var(--accent);
-    font-weight: 700;
-  }
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-500);
+  background: rgba(var(--primary-500-rgb), 0.1);
+  padding: 6px 12px;
+  border-radius: 100px;
 `;
 
 // ==================== TESTIMONIALS - STYLED COMPONENTS ====================
@@ -2018,49 +2013,62 @@ const JobDescription = styled.p`
 
 // ==================== PROBLEM-AGITATE SECTION ====================
 const ProblemSection = styled(Section)`
-  background: linear-gradient(
-    135deg,
-    rgba(255, 107, 107, 0.03) 0%,
-    rgba(255, 179, 186, 0.03) 100%
-  );
-  border-top: 1px solid rgba(255, 107, 107, 0.1);
-  border-bottom: 1px solid rgba(255, 107, 107, 0.1);
+  background: var(--bg-color);
 `;
 
 const ProblemGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-bottom: 48px;
 
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 `;
 
 const ProblemCard = styled.div`
   background: var(--bg-alt);
-  border: 1px solid rgba(255, 107, 107, 0.2);
   border-radius: ${({ theme }) => theme.radius.xl};
   padding: 32px;
-  transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
 
-  &:before {
+  &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #FF6B6B 0%, #FFB3BA 100%);
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 107, 107, 0.3) 0%,
+      rgba(255, 107, 107, 0.05) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
   }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: ${({ theme }) => theme.shadow.lg};
-    border-color: rgba(255, 107, 107, 0.4);
+    transform: translateY(-6px);
+
+    &::before {
+      background: linear-gradient(
+        180deg,
+        rgba(255, 107, 107, 0.5) 0%,
+        rgba(255, 107, 107, 0.15) 100%
+      );
+    }
+
+    .problem-icon {
+      transform: scale(1.1);
+      box-shadow: 0 0 24px rgba(255, 107, 107, 0.4);
+    }
   }
 
   @media (max-width: 768px) {
@@ -2071,12 +2079,13 @@ const ProblemCard = styled.div`
 const ProblemIcon = styled.div`
   width: 56px;
   height: 56px;
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: linear-gradient(135deg, #FF6B6B 0%, #FFB3BA 100%);
+  border-radius: 16px;
+  background: var(--landing-button);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
 
   svg {
     width: 28px;
@@ -2086,62 +2095,76 @@ const ProblemIcon = styled.div`
 `;
 
 const ProblemTitle = styled.h3`
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-  margin-bottom: 12px;
   color: var(--text-color);
+  line-height: 1.4;
+  margin-bottom: 12px;
+  min-height: 50px;
+
+  @media (max-width: 768px) {
+    min-height: auto;
+  }
 `;
 
 const ProblemDescription = styled.p`
   color: var(--text-secondary);
   line-height: 1.7;
   font-size: 15px;
-  margin-bottom: 16px;
+  flex: 1;
 `;
 
-const ProblemAgitation = styled.div`
-  background: rgba(255, 107, 107, 0.1);
-  border-left: 3px solid #FF6B6B;
-  padding: 12px 16px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  font-size: 14px;
-  font-style: italic;
-  color: var(--text-color);
+const ProblemQuote = styled.div`
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed rgba(255, 107, 107, 0.3);
+
+  p {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+
+    &::before {
+      content: '— ';
+      color: #FF6B6B;
+    }
+  }
 `;
 
 const TransitionBox = styled.div`
-  background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.1) 0%, rgba(var(--accent-rgb), 0.1) 100%);
-  border: 2px solid var(--primary-500);
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: 32px;
   text-align: center;
-  margin-top: 48px;
+  margin-top: 64px;
+  padding-top: 48px;
+  border-top: 1px solid var(--border-color);
 
   h3 {
-    font-size: 28px;
-    font-weight: 800;
-    margin-bottom: 16px;
-    background: linear-gradient(135deg, var(--landing) 0%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--landing);
+    letter-spacing: -0.02em;
   }
 
   p {
-    font-size: 18px;
+    font-size: 20px;
     color: var(--text-secondary);
     line-height: 1.6;
+    max-width: 540px;
+    margin: 0 auto;
   }
 
   @media (max-width: 768px) {
-    padding: 24px;
+    margin-top: 48px;
+    padding-top: 32px;
 
     h3 {
-      font-size: 22px;
+      font-size: 26px;
     }
 
     p {
-      font-size: 16px;
+      font-size: 17px;
     }
   }
 `;
@@ -2195,22 +2218,17 @@ const TransformationContent = styled.div`
   }
 `;
 
-const TransformationBadge = styled.div<{ $color: string }>`
+const TransformationBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: ${({ $color }) => $color};
+  background: var(--primary-500);
   color: white;
   padding: 8px 16px;
   border-radius: 9999px;
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 13px;
   margin-bottom: 16px;
-
-  svg {
-    width: 18px;
-    height: 18px;
-  }
 `;
 
 const TransformationTitle = styled.h3`
@@ -2241,18 +2259,14 @@ const TransformationMetrics = styled.div`
 const TransformationMetric = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(var(--success-rgb), 0.1);
-  border: 1px solid var(--success);
-  color: var(--success);
-  padding: 8px 16px;
-  border-radius: 9999px;
-  font-weight: 600;
+  gap: 6px;
+  color: var(--primary-500);
   font-size: 14px;
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
+    color: var(--primary-500);
   }
 `;
 
@@ -2260,7 +2274,7 @@ const TransformationIcon = styled.div`
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary-500) 0%, var(--accent) 100%);
+  background: var(--primary-500);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3070,39 +3084,43 @@ export default function Page() {
 
         <ProblemGrid>
           <ProblemCard>
-            <ProblemIcon>
+            <ProblemIcon className="problem-icon">
               <XIcon />
             </ProblemIcon>
             <ProblemTitle>ATS Robots Kill Your Resume Before Human Eyes See It</ProblemTitle>
             <ProblemDescription>
-              98% of Fortune 500 companies use Applicant Tracking Systems that automatically
-              filter resumes. Your perfectly crafted CV gets rejected in 7.4 seconds by
-              algorithms that can't parse your format or find the right keywords.
+              98% of Fortune 500 companies use Applicant Tracking Systems. Your perfectly
+              crafted CV gets rejected in 7.4 seconds by algorithms that can't parse your
+              format or find the right keywords.
             </ProblemDescription>
-            <ProblemAgitation>
-              "You could be the perfect candidate, but if the ATS can't read your resume,
-              you're invisible. It's like showing up to an interview in the wrong language."
-            </ProblemAgitation>
+            <ProblemQuote>
+              <p>
+                If the ATS can't read your resume, you're invisible—like showing up to
+                an interview speaking the wrong language.
+              </p>
+            </ProblemQuote>
           </ProblemCard>
 
           <ProblemCard>
-            <ProblemIcon>
+            <ProblemIcon className="problem-icon">
               <TargetIcon />
             </ProblemIcon>
             <ProblemTitle>You're Applying to Jobs You'll Never Get</ProblemTitle>
             <ProblemDescription>
               Without AI analysis, you can't see the 30-40% skills gap between your resume
-              and the job posting. You waste hours applying to positions where you have zero
-              chance, while missing roles you'd actually excel at.
+              and the job posting. You waste hours applying to positions where you have
+              zero chance, while missing roles you'd actually excel at.
             </ProblemDescription>
-            <ProblemAgitation>
-              "Sent 150 applications. Got 4 responses. The problem isn't you—it's your
-              targeting. Every bad-fit application is time stolen from finding your dream job."
-            </ProblemAgitation>
+            <ProblemQuote>
+              <p>
+                Sent 150 applications. Got 4 responses. Every bad-fit application is time
+                stolen from finding your dream job.
+              </p>
+            </ProblemQuote>
           </ProblemCard>
 
           <ProblemCard>
-            <ProblemIcon>
+            <ProblemIcon className="problem-icon">
               <RobotIcon />
             </ProblemIcon>
             <ProblemTitle>Your Resume Speaks Human, But Hiring is Done by Machines</ProblemTitle>
@@ -3111,20 +3129,20 @@ export default function Page() {
               ATS systems. Your resume needs to be bilingual: machine-readable for ATS,
               compelling for humans. Most resumes fail at both.
             </ProblemDescription>
-            <ProblemAgitation>
-              "Your skills are real. Your experience is solid. But if your resume doesn't
-              speak 'ATS language' with the exact keywords recruiters search for, you're
-              screaming into a void."
-            </ProblemAgitation>
+            <ProblemQuote>
+              <p>
+                Your skills are real. But without the exact keywords recruiters search for,
+                you're screaming into a void.
+              </p>
+            </ProblemQuote>
           </ProblemCard>
         </ProblemGrid>
 
         <TransitionBox>
-          <h3>If This Sounds Familiar, You're in the Right Place</h3>
+          <h3>There's a better way.</h3>
           <p>
-            Every day you wait is another day of wasted applications. Rejectly.pro uses
-            GPT-4 to transform your resume from "auto-rejected" to "interview-ready" in
-            30 seconds. Stop guessing. Start getting interviews.
+            Stop sending applications into the void.
+            Let AI show you exactly what's missing—in 30 seconds.
           </p>
         </TransitionBox>
       </ProblemSection>
@@ -3491,70 +3509,62 @@ export default function Page() {
 
       <Divider />
 
-      {/* FEATURES - BENEFIT DRIVEN */}
+      {/* FEATURES */}
       <Section id="features">
         <SectionHeader>
-          <SectionTitle>AI-Powered Career Tools</SectionTitle>
+          <SectionTitle>Four tools. One goal.</SectionTitle>
           <SectionSubtitle>
-            Everything you need to land your dream job
+            Everything works together to get you hired.
           </SectionSubtitle>
         </SectionHeader>
 
         <FeatureGrid>
           <FeatureCard>
-            <FeatureIcon $gradient="linear-gradient(135deg, #FFB3BA 0%, #FFCCE5 100%)">
+            <FeatureIcon>
               <DocumentCheckIcon />
             </FeatureIcon>
-            <FeatureTitle>Resume Analysis & Improvement</FeatureTitle>
+            <FeatureTitle>Resume Analysis</FeatureTitle>
             <FeatureDescription>
-              Get instant AI-powered feedback on your resume. Identify missing skills,
-              improve formatting, and optimize content for ATS systems in seconds.
+              See exactly what's wrong with your resume. Missing keywords,
+              formatting issues, ATS compatibility—fixed in 30 seconds.
             </FeatureDescription>
-            <FeatureHighlight>
-              <strong>30 seconds</strong> analysis time
-            </FeatureHighlight>
+            <FeatureHighlight>Instant feedback</FeatureHighlight>
           </FeatureCard>
 
           <FeatureCard>
-            <FeatureIcon $gradient="linear-gradient(135deg, #B4E7F5 0%, #C7E9FB 100%)">
+            <FeatureIcon>
               <BriefcaseSearchIcon />
             </FeatureIcon>
-            <FeatureTitle>Personalized Job Recommendations</FeatureTitle>
+            <FeatureTitle>Smart Job Matching</FeatureTitle>
             <FeatureDescription>
-              Discover job opportunities tailored to your resume. Our AI matches
-              your skills and experience with the best positions for you.
+              Stop applying blindly. AI finds jobs where your skills
+              actually match what employers are looking for.
             </FeatureDescription>
-            <FeatureHighlight>
-              <strong>Smart matching</strong> algorithm
-            </FeatureHighlight>
+            <FeatureHighlight>Better targeting</FeatureHighlight>
           </FeatureCard>
 
           <FeatureCard>
-            <FeatureIcon $gradient="linear-gradient(135deg, #BFACE2 0%, #D4C5F9 100%)">
+            <FeatureIcon>
               <PencilIcon />
             </FeatureIcon>
-            <FeatureTitle>AI Cover Letter Generator</FeatureTitle>
+            <FeatureTitle>Cover Letters</FeatureTitle>
             <FeatureDescription>
-              Create compelling, customized cover letters in minutes. Our AI
-              crafts professional letters tailored to each job application.
+              One click. Personalized letter. Tailored to the job description
+              and your experience.
             </FeatureDescription>
-            <FeatureHighlight>
-              <strong>Personalized</strong> for each role
-            </FeatureHighlight>
+            <FeatureHighlight>Ready in seconds</FeatureHighlight>
           </FeatureCard>
 
           <FeatureCard>
-            <FeatureIcon $gradient="linear-gradient(135deg, #B9E8D8 0%, #D0F0E4 100%)">
+            <FeatureIcon>
               <DocumentDuplicateIcon />
             </FeatureIcon>
-            <FeatureTitle>AI-Optimized Resume Creation</FeatureTitle>
+            <FeatureTitle>Resume Builder</FeatureTitle>
             <FeatureDescription>
-              Generate a professionally optimized resume with AI. Get ATS-friendly
-              formatting, keyword optimization, and compelling bullet points.
+              Start fresh with an ATS-optimized resume. Clean formatting,
+              right keywords, professional structure.
             </FeatureDescription>
-            <FeatureHighlight>
-              <strong>85% more</strong> ATS pass rate
-            </FeatureHighlight>
+            <FeatureHighlight>Built to pass ATS</FeatureHighlight>
           </FeatureCard>
         </FeatureGrid>
       </Section>
@@ -3571,32 +3581,18 @@ export default function Page() {
         </SectionHeader>
 
         <TransformationTimeline>
-          {/* Stage 1: Quick Win */}
+          {/* Stage 1 */}
           <TransformationStage $index={0}>
             <TransformationContent>
-              <TransformationBadge $color="#10B981">
-                <ZapIcon />
-                Day 1 - Quick Win
-              </TransformationBadge>
-              <TransformationTitle>Your First Optimized Resume Goes Live</TransformationTitle>
+              <TransformationBadge>Day 1</TransformationBadge>
+              <TransformationTitle>Your resume goes from invisible to irresistible</TransformationTitle>
               <TransformationDescription>
-                Get instant AI analysis revealing exactly why your resume was failing. Within
-                15 minutes, you'll have an ATS-optimized version with the right keywords,
-                format, and compelling bullet points that actually get read.
+                AI reveals exactly why you were getting rejected. In 15 minutes,
+                you have an ATS-optimized resume with the right keywords and format.
               </TransformationDescription>
               <TransformationMetrics>
-                <TransformationMetric>
-                  <CheckIcon />
-                  +85% ATS pass rate
-                </TransformationMetric>
-                <TransformationMetric>
-                  <CheckIcon />
-                  Ready in 15 minutes
-                </TransformationMetric>
-                <TransformationMetric>
-                  <CheckIcon />
-                  15+ keyword gaps fixed
-                </TransformationMetric>
+                <TransformationMetric><CheckIcon /> 85% ATS pass rate</TransformationMetric>
+                <TransformationMetric><CheckIcon /> 15 min setup</TransformationMetric>
               </TransformationMetrics>
             </TransformationContent>
             <TransformationIcon>
@@ -3604,32 +3600,18 @@ export default function Page() {
             </TransformationIcon>
           </TransformationStage>
 
-          {/* Stage 2: Compound */}
+          {/* Stage 2 */}
           <TransformationStage $index={1}>
             <TransformationContent>
-              <TransformationBadge $color="#F59E0B">
-                <RefreshIcon />
-                Week 1 - Compound Effect
-              </TransformationBadge>
-              <TransformationTitle>3x More Interview Invitations Start Rolling In</TransformationTitle>
+              <TransformationBadge>Week 1</TransformationBadge>
+              <TransformationTitle>Interview invitations start rolling in</TransformationTitle>
               <TransformationDescription>
-                Your optimized resume cuts through the ATS noise. Recruiters actually read it
-                and reach out. Every application now targets roles where you have 70%+ skill
-                match, tripling your response rate from 2% to 7-10%.
+                Your resume cuts through ATS filters. Recruiters actually see it.
+                Response rate jumps from 2% to 10% because you're targeting the right roles.
               </TransformationDescription>
               <TransformationMetrics>
-                <TransformationMetric>
-                  <CheckIcon />
-                  5-8 interview requests
-                </TransformationMetric>
-                <TransformationMetric>
-                  <CheckIcon />
-                  +300% response rate
-                </TransformationMetric>
-                <TransformationMetric>
-                  <CheckIcon />
-                  Better-fit positions
-                </TransformationMetric>
+                <TransformationMetric><CheckIcon /> 3x more responses</TransformationMetric>
+                <TransformationMetric><CheckIcon /> Better-fit roles</TransformationMetric>
               </TransformationMetrics>
             </TransformationContent>
             <TransformationIcon>
@@ -3637,32 +3619,18 @@ export default function Page() {
             </TransformationIcon>
           </TransformationStage>
 
-          {/* Stage 3: Advantage */}
+          {/* Stage 3 */}
           <TransformationStage $index={2}>
             <TransformationContent>
-              <TransformationBadge $color="#8B5CF6">
-                <BriefcaseIcon />
-                Month 1 - Competitive Advantage
-              </TransformationBadge>
-              <TransformationTitle>Multiple Offers, Better Leverage</TransformationTitle>
+              <TransformationBadge>Month 1</TransformationBadge>
+              <TransformationTitle>Multiple offers give you leverage</TransformationTitle>
               <TransformationDescription>
-                Because you're targeting the right roles, your interviews convert at higher
-                rates. You get 2-3 competing offers, giving you negotiation power. One of
-                them is your dream company—and they want you.
+                Better targeting means higher conversion. You get 2-3 competing offers.
+                Negotiation power. One of them is your dream company—and they want you.
               </TransformationDescription>
               <TransformationMetrics>
-                <TransformationMetric>
-                  <CheckIcon />
-                  2-3 job offers
-                </TransformationMetric>
-                <TransformationMetric>
-                  <CheckIcon />
-                  15-25% salary boost
-                </TransformationMetric>
-                <TransformationMetric>
-                  <CheckIcon />
-                  Dream company YES
-                </TransformationMetric>
+                <TransformationMetric><CheckIcon /> 2-3 job offers</TransformationMetric>
+                <TransformationMetric><CheckIcon /> 15-25% salary boost</TransformationMetric>
               </TransformationMetrics>
             </TransformationContent>
             <TransformationIcon>
@@ -3670,36 +3638,18 @@ export default function Page() {
             </TransformationIcon>
           </TransformationStage>
 
-          {/* Stage 4: 10x */}
+          {/* Stage 4 */}
           <TransformationStage $index={3}>
             <TransformationContent>
-              <TransformationBadge $color="#EF4444">
-                <SparklesIcon />
-                Year 1 - 10x Career Momentum
-              </TransformationBadge>
-              <TransformationTitle>Your Career Trajectory Changes Forever</TransformationTitle>
+              <TransformationBadge>Year 1</TransformationBadge>
+              <TransformationTitle>Your career trajectory changes forever</TransformationTitle>
               <TransformationDescription>
-                You're thriving at your new job. The confidence from landing it carries over
-                into faster promotions. You know how to position yourself for any opportunity.
-                Your network grows. Your earning power compounds year over year.
+                You're thriving. The confidence carries into promotions. Your network grows.
+                Your earning power compounds. You know how to position yourself for anything.
               </TransformationDescription>
               <TransformationMetrics>
-                <TransformationMetric>
-                  <CheckIcon />
-                  +40-60% total comp
-                </TransformationMetric>
-                <TransformationMetric>
-                  <CheckIcon />
-                  Promotion-ready profile
-                </TransformationMetric>
-                <TransformationMetric>
-                  <CheckIcon />
-                  Career confidence
-                </TransformationMetric>
-                <TransformationMetric>
-                  <CheckIcon />
-                  Industry reputation
-                </TransformationMetric>
+                <TransformationMetric><CheckIcon /> 40-60% higher comp</TransformationMetric>
+                <TransformationMetric><CheckIcon /> Career momentum</TransformationMetric>
               </TransformationMetrics>
             </TransformationContent>
             <TransformationIcon>

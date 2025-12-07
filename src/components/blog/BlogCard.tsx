@@ -1,8 +1,17 @@
 "use client";
 
 import styled from "styled-components";
+import Link from "next/link";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import type { BlogPostWithRelations } from "@/types/blog";
+
+const CardLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
 
 const Card = styled.article`
   background: var(--bg-alt);
@@ -160,18 +169,17 @@ const Tag = styled.span`
   white-space: normal;
 `;
 
-const ReadMore = styled.a`
+const ReadMore = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 14px;
   font-weight: 600;
   color: var(--primary-500);
-  text-decoration: none;
   margin-top: 16px;
   transition: gap 0.2s ease;
 
-  &:hover {
+  ${Card}:hover & {
     gap: 10px;
   }
 
@@ -196,7 +204,7 @@ export function BlogCard({ post }: BlogCardProps) {
 
   return (
     <Card>
-      <a href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
+      <CardLink href={`/blog/${post.slug}`}>
         <ImageWrapper>
           {post.featured_image ? (
             <Image src={post.featured_image} alt={post.featured_image_alt || post.title} />
@@ -213,48 +221,44 @@ export function BlogCard({ post }: BlogCardProps) {
             </PlaceholderImage>
           )}
         </ImageWrapper>
-      </a>
 
-      <Content>
-        <TopSection>
-          <Category>{post.category?.name || "\u00A0"}</Category>
-
-          <a href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
+        <Content>
+          <TopSection>
+            <Category>{post.category?.name || "\u00A0"}</Category>
             <Title>{post.title}</Title>
-          </a>
+            <Excerpt>{post.excerpt || "\u00A0"}</Excerpt>
+          </TopSection>
 
-          <Excerpt>{post.excerpt || "\u00A0"}</Excerpt>
-        </TopSection>
-
-        <BottomSection>
-          <Meta>
-            {formattedDate && (
+          <BottomSection>
+            <Meta>
+              {formattedDate && (
+                <MetaItem>
+                  <Calendar />
+                  {formattedDate}
+                </MetaItem>
+              )}
               <MetaItem>
-                <Calendar />
-                {formattedDate}
+                <Clock />
+                {post.reading_time_minutes} min read
               </MetaItem>
-            )}
-            <MetaItem>
-              <Clock />
-              {post.reading_time_minutes} min read
-            </MetaItem>
-          </Meta>
+            </Meta>
 
-          <Tags>
-            {post.tags && post.tags.length > 0 ? (
-              post.tags.slice(0, 3).map((tag) => (
-                <Tag key={tag.id}>{tag.name}</Tag>
-              ))
-            ) : (
-              <Tag style={{ visibility: "hidden" }}>Placeholder</Tag>
-            )}
-          </Tags>
+            <Tags>
+              {post.tags && post.tags.length > 0 ? (
+                post.tags.slice(0, 3).map((tag) => (
+                  <Tag key={tag.id}>{tag.name}</Tag>
+                ))
+              ) : (
+                <Tag style={{ visibility: "hidden" }}>Placeholder</Tag>
+              )}
+            </Tags>
 
-          <ReadMore href={`/blog/${post.slug}`}>
-            Read More <ArrowRight />
-          </ReadMore>
-        </BottomSection>
-      </Content>
+            <ReadMore>
+              Read More <ArrowRight />
+            </ReadMore>
+          </BottomSection>
+        </Content>
+      </CardLink>
     </Card>
   );
 }

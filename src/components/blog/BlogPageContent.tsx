@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { BlogList } from "./BlogList";
 import { BlogPagination } from "./BlogPagination";
 import { BlogSidebar } from "./BlogSidebar";
+import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
 import { Footer } from "@/components/ui/Footer";
 import type { BlogPostWithRelations, BlogCategory, BlogTag } from "@/types/blog";
 
@@ -182,6 +183,8 @@ export function BlogPageContent({
           </SidebarWrapper>
         </MainLayout>
       </Content>
+
+      <SecondaryCTA />
 
       <Footer />
     </Container>

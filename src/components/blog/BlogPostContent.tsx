@@ -1,18 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
 import styled from "styled-components";
 import { Calendar, Clock, User, Tag, ArrowLeft, Share2 } from "lucide-react";
-import { marked } from "marked";
 import { BlogCard } from "./BlogCard";
 import { Footer } from "@/components/ui/Footer";
 import type { BlogPostWithRelations } from "@/types/blog";
-
-// Configure marked for better output
-marked.setOptions({
-  breaks: true,
-  gfm: true,
-});
 
 const Container = styled.div`
   min-height: 100vh;
@@ -421,11 +413,6 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
 
   const shareUrl = `https://www.rejectly.pro/blog/${post.slug}`;
 
-  // Convert markdown content to HTML
-  const htmlContent = useMemo(() => {
-    return marked(post.content) as string;
-  }, [post.content]);
-
   return (
     <Container>
       <HeroSection>
@@ -474,7 +461,8 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
 
       <ArticleSection>
         <ArticleContent>
-          <Content dangerouslySetInnerHTML={{ __html: htmlContent }} />
+          {/* Content is stored as HTML in Supabase */}
+          <Content dangerouslySetInnerHTML={{ __html: post.content }} />
 
           {post.tags && post.tags.length > 0 && (
             <TagsSection>

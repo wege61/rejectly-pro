@@ -64,6 +64,7 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  height: 100%;
 `;
 
 const TopSection = styled.div`
@@ -79,7 +80,7 @@ const Category = styled.span`
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 12px;
-  min-height: 18px;
+  height: 18px;
 `;
 
 const Title = styled.h3`
@@ -92,11 +93,11 @@ const Title = styled.h3`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 56px;
+  height: 56px;
 
   @media (max-width: 768px) {
     font-size: 18px;
-    min-height: 50px;
+    height: 50px;
   }
 `;
 
@@ -104,16 +105,17 @@ const Excerpt = styled.p`
   font-size: 15px;
   color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 16px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 72px;
+  height: 72px;
+  margin-bottom: 0;
 `;
 
 const BottomSection = styled.div`
   margin-top: auto;
+  padding-top: 16px;
   display: flex;
   flex-direction: column;
 `;
@@ -139,14 +141,13 @@ const MetaItem = styled.span`
 
 const Tags = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--border-color);
-  min-height: 44px;
+  height: 44px;
   align-items: flex-start;
-  align-content: flex-start;
 `;
 
 const Tag = styled.span`
@@ -155,6 +156,8 @@ const Tag = styled.span`
   background: var(--surface-color);
   padding: 4px 10px;
   border-radius: 12px;
+  line-height: 1.3;
+  white-space: normal;
 `;
 
 const ReadMore = styled.a`

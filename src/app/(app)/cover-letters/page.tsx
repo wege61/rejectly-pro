@@ -641,6 +641,11 @@ interface CoverLetter {
       title: string;
     };
   };
+  job?: {
+    id: string;
+    title: string;
+    type: string;
+  };
 }
 
 interface Report {
@@ -998,10 +1003,10 @@ export default function CoverLettersPage() {
                   <CardHeader>
                     <div style={{ flex: 1 }}>
                       <CardTitle>
-                        {letter.report?.job?.title || "Cover Letter"}
+                        {letter.job?.title || "Cover Letter"}
                       </CardTitle>
                       <CardSubtitle>
-                        {getToneLabel(letter.tone)} · {getLanguageLabel(letter.language)} · {getWordCount(letter.content)} words
+                        {getToneLabel(letter.tone)} · {getWordCount(letter.content)} words
                       </CardSubtitle>
                     </div>
                     <DateBadge>{formatDate(letter.created_at)}</DateBadge>
@@ -1009,7 +1014,6 @@ export default function CoverLettersPage() {
 
                   <MetaTags>
                     <Tag $tone={letter.tone}>{getToneLabel(letter.tone)}</Tag>
-                    <Tag>{getLanguageLabel(letter.language)}</Tag>
                   </MetaTags>
 
                   <QuickActions onClick={(e) => e.stopPropagation()}>
@@ -1100,6 +1104,7 @@ export default function CoverLettersPage() {
             setIsEditorOpen(false);
             setSelectedLetterForEdit(null);
           }}
+          reportId={selectedLetterForEdit.report_id}
           existingLetter={{
             id: selectedLetterForEdit.id,
             content: selectedLetterForEdit.content,

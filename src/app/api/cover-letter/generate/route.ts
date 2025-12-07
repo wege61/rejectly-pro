@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
     // Get request body
     const {
       reportId,
+      existingLetterId, // If provided, update existing letter instead of creating new
       tone = 'professional',
       length = 'medium',
       language = 'en',
@@ -135,27 +136,61 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    // Save cover letter to database
-    const { data: coverLetter, error: saveError } = await supabase
-      .from("cover_letters")
-      .insert({
-        user_id: user.id,
-        report_id: reportId,
-        job_id: primaryJob.id,
-        content: result.content,
-        tone,
-        length,
-        language,
-        template,
-        structured_content: result.paragraphs ? {
-          paragraphs: result.paragraphs,
-          keyHighlights: result.keyHighlights,
-          wordCount: result.wordCount
-        } : null,
-        customization_fields: customizationFields || null,
-      })
-      .select()
-      .single();
+    // Save or update cover letter in database
+    let coverLetter;
+    let saveError;
+
+    if (existingLetterId) {
+      // Update existing cover letter
+      const { data, error } = await supabase
+        .from("cover_letters")
+        .update({
+          content: result.content,
+          tone,
+          length,
+          language,
+          template,
+          structured_content: result.paragraphs ? {
+            paragraphs: result.paragraphs,
+            keyHighlights: result.keyHighlights,
+            wordCount: result.wordCount
+          } : null,
+          customization_fields: customizationFields || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", existingLetterId)
+        .eq("user_id", user.id)
+        .select()
+        .single();
+
+      coverLetter = data;
+      saveError = error;
+    } else {
+      // Create new cover letter
+      const { data, error } = await supabase
+        .from("cover_letters")
+        .insert({
+          user_id: user.id,
+          report_id: reportId,
+          job_id: primaryJob.id,
+          content: result.content,
+          tone,
+          length,
+          language,
+          template,
+          structured_content: result.paragraphs ? {
+            paragraphs: result.paragraphs,
+            keyHighlights: result.keyHighlights,
+            wordCount: result.wordCount
+          } : null,
+          customization_fields: customizationFields || null,
+        })
+        .select()
+        .single();
+
+      coverLetter = data;
+      saveError = error;
+    }
 
     if (saveError) {
       console.error("Error saving cover letter:", saveError);

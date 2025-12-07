@@ -7,6 +7,97 @@ import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { useToast } from "@/contexts/ToastContext";
 
+// Icons
+const DocumentIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <line x1="10" y1="9" x2="8" y2="9" />
+  </svg>
+);
+
+const BookOpenIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+  </svg>
+);
+
+const CodeIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+  </svg>
+);
+
+const ChartIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="20" x2="18" y2="10" />
+    <line x1="12" y1="20" x2="12" y2="4" />
+    <line x1="6" y1="20" x2="6" y2="14" />
+  </svg>
+);
+
+const RefreshIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 2v6h-6" />
+    <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+    <path d="M3 22v-6h6" />
+    <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+  </svg>
+);
+
+const ZapIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+  </svg>
+);
+
+const CopyIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+  </svg>
+);
+
+const DownloadIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" />
+    <line x1="12" y1="15" x2="12" y2="3" />
+  </svg>
+);
+
+const EditIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
+
+const MailIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+    <polyline points="22,6 12,13 2,6" />
+  </svg>
+);
+
+const LightbulbIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 18h6" />
+    <path d="M10 22h4" />
+    <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
 const GeneratorContent = styled.div`
   padding: ${({ theme }) => theme.spacing.lg};
 `;
@@ -38,8 +129,16 @@ const OptionGrid = styled.div`
 
 const TemplateGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const OptionButton = styled.button<{ $selected: boolean }>`
@@ -77,6 +176,27 @@ const TemplateButton = styled(OptionButton)`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
+  min-height: 140px;
+`;
+
+const TemplateIconWrapper = styled.div<{ $selected: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ $selected }) =>
+    $selected
+      ? "rgba(255, 255, 255, 0.2)"
+      : "rgba(102, 126, 234, 0.1)"};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  svg {
+    color: ${({ $selected }) =>
+      $selected ? "white" : "var(--accent)"};
+  }
 `;
 
 const OptionTitle = styled.div`
@@ -287,19 +407,39 @@ const HighlightItem = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: ${({ theme }) => theme.colors.textSecondary};
   padding: ${({ theme }) => theme.spacing.xs} 0;
+  display: flex;
+  align-items: flex-start;
+  gap: ${({ theme }) => theme.spacing.xs};
 
-  &::before {
-    content: "✓ ";
+  svg {
     color: var(--success);
-    font-weight: bold;
+    flex-shrink: 0;
+    margin-top: 2px;
   }
 `;
 
 const ActionButtons = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.sm};
-  margin-top: ${({ theme }) => theme.spacing.lg};
+  margin-top: ${({ theme }) => theme.spacing.xl};
+  padding-top: ${({ theme }) => theme.spacing.lg};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
   flex-wrap: wrap;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing.xs};
+  }
+
+  @media (max-width: 520px) {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 `;
 
 const LoadingContainer = styled.div`
@@ -468,37 +608,37 @@ const TEMPLATES = [
   {
     id: 'standard',
     name: 'Standard',
-    emoji: '📄',
+    icon: DocumentIcon,
     description: 'Classic professional format with clear structure',
   },
   {
     id: 'story_driven',
     name: 'Story Driven',
-    emoji: '📖',
+    icon: BookOpenIcon,
     description: 'Narrative approach that tells your professional story',
   },
   {
     id: 'technical_focus',
     name: 'Technical Focus',
-    emoji: '💻',
+    icon: CodeIcon,
     description: 'Emphasize technical skills and achievements',
   },
   {
     id: 'results_oriented',
     name: 'Results Oriented',
-    emoji: '📊',
+    icon: ChartIcon,
     description: 'Focus on metrics and measurable impact',
   },
   {
     id: 'career_change',
     name: 'Career Change',
-    emoji: '🔄',
+    icon: RefreshIcon,
     description: 'Perfect for transitioning to a new field',
   },
   {
     id: 'short_intro',
     name: 'Short Intro',
-    emoji: '⚡',
+    icon: ZapIcon,
     description: 'Concise and impactful, straight to the point',
   },
 ];
@@ -589,6 +729,7 @@ export function CoverLetterGenerator({
         },
         body: JSON.stringify({
           reportId,
+          existingLetterId: existingLetter?.id, // Update existing letter if regenerating
           tone,
           length,
           language,
@@ -604,7 +745,7 @@ export function CoverLetterGenerator({
       }
 
       setGeneratedLetter(result.coverLetter);
-      toast.success("Cover letter generated successfully!");
+      toast.success(existingLetter ? "Cover letter updated!" : "Cover letter generated!");
       onSuccess?.(result.coverLetter?.id);
     } catch (error) {
       const errorMessage =
@@ -707,7 +848,7 @@ export function CoverLetterGenerator({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={existingLetter ? "✏️ Edit Cover Letter" : "✉️ Generate Cover Letter"}
+      title={existingLetter ? "Edit Cover Letter" : "Generate Cover Letter"}
       description={existingLetter ? "Review and edit your cover letter" : "Create a personalized, customizable cover letter with AI assistance"}
       size="xl"
     >
@@ -721,17 +862,22 @@ export function CoverLetterGenerator({
                   Choose the approach that best fits your application
                 </OptionDescription>
                 <TemplateGrid>
-                  {TEMPLATES.map(tmpl => (
-                    <TemplateButton
-                      key={tmpl.id}
-                      $selected={template === tmpl.id}
-                      onClick={() => setTemplate(tmpl.id)}
-                    >
-                      <div style={{ fontSize: '24px', marginBottom: '4px' }}>{tmpl.emoji}</div>
-                      <OptionTitle>{tmpl.name}</OptionTitle>
-                      <OptionDesc>{tmpl.description}</OptionDesc>
-                    </TemplateButton>
-                  ))}
+                  {TEMPLATES.map(tmpl => {
+                    const IconComponent = tmpl.icon;
+                    return (
+                      <TemplateButton
+                        key={tmpl.id}
+                        $selected={template === tmpl.id}
+                        onClick={() => setTemplate(tmpl.id)}
+                      >
+                        <TemplateIconWrapper $selected={template === tmpl.id}>
+                          <IconComponent />
+                        </TemplateIconWrapper>
+                        <OptionTitle>{tmpl.name}</OptionTitle>
+                        <OptionDesc>{tmpl.description}</OptionDesc>
+                      </TemplateButton>
+                    );
+                  })}
                 </TemplateGrid>
               </OptionSection>
 
@@ -789,25 +935,8 @@ export function CoverLetterGenerator({
                 </OptionGrid>
               </OptionSection>
 
-              <OptionSection>
-                <OptionLabel>Language</OptionLabel>
-                <OptionGrid>
-                  <OptionButton
-                    $selected={language === 'en'}
-                    onClick={() => setLanguage('en')}
-                  >
-                    <OptionTitle>English</OptionTitle>
-                    <OptionDesc>International</OptionDesc>
-                  </OptionButton>
-                  <OptionButton
-                    $selected={language === 'tr'}
-                    onClick={() => setLanguage('tr')}
-                  >
-                    <OptionTitle>Turkish</OptionTitle>
-                    <OptionDesc>Türkçe</OptionDesc>
-                  </OptionButton>
-                </OptionGrid>
-              </OptionSection>
+              {/* Language selection hidden for now - defaulting to English
+                 Infrastructure preserved for future multi-language support */}
 
               <OptionSection>
                 <OptionLabel>Customization (Optional)</OptionLabel>
@@ -889,7 +1018,7 @@ export function CoverLetterGenerator({
 
                   <RationalePanel>
                     <RationaleTitle>
-                      💡 Why This Content?
+                      <LightbulbIcon /> Why This Content?
                     </RationaleTitle>
                     {activeParagraph ? (
                       <RationaleContent>
@@ -921,23 +1050,26 @@ export function CoverLetterGenerator({
                 <HighlightsList>
                   <HighlightsTitle>Key Highlights Mentioned:</HighlightsTitle>
                   {generatedLetter.keyHighlights.map((highlight, index) => (
-                    <HighlightItem key={index}>{highlight}</HighlightItem>
+                    <HighlightItem key={index}>
+                      <CheckIcon />
+                      <span>{highlight}</span>
+                    </HighlightItem>
                   ))}
                 </HighlightsList>
               )}
 
               <ActionButtons>
                 <Button onClick={handleCopy} variant="primary">
-                  📋 Copy to Clipboard
+                  <CopyIcon /> Copy to Clipboard
                 </Button>
                 <Button onClick={handleDownload} variant="ghost">
-                  💾 Download
+                  <DownloadIcon /> Download
                 </Button>
                 <Button
                   onClick={() => setGeneratedLetter(null)}
                   variant="ghost"
                 >
-                  🔄 Generate New
+                  <RefreshIcon size={16} /> Generate New
                 </Button>
               </ActionButtons>
 
@@ -976,9 +1108,9 @@ export function CoverLetterGenerator({
                         // Keep current
                         setSelectedSentence(null);
                       }}
-                      style={{ fontWeight: 600, color: 'var(--success)' }}
+                      style={{ fontWeight: 600, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
-                      ✓ {selectedSentenceData.text}
+                      <CheckIcon /> {selectedSentenceData.text}
                     </AlternativeOption>
                     {selectedSentenceData.alternatives.map((alt, idx) => (
                       <AlternativeOption

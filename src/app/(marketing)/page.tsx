@@ -5,6 +5,8 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { ROUTES } from "@/lib/constants";
 import { Footer } from "@/components/ui/Footer";
+import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
+import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -274,8 +276,16 @@ const HeroSection = styled.section`
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 80px 24px 60px;
   background-color: var(--bg-color);
+
+  @media (max-width: 768px) {
+    min-height: auto;
+  }
+`;
+
+const HeroHighlightWrapper = styled(HeroHighlight)`
+  min-height: 100vh;
+  padding: 80px 24px 60px;
 
   @media (max-width: 768px) {
     min-height: auto;
@@ -283,56 +293,6 @@ const HeroSection = styled.section`
   }
 `;
 
-const BackgroundBlur = styled.div`
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-`;
-
-const BlurCircle = styled.div<{
-  $delay?: string;
-  $position: string;
-  $color: string;
-  $isDarkMode?: boolean;
-}>`
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  ${({ $position }) => $position}
-  background: ${({ $color }) => $color};
-  opacity: ${({ $isDarkMode }) => ($isDarkMode ? '0.6' : '0.6')};
-
-  /* Hide/show based on theme */
-  ${({ $isDarkMode }) => $isDarkMode ? `
-    display: none;
-
-    [data-theme="dark"] & {
-      display: block;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      display: block;
-    }
-
-    [data-theme="light"] & {
-      display: none;
-    }
-  ` : `
-    display: block;
-
-    [data-theme="dark"] & {
-      display: none;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      display: none;
-    }
-
-    [data-theme="light"] & {
-      display: block;
-    }
-  `}
-`;
 
 const HeroContent = styled.div`
   position: relative;
@@ -377,10 +337,6 @@ const HeroTitle = styled.h1`
   }
 `;
 
-const GradientText = styled.span`
-  color: var(--landing);
-  font-weight: 900;
-`;
 
 const HeroSubtitle = styled.p`
   font-size: 20px;
@@ -2436,183 +2392,6 @@ const ValueStackTotalItem = styled.div<{ $emphasized?: boolean }>`
   }
 `;
 
-// ==================== SECONDARY CTA SECTION ====================
-const SecondaryCTASection = styled(Section)`
-  background: linear-gradient(
-    135deg,
-    rgba(var(--accent-rgb), 0.05) 0%,
-    rgba(var(--primary-500-rgb), 0.05) 100%
-  );
-  border-top: 1px solid var(--primary-500);
-  border-bottom: 1px solid var(--primary-500);
-`;
-
-const SecondaryCTACard = styled.div`
-  background: var(--bg-alt);
-  border: 2px solid var(--accent);
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: 64px 48px;
-  text-align: center;
-  max-width: 800px;
-  margin: 0 auto;
-  box-shadow: 0 20px 60px rgba(var(--accent-rgb), 0.15);
-
-  @media (max-width: 768px) {
-    padding: 40px 24px;
-  }
-`;
-
-const SecondaryCTAAvatarStack = styled(AvatarStack)`
-  justify-content: center;
-  margin-bottom: 24px;
-`;
-
-const SecondaryCTATitle = styled.h2`
-  font-size: 36px;
-  font-weight: 800;
-  margin-bottom: 16px;
-  color: var(--text-color);
-
-  @media (max-width: 768px) {
-    font-size: 28px;
-  }
-`;
-
-const SecondaryCTASubtitle = styled.p`
-  font-size: 18px;
-  color: var(--text-secondary);
-  margin-bottom: 32px;
-  line-height: 1.6;
-
-  @media (max-width: 768px) {
-    font-size: 16px;
-  }
-`;
-
-const SecondaryCTAButton = styled(PrimaryButton)`
-  font-size: 20px;
-  padding: 20px 48px;
-
-  @media (max-width: 768px) {
-    font-size: 18px;
-    padding: 18px 36px;
-    width: 100%;
-  }
-`;
-
-const SecondaryCTAFeatures = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  margin-top: 32px;
-  flex-wrap: wrap;
-
-  @media (max-width: 768px) {
-    gap: 16px;
-  }
-`;
-
-const SecondaryCTAFeature = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-secondary);
-  font-size: 14px;
-
-  svg {
-    width: 18px;
-    height: 18px;
-    color: var(--success);
-  }
-`;
-
-// ==================== SUCCESS SECTION (Conditional) ====================
-const SuccessSection = styled.div`
-  background: linear-gradient(135deg, rgba(var(--success-rgb), 0.1) 0%, rgba(var(--primary-500-rgb), 0.1) 100%);
-  border: 2px solid var(--success);
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: 40px;
-  margin: 32px auto;
-  max-width: 700px;
-  text-align: center;
-  animation: ${fadeIn} 0.6s ease-out;
-
-  @media (max-width: 768px) {
-    padding: 24px;
-    margin: 24px 16px;
-  }
-`;
-
-const SuccessIcon = styled.div`
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--success);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 24px;
-  animation: ${pulse} 2s infinite;
-
-  svg {
-    width: 48px;
-    height: 48px;
-    color: white;
-  }
-`;
-
-const SuccessTitle = styled.h2`
-  font-size: 32px;
-  font-weight: 800;
-  margin-bottom: 16px;
-  color: var(--text-color);
-
-  @media (max-width: 768px) {
-    font-size: 24px;
-  }
-`;
-
-const SuccessSubtitle = styled.p`
-  font-size: 18px;
-  color: var(--text-secondary);
-  margin-bottom: 32px;
-  line-height: 1.6;
-
-  @media (max-width: 768px) {
-    font-size: 16px;
-  }
-`;
-
-const SuccessDeliverables = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  text-align: left;
-  margin-bottom: 32px;
-`;
-
-const SuccessDeliverable = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
-  border-radius: ${({ theme }) => theme.radius.md};
-  padding: 16px;
-
-  svg {
-    width: 24px;
-    height: 24px;
-    color: var(--success);
-    flex-shrink: 0;
-  }
-
-  span {
-    font-size: 16px;
-    color: var(--text-color);
-    font-weight: 500;
-  }
-`;
 
 // ==================== MAIN COMPONENT ====================
 export default function Page() {
@@ -2978,32 +2757,7 @@ export default function Page() {
       <Container>
       {/* HERO SECTION */}
       <HeroSection>
-        <BackgroundBlur>
-          {/* Light mode - Mint glow */}
-          <BlurCircle
-            $position="width: 320px; height: 320px; left: -128px; top: -128px;"
-            $color="#006e81"
-            $isDarkMode={false}
-          />
-          <BlurCircle
-            $position="width: 384px; height: 384px; right: -140px; bottom: -140px;"
-            $color="#006e81"
-            $isDarkMode={false}
-          />
-
-          {/* Dark mode - Teal / Navy glow */}
-          <BlurCircle
-            $position="width: 400px; height: 600px; left: -160px; top: -160px;"
-            $color="#118296ff"
-            $isDarkMode={true}
-          />
-          <BlurCircle
-            $position="width: 400px; height: 600px; right: -140px; bottom: -140px;"
-            $color="#006e81"
-            $isDarkMode={true}
-          />
-        </BackgroundBlur>
-
+        <HeroHighlightWrapper>
         <HeroContent>
           <TrustBadge>
             <CheckIcon />
@@ -3011,7 +2765,7 @@ export default function Page() {
           </TrustBadge>
 
           <HeroTitle>
-            Optimize Your Resume for <GradientText>Job Postings</GradientText>
+            Optimize Your Resume for <Highlight>Job Postings</Highlight>
           </HeroTitle>
 
           <HeroSubtitle>
@@ -3069,6 +2823,7 @@ export default function Page() {
             </SocialProofText>
           </SocialProof>
         </HeroContent>
+        </HeroHighlightWrapper>
       </HeroSection>
 
       <Divider />
@@ -3965,57 +3720,7 @@ export default function Page() {
       <Divider />
 
       {/* SECONDARY CTA SECTION */}
-      <SecondaryCTASection>
-        <SecondaryCTACard>
-          <SecondaryCTAAvatarStack>
-            <AvatarWrapper $isFirst>
-              <Image src="https://i.pravatar.cc/150?img=1" alt="Professional who achieved interview success with Rejectly AI resume optimizer and ATS optimization" fill sizes="44px" style={{ objectFit: "cover" }} />
-            </AvatarWrapper>
-            <AvatarWrapper>
-              <Image src="https://i.pravatar.cc/150?img=2" alt="Job seeker who transformed career using Rejectly ATS-friendly resume builder" fill sizes="44px" style={{ objectFit: "cover" }} />
-            </AvatarWrapper>
-            <AvatarWrapper>
-              <Image src="https://i.pravatar.cc/150?img=3" alt="Tech professional who landed interviews at top companies with Rejectly resume analysis" fill sizes="44px" style={{ objectFit: "cover" }} />
-            </AvatarWrapper>
-            <AvatarWrapper>
-              <Image src="https://i.pravatar.cc/150?img=4" alt="Career changer who beat applicant tracking systems using Rejectly AI optimization" fill sizes="44px" style={{ objectFit: "cover" }} />
-            </AvatarWrapper>
-            <AvatarWrapper>
-              <Image src="https://i.pravatar.cc/150?img=5" alt="Success story from 500+ professionals who transformed job search with Rejectly AI resume optimizer" fill sizes="44px" style={{ objectFit: "cover" }} />
-            </AvatarWrapper>
-          </SecondaryCTAAvatarStack>
-
-          <SecondaryCTATitle>
-            Still Deciding? Every Day You Wait is Another Day of Rejections.
-          </SecondaryCTATitle>
-
-          <SecondaryCTASubtitle>
-            Join 500+ professionals who transformed their job search with Rejectly.pro.
-            Stop wasting hours on applications that go nowhere. Start getting interviews
-            within 7 days—or your money back.
-          </SecondaryCTASubtitle>
-
-          <SecondaryCTAButton href={ROUTES.AUTH.SIGNUP}>
-            <RocketIcon />
-            Yes, I Want to Fix My Resume Now
-          </SecondaryCTAButton>
-
-          <SecondaryCTAFeatures>
-            <SecondaryCTAFeature>
-              <CheckIcon />
-              No credit card required
-            </SecondaryCTAFeature>
-            <SecondaryCTAFeature>
-              <CheckIcon />
-              Results in 30 seconds
-            </SecondaryCTAFeature>
-            <SecondaryCTAFeature>
-              <CheckIcon />
-              Cancel anytime, no questions
-            </SecondaryCTAFeature>
-          </SecondaryCTAFeatures>
-        </SecondaryCTACard>
-      </SecondaryCTASection>
+      <SecondaryCTA />
 
       <Divider />
 

@@ -14,13 +14,32 @@ const Section = styled.section`
 `;
 
 const CTASection = styled(Section)`
-  background: linear-gradient(
-    135deg,
-    rgba(var(--accent-rgb), 0.05) 0%,
-    rgba(var(--primary-500-rgb), 0.05) 100%
-  );
-  border-top: 1px solid var(--primary-500);
-  border-bottom: 1px solid var(--primary-500);
+  position: relative;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  width: 100vw;
+  padding-left: 24px;
+  padding-right: 24px;
+  background-image: url('https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+  }
+
+  @media (max-width: 768px) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 `;
 
 const PrimaryButton = styled.a`
@@ -59,6 +78,8 @@ const PrimaryButton = styled.a`
 `;
 
 const CTACard = styled.div`
+  position: relative;
+  z-index: 1;
   background: var(--bg-alt);
   border: 2px solid var(--accent);
   border-radius: 24px;
@@ -66,7 +87,7 @@ const CTACard = styled.div`
   text-align: center;
   max-width: 800px;
   margin: 0 auto;
-  box-shadow: 0 20px 60px rgba(var(--accent-rgb), 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 
   @media (max-width: 768px) {
     padding: 40px 24px;

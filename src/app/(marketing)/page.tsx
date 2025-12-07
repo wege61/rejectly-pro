@@ -7,6 +7,7 @@ import { ROUTES } from "@/lib/constants";
 import { Footer } from "@/components/ui/Footer";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
 import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
+import { ProblemBentoGrid } from "@/components/marketing/ProblemBentoGrid";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -2829,78 +2830,7 @@ export default function Page() {
       <Divider />
 
       {/* PROBLEM-AGITATE SECTION */}
-      <ProblemSection>
-        <SectionHeader>
-          <SectionTitle>Why Your Applications Keep Getting Rejected</SectionTitle>
-          <SectionSubtitle>
-            The brutal truth about modern job hunting that nobody tells you
-          </SectionSubtitle>
-        </SectionHeader>
-
-        <ProblemGrid>
-          <ProblemCard>
-            <ProblemIcon className="problem-icon">
-              <XIcon />
-            </ProblemIcon>
-            <ProblemTitle>ATS Robots Kill Your Resume Before Human Eyes See It</ProblemTitle>
-            <ProblemDescription>
-              98% of Fortune 500 companies use Applicant Tracking Systems. Your perfectly
-              crafted CV gets rejected in 7.4 seconds by algorithms that can't parse your
-              format or find the right keywords.
-            </ProblemDescription>
-            <ProblemQuote>
-              <p>
-                If the ATS can't read your resume, you're invisible—like showing up to
-                an interview speaking the wrong language.
-              </p>
-            </ProblemQuote>
-          </ProblemCard>
-
-          <ProblemCard>
-            <ProblemIcon className="problem-icon">
-              <TargetIcon />
-            </ProblemIcon>
-            <ProblemTitle>You're Applying to Jobs You'll Never Get</ProblemTitle>
-            <ProblemDescription>
-              Without AI analysis, you can't see the 30-40% skills gap between your resume
-              and the job posting. You waste hours applying to positions where you have
-              zero chance, while missing roles you'd actually excel at.
-            </ProblemDescription>
-            <ProblemQuote>
-              <p>
-                Sent 150 applications. Got 4 responses. Every bad-fit application is time
-                stolen from finding your dream job.
-              </p>
-            </ProblemQuote>
-          </ProblemCard>
-
-          <ProblemCard>
-            <ProblemIcon className="problem-icon">
-              <RobotIcon />
-            </ProblemIcon>
-            <ProblemTitle>Your Resume Speaks Human, But Hiring is Done by Machines</ProblemTitle>
-            <ProblemDescription>
-              What impresses humans (creative formatting, personality, storytelling) confuses
-              ATS systems. Your resume needs to be bilingual: machine-readable for ATS,
-              compelling for humans. Most resumes fail at both.
-            </ProblemDescription>
-            <ProblemQuote>
-              <p>
-                Your skills are real. But without the exact keywords recruiters search for,
-                you're screaming into a void.
-              </p>
-            </ProblemQuote>
-          </ProblemCard>
-        </ProblemGrid>
-
-        <TransitionBox>
-          <h3>There's a better way.</h3>
-          <p>
-            Stop sending applications into the void.
-            Let AI show you exactly what's missing—in 30 seconds.
-          </p>
-        </TransitionBox>
-      </ProblemSection>
+      <ProblemBentoGrid />
 
       <Divider />
 

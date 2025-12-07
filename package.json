@@ -13,6 +13,7 @@
     "@supabase/ssr": "^0.7.0",
     "@supabase/storage-js": "^2.75.1",
     "@supabase/supabase-js": "^2.75.0",
+    "framer-motion": "^12.23.25",
     "jspdf": "^3.0.3",
     "lucide-react": "^0.554.0",
     "mammoth": "^1.11.0",

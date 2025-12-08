@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-import { BlogList } from "./BlogList";
+import { BlogBentoGrid } from "./BlogBentoGrid";
 import { BlogPagination } from "./BlogPagination";
 import { BlogSidebar } from "./BlogSidebar";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
@@ -158,7 +158,7 @@ export function BlogPageContent({
               </FilterInfo>
             )}
 
-            <BlogList posts={posts} />
+            <BlogBentoGrid posts={posts} />
 
             <BlogPagination
               currentPage={page}

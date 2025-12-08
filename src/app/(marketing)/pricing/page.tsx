@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -363,54 +364,6 @@ const AnswerText = styled.p`
   }
 `;
 
-const CTASection = styled.section`
-  background: linear-gradient(
-    135deg,
-    rgba(var(--primary-500-rgb), 0.1) 0%,
-    rgba(var(--primary-700-rgb), 0.1) 100%
-  );
-  border: 1px solid var(--primary-200);
-  border-radius: 24px;
-  padding: 64px 48px;
-  text-align: center;
-  margin-bottom: 120px;
-
-  @media (max-width: 768px) {
-    padding: 48px 32px;
-    margin-bottom: 80px;
-  }
-`;
-
-const CTATitle = styled.h2`
-  font-size: 38px;
-  font-weight: 800;
-  margin-bottom: 16px;
-  color: var(--text-color);
-
-  @media (max-width: 768px) {
-    font-size: 28px;
-  }
-`;
-
-const CTADescription = styled.p`
-  font-size: 18px;
-  color: var(--text-secondary);
-  margin-bottom: 32px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-
-  @media (max-width: 768px) {
-    font-size: 16px;
-  }
-`;
-
-const CTAButtons = styled.div`
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-`;
 
 const CheckIcon = () => (
   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -816,25 +769,7 @@ export default function PricingPage() {
           </FAQList>
         </FAQSection>
 
-        <CTASection>
-          <CTATitle>Ready to Boost Your Job Search?</CTATitle>
-          <CTADescription>
-            Join professionals who improved their resumes and increased their
-            interview rates. Start with just $2.
-          </CTADescription>
-          <CTAButtons>
-            <Button size="lg" onClick={() => router.push("/signup")}>
-              Get Started
-            </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={() => router.push("/#demo")}
-            >
-              Try Demo
-            </Button>
-          </CTAButtons>
-        </CTASection>
+        <SecondaryCTA />
       </Content>
       <Footer />
     </Container>

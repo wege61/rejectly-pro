@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
 
 // ==================== ICONS ====================
 const TargetIcon = () => (
@@ -408,63 +409,6 @@ const StatLabel = styled.div`
   font-weight: 500;
 `;
 
-const CTASection = styled.section`
-  padding: 80px 24px;
-  max-width: 900px;
-  margin: 0 auto;
-
-  @media (max-width: 768px) {
-    padding: 60px 16px;
-  }`;
-
-  const CTACard = styled.div`
- background: linear-gradient(
-    135deg,
-    rgba(var(--primary-500-rgb), 0.1) 0%,
-    rgba(var(--primary-700-rgb), 0.1) 100%
-  );
-  border: 1px solid var(--primary-200);
-  border-radius: 24px;
-  padding: 64px 48px;
-  text-align: center;
-
-  @media (max-width: 768px) {
-    padding: 48px 32px;
-  }`;
-
-const CTATitle = styled.h2`
-  font-size: 38px;
-  font-weight: 800;
-  margin-bottom: 16px;
-
-  @media (max-width: 768px) {
-    font-size: 28px;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 32px;
-  }
-`;
-
-const CTAText = styled.p`
-  font-size: 18px;
-  color: var(--text-secondary);
-  margin-bottom: 32px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-
-  @media (max-width: 768px) {
-    font-size: 16px;
-  }
-`;
-
-const CTAButtons = styled.div`
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-`;
 
 export default function AboutPage() {
   const router = useRouter();
@@ -640,27 +584,7 @@ export default function AboutPage() {
           </TeamStats>
         </TeamSection>
 
-        <CTASection>
-          <CTACard>
-          <CTATitle>Ready to Transform Your Resume?</CTATitle>
-          <CTAText>
-            Join thousands of successful job seekers who've used Rejectly.pro to land
-            their dream jobs. Get started for free today.
-          </CTAText>
-          <CTAButtons>
-            <Button onClick={() => router.push(ROUTES.AUTH.SIGNUP)} size="lg">
-              Get Started Free
-            </Button>
-            <Button
-              onClick={() => router.push(ROUTES.PUBLIC.PRICING)}
-              variant="secondary"
-              size="lg"
-            >
-              View Pricing
-            </Button>
-          </CTAButtons>
-          </CTACard>
-        </CTASection>
+        <SecondaryCTA />
       </Content>
       <Footer />
     </Container>

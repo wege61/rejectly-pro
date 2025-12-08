@@ -1,8 +1,9 @@
 "use client";
 
 import styled, { keyframes } from "styled-components";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ROUTES } from "@/lib/constants";
 import { Footer } from "@/components/ui/Footer";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
@@ -2140,139 +2141,222 @@ const TransitionBox = styled.div`
   }
 `;
 
-// ==================== TRANSFORMATION SECTION ====================
-const TransformationSection = styled(Section)`
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(var(--primary-500-rgb), 0.03) 50%,
-    transparent 100%
-  );
+// ==================== TIMELINE SECTION ====================
+const TimelineSection = styled(Section)`
+  background: var(--bg-color);
 `;
 
-const TransformationTimeline = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 48px;
-  max-width: 900px;
+const TimelineContainer = styled.div`
+  max-width: 1200px;
   margin: 0 auto;
   position: relative;
-`;
-
-const TransformationStage = styled.div<{ $index: number }>`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  padding: 0 16px;
 
   @media (min-width: 768px) {
-    flex-direction: ${({ $index }) => ($index % 2 === 0 ? 'row' : 'row-reverse')};
-    align-items: center;
+    padding: 0 40px;
   }
 `;
 
-const TransformationContent = styled.div`
-  flex: 1;
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: 32px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    border-color: var(--primary-500);
-    transform: translateY(-4px);
-    box-shadow: ${({ theme }) => theme.shadow.lg};
-  }
-
-  @media (max-width: 768px) {
-    padding: 24px;
-  }
+const TimelineWrapper = styled.div`
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 80px;
 `;
 
-const TransformationBadge = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--primary-500);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-size: 13px;
-  margin-bottom: 16px;
-`;
-
-const TransformationTitle = styled.h3`
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 12px;
-  color: var(--text-color);
-
-  @media (max-width: 768px) {
-    font-size: 20px;
-  }
-`;
-
-const TransformationDescription = styled.p`
-  color: var(--text-secondary);
-  line-height: 1.7;
-  font-size: 16px;
-  margin-bottom: 16px;
-`;
-
-const TransformationMetrics = styled.div`
+const TimelineEntry = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 20px;
-`;
+  justify-content: flex-start;
+  padding-top: 40px;
+  gap: 40px;
 
-const TransformationMetric = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--primary-500);
-  font-size: 14px;
-
-  svg {
-    width: 16px;
-    height: 16px;
-    color: var(--primary-500);
+  @media (min-width: 768px) {
+    padding-top: 160px;
+    gap: 40px;
   }
 `;
 
-const TransformationIcon = styled.div`
-  width: 80px;
-  height: 80px;
+const TimelineStickyLeft = styled.div`
+  position: sticky;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  top: 160px;
+  align-self: flex-start;
+  z-index: 40;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  @media (min-width: 1024px) {
+    max-width: 360px;
+  }
+`;
+
+const TimelineDotWrapper = styled.div`
+  height: 40px;
+  width: 40px;
+  position: absolute;
+  left: 12px;
   border-radius: 50%;
-  background: var(--primary-500);
+  background: var(--bg-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-  box-shadow: 0 8px 24px rgba(var(--primary-500-rgb), 0.3);
-
-  svg {
-    width: 40px;
-    height: 40px;
-    color: white;
-  }
 
   @media (min-width: 768px) {
-    margin: 0 32px;
+    left: 12px;
+  }
+`;
+
+const TimelineDotInner = styled.div`
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+`;
+
+const TimelinePeriod = styled.h3`
+  display: none;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-muted);
+
+  @media (min-width: 768px) {
+    display: block;
+    padding-left: 80px;
+    font-size: 48px;
+  }
+`;
+
+const TimelineContent = styled.div`
+  position: relative;
+  padding-left: 80px;
+  padding-right: 16px;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    padding-left: 16px;
+    padding-right: 0;
+  }
+`;
+
+const TimelineMobilePeriod = styled.h3`
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  text-align: left;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+`;
+
+const TimelineHeadline = styled.h4`
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-color);
+  line-height: 1.4;
+  margin-bottom: 16px;
+
+  @media (min-width: 768px) {
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+`;
+
+const TimelineText = styled.p`
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 24px;
+  max-width: 480px;
+
+  @media (min-width: 768px) {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+`;
+
+const TimelineHighlight = styled.span`
+  color: var(--text-color);
+  font-weight: 600;
+`;
+
+const TimelineMetrics = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
+const TimelineMetric = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--landing-button);
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(255, 107, 107, 0.08);
+  padding: 8px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 107, 107, 0.15);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 107, 107, 0.12);
+    border-color: rgba(255, 107, 107, 0.25);
   }
 
-  @media (max-width: 768px) {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 16px;
-
-    svg {
-      width: 32px;
-      height: 32px;
-    }
+  svg {
+    width: 14px;
+    height: 14px;
   }
+`;
+
+const TimelineLineContainer = styled.div<{ $height: number }>`
+  position: absolute;
+  left: 32px;
+  top: 0;
+  overflow: hidden;
+  width: 2px;
+  height: ${({ $height }) => $height}px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--border-color) 10%,
+    var(--border-color) 90%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+
+  @media (min-width: 768px) {
+    left: 32px;
+  }
+`;
+
+const TimelineLineProgress = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  width: 2px;
+  background: linear-gradient(
+    to top,
+    var(--landing-button) 0%,
+    rgba(255, 107, 107, 0.5) 10%,
+    transparent 100%
+  );
+  border-radius: 9999px;
 `;
 
 // ==================== VALUE STACK (Enhanced Pricing) ====================
@@ -2407,6 +2491,73 @@ const ValueStackTotalItem = styled.div<{ $emphasized?: boolean }>`
   }
 `;
 
+
+// ==================== TIMELINE COMPONENT ====================
+interface TimelineEntryData {
+  period: string;
+  headline: string;
+  text: React.ReactNode;
+  metrics: { icon: React.ReactNode; label: string }[];
+}
+
+function Timeline({ data }: { data: TimelineEntryData[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setHeight(rect.height);
+    }
+  }, [ref]);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 10%", "end 50%"],
+  });
+
+  const heightTransform = useTransform(scrollYProgress, [0, 1], [0, height]);
+  const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
+
+  return (
+    <TimelineContainer ref={containerRef}>
+      <TimelineWrapper ref={ref}>
+        {data.map((item, index) => (
+          <TimelineEntry key={index}>
+            <TimelineStickyLeft>
+              <TimelineDotWrapper>
+                <TimelineDotInner />
+              </TimelineDotWrapper>
+              <TimelinePeriod>{item.period}</TimelinePeriod>
+            </TimelineStickyLeft>
+
+            <TimelineContent>
+              <TimelineMobilePeriod>{item.period}</TimelineMobilePeriod>
+              <TimelineHeadline>{item.headline}</TimelineHeadline>
+              <TimelineText>{item.text}</TimelineText>
+              <TimelineMetrics>
+                {item.metrics.map((metric, idx) => (
+                  <TimelineMetric key={idx}>
+                    {metric.icon} {metric.label}
+                  </TimelineMetric>
+                ))}
+              </TimelineMetrics>
+            </TimelineContent>
+          </TimelineEntry>
+        ))}
+        <TimelineLineContainer $height={height}>
+          <TimelineLineProgress
+            style={{
+              height: heightTransform,
+              opacity: opacityTransform,
+            }}
+          />
+        </TimelineLineContainer>
+      </TimelineWrapper>
+    </TimelineContainer>
+  );
+}
 
 // ==================== MAIN COMPONENT ====================
 export default function Page() {
@@ -3274,93 +3425,78 @@ export default function Page() {
 
       <Divider />
 
-      {/* TRANSFORMATION SECTION */}
-      <TransformationSection>
+      {/* TIMELINE SECTION */}
+      <TimelineSection>
         <SectionHeader>
           <SectionTitle>Your Career Transformation Journey</SectionTitle>
           <SectionSubtitle>
-            From "auto-rejected" to "dream job offer" in 4 proven stages
+            From &quot;auto-rejected&quot; to &quot;dream job offer&quot; in 4 proven stages
           </SectionSubtitle>
         </SectionHeader>
 
-        <TransformationTimeline>
-          {/* Stage 1 */}
-          <TransformationStage $index={0}>
-            <TransformationContent>
-              <TransformationBadge>Day 1</TransformationBadge>
-              <TransformationTitle>Your resume goes from invisible to irresistible</TransformationTitle>
-              <TransformationDescription>
-                AI reveals exactly why you were getting rejected. In 15 minutes,
-                you have an ATS-optimized resume with the right keywords and format.
-              </TransformationDescription>
-              <TransformationMetrics>
-                <TransformationMetric><CheckIcon /> 85% ATS pass rate</TransformationMetric>
-                <TransformationMetric><CheckIcon /> 15 min setup</TransformationMetric>
-              </TransformationMetrics>
-            </TransformationContent>
-            <TransformationIcon>
-              <ZapIcon />
-            </TransformationIcon>
-          </TransformationStage>
-
-          {/* Stage 2 */}
-          <TransformationStage $index={1}>
-            <TransformationContent>
-              <TransformationBadge>Week 1</TransformationBadge>
-              <TransformationTitle>Interview invitations start rolling in</TransformationTitle>
-              <TransformationDescription>
-                Your resume cuts through ATS filters. Recruiters actually see it.
-                Response rate jumps from 2% to 10% because you're targeting the right roles.
-              </TransformationDescription>
-              <TransformationMetrics>
-                <TransformationMetric><CheckIcon /> 3x more responses</TransformationMetric>
-                <TransformationMetric><CheckIcon /> Better-fit roles</TransformationMetric>
-              </TransformationMetrics>
-            </TransformationContent>
-            <TransformationIcon>
-              <RefreshIcon />
-            </TransformationIcon>
-          </TransformationStage>
-
-          {/* Stage 3 */}
-          <TransformationStage $index={2}>
-            <TransformationContent>
-              <TransformationBadge>Month 1</TransformationBadge>
-              <TransformationTitle>Multiple offers give you leverage</TransformationTitle>
-              <TransformationDescription>
-                Better targeting means higher conversion. You get 2-3 competing offers.
-                Negotiation power. One of them is your dream company—and they want you.
-              </TransformationDescription>
-              <TransformationMetrics>
-                <TransformationMetric><CheckIcon /> 2-3 job offers</TransformationMetric>
-                <TransformationMetric><CheckIcon /> 15-25% salary boost</TransformationMetric>
-              </TransformationMetrics>
-            </TransformationContent>
-            <TransformationIcon>
-              <BriefcaseIcon />
-            </TransformationIcon>
-          </TransformationStage>
-
-          {/* Stage 4 */}
-          <TransformationStage $index={3}>
-            <TransformationContent>
-              <TransformationBadge>Year 1</TransformationBadge>
-              <TransformationTitle>Your career trajectory changes forever</TransformationTitle>
-              <TransformationDescription>
-                You're thriving. The confidence carries into promotions. Your network grows.
-                Your earning power compounds. You know how to position yourself for anything.
-              </TransformationDescription>
-              <TransformationMetrics>
-                <TransformationMetric><CheckIcon /> 40-60% higher comp</TransformationMetric>
-                <TransformationMetric><CheckIcon /> Career momentum</TransformationMetric>
-              </TransformationMetrics>
-            </TransformationContent>
-            <TransformationIcon>
-              <SparklesIcon />
-            </TransformationIcon>
-          </TransformationStage>
-        </TransformationTimeline>
-      </TransformationSection>
+        <Timeline
+          data={[
+            {
+              period: "Day 1",
+              headline: "Your resume goes from invisible to irresistible",
+              text: (
+                <>
+                  AI reveals <TimelineHighlight>exactly why</TimelineHighlight> you were getting rejected.
+                  In just 15 minutes, you have an ATS-optimized resume with the right keywords,
+                  perfect formatting, and language that both robots and humans love.
+                </>
+              ),
+              metrics: [
+                { icon: <CheckIcon />, label: "85% ATS pass rate" },
+                { icon: <CheckIcon />, label: "15 min setup" },
+              ],
+            },
+            {
+              period: "Week 1",
+              headline: "Interview invitations start rolling in",
+              text: (
+                <>
+                  Your resume cuts through ATS filters. <TimelineHighlight>Recruiters actually see it.</TimelineHighlight> Response
+                  rate jumps from 2% to 10% because you&apos;re finally targeting the right roles
+                  with the right message.
+                </>
+              ),
+              metrics: [
+                { icon: <CheckIcon />, label: "3x more responses" },
+                { icon: <CheckIcon />, label: "Better-fit roles" },
+              ],
+            },
+            {
+              period: "Month 1",
+              headline: "Multiple offers give you leverage",
+              text: (
+                <>
+                  Better targeting means higher conversion. You get <TimelineHighlight>2-3 competing offers.</TimelineHighlight> Negotiation
+                  power you never had before. One of them is your dream company—and they want you.
+                </>
+              ),
+              metrics: [
+                { icon: <CheckIcon />, label: "2-3 job offers" },
+                { icon: <CheckIcon />, label: "15-25% salary boost" },
+              ],
+            },
+            {
+              period: "Year 1",
+              headline: "Your career trajectory changes forever",
+              text: (
+                <>
+                  You&apos;re thriving. The confidence carries into promotions. Your network grows exponentially.
+                  Your <TimelineHighlight>earning power compounds.</TimelineHighlight> You know how to position yourself for anything that comes next.
+                </>
+              ),
+              metrics: [
+                { icon: <CheckIcon />, label: "40-60% higher comp" },
+                { icon: <CheckIcon />, label: "Career momentum" },
+              ],
+            },
+          ]}
+        />
+      </TimelineSection>
 
       <Divider />
 

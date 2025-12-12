@@ -18,13 +18,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Get request body
-    const { reportId, fakeItMode = false } = await request.json();
+    const { reportId, fakeItMode = false, additionalTools = [] } = await request.json();
 
     console.log('🔍 CV Generation Request:', {
       reportId,
       fakeItMode,
       fakeItModeType: typeof fakeItMode,
-      fakeItModeValue: fakeItMode === true ? 'TRUE' : 'FALSE'
+      fakeItModeValue: fakeItMode === true ? 'TRUE' : 'FALSE',
+      additionalTools: additionalTools.length > 0 ? additionalTools : 'none'
     });
 
     if (!reportId) {
@@ -46,9 +47,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Report not found" }, { status: 404 });
     }
 
-    // Check if CV already generated with same fake it mode setting
-    if (report.generated_cv && report.fake_it_mode === fakeItMode) {
-      console.log('✅ CV already generated with same fake_it_mode, returning cached version');
+    // Check if CV already generated with same settings
+    // Always regenerate if additionalTools are provided (user selected new tools)
+    const hasAdditionalTools = additionalTools && additionalTools.length > 0;
+
+    if (report.generated_cv && report.fake_it_mode === fakeItMode && !hasAdditionalTools) {
+      console.log('✅ CV already generated with same settings, returning cached version');
       return NextResponse.json({
         success: true,
         message: "CV already generated",
@@ -56,12 +60,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // If fake it mode changed, regenerate CV
-    if (report.generated_cv && report.fake_it_mode !== fakeItMode) {
-      console.log('🔄 Regenerating CV with different fake_it_mode:', {
-        old: report.fake_it_mode,
-        new: fakeItMode
-      });
+    // Log regeneration reason
+    if (report.generated_cv) {
+      if (report.fake_it_mode !== fakeItMode) {
+        console.log('🔄 Regenerating CV with different fake_it_mode:', {
+          old: report.fake_it_mode,
+          new: fakeItMode
+        });
+      }
+      if (hasAdditionalTools) {
+        console.log('🔧 Regenerating CV with additional tools:', additionalTools);
+      }
     }
 
     // Check if report is Pro (required for CV generation)
@@ -123,7 +132,8 @@ export async function POST(request: NextRequest) {
       report.cv.text,
       jobDocs.map((job) => job.text),
       analysisResults,
-      fakeItMode
+      fakeItMode,
+      additionalTools
     );
 
     const completion = await openai.chat.completions.create({

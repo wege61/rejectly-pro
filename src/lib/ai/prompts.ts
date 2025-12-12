@@ -470,7 +470,8 @@ export function generateOptimizedCVPrompt(
     roleRecommendations?: Array<{ title: string; fit: number }>;
     atsFlags?: string[];
   },
-  fakeItMode: boolean = false
+  fakeItMode: boolean = false,
+  additionalTools: string[] = []
 ): string {
   return `You are an expert CV writer and ATS optimization specialist. Create a fully optimized, ATS-friendly CV based on the original CV, target job postings, and analysis results.
 
@@ -495,6 +496,37 @@ ANALYSIS RESULTS:
 - Match Score: ${analysisResults.fitScore}/100
 ${analysisResults.rewrittenBullets ? `- Suggested Bullets: ${analysisResults.rewrittenBullets.join(" | ")}` : ""}
 ${analysisResults.atsFlags ? `- ATS Tips: ${analysisResults.atsFlags.join(" | ")}` : ""}
+${additionalTools.length > 0 ? `
+=============================================================================
+USER-CONFIRMED ADDITIONAL TOOLS (MANDATORY INTEGRATION)
+=============================================================================
+The candidate has CONFIRMED they have real experience with these tools:
+${additionalTools.map(tool => `- ${tool}`).join("\n")}
+
+🚨 CRITICAL INTEGRATION REQUIREMENTS 🚨
+
+1. SKILLS SECTION (MANDATORY):
+   - Add ALL ${additionalTools.length} tools to the skills.technical array
+   - These are verified skills - prioritize them in the list
+
+2. EXPERIENCE BULLETS (MANDATORY):
+   - For EACH confirmed tool, find the most relevant job experience
+   - Naturally integrate the tool into at least ONE bullet point for that experience
+   - Use action verbs: "Developed with [Tool]", "Implemented using [Tool]", "Built [X] leveraging [Tool]"
+
+   Example transformations:
+   - Original: "Developed web applications"
+   - With React: "Developed responsive web applications using React and modern JavaScript"
+
+   - Original: "Managed database systems"
+   - With PostgreSQL: "Managed and optimized PostgreSQL database systems, improving query performance by 40%"
+
+3. PROFESSIONAL SUMMARY (IF RELEVANT):
+   - If a tool is highly relevant to the target job, mention it in the summary
+   - Example: "Full-stack developer proficient in React, Node.js, and cloud technologies"
+
+The user specifically confirmed these tools - they MUST appear in the optimized CV, not just in skills but woven into the experience narrative.
+` : ""}
 
 ${fakeItMode ? `
 ═══════════════════════════════════════════════════════
@@ -682,6 +714,8 @@ FINAL QUALITY VERIFICATION
 Before responding, verify:
 □ All contact information preserved from original
 □ All job titles, companies, and dates are EXACT from original
+${additionalTools.length > 0 ? `□ CRITICAL: ALL ${additionalTools.length} user-confirmed tools (${additionalTools.join(', ')}) are in skills.technical array
+□ CRITICAL: Each user-confirmed tool appears in at least ONE experience bullet point` : ''}
 ${fakeItMode ? '□ All missing keywords aggressively added per Fake It Mode' : '□ Related/transferable keywords strategically integrated to IMPROVE MATCH SCORE'}
 □ Bullets enhanced but based on real content
 □ Summary accurately represents the candidate

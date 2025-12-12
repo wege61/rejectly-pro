@@ -15,6 +15,8 @@ import { createClient } from "@/lib/supabase/client";
 import { GeneratedCV } from "@/types/cv";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
+import { ToolSuggestionModal } from "@/components/features/ToolSuggestionModal";
+import { ToolSuggestionResponse } from "@/types/toolSuggestion";
 import { PRICING } from "@/lib/constants";
 
 interface UserCredits {
@@ -2950,6 +2952,10 @@ export default function ReportDetailPage() {
   const [isBuyCreditsModalOpen, setIsBuyCreditsModalOpen] = useState(false);
   const [isBuyingCredits, setIsBuyingCredits] = useState<string | null>(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const [isToolSuggestionModalOpen, setIsToolSuggestionModalOpen] = useState(false);
+  const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
+  const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
+  const [pendingCVGeneration, setPendingCVGeneration] = useState<{ fakeItMode: boolean } | null>(null);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const wasGeneratingRef = useRef(false);
   const [userCredits, setUserCredits] = useState<UserCredits>({
@@ -3460,160 +3466,184 @@ export default function ReportDetailPage() {
 
       if (data) {
         setReport(data);
+        setIsUpgrading(false);
 
-        // Automatically generate optimized CV
-        try {
-          const cvResponse = await fetch("/api/cv/generate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              reportId: data.id,
-              fakeItMode: false,
-            }),
-          });
-
-          if (cvResponse.ok) {
-            // Refresh report again to get generated_cv
-            const { data: updatedData } = await supabase
-              .from("reports")
-              .select("*")
-              .eq("id", reportId)
-              .single();
-
-            if (updatedData) {
-              // Update fake_it_mode state from database
-              if (updatedData.fake_it_mode !== undefined) {
-                setFakeItMode(updatedData.fake_it_mode);
-                console.log('📌 Updated fake_it_mode after upgrade:', updatedData.fake_it_mode);
-              }
-              setReport(updatedData);
-
-              // Generate PDF on client and save to optimized_cvs via API
-              if (updatedData.generated_cv) {
-                try {
-                  const pdf = await generateCVPDF(updatedData.generated_cv);
-                  const pdfBlob = pdf.output('blob');
-
-                  const userName = updatedData.generated_cv.contact?.name || 'Optimized';
-                  const sanitizedName = userName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
-                  const pdfFile = new File([pdfBlob], `${sanitizedName}.pdf`, { type: 'application/pdf' });
-
-                  // Use API to upload with service role (bypasses RLS)
-                  const formData = new FormData();
-                  formData.append('pdf', pdfFile);
-                  formData.append('reportId', updatedData.id);
-
-                  const saveResponse = await fetch('/api/cv/save-optimized', {
-                    method: 'POST',
-                    body: formData,
-                  });
-
-                  const saveResult = await saveResponse.json();
-
-                  if (!saveResponse.ok) {
-                    console.error('Save error:', saveResult.error);
-                    throw new Error(saveResult.error);
-                  }
-
-                  console.log('✅ CV saved to My CVs via API');
-                } catch (saveError) {
-                  console.error('Error saving to My CVs:', saveError);
-                }
-              }
-
-              // Analyze optimized CV to get score improvement
-              const analyzeResponse = await fetch("/api/cv/analyze-optimized", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  reportId: updatedData.id,
-                }),
-              });
-
-              if (analyzeResponse.ok) {
-                const analysisResult = await analyzeResponse.json();
-                setOptimizedScore(analysisResult.optimizedScore);
-                setImprovementBreakdown(analysisResult.improvements || []);
-              }
-            }
-          }
-        } catch (cvError) {
-          console.error("CV generation error:", cvError);
-        }
-
-        // Scroll to top after everything completes
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        toast.success("Your optimized CV is ready!");
+        // Show tool suggestion modal instead of auto-generating CV
+        setPendingCVGeneration({ fakeItMode: false });
+        setIsToolSuggestionModalOpen(true);
+        const suggestions = await fetchToolSuggestions();
+        setToolSuggestions(suggestions);
       }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Upgrade failed";
       toast.error(errorMessage);
-    } finally {
       setIsUpgrading(false);
     }
   };
 
-  const handleGenerateCV = async () => {
+  // Complete CV generation after tool selection (used by both upgrade and regenerate flows)
+  const completeUpgradeWithCV = async (additionalTools: string[] = []) => {
     if (!report) return;
 
     setIsGeneratingCV(true);
-    // Clear previous analysis cache
-    setOptimizedScore(null);
-    setImprovementBreakdown([]);
-
     try {
-      const response = await fetch("/api/cv/generate", {
+      const cvResponse = await fetch("/api/cv/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           reportId: report.id,
-          fakeItMode,
+          fakeItMode: pendingCVGeneration?.fakeItMode ?? false,
+          additionalTools,
         }),
       });
 
-      const result = await response.json();
+      if (cvResponse.ok) {
+        // Refresh report to get generated_cv
+        const supabase = createClient();
+        const { data: updatedData } = await supabase
+          .from("reports")
+          .select("*")
+          .eq("id", reportId)
+          .single();
 
-      if (!response.ok) {
-        throw new Error(result.error || "CV generation failed");
-      }
+        if (updatedData) {
+          // Update fake_it_mode state from database
+          if (updatedData.fake_it_mode !== undefined) {
+            setFakeItMode(updatedData.fake_it_mode);
+            console.log('📌 Updated fake_it_mode after upgrade:', updatedData.fake_it_mode);
+          }
+          setReport(updatedData);
 
-      toast.success(
-        "Your optimized CV has been generated successfully! You can now download it as PDF."
-      );
+          // Generate PDF on client and save to optimized_cvs via API
+          if (updatedData.generated_cv) {
+            try {
+              const pdf = await generateCVPDF(updatedData.generated_cv);
+              const pdfBlob = pdf.output('blob');
 
-      // Refresh report to get generated_cv (cache will be cleared)
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("reports")
-        .select("*")
-        .eq("id", reportId)
-        .single();
+              const userName = updatedData.generated_cv.contact?.name || 'Optimized';
+              const sanitizedName = userName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
+              const pdfFile = new File([pdfBlob], `${sanitizedName}.pdf`, { type: 'application/pdf' });
 
-      if (data) {
-        setReport(data);
-        // Update fake_it_mode state from database
-        if (data.fake_it_mode !== undefined) {
-          setFakeItMode(data.fake_it_mode);
-          console.log('📌 Updated fake_it_mode after CV generation:', data.fake_it_mode);
+              // Use API to upload with service role (bypasses RLS)
+              const formData = new FormData();
+              formData.append('pdf', pdfFile);
+              formData.append('reportId', updatedData.id);
+
+              const saveResponse = await fetch('/api/cv/save-optimized', {
+                method: 'POST',
+                body: formData,
+              });
+
+              const saveResult = await saveResponse.json();
+
+              if (!saveResponse.ok) {
+                console.error('Save error:', saveResult.error);
+                throw new Error(saveResult.error);
+              }
+
+              console.log('✅ CV saved to My CVs via API');
+            } catch (saveError) {
+              console.error('Error saving to My CVs:', saveError);
+            }
+          }
+
+          // Analyze optimized CV to get score improvement
+          const analyzeResponse = await fetch("/api/cv/analyze-optimized", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              reportId: updatedData.id,
+            }),
+          });
+
+          if (analyzeResponse.ok) {
+            const analysisResult = await analyzeResponse.json();
+            setOptimizedScore(analysisResult.optimizedScore);
+            setImprovementBreakdown(analysisResult.improvements || []);
+          }
         }
-      }
 
-      // Analyze the optimized CV to get new match score
-      await analyzeOptimizedCV();
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "CV generation failed";
-      toast.error(errorMessage);
+        // Scroll to top after everything completes
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const toolsMessage = additionalTools.length > 0
+          ? ` ${additionalTools.length} additional tools added!`
+          : "";
+        toast.success(`Your optimized CV is ready!${toolsMessage}`);
+      }
+    } catch (cvError) {
+      console.error("CV generation error:", cvError);
+      toast.error("CV generation failed");
     } finally {
       setIsGeneratingCV(false);
+      setPendingCVGeneration(null);
     }
+  };
+
+  // Fetch tool suggestions before CV generation
+  const fetchToolSuggestions = async () => {
+    if (!report) return null;
+
+    setIsLoadingToolSuggestions(true);
+    try {
+      const response = await fetch("/api/cv/suggest-tools", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reportId: report.id }),
+      });
+
+      if (!response.ok) {
+        console.error("Failed to fetch tool suggestions");
+        return null;
+      }
+
+      const result = await response.json();
+      return result.suggestions as ToolSuggestionResponse;
+    } catch (error) {
+      console.error("Error fetching tool suggestions:", error);
+      return null;
+    } finally {
+      setIsLoadingToolSuggestions(false);
+    }
+  };
+
+  // Handle CV generation button click
+  const handleGenerateCV = async () => {
+    if (!report) return;
+
+    // Store the current fakeItMode for later use
+    setPendingCVGeneration({ fakeItMode });
+
+    // If CV already exists (regenerate case), use existing tools without asking
+    if (report.generated_cv?.skills?.technical) {
+      const existingTools = report.generated_cv.skills.technical;
+      console.log('🔄 Regenerating with existing tools:', existingTools);
+      await completeUpgradeWithCV(existingTools);
+      return;
+    }
+
+    // First time generation - show tool suggestion modal
+    setIsToolSuggestionModalOpen(true);
+    const suggestions = await fetchToolSuggestions();
+    setToolSuggestions(suggestions);
+  };
+
+  // Handle tool selection confirm from modal
+  const handleToolSuggestionConfirm = async (selectedTools: string[]) => {
+    setIsToolSuggestionModalOpen(false);
+    setToolSuggestions(null);
+    await completeUpgradeWithCV(selectedTools);
+  };
+
+  // Handle skip from tool suggestion modal
+  const handleToolSuggestionSkip = async () => {
+    setIsToolSuggestionModalOpen(false);
+    setToolSuggestions(null);
+    await completeUpgradeWithCV([]);
   };
 
   const handlePreviewCV = async () => {
@@ -5476,6 +5506,31 @@ export default function ReportDetailPage() {
         </FullscreenSuccessOverlay>,
         document.body
       )}
+
+      {/* Tool Suggestion Loading Modal */}
+      {isLoadingToolSuggestions && (
+        <LoadingModalOverlay>
+          <LoadingModalContent>
+            <LoadingSpinner />
+            <LoadingTitle>Analyzing Your Experience</LoadingTitle>
+            <LoadingMessage>
+              Identifying tools that could strengthen your CV...
+            </LoadingMessage>
+          </LoadingModalContent>
+        </LoadingModalOverlay>
+      )}
+
+      {/* Tool Suggestion Modal */}
+      <ToolSuggestionModal
+        isOpen={isToolSuggestionModalOpen && !isLoadingToolSuggestions}
+        onClose={() => {
+          setIsToolSuggestionModalOpen(false);
+          setPendingCVGeneration(null);
+        }}
+        onConfirm={handleToolSuggestionConfirm}
+        onSkip={handleToolSuggestionSkip}
+        suggestions={toolSuggestions}
+      />
 
       {/* Cover Letter Generator Modal */}
       <CoverLetterGenerator

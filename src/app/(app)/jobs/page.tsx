@@ -6,20 +6,21 @@ import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/Badge";
 import { JobsListSkeleton } from "@/components/skeletons/JobsListSkeleton";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useId } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/contexts/ToastContext";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
+import { AnimatePresence, motion } from "motion/react";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: ${({ theme }) => theme.spacing["2xl"]};
 
-  
   @media (max-width: 450px) {
     padding: ${({ theme }) => theme.spacing["lg"]};
     padding-top: 52px;
@@ -51,20 +52,118 @@ const JobsList = styled.div`
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const JobCard = styled(Card)`
-  cursor: default;
-  transition: all ${({ theme }) => theme.transitions.normal};
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  }
-`;
-
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
+`;
+
+// Expanded card styled components
+const ExpandedCardContainer = styled(motion.div)`
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  box-shadow: ${({ theme }) => theme.shadow.xl};
+  overflow: hidden;
+`;
+
+const ExpandedCardHeader = styled.div`
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const ExpandedCardBody = styled.div`
+  padding: ${({ theme }) => theme.spacing.lg};
+  overflow-y: auto;
+  flex: 1;
+`;
+
+const ExpandedCardFooter = styled.div`
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  justify-content: flex-end;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const ExpandedFormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+// Job card with motion
+const JobCardWrapper = styled(motion.div)`
+  cursor: pointer;
+`;
+
+const JobCardInner = styled(Card)`
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const CardTitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+`;
+
+const CardTitleContent = styled.div``;
+
+const CardActions = styled.div`
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+`;
+
+// Backdrop
+const Backdrop = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+`;
+
+const ExpandedCardOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 101;
+  padding: ${({ theme }) => theme.spacing.lg};
+`;
+
+const CloseButton = styled(motion.button)`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 102;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.surfaceHover};
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    color: ${({ theme }) => theme.colors.textSecondary};
+  }
 `;
 
 interface Job {
@@ -79,7 +178,6 @@ interface Job {
 
 export default function JobsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [jobTitle, setJobTitle] = useState("");
   const [jobUrl, setJobUrl] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -87,8 +185,39 @@ export default function JobsPage() {
   const [isFetchingJobs, setIsFetchingJobs] = useState(true);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [deletingJobId, setDeletingJobId] = useState<string | null>(null);
+
+  // Expandable card state
+  const [activeJob, setActiveJob] = useState<Job | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editUrl, setEditUrl] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [isEditLoading, setIsEditLoading] = useState(false);
+
+  const expandedCardRef = useRef<HTMLDivElement>(null);
+  const id = useId();
   const toast = useToast();
   const { user } = useAuth();
+
+  // Handle escape key and body scroll
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setActiveJob(null);
+      }
+    }
+
+    if (activeJob) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [activeJob]);
+
+  // Click outside to close
+  useClickOutside(expandedCardRef, () => setActiveJob(null));
 
   // Fetch jobs on mount
   useEffect(() => {
@@ -114,35 +243,30 @@ export default function JobsPage() {
     fetchJobs();
   }, [user]);
 
-  // Pre-populate form when editing
-  useEffect(() => {
-    if (editingJob) {
-      setJobTitle(editingJob.title);
-      setJobUrl(editingJob.file_url || "");
-      setJobDescription(editingJob.text);
-    } else {
-      setJobTitle("");
-      setJobUrl("");
-      setJobDescription("");
-    }
-  }, [editingJob]);
-
   const openAddModal = () => {
-    setEditingJob(null);
-    setIsModalOpen(true);
-  };
-
-  const openEditModal = (job: Job) => {
-    setEditingJob(job);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setEditingJob(null);
     setJobTitle("");
     setJobUrl("");
     setJobDescription("");
+  };
+
+  const handleOpenEdit = (job: Job, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveJob(job);
+    setEditTitle(job.title);
+    setEditUrl(job.file_url || "");
+    setEditDescription(job.text);
+  };
+
+  const handleCloseEdit = () => {
+    setActiveJob(null);
+    setEditTitle("");
+    setEditUrl("");
+    setEditDescription("");
   };
 
   const handleSubmit = async () => {
@@ -153,17 +277,12 @@ export default function JobsPage() {
 
     setIsLoading(true);
     try {
-      const isEditing = !!editingJob;
-      const endpoint = isEditing ? "/api/jobs/update" : "/api/jobs/add";
-      const method = isEditing ? "PUT" : "POST";
-
-      const response = await fetch(endpoint, {
-        method,
+      const response = await fetch("/api/jobs/add", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...(isEditing && { jobId: editingJob.id }),
           title: jobTitle,
           url: jobUrl || null,
           description: jobDescription || null,
@@ -176,7 +295,7 @@ export default function JobsPage() {
         throw new Error(result.error || "Operation failed");
       }
 
-      toast.success(isEditing ? "Job posting updated!" : "Job posting added!");
+      toast.success("Job posting added!");
 
       // Refresh jobs list
       const supabase = createClient();
@@ -191,7 +310,6 @@ export default function JobsPage() {
         setJobs(data);
       }
 
-      // Close modal and reset form
       closeModal();
     } catch (error) {
       const errorMessage =
@@ -202,7 +320,62 @@ export default function JobsPage() {
     }
   };
 
-  const handleDeleteClick = (jobId: string) => {
+  const handleEditSubmit = async () => {
+    if (!editTitle || (!editUrl && !editDescription)) {
+      toast.error("Please fill in job title and description");
+      return;
+    }
+
+    if (!activeJob) return;
+
+    setIsEditLoading(true);
+    try {
+      const response = await fetch("/api/jobs/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jobId: activeJob.id,
+          title: editTitle,
+          url: editUrl || null,
+          description: editDescription || null,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Update failed");
+      }
+
+      toast.success("Job posting updated!");
+
+      // Refresh jobs list
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("documents")
+        .select("*")
+        .eq("user_id", user?.id)
+        .eq("type", "job")
+        .order("created_at", { ascending: false });
+
+      if (data) {
+        setJobs(data);
+      }
+
+      handleCloseEdit();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Update failed";
+      toast.error(errorMessage);
+    } finally {
+      setIsEditLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (jobId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     setDeletingJobId(jobId);
   };
 
@@ -246,6 +419,121 @@ export default function JobsPage() {
         <Button onClick={openAddModal}>Add Job Posting</Button>
       </Header>
 
+      {/* Backdrop */}
+      <AnimatePresence>
+        {activeJob && (
+          <Backdrop
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Expanded Card */}
+      <AnimatePresence>
+        {activeJob && (
+          <ExpandedCardOverlay>
+            <CloseButton
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.05 } }}
+              onClick={handleCloseEdit}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </CloseButton>
+            <ExpandedCardContainer
+              layoutId={`card-${activeJob.id}-${id}`}
+              ref={expandedCardRef}
+            >
+              <ExpandedCardHeader>
+                <motion.h3
+                  layoutId={`title-${activeJob.id}-${id}`}
+                  style={{
+                    fontSize: "1.25rem",
+                    fontWeight: 600,
+                    marginBottom: "4px",
+                  }}
+                >
+                  Edit Job Posting
+                </motion.h3>
+                <motion.p
+                  layoutId={`description-${activeJob.id}-${id}`}
+                  style={{
+                    fontSize: "0.875rem",
+                    color: "#6b7280",
+                  }}
+                >
+                  Update the job details below
+                </motion.p>
+              </ExpandedCardHeader>
+              <ExpandedCardBody>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <ExpandedFormGroup>
+                    <Input
+                      label="Job Title"
+                      placeholder="e.g. Senior Frontend Developer"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      required
+                      fullWidth
+                    />
+                    <Input
+                      label="Job URL (Optional)"
+                      type="url"
+                      placeholder="https://..."
+                      value={editUrl}
+                      onChange={(e) => setEditUrl(e.target.value)}
+                      helperText="We'll extract the job description automatically"
+                      fullWidth
+                    />
+                    <Textarea
+                      label="Job Description"
+                      placeholder="Paste the full job description here..."
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      rows={8}
+                      fullWidth
+                      helperText={`${editDescription.length} characters`}
+                    />
+                  </ExpandedFormGroup>
+                </motion.div>
+              </ExpandedCardBody>
+              <ExpandedCardFooter>
+                <motion.div
+                  layoutId={`button-${activeJob.id}-${id}`}
+                  style={{ display: "flex", gap: "8px" }}
+                >
+                  <Button variant="ghost" onClick={handleCloseEdit}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleEditSubmit} isLoading={isEditLoading}>
+                    Update Job
+                  </Button>
+                </motion.div>
+              </ExpandedCardFooter>
+            </ExpandedCardContainer>
+          </ExpandedCardOverlay>
+        )}
+      </AnimatePresence>
+
       {jobs.length === 0 ? (
         <Card variant="bordered">
           <EmptyState
@@ -261,44 +549,49 @@ export default function JobsPage() {
       ) : (
         <JobsList>
           {jobs.map((job) => (
-            <JobCard key={job.id} variant="elevated">
-              <Card.Header>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "start",
-                  }}
-                >
-                  <div>
-                    <Card.Title>{job.title}</Card.Title>
-                    <Card.Description>
-                      Added on{" "}
-                      {new Date(job.created_at).toLocaleDateString("tr-TR")}
-                    </Card.Description>
-                  </div>
-                  <Badge>{job.text.length.toLocaleString()} characters</Badge>
-                </div>
-              </Card.Header>
-              <Card.Footer>
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => openEditModal(job)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDeleteClick(job.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </Card.Footer>
-            </JobCard>
+            <JobCardWrapper
+              key={job.id}
+              layoutId={`card-${job.id}-${id}`}
+            >
+              <JobCardInner variant="elevated">
+                <Card.Header>
+                  <CardTitleWrapper>
+                    <CardTitleContent>
+                      <motion.div layoutId={`title-${job.id}-${id}`}>
+                        <Card.Title>{job.title}</Card.Title>
+                      </motion.div>
+                      <motion.div layoutId={`description-${job.id}-${id}`}>
+                        <Card.Description>
+                          Added on{" "}
+                          {new Date(job.created_at).toLocaleDateString("tr-TR")}
+                        </Card.Description>
+                      </motion.div>
+                    </CardTitleContent>
+                    <Badge>{job.text.length.toLocaleString()} characters</Badge>
+                  </CardTitleWrapper>
+                </Card.Header>
+                <Card.Footer>
+                  <motion.div layoutId={`button-${job.id}-${id}`}>
+                    <CardActions>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => handleOpenEdit(job, e)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={(e) => handleDeleteClick(job.id, e)}
+                      >
+                        Delete
+                      </Button>
+                    </CardActions>
+                  </motion.div>
+                </Card.Footer>
+              </JobCardInner>
+            </JobCardWrapper>
           ))}
         </JobsList>
       )}
@@ -306,12 +599,8 @@ export default function JobsPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        title={editingJob ? "Edit Job Posting" : "Add Job Posting"}
-        description={
-          editingJob
-            ? "Update the job details below"
-            : "Enter the job title and paste the full job description"
-        }
+        title="Add Job Posting"
+        description="Enter the job title and paste the full job description"
       >
         <Modal.Body>
           <FormGroup>
@@ -348,7 +637,7 @@ export default function JobsPage() {
             Cancel
           </Button>
           <Button onClick={handleSubmit} isLoading={isLoading}>
-            {editingJob ? "Update Job" : "Add Job"}
+            Add Job
           </Button>
         </Modal.Footer>
       </Modal>

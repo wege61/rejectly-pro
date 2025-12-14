@@ -1529,7 +1529,7 @@ export default function DashboardPage() {
               onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
             >
               <Card.Header>
-                <Card.Title>✉️ Generate Cover Letter</Card.Title>
+                <Card.Title>Generate Cover Letter</Card.Title>
                 <Card.Description>
                   Create AI-powered cover letters for your applications
                 </Card.Description>

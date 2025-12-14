@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/contexts/ToastContext";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useClickOutside } from "@/hooks/useClickOutside";
 
 const Container = styled.div`
@@ -419,8 +419,9 @@ export default function JobsPage() {
         <Button onClick={openAddModal}>Add Job Posting</Button>
       </Header>
 
-      {/* Backdrop */}
-      <AnimatePresence>
+      <LayoutGroup>
+        {/* Backdrop */}
+        <AnimatePresence>
         {activeJob && (
           <Backdrop
             initial={{ opacity: 0 }}
@@ -431,7 +432,7 @@ export default function JobsPage() {
       </AnimatePresence>
 
       {/* Expanded Card */}
-      <AnimatePresence>
+      <AnimatePresence mode="popLayout">
         {activeJob && (
           <ExpandedCardOverlay>
             <CloseButton
@@ -457,26 +458,35 @@ export default function JobsPage() {
             <ExpandedCardContainer
               layoutId={`card-${activeJob.id}-${id}`}
               ref={expandedCardRef}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               <ExpandedCardHeader>
                 <motion.h3
+                  layout
                   layoutId={`title-${activeJob.id}-${id}`}
                   style={{
                     fontSize: "1.25rem",
                     fontWeight: 600,
                     marginBottom: "4px",
+                    margin: 0,
                   }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 >
-                  Edit Job Posting
+                  {activeJob.title}
                 </motion.h3>
                 <motion.p
+                  layout
                   layoutId={`description-${activeJob.id}-${id}`}
                   style={{
                     fontSize: "0.875rem",
                     color: "#6b7280",
+                    margin: 0,
+                    marginTop: "4px",
                   }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 >
-                  Update the job details below
+                  Added on{" "}
+                  {new Date(activeJob.created_at).toLocaleDateString("tr-TR")}
                 </motion.p>
               </ExpandedCardHeader>
               <ExpandedCardBody>
@@ -517,17 +527,12 @@ export default function JobsPage() {
                 </motion.div>
               </ExpandedCardBody>
               <ExpandedCardFooter>
-                <motion.div
-                  layoutId={`button-${activeJob.id}-${id}`}
-                  style={{ display: "flex", gap: "8px" }}
-                >
-                  <Button variant="ghost" onClick={handleCloseEdit}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleEditSubmit} isLoading={isEditLoading}>
-                    Update Job
-                  </Button>
-                </motion.div>
+                <Button variant="ghost" onClick={handleCloseEdit}>
+                  Cancel
+                </Button>
+                <Button onClick={handleEditSubmit} isLoading={isEditLoading}>
+                  Update Job
+                </Button>
               </ExpandedCardFooter>
             </ExpandedCardContainer>
           </ExpandedCardOverlay>
@@ -552,49 +557,67 @@ export default function JobsPage() {
             <JobCardWrapper
               key={job.id}
               layoutId={`card-${job.id}-${id}`}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               <JobCardInner variant="elevated">
                 <Card.Header>
                   <CardTitleWrapper>
                     <CardTitleContent>
-                      <motion.div layoutId={`title-${job.id}-${id}`}>
-                        <Card.Title>{job.title}</Card.Title>
-                      </motion.div>
-                      <motion.div layoutId={`description-${job.id}-${id}`}>
-                        <Card.Description>
-                          Added on{" "}
-                          {new Date(job.created_at).toLocaleDateString("tr-TR")}
-                        </Card.Description>
-                      </motion.div>
+                      <motion.h3
+                        layout
+                        layoutId={`title-${job.id}-${id}`}
+                        style={{
+                          fontSize: "1rem",
+                          fontWeight: 600,
+                          margin: 0,
+                          color: "inherit",
+                        }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      >
+                        {job.title}
+                      </motion.h3>
+                      <motion.p
+                        layout
+                        layoutId={`description-${job.id}-${id}`}
+                        style={{
+                          fontSize: "0.875rem",
+                          color: "#6b7280",
+                          margin: 0,
+                          marginTop: "4px",
+                        }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      >
+                        Added on{" "}
+                        {new Date(job.created_at).toLocaleDateString("tr-TR")}
+                      </motion.p>
                     </CardTitleContent>
                     <Badge>{job.text.length.toLocaleString()} characters</Badge>
                   </CardTitleWrapper>
                 </Card.Header>
                 <Card.Footer>
-                  <motion.div layoutId={`button-${job.id}-${id}`}>
-                    <CardActions>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => handleOpenEdit(job, e)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={(e) => handleDeleteClick(job.id, e)}
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </motion.div>
+                  <CardActions>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => handleOpenEdit(job, e)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={(e) => handleDeleteClick(job.id, e)}
+                    >
+                      Delete
+                    </Button>
+                  </CardActions>
                 </Card.Footer>
               </JobCardInner>
             </JobCardWrapper>
           ))}
         </JobsList>
       )}
+      </LayoutGroup>
 
       <Modal
         isOpen={isModalOpen}

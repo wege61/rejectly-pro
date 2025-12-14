@@ -39,7 +39,11 @@ const MobileHeader = styled.header`
 const MobileLogo = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.lg};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--accent);
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
 `;
 
 const HamburgerButton = styled.button`
@@ -105,7 +109,11 @@ const Sidebar = styled.aside<{ $isOpen?: boolean }>`
 const Logo = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--accent);
+ background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 
   @media (max-width: 768px) {
@@ -344,7 +352,7 @@ const navItems = [
     ),
   },
   {
-    label: "My CV",
+    label: "Resume",
     href: ROUTES.APP.CV,
     icon: (
       <svg

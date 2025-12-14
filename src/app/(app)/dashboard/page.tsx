@@ -4,6 +4,7 @@ import styled, { keyframes, css } from "styled-components";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
@@ -80,6 +81,519 @@ const CoverLettersIcon = () => (
       d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
     />
   </svg>
+);
+
+// Bento Card Background Animations
+const marqueeAnimation = keyframes`
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+`;
+
+const fadeInUp = keyframes`
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+`;
+
+// Base background wrapper
+const BentoBackgroundBase = styled.div`
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to top, transparent 40%, #000 100%);
+  -webkit-mask-image: linear-gradient(to top, transparent 40%, #000 100%);
+`;
+
+// Reports Background - Matches original ReportCard styling
+const ReportsBackgroundWrapper = styled(BentoBackgroundBase)``;
+
+const ReportListContainer = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 200px;
+
+  @media (max-width: 640px) {
+    width: 160px;
+    right: 8px;
+  }
+`;
+
+const ReportItem = styled.div<{ $delay: number }>`
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 12px;
+  padding: 12px;
+  animation: ${fadeInUp} 0.5s ease-out forwards;
+  animation-delay: ${({ $delay }) => $delay}s;
+  opacity: 0;
+  transition: all 0.2s ease;
+  filter: blur(0.5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    filter: blur(0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const ReportItemHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+`;
+
+const ReportItemInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const ReportItemTitle = styled.div`
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const ReportItemSubtitle = styled.div`
+  font-size: 9px;
+  color: var(--text-secondary);
+`;
+
+const ReportItemScore = styled.div<{ $score: number }>`
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  color: ${({ $score }) =>
+    $score >= 75 ? 'var(--success)' : $score >= 50 ? '#f59e0b' : '#ef4444'};
+
+  &::after {
+    content: '%';
+    font-size: 10px;
+    margin-left: 1px;
+  }
+`;
+
+const ReportItemMeta = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  font-size: 9px;
+  color: var(--text-secondary);
+`;
+
+const ReportBadge = styled.span<{ $variant?: 'success' | 'warning' | 'info' }>`
+  font-size: 8px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: ${({ $variant }) =>
+    $variant === 'success' ? 'rgba(110, 231, 183, 0.15)' :
+    $variant === 'warning' ? 'rgba(251, 191, 36, 0.15)' :
+    'rgba(var(--accent-rgb), 0.1)'};
+  color: ${({ $variant }) =>
+    $variant === 'success' ? '#6EE7B7' :
+    $variant === 'warning' ? '#FCD34D' :
+    'var(--accent)'};
+`;
+
+const reportItems = [
+  { title: 'Software Engineer', cv: 'Resume_v3.pdf', score: 87, keywords: 3, pro: true },
+  { title: 'Product Manager', cv: 'CV_2024.pdf', score: 72, keywords: 5, pro: false },
+  { title: 'Data Analyst', cv: 'Resume_Tech.pdf', score: 91, keywords: 1, pro: true },
+];
+
+const ReportsBackground = () => (
+  <ReportsBackgroundWrapper>
+    <ReportListContainer>
+      {reportItems.map((item, idx) => (
+        <ReportItem key={idx} $delay={idx * 0.15}>
+          <ReportItemHeader>
+            <ReportItemInfo>
+              <ReportItemTitle>{item.title}</ReportItemTitle>
+              <ReportItemSubtitle>{item.cv}</ReportItemSubtitle>
+            </ReportItemInfo>
+            <ReportItemScore $score={item.score}>{item.score}</ReportItemScore>
+          </ReportItemHeader>
+          <ReportItemMeta>
+            <ReportBadge>{item.keywords} Missing</ReportBadge>
+            <ReportBadge $variant={item.pro ? 'success' : undefined}>
+              {item.pro ? 'Pro' : 'Free'}
+            </ReportBadge>
+          </ReportItemMeta>
+        </ReportItem>
+      ))}
+    </ReportListContainer>
+  </ReportsBackgroundWrapper>
+);
+
+// CV/Resume Background - Matches original CVCard styling
+const CVBackgroundWrapper = styled(BentoBackgroundBase)``;
+
+const MarqueeContainer = styled.div`
+  position: absolute;
+  top: 12px;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+`;
+
+const MarqueeTrack = styled.div`
+  display: flex;
+  gap: 12px;
+  animation: ${marqueeAnimation} 30s linear infinite;
+  width: fit-content;
+  padding-left: 12px;
+
+  &:hover {
+    animation-play-state: paused;
+  }
+`;
+
+const CVCardMini = styled.div<{ $isOptimized?: boolean }>`
+  flex-shrink: 0;
+  width: 140px;
+  background: ${({ theme }) => theme.colors.surface};
+  border: 2px solid ${({ $isOptimized, theme }) =>
+    $isOptimized ? 'var(--success-light)' : theme.colors.border};
+  border-radius: 12px;
+  padding: 12px;
+  filter: blur(0.5px);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: ${({ $isOptimized }) =>
+      $isOptimized ? 'var(--success)' : 'var(--gradient-primary)'};
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover {
+    filter: blur(0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+`;
+
+const CVCardIcon = styled.div<{ $isOptimized?: boolean }>`
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${({ $isOptimized }) =>
+    $isOptimized ? 'var(--success-light)' : 'var(--primary-50)'};
+  color: ${({ $isOptimized }) =>
+    $isOptimized ? 'var(--success)' : 'var(--accent)'};
+  margin-bottom: 8px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const CVCardTitle = styled.div`
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const CVCardMeta = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+`;
+
+const CVBadge = styled.span<{ $variant?: 'success' | 'info' }>`
+  font-size: 8px;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: ${({ $variant }) =>
+    $variant === 'success' ? 'rgba(110, 231, 183, 0.15)' :
+    $variant === 'info' ? 'rgba(59, 130, 246, 0.15)' :
+    'rgba(var(--accent-rgb), 0.1)'};
+  color: ${({ $variant }) =>
+    $variant === 'success' ? '#6EE7B7' :
+    $variant === 'info' ? '#60A5FA' :
+    'var(--text-secondary)'};
+`;
+
+const FileIconMini = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+  </svg>
+);
+
+const resumeData = [
+  { name: 'Resume_v3.pdf', isOptimized: false, lang: 'EN' },
+  { name: 'John Doe - Optimized', isOptimized: true, lang: 'EN' },
+  { name: 'CV_2024.pdf', isOptimized: false, lang: 'TR' },
+  { name: 'Jane Smith - Optimized', isOptimized: true, lang: 'EN' },
+];
+
+const CVBackground = () => (
+  <CVBackgroundWrapper>
+    <MarqueeContainer>
+      <MarqueeTrack>
+        {[...resumeData, ...resumeData].map((item, idx) => (
+          <CVCardMini key={idx} $isOptimized={item.isOptimized}>
+            <CVCardIcon $isOptimized={item.isOptimized}>
+              <FileIconMini />
+            </CVCardIcon>
+            <CVCardTitle>{item.name}</CVCardTitle>
+            <CVCardMeta>
+              {item.isOptimized && <CVBadge $variant="success">✨ Optimized</CVBadge>}
+              <CVBadge $variant="info">{item.lang === 'TR' ? '🇹🇷' : '🇬🇧'} {item.lang}</CVBadge>
+            </CVCardMeta>
+          </CVCardMini>
+        ))}
+      </MarqueeTrack>
+    </MarqueeContainer>
+  </CVBackgroundWrapper>
+);
+
+// Jobs Background - Matches original JobCard styling
+const JobsBackgroundWrapper = styled(BentoBackgroundBase)``;
+
+const JobListContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 170px;
+
+  @media (max-width: 640px) {
+    width: 140px;
+  }
+`;
+
+const JobCardMini = styled.div<{ $delay: number }>`
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 12px;
+  padding: 10px 12px;
+  animation: ${fadeInUp} 0.5s ease-out forwards;
+  animation-delay: ${({ $delay }) => $delay}s;
+  opacity: 0;
+  filter: blur(0.5px);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    filter: blur(0);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const JobCardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 6px;
+`;
+
+const JobCardTitle = styled.div`
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 2px;
+`;
+
+const JobCardDate = styled.div`
+  font-size: 9px;
+  color: var(--text-secondary);
+`;
+
+const JobCharBadge = styled.span`
+  font-size: 8px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(var(--accent-rgb), 0.1);
+  color: var(--text-secondary);
+  white-space: nowrap;
+`;
+
+const jobData = [
+  { title: 'Senior Frontend Developer', date: 'Dec 12', chars: 2450 },
+  { title: 'Product Manager', date: 'Dec 10', chars: 1890 },
+  { title: 'ML Engineer', date: 'Dec 8', chars: 3200 },
+];
+
+const JobsBackground = () => (
+  <JobsBackgroundWrapper>
+    <JobListContainer>
+      {jobData.map((job, idx) => (
+        <JobCardMini key={idx} $delay={idx * 0.12}>
+          <JobCardHeader>
+            <div>
+              <JobCardTitle>{job.title}</JobCardTitle>
+              <JobCardDate>Added on {job.date}</JobCardDate>
+            </div>
+            <JobCharBadge>{job.chars.toLocaleString()} chars</JobCharBadge>
+          </JobCardHeader>
+        </JobCardMini>
+      ))}
+    </JobListContainer>
+  </JobsBackgroundWrapper>
+);
+
+// Cover Letters Background - Matches original CoverLetterCard styling
+const CoverLettersBackgroundWrapper = styled(BentoBackgroundBase)``;
+
+const LetterStack = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 165px;
+
+  @media (max-width: 640px) {
+    width: 135px;
+  }
+`;
+
+const LetterCardMini = styled.div<{ $delay: number; $tone: string }>`
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 12px;
+  padding: 10px 12px;
+  padding-left: 14px;
+  animation: ${fadeInUp} 0.5s ease-out forwards;
+  animation-delay: ${({ $delay }) => $delay}s;
+  opacity: 0;
+  filter: blur(0.5px);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: ${({ $tone }) =>
+      $tone === 'professional' ? '#3b82f6' :
+      $tone === 'friendly' ? 'var(--success)' :
+      '#8b5cf6'};
+  }
+
+  &:hover {
+    filter: blur(0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: ${({ $tone }) =>
+      $tone === 'professional' ? '#3b82f6' :
+      $tone === 'friendly' ? 'var(--success)' :
+      '#8b5cf6'};
+  }
+`;
+
+const LetterCardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+`;
+
+const LetterTitle = styled.div`
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 2px;
+`;
+
+const LetterSubtitle = styled.div`
+  font-size: 9px;
+  color: var(--text-secondary);
+`;
+
+const LetterDateBadge = styled.div`
+  font-size: 8px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+`;
+
+const LetterToneBadge = styled.span<{ $tone: string }>`
+  font-size: 8px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: ${({ $tone }) =>
+    $tone === 'professional' ? 'rgba(59, 130, 246, 0.1)' :
+    $tone === 'friendly' ? 'rgba(16, 185, 129, 0.1)' :
+    'rgba(139, 92, 246, 0.1)'};
+  color: ${({ $tone }) =>
+    $tone === 'professional' ? '#3b82f6' :
+    $tone === 'friendly' ? 'var(--success)' :
+    '#8b5cf6'};
+`;
+
+const letterData = [
+  { title: 'Software Engineer', tone: 'professional', words: 285, date: 'Dec 14' },
+  { title: 'Product Manager', tone: 'friendly', words: 312, date: 'Dec 12' },
+  { title: 'Data Scientist', tone: 'formal', words: 298, date: 'Dec 10' },
+];
+
+const CoverLettersBackground = () => (
+  <CoverLettersBackgroundWrapper>
+    <LetterStack>
+      {letterData.map((letter, idx) => (
+        <LetterCardMini key={idx} $delay={idx * 0.12} $tone={letter.tone}>
+          <LetterCardHeader>
+            <div>
+              <LetterTitle>{letter.title}</LetterTitle>
+              <LetterSubtitle>{letter.words} words</LetterSubtitle>
+            </div>
+            <LetterDateBadge>{letter.date}</LetterDateBadge>
+          </LetterCardHeader>
+          <LetterToneBadge $tone={letter.tone}>
+            {letter.tone.charAt(0).toUpperCase() + letter.tone.slice(1)}
+          </LetterToneBadge>
+        </LetterCardMini>
+      ))}
+    </LetterStack>
+  </CoverLettersBackgroundWrapper>
 );
 
 const Container = styled.div`
@@ -166,78 +680,11 @@ const LowCreditsWarning = styled.div`
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
 `;
 
-const Grid = styled.div`
-  display: grid;
-  gap: ${({ theme }) => theme.spacing.lg};
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+const BentoGridContainer = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: ${({ theme }) => theme.spacing.sm};
     margin-bottom: ${({ theme }) => theme.spacing.lg};
-  }
-`;
-
-const StatCard = styled(Card)`
-  text-align: center;
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: ${({ theme }) => theme.shadow.lg};
-  }
-
-  &:active {
-    transform: translateY(-2px);
-  }
-
-  @media (max-width: 768px) {
-    padding: ${({ theme }) => theme.spacing.md} !important;
-  }
-`;
-
-const StatIcon = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  color: var(--accent);
-
-  svg {
-    width: 32px;
-    height: 32px;
-  }
-
-  @media (max-width: 768px) {
-    margin-bottom: ${({ theme }) => theme.spacing.xs};
-
-    svg {
-      width: 20px;
-      height: 20px;
-    }
-  }
-`;
-
-const StatValue = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--accent);
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-
-  @media (max-width: 768px) {
-    font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-    margin-bottom: 2px;
-  }
-`;
-
-const StatLabel = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-
-  @media (max-width: 768px) {
-    font-size: ${({ theme }) => theme.typography.fontSize.xs};
   }
 `;
 
@@ -591,7 +1038,7 @@ const HintContainer = styled.div`
 
 const HintText = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.extrabold};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: #ffffff;
   margin-bottom: ${({ theme }) => theme.spacing.sm};
   line-height: ${({ theme }) => theme.typography.lineHeight.tight};
@@ -614,16 +1061,7 @@ const ArrowContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-<<<<<<< Updated upstream
   gap: ${({ theme }) => theme.spacing.sm};
-=======
-  gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
-  background: var(--accent-light);
-  border-radius: ${({ theme }) => theme.radius.full};
-  border: 2px solid var(--accent);
-  backdrop-filter: blur(8px);
->>>>>>> Stashed changes
 `;
 
 const ArrowText = styled.span`
@@ -1008,37 +1446,55 @@ export default function DashboardPage() {
           </CreditsContent>
         </CreditsCard>
 
-        {/* Stats */}
-        <Grid>
-          <StatCard variant="elevated" onClick={() => router.push(ROUTES.APP.REPORTS)}>
-            <StatIcon>
-              <ReportsIcon />
-            </StatIcon>
-            <StatValue>{stats.totalReports}</StatValue>
-            <StatLabel>Total Reports</StatLabel>
-          </StatCard>
-          <StatCard variant="elevated" onClick={() => router.push(ROUTES.APP.CV)}>
-            <StatIcon>
-              <CVIcon />
-            </StatIcon>
-            <StatValue>{stats.totalCVs}</StatValue>
-            <StatLabel>Resumes Uploaded</StatLabel>
-          </StatCard>
-          <StatCard variant="elevated" onClick={() => router.push(ROUTES.APP.JOBS)}>
-            <StatIcon>
-              <JobsIcon />
-            </StatIcon>
-            <StatValue>{stats.totalJobs}</StatValue>
-            <StatLabel>Job Postings</StatLabel>
-          </StatCard>
-          <StatCard variant="elevated" onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}>
-            <StatIcon>
-              <CoverLettersIcon />
-            </StatIcon>
-            <StatValue>{stats.totalCoverLetters}</StatValue>
-            <StatLabel>Cover Letters</StatLabel>
-          </StatCard>
-        </Grid>
+        {/* Stats Bento Grid */}
+        <BentoGridContainer>
+          <BentoGrid className="lg:grid-rows-2">
+            <BentoCard
+              name="Total Reports"
+              className="col-span-1 lg:col-span-1 lg:row-span-2"
+              Icon={ReportsIcon}
+              description="View all your resume analysis reports"
+              href={ROUTES.APP.REPORTS}
+              cta="View Reports"
+              value={stats.totalReports}
+              background={<ReportsBackground />}
+              onClick={() => router.push(ROUTES.APP.REPORTS)}
+            />
+            <BentoCard
+              name="Resumes Uploaded"
+              className="col-span-1 lg:col-span-2 lg:row-span-1"
+              Icon={CVIcon}
+              description="Manage your uploaded resumes"
+              href={ROUTES.APP.CV}
+              cta="View Resumes"
+              value={stats.totalCVs}
+              background={<CVBackground />}
+              onClick={() => router.push(ROUTES.APP.CV)}
+            />
+            <BentoCard
+              name="Job Postings"
+              className="col-span-1 lg:col-span-1 lg:row-span-1"
+              Icon={JobsIcon}
+              description="Browse saved job postings"
+              href={ROUTES.APP.JOBS}
+              cta="View Jobs"
+              value={stats.totalJobs}
+              background={<JobsBackground />}
+              onClick={() => router.push(ROUTES.APP.JOBS)}
+            />
+            <BentoCard
+              name="Cover Letters"
+              className="col-span-1 lg:col-span-1 lg:row-span-1"
+              Icon={CoverLettersIcon}
+              description="Your generated cover letters"
+              href={ROUTES.APP.COVER_LETTERS}
+              cta="View Letters"
+              value={stats.totalCoverLetters}
+              background={<CoverLettersBackground />}
+              onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
+            />
+          </BentoGrid>
+        </BentoGridContainer>
 
         {/* Quick Actions */}
         <Section>

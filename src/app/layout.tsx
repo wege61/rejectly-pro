@@ -138,6 +138,7 @@ export default function RootLayout({
 
                 /* Accent (Warm CTA) */
                 --accent: #FF7A73;
+                --accent-rgb: 255, 122, 115;
                 --accent-hover: #ff6a64;
                 --accent-light: rgba(255, 122, 115, 0.1);
 

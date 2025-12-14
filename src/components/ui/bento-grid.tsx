@@ -1,133 +1,335 @@
 "use client";
+
+import { ComponentPropsWithoutRef, ReactNode } from "react";
 import styled from "styled-components";
-import { cn } from "@/lib/utils";
-import React from "react";
+
+interface BentoGridProps extends ComponentPropsWithoutRef<"div"> {
+  children: ReactNode;
+  className?: string;
+}
+
+interface BentoCardProps extends ComponentPropsWithoutRef<"div"> {
+  name: string;
+  className?: string;
+  background?: ReactNode;
+  Icon: React.ElementType;
+  description: string;
+  href: string;
+  cta: string;
+  value?: string | number;
+}
+
+const ArrowRightIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{ width: 16, height: 16 }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+    />
+  </svg>
+);
 
 const BentoGridWrapper = styled.div`
   display: grid;
+  width: 100%;
   gap: 16px;
+  grid-template-columns: 1fr;
+  grid-auto-rows: auto;
 
   @media (min-width: 768px) {
-    grid-auto-rows: 18rem;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 12rem;
+  }
+
+  @media (min-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 14rem);
   }
 `;
 
-const BentoGridItemWrapper = styled.div`
+interface BentoCardWrapperProps {
+  $colSpan?: number;
+  $rowSpan?: number;
+  $lgColSpan?: number;
+  $lgRowSpan?: number;
+}
+
+const BentoCardWrapper = styled.div<BentoCardWrapperProps>`
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 16px;
-  border-radius: 24px;
-  background: var(--bg-alt);
   overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-alt);
+  cursor: pointer;
   transition: all 0.3s ease;
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 107, 107, 0.2) 0%,
-      rgba(255, 107, 107, 0.05) 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+  /* Default single column on mobile */
+  grid-column: span 1;
+  grid-row: span 1;
+
+  /* Tablet (md) */
+  @media (min-width: 768px) {
+    grid-column: span ${({ $colSpan }) => $colSpan || 1};
+    grid-row: span ${({ $rowSpan }) => $rowSpan || 1};
+  }
+
+  /* Desktop (lg) */
+  @media (min-width: 1024px) {
+    grid-column: span ${({ $lgColSpan }) => $lgColSpan || 1};
+    grid-row: span ${({ $lgRowSpan }) => $lgRowSpan || 1};
+  }
+
+  /* Light styles */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  /* Dark styles */
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
 
-    &::before {
-      background: linear-gradient(
-        180deg,
-        rgba(255, 107, 107, 0.4) 0%,
-        rgba(255, 107, 107, 0.1) 100%
-      );
+  &:hover .bento-icon {
+    transform: scale(0.85);
+  }
+
+  &:hover .bento-content {
+    transform: translateY(-32px);
+  }
+
+  &:hover .bento-cta-desktop {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  &:hover .bento-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .bento-overlay {
+      background: rgba(255, 255, 255, 0.05);
     }
   }
 
-  &.md-col-span-2 {
-    @media (min-width: 768px) {
-      grid-column: span 2;
-    }
+  @media (max-width: 640px) {
+    min-height: 180px;
   }
 `;
 
-const ItemHeader = styled.div`
-  flex: 1;
+const BackgroundContainer = styled.div`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 `;
 
-const ItemContent = styled.div`
-  transition: transform 0.3s ease;
+const ContentContainer = styled.div`
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+`;
 
-  ${BentoGridItemWrapper}:hover & {
-    transform: translateY(-2px);
+const ContentInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
   }
 `;
 
-const ItemIcon = styled.div`
+const StyledIcon = styled.div`
+  transform-origin: left;
+  transition: all 0.3s ease;
+  color: var(--accent);
   margin-bottom: 8px;
+
+  svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  @media (max-width: 640px) {
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
 `;
 
-const ItemTitle = styled.h4`
-  font-size: 16px;
+const ValueText = styled.span`
+  font-size: 48px;
   font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 4px;
+
+  @media (max-width: 1024px) {
+    font-size: 40px;
+  }
+
+  @media (max-width: 640px) {
+    font-size: 36px;
+  }
+`;
+
+const TitleText = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
   color: var(--text-color);
-  margin-bottom: 8px;
+  margin-top: 4px;
+
+  @media (max-width: 640px) {
+    font-size: 16px;
+  }
+`;
+
+const DescriptionText = styled.p`
+  max-width: 32rem;
+  color: var(--text-secondary);
+  font-size: 14px;
   line-height: 1.4;
 `;
 
-const ItemDescription = styled.p`
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.6;
+const CTAContainerMobile = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  transform: translateY(0);
+  opacity: 1;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+
+  @media (min-width: 1025px) {
+    display: none;
+  }
 `;
 
-export const BentoGrid = ({
-  className,
-  children,
-}: {
-  className?: string;
-  children?: React.ReactNode;
-}) => {
+const CTAContainerDesktop = styled.div`
+  position: absolute;
+  bottom: 0;
+  display: none;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px;
+  transform: translateY(40px);
+  opacity: 0;
+  transition: all 0.3s ease;
+
+  @media (min-width: 1025px) {
+    display: flex;
+  }
+`;
+
+const Overlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  transition: all 0.3s ease;
+`;
+
+const StyledLink = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const BentoGrid = ({ children, className, ...props }: BentoGridProps) => {
   return (
-    <BentoGridWrapper className={cn(className)}>
+    <BentoGridWrapper className={className} {...props}>
       {children}
     </BentoGridWrapper>
   );
 };
 
-export const BentoGridItem = ({
+const BentoCard = ({
+  name,
   className,
-  title,
+  background,
+  Icon,
   description,
-  header,
-  icon,
-}: {
-  className?: string;
-  title?: string | React.ReactNode;
-  description?: string | React.ReactNode;
-  header?: React.ReactNode;
-  icon?: React.ReactNode;
-}) => {
-  const isColSpan2 = className?.includes("md:col-span-2");
+  href,
+  cta,
+  value,
+  ...props
+}: BentoCardProps) => {
+  // Parse className to extract grid span values
+  const parseSpan = (prefix: string, cls: string = ""): number | undefined => {
+    const match = cls.match(new RegExp(`${prefix}-(\\d+)`));
+    return match ? parseInt(match[1], 10) : undefined;
+  };
+
+  const colSpan = parseSpan("col-span", className);
+  const rowSpan = parseSpan("row-span", className);
+  const lgColSpan = parseSpan("lg:col-span", className);
+  const lgRowSpan = parseSpan("lg:row-span", className);
 
   return (
-    <BentoGridItemWrapper className={cn(isColSpan2 && "md-col-span-2", className)}>
-      <ItemHeader>{header}</ItemHeader>
-      <ItemContent>
-        <ItemIcon>{icon}</ItemIcon>
-        <ItemTitle>{title}</ItemTitle>
-        <ItemDescription>{description}</ItemDescription>
-      </ItemContent>
-    </BentoGridItemWrapper>
+    <BentoCardWrapper
+      $colSpan={colSpan}
+      $rowSpan={rowSpan}
+      $lgColSpan={lgColSpan}
+      $lgRowSpan={lgRowSpan}
+      {...props}
+    >
+      <BackgroundContainer>{background}</BackgroundContainer>
+      <ContentContainer>
+        <ContentInner className="bento-content">
+          <StyledIcon className="bento-icon">
+            <Icon />
+          </StyledIcon>
+          {value !== undefined && <ValueText>{value}</ValueText>}
+          <TitleText>{name}</TitleText>
+          <DescriptionText>{description}</DescriptionText>
+        </ContentInner>
+
+        <CTAContainerMobile>
+          <StyledLink href={href}>
+            {cta}
+            <ArrowRightIcon />
+          </StyledLink>
+        </CTAContainerMobile>
+      </ContentContainer>
+
+      <CTAContainerDesktop className="bento-cta-desktop">
+        <StyledLink href={href}>
+          {cta}
+          <ArrowRightIcon />
+        </StyledLink>
+      </CTAContainerDesktop>
+
+      <Overlay className="bento-overlay" />
+    </BentoCardWrapper>
   );
 };
+
+export { BentoCard, BentoGrid };

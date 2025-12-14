@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ReportsListSkeleton } from "@/components/skeletons/ReportsListSkeleton";
 import { Modal } from "@/components/ui/Modal";
@@ -15,22 +14,6 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/contexts/ToastContext";
 
 // Icons
-const ViewIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-);
-
 const DeleteIcon = () => (
   <svg
     width="16"
@@ -46,6 +29,21 @@ const DeleteIcon = () => (
     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
     <line x1="10" y1="11" x2="10" y2="17" />
     <line x1="14" y1="11" x2="14" y2="17" />
+  </svg>
+);
+
+const ArrowRightIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M5 12h14M12 5l7 7-7 7" />
   </svg>
 );
 
@@ -83,210 +81,130 @@ const Subtitle = styled.p`
   }
 `;
 
-const ReportsList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
+const ReportsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
 
-const ReportCard = styled(Card)`
-  cursor: pointer;
-  transition: transform ${({ theme }) => theme.transitions.fast};
-
-  &:hover {
-    transform: translateY(-2px);
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
   }
-
-  
 `;
 
-const ReportHeader = styled.div`
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+const CategorySection = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 `;
 
-const ReportTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-`;
-
-const ReportDate = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const ReportMeta = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing.sm};
-  flex-wrap: wrap;
-`;
-
-const CardActions = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing.sm};
-  margin-top: ${({ theme }) => theme.spacing.md};
-  padding-top: ${({ theme }) => theme.spacing.md};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const ActionButton = styled.button<{ $variant?: 'primary' | 'danger' }>`
-  flex: 1;
+const CategoryHeader = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  border: none;
-  border-radius: ${({ theme }) => theme.radius.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
-
-  ${({ $variant = 'primary', theme }) =>
-    $variant === 'danger'
-      ? `
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-
-    &:hover {
-      background: rgba(239, 68, 68, 0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-    }
-  `
-      : `
-    background: ${theme.colors.surfaceHover};
-    color: ${theme.colors.textPrimary};
-
-    &:hover {
-      background: var(--accent);
-      color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px var(--accent-shadow);
-    }
-  `}
-
-  &:active {
-    transform: translateY(0);
-  }
+  gap: 12px;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
-const ScoreBadge = styled(Badge)`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
-  @media (max-width: 375px) {
-  font-size: 13px;
-  }
-`;
-
-const MatchQualityBadge = styled.div<{ $quality: 'low' | 'medium' | 'high' }>`
+const CategoryBadge = styled.span<{ $variant: 'excellent' | 'good' | 'needsWork' }>`
   display: inline-flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.radius.full};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
 
-  ${({ $quality, theme }) => {
-    if ($quality === 'high') {
-      return `
-        background: var(--success);
-        color: white;
-      `;
-    } else if ($quality === 'medium') {
-      return `
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        color: white;
-      `;
-    } else {
-      return `
-        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-        color: white;
-      `;
+  ${({ $variant }) => {
+    switch ($variant) {
+      case 'excellent':
+        return `
+          background: rgba(34, 197, 94, 0.1);
+          color: #22c55e;
+        `;
+      case 'good':
+        return `
+          background: rgba(59, 130, 246, 0.1);
+          color: #3b82f6;
+        `;
+      case 'needsWork':
+        return `
+          background: rgba(249, 115, 22, 0.1);
+          color: #f97316;
+        `;
     }
   }}
 `;
 
-const ScoreImprovement = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  margin-top: ${({ theme }) => theme.spacing.xs};
+const CategoryCount = styled.span`
+  font-size: 13px;
+  color: var(--text-secondary);
 `;
 
-const BeforeScore = styled.span`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  text-decoration: line-through;
-`;
-
-const AfterScore = styled.span`
-  color: var(--success);
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-`;
-
-const ImprovementArrow = styled.span`
-  color: var(--success);
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-`;
-
-const FakeItIndicator = styled.div`
+const ReportCard = styled.div<{ $fakeItMode?: boolean }>`
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.md};
-  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-  color: white;
-  border-radius: ${({ theme }) => theme.radius.full};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-  animation: pulse 2s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-alt);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 200px;
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-    border-radius: ${({ theme }) => theme.radius.full};
-    opacity: 0.3;
-    filter: blur(8px);
-    z-index: -1;
+  /* Subtle depth through shadows */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.05);
+  ${({ $fakeItMode }) =>
+    $fakeItMode &&
+    `
+    margin-top: 14px;
+  `}
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  &:hover .report-content {
+    transform: translateY(-10px);
+  }
+
+  &:hover .report-cta {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  &:hover .report-overlay {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .report-overlay {
+      background: rgba(255, 255, 255, 0.03);
     }
   }
 `;
 
 const FakeItBanner = styled.div`
   position: absolute;
-  top: -10px;
-  right: 12px;
+  top: -14px;
+  right: 20px;
   background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
   color: white;
-  padding: 6px 16px;
+  padding: 6px 14px;
   font-size: 10px;
-  font-weight: bold;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-  border-radius: 6px 6px 0 0;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
   z-index: 10;
   display: flex;
   align-items: center;
@@ -297,30 +215,158 @@ const FakeItBanner = styled.div`
   }
 `;
 
-const ReportCardWithFakeIt = styled(ReportCard)<{ $fakeItMode?: boolean }>`
-  ${({ $fakeItMode }) =>
-    $fakeItMode &&
-    `
-    position: relative;
-    border: 2px solid rgba(245, 158, 11, 0.3);
-    margin-top: 12px;
-    overflow: visible;
+const CardContent = styled.div`
+  padding: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 1;
+`;
 
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, #f59e0b 0%, #ea580c 100%);
+const ContentInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
+`;
+
+const ScoreDisplay = styled.div`
+  margin-bottom: 8px;
+`;
+
+const ScoreValue = styled.span`
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+
+  &::after {
+    content: '%';
+    font-size: 24px;
+    margin-left: 2px;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 640px) {
+    font-size: 40px;
+
+    &::after {
+      font-size: 20px;
     }
+  }
+`;
 
+const ReportTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-top: 4px;
+
+  @media (max-width: 640px) {
+    font-size: 16px;
+  }
+`;
+
+const ReportMeta = styled.p`
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+  margin-top: 2px;
+`;
+
+const MetaRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+`;
+
+const MetaItem = styled.span`
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const CTAContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  background: linear-gradient(to top, var(--bg-alt) 60%, transparent);
+
+  @media (max-width: 768px) {
+    transform: translateY(0);
+    opacity: 1;
+    position: relative;
+    padding-top: 16px;
+    background: none;
+  }
+`;
+
+const CTALink = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 14px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const CardActions = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+const ActionButton = styled.button<{ $variant?: 'danger' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: var(--text-secondary);
+
+  &:hover {
+    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--accent);
+  }
+
+  ${({ $variant }) =>
+    $variant === 'danger' &&
+    `
     &:hover {
-      border-color: rgba(245, 158, 11, 0.5);
-      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
     }
   `}
+`;
+
+const Overlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  transition: all 0.3s ease;
 `;
 
 interface Report {
@@ -366,7 +412,7 @@ export default function ReportsPage() {
         const allJobIds = new Set<string>();
         data.forEach((report) => {
           if (report.job_ids && Array.isArray(report.job_ids)) {
-            report.job_ids.forEach((id) => allJobIds.add(id));
+            report.job_ids.forEach((id: string) => allJobIds.add(id));
           }
         });
 
@@ -393,22 +439,6 @@ export default function ReportsPage() {
 
     fetchReports();
   }, [user]);
-
-  const getScoreColor = (score: number): "success" | "warning" | "error" => {
-    if (score >= 75) return "success";
-    if (score >= 50) return "warning";
-    return "error";
-  };
-
-  const getMatchQuality = (score: number): { quality: 'low' | 'medium' | 'high'; label: string } => {
-    if (score >= 75) {
-      return { quality: 'high', label: '✨ Excellent Match' };
-    } else if (score >= 50) {
-      return { quality: 'medium', label: '📈 Growth Potential' };
-    } else {
-      return { quality: 'low', label: '💡 Consider Alternatives' };
-    }
-  };
 
   const handleDeleteClick = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -472,85 +502,113 @@ export default function ReportsPage() {
           />
         </Card>
       ) : (
-        <ReportsList>
-          {reports.map((report) => (
-            <ReportCardWithFakeIt
-              key={report.id}
-              variant="elevated"
-              $fakeItMode={report.fake_it_mode}
-            >
-              {report.fake_it_mode && (
-                <FakeItBanner>
-                  Fake It Mode
-                </FakeItBanner>
-              )}
-              <div onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))} style={{ cursor: 'pointer' }}>
-                <ReportHeader>
-                  <div>
-                    <ReportTitle>CV Analysis Report</ReportTitle>
-                    <ReportDate>
-                      Created on{" "}
-                      {new Date(report.created_at).toLocaleDateString("en-EN", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </ReportDate>
-                    {report.job_ids && report.job_ids.length > 0 && (
-                      <div style={{ marginTop: "4px", fontSize: "13px" }}>
-                        <span style={{ color: "#6b7280", fontWeight: "500" }}>
-                          Job{report.job_ids.length > 1 ? "s" : ""}:{" "}
-                        </span>
-                        <span style={{ color: "#6b7280", fontWeight: "600" }}>
-                          {report.job_ids
-                            .map((id) => jobTitlesMap[id] || "Unknown")
-                            .join(" • ")}
-                        </span>
-                      </div>
-                    )}
-                    {report.optimized_score && report.optimized_score > report.fit_score && (
-                      <ScoreImprovement>
-                        <BeforeScore>{report.fit_score}%</BeforeScore>
-                        <ImprovementArrow>→</ImprovementArrow>
-                        <AfterScore>{report.optimized_score}%</AfterScore>
-                        <span style={{ fontSize: "11px", color: "var(--success)" }}>
-                          (+{report.optimized_score - report.fit_score}%)
-                        </span>
-                      </ScoreImprovement>
-                    )}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-                    <ScoreBadge variant={getScoreColor(report.fit_score)}>
-                      {report.fit_score}% Match
-                    </ScoreBadge>
-                    <MatchQualityBadge $quality={getMatchQuality(report.fit_score).quality}>
-                      {getMatchQuality(report.fit_score).label}
-                    </MatchQualityBadge>
-                  </div>
-                </ReportHeader>
-                <ReportMeta>
-                  <Badge size="sm">
-                    {report.keywords?.missing?.length || 0} Missing Keywords
-                  </Badge>
-                  <Badge variant={report.pro ? "info" : "default"} size="sm">
-                    {report.pro ? "Pro Report" : "Free Report"}
-                  </Badge>
-                </ReportMeta>
-              </div>
-              <CardActions onClick={(e) => e.stopPropagation()}>
-                <ActionButton onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}>
-                  <ViewIcon /> View Details
-                </ActionButton>
-                <ActionButton
-                  $variant="danger"
-                  onClick={(e) => handleDeleteClick(report.id, e)}
+        <>
+          {(() => {
+            const excellent = reports.filter((r) => r.fit_score >= 70);
+            const good = reports.filter((r) => r.fit_score >= 41 && r.fit_score < 70);
+            const needsWork = reports.filter((r) => r.fit_score <= 40);
+
+            const renderReportCard = (report: Report) => {
+              const jobTitles = report.job_ids
+                ?.map((id) => jobTitlesMap[id])
+                .filter(Boolean)
+                .join(" • ");
+
+              return (
+                <ReportCard
+                  key={report.id}
+                  $fakeItMode={report.fake_it_mode ?? false}
+                  onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}
                 >
-                  <DeleteIcon /> Delete
-                </ActionButton>
-              </CardActions>
-            </ReportCardWithFakeIt>
-          ))}
-        </ReportsList>
+                  {report.fake_it_mode && <FakeItBanner>Fake It Mode</FakeItBanner>}
+
+                  <CardContent>
+                    <ContentInner className="report-content">
+                      <ScoreDisplay>
+                        <ScoreValue>{report.fit_score}</ScoreValue>
+                      </ScoreDisplay>
+                      <ReportTitle>
+                        {jobTitles || "CV Analysis Report"}
+                      </ReportTitle>
+                      <ReportMeta>
+                        {new Date(report.created_at).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </ReportMeta>
+                      <MetaRow>
+                        <MetaItem>
+                          {report.keywords?.missing?.length || 0} missing keywords
+                        </MetaItem>
+                        <MetaItem>
+                          {report.pro ? "Pro" : "Free"}
+                        </MetaItem>
+                      </MetaRow>
+                    </ContentInner>
+
+                    <CTAContainer className="report-cta" onClick={(e) => e.stopPropagation()}>
+                      <CTALink>
+                        View Details
+                        <ArrowRightIcon />
+                      </CTALink>
+                      <CardActions>
+                        <ActionButton
+                          $variant="danger"
+                          onClick={(e) => handleDeleteClick(report.id, e)}
+                        >
+                          <DeleteIcon />
+                        </ActionButton>
+                      </CardActions>
+                    </CTAContainer>
+                  </CardContent>
+
+                  <Overlay className="report-overlay" />
+                </ReportCard>
+              );
+            };
+
+            return (
+              <>
+                {excellent.length > 0 && (
+                  <CategorySection>
+                    <CategoryHeader>
+                      <CategoryBadge $variant="excellent">Excellent Match</CategoryBadge>
+                      <CategoryCount>{excellent.length} report{excellent.length > 1 ? 's' : ''}</CategoryCount>
+                    </CategoryHeader>
+                    <ReportsGrid>
+                      {excellent.map(renderReportCard)}
+                    </ReportsGrid>
+                  </CategorySection>
+                )}
+
+                {good.length > 0 && (
+                  <CategorySection>
+                    <CategoryHeader>
+                      <CategoryBadge $variant="good">Good Potential</CategoryBadge>
+                      <CategoryCount>{good.length} report{good.length > 1 ? 's' : ''}</CategoryCount>
+                    </CategoryHeader>
+                    <ReportsGrid>
+                      {good.map(renderReportCard)}
+                    </ReportsGrid>
+                  </CategorySection>
+                )}
+
+                {needsWork.length > 0 && (
+                  <CategorySection>
+                    <CategoryHeader>
+                      <CategoryBadge $variant="needsWork">Needs Work</CategoryBadge>
+                      <CategoryCount>{needsWork.length} report{needsWork.length > 1 ? 's' : ''}</CategoryCount>
+                    </CategoryHeader>
+                    <ReportsGrid>
+                      {needsWork.map(renderReportCard)}
+                    </ReportsGrid>
+                  </CategorySection>
+                )}
+              </>
+            );
+          })()}
+        </>
       )}
 
       {/* Delete Confirmation Modal */}

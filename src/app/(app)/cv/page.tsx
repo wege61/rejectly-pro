@@ -1039,8 +1039,8 @@ export default function CVPage() {
             {allCVs.filter((cv) => "isOptimized" in cv && cv.isOptimized).length > 0 && (
               <CVSection>
                 <CVSectionHeader>
-                  <CVSectionIcon>✨</CVSectionIcon>
-                  <span>Optimized CVs</span>
+                  <CVSectionIcon></CVSectionIcon>
+                  <span>Optimized Resumes</span>
                 </CVSectionHeader>
                 <CVGrid>
                   {allCVs
@@ -1119,8 +1119,8 @@ export default function CVPage() {
             {allCVs.filter((cv) => !("isOptimized" in cv) || !cv.isOptimized).length > 0 && (
               <CVSection>
                 <CVSectionHeader>
-                  <CVSectionIcon>📄</CVSectionIcon>
-                  <span>Original CVs</span>
+                  <CVSectionIcon></CVSectionIcon>
+                  <span>Original Resumes</span>
                 </CVSectionHeader>
                 <CVGrid>
                   {allCVs

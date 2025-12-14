@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
+import { Briefcase, Target, Plus, Sparkles, Check, X, AlertCircle } from "lucide-react";
 import {
   ExperienceTools,
   ToolSuggestion,
@@ -22,6 +23,10 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
+
+  @media (max-width: 640px) {
+    gap: ${({ theme }) => theme.spacing.md};
+  }
 `;
 
 const Description = styled.p`
@@ -31,6 +36,11 @@ const Description = styled.p`
   margin: 0;
 `;
 
+const HighlightText = styled.span`
+  color: ${({ theme }) => theme.colors.warning};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+`;
+
 const ExperienceSection = styled.div`
   background: ${({ theme }) => theme.colors.surfaceHover};
   border-radius: ${({ theme }) => theme.radius.lg};
@@ -38,6 +48,12 @@ const ExperienceSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: 640px) {
+    padding: 14px;
+    gap: 12px;
+    border-radius: 12px;
+  }
 `;
 
 const ExperienceHeader = styled.div`
@@ -46,9 +62,41 @@ const ExperienceHeader = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
-const ExperienceIcon = styled.span`
-  font-size: 1.25rem;
-  line-height: 1;
+const IconWrapper = styled.div<{ $variant?: 'default' | 'accent' | 'muted' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ $variant }) =>
+    $variant === 'accent'
+      ? 'var(--accent-light, rgba(99, 102, 241, 0.1))'
+      : $variant === 'muted'
+      ? 'rgba(107, 114, 128, 0.1)'
+      : 'rgba(99, 102, 241, 0.08)'};
+  color: ${({ $variant, theme }) =>
+    $variant === 'accent'
+      ? 'var(--accent)'
+      : $variant === 'muted'
+      ? theme.colors.textTertiary
+      : 'var(--accent)'};
+  flex-shrink: 0;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  @media (max-width: 640px) {
+    width: 32px;
+    height: 32px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
 `;
 
 const ExperienceInfo = styled.div`
@@ -59,13 +107,21 @@ const ExperienceTitle = styled.h4`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.textPrimary};
-  margin: 0 0 ${({ theme }) => theme.spacing.xs} 0;
+  margin: 0 0 2px 0;
+
+  @media (max-width: 640px) {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  }
 `;
 
 const ExperienceMeta = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: ${({ theme }) => theme.colors.textSecondary};
   margin: 0;
+
+  @media (max-width: 640px) {
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  }
 `;
 
 const ExistingToolsLabel = styled.p`
@@ -112,56 +168,123 @@ const ToolsGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: ${({ theme }) => theme.spacing.sm};
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+`;
+
+const ToolCheckboxWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+
+  &:hover > div[data-tooltip] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+`;
+
+const ToolTooltip = styled.div`
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: ${({ theme }) => theme.colors.textPrimary};
+  color: ${({ theme }) => theme.colors.background};
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 240px;
+  min-width: 160px;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: ${({ theme }) => theme.colors.textPrimary};
+  }
+
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 const ToolCheckbox = styled.label<{ $priority: string; $isSelected: boolean }>`
   display: inline-flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  gap: 8px;
+  padding: 8px 12px;
   background: ${({ theme, $isSelected }) =>
-    $isSelected ? "var(--accent-light, rgba(99, 102, 241, 0.1))" : theme.colors.surface};
-  border: 1px solid
+    $isSelected ? "var(--accent-light, rgba(99, 102, 241, 0.08))" : theme.colors.surface};
+  border: 1.5px solid
     ${({ theme, $isSelected, $priority }) =>
       $isSelected
         ? "var(--accent)"
         : $priority === "high"
         ? theme.colors.warning
         : theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-radius: 8px;
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
+  transition: all 0.15s ease;
   user-select: none;
 
   &:hover {
     background: ${({ theme, $isSelected }) =>
-      $isSelected ? "var(--accent-light, rgba(99, 102, 241, 0.15))" : theme.colors.surfaceHover};
-    border-color: ${({ $isSelected }) =>
-      $isSelected ? "var(--accent)" : "var(--accent-light, rgba(99, 102, 241, 0.5))"};
+      $isSelected ? "var(--accent-light, rgba(99, 102, 241, 0.12))" : theme.colors.surfaceHover};
+    border-color: ${({ $isSelected, $priority, theme }) =>
+      $isSelected
+        ? "var(--accent)"
+        : $priority === "high"
+        ? theme.colors.warning
+        : "var(--accent-light, rgba(99, 102, 241, 0.4))"};
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   input {
     display: none;
   }
+
+  @media (max-width: 640px) {
+    padding: 6px 10px;
+    gap: 6px;
+    border-radius: 6px;
+  }
 `;
 
 const CheckIcon = styled.span<{ $isSelected: boolean }>`
-  width: 18px;
-  height: 18px;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  border: 2px solid
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid
     ${({ $isSelected }) => ($isSelected ? "var(--accent)" : "var(--border-color)")};
   background: ${({ $isSelected }) =>
     $isSelected ? "var(--accent)" : "transparent"};
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all ${({ theme }) => theme.transitions.fast};
+  transition: all 0.15s ease;
   flex-shrink: 0;
 
   svg {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
+    stroke-width: 3;
     color: white;
     opacity: ${({ $isSelected }) => ($isSelected ? 1 : 0)};
   }
@@ -171,31 +294,22 @@ const ToolName = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   color: ${({ theme }) => theme.colors.textPrimary};
+
+  @media (max-width: 640px) {
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  }
 `;
 
 const ToolCategory = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-size: 11px;
   color: ${({ theme }) => theme.colors.textTertiary};
+  opacity: 0.8;
+
+  @media (max-width: 640px) {
+    font-size: 10px;
+  }
 `;
 
-const PriorityBadge = styled.span<{ $priority: string }>`
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  background: ${({ $priority }) =>
-    $priority === "high"
-      ? "rgba(245, 158, 11, 0.15)"
-      : $priority === "medium"
-      ? "rgba(99, 102, 241, 0.1)"
-      : "rgba(107, 114, 128, 0.1)"};
-  color: ${({ $priority, theme }) =>
-    $priority === "high"
-      ? theme.colors.warning
-      : $priority === "medium"
-      ? "var(--accent)"
-      : theme.colors.textTertiary};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-`;
 
 const GlobalSection = styled.div`
   background: linear-gradient(
@@ -209,6 +323,12 @@ const GlobalSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: 640px) {
+    padding: 14px;
+    gap: 12px;
+    border-radius: 12px;
+  }
 `;
 
 const GlobalHeader = styled.div`
@@ -222,6 +342,10 @@ const GlobalTitle = styled.h4`
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.textPrimary};
   margin: 0;
+
+  @media (max-width: 640px) {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  }
 `;
 
 const SelectedCount = styled.span`
@@ -247,9 +371,6 @@ const EmptyState = styled.div`
   text-align: center;
 `;
 
-const EmptyIcon = styled.span`
-  font-size: 3rem;
-`;
 
 const EmptyText = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
@@ -265,6 +386,11 @@ const CustomToolsSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.sm};
+
+  @media (max-width: 640px) {
+    padding: 14px;
+    border-radius: 12px;
+  }
 `;
 
 const CustomToolsHeader = styled.div`
@@ -280,8 +406,13 @@ const CustomToolsTitle = styled.h4`
   margin: 0;
 `;
 
+const InputWrapper = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
 const CustomToolsInput = styled.input`
-  width: 100%;
+  flex: 1;
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
@@ -298,6 +429,37 @@ const CustomToolsInput = styled.input`
 
   &::placeholder {
     color: ${({ theme }) => theme.colors.textTertiary};
+  }
+`;
+
+const AddButton = styled.button<{ $visible: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: ${({ theme }) => theme.radius.md};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  cursor: pointer;
+  transition: all 0.15s ease;
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  transform: ${({ $visible }) => ($visible ? 'scale(1)' : 'scale(0.9)')};
+  pointer-events: ${({ $visible }) => ($visible ? 'auto' : 'none')};
+
+  &:hover {
+    background: var(--accent-hover, rgba(99, 102, 241, 0.9));
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
   }
 `;
 
@@ -348,17 +510,6 @@ const CustomToolBadge = styled.span`
   }
 `;
 
-const CheckIconSvg = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-
-const CloseIconSvg = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-    <path d="M18 6L6 18M6 6l12 12" />
-  </svg>
-);
 
 export const ToolSuggestionModal: React.FC<ToolSuggestionModalProps> = ({
   isOpen,
@@ -425,6 +576,57 @@ export const ToolSuggestionModal: React.FC<ToolSuggestionModalProps> = ({
     onConfirm(allTools);
   };
 
+  // Parse date string and extract start year/month for sorting
+  const parseStartDate = (dates: string): Date => {
+    // Handle formats like "Jan 2020 - Present", "2019 - 2021", "January 2020 - December 2021"
+    const months: Record<string, number> = {
+      jan: 0, january: 0,
+      feb: 1, february: 1,
+      mar: 2, march: 2,
+      apr: 3, april: 3,
+      may: 4,
+      jun: 5, june: 5,
+      jul: 6, july: 6,
+      aug: 7, august: 7,
+      sep: 8, september: 8,
+      oct: 9, october: 9,
+      nov: 10, november: 10,
+      dec: 11, december: 11,
+    };
+
+    const startPart = dates.split('-')[0].trim().toLowerCase();
+
+    // Check for "Present" or current job
+    if (dates.toLowerCase().includes('present') || dates.toLowerCase().includes('current')) {
+      // If it's current job, use today's date for end comparison
+      // but we need start date, so parse the start part
+    }
+
+    // Try to find year
+    const yearMatch = startPart.match(/\d{4}/);
+    const year = yearMatch ? parseInt(yearMatch[0]) : 2000;
+
+    // Try to find month
+    let month = 0;
+    for (const [key, value] of Object.entries(months)) {
+      if (startPart.includes(key)) {
+        month = value;
+        break;
+      }
+    }
+
+    return new Date(year, month, 1);
+  };
+
+  // Sort experiences by start date (most recent first)
+  const sortedExperiences = suggestions?.experiences
+    ? [...suggestions.experiences].sort((a, b) => {
+        const dateA = parseStartDate(a.dates);
+        const dateB = parseStartDate(b.dates);
+        return dateB.getTime() - dateA.getTime(); // Descending (newest first)
+      })
+    : [];
+
   const totalSelectedCount = selectedTools.size + customTools.length;
 
   const hasNoSuggestions =
@@ -436,26 +638,27 @@ export const ToolSuggestionModal: React.FC<ToolSuggestionModalProps> = ({
   const renderToolCheckbox = (tool: ToolSuggestion) => {
     const isSelected = selectedTools.has(tool.name);
     return (
-      <ToolCheckbox
-        key={tool.name}
-        $priority={tool.priority}
-        $isSelected={isSelected}
-        title={tool.reason}
-      >
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => toggleTool(tool.name)}
-        />
-        <CheckIcon $isSelected={isSelected}>
-          <CheckIconSvg />
-        </CheckIcon>
-        <ToolName>{tool.name}</ToolName>
-        <ToolCategory>({tool.category})</ToolCategory>
-        {tool.priority === "high" && (
-          <PriorityBadge $priority={tool.priority}>Critical</PriorityBadge>
-        )}
-      </ToolCheckbox>
+      <ToolCheckboxWrapper key={tool.name}>
+        <ToolTooltip data-tooltip>{tool.reason}</ToolTooltip>
+        <ToolCheckbox
+          $priority={tool.priority}
+          $isSelected={isSelected}
+        >
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => toggleTool(tool.name)}
+          />
+          <CheckIcon $isSelected={isSelected}>
+            <Check />
+          </CheckIcon>
+          <ToolName>{tool.name}</ToolName>
+          <ToolCategory>{tool.category}</ToolCategory>
+          {tool.priority === "high" && (
+            <AlertCircle size={14} style={{ color: 'var(--warning-color, #f59e0b)' }} />
+          )}
+        </ToolCheckbox>
+      </ToolCheckboxWrapper>
     );
   };
 
@@ -466,11 +669,16 @@ export const ToolSuggestionModal: React.FC<ToolSuggestionModalProps> = ({
       title="Enhance Your CV with Additional Tools"
       description="Select the tools you have experience with to strengthen your CV."
       size="lg"
+      showCloseButton={false}
+      closeOnBackdropClick={false}
+      closeOnEscape={false}
     >
       <Modal.Body>
         {hasNoSuggestions ? (
           <EmptyState>
-            <EmptyIcon>✨</EmptyIcon>
+            <IconWrapper $variant="accent" style={{ width: 48, height: 48 }}>
+              <Sparkles style={{ width: 24, height: 24 }} />
+            </IconWrapper>
             <EmptyText>
               Your CV already contains comprehensive tool and technology information.
               You can proceed to generate your optimized CV.
@@ -479,17 +687,15 @@ export const ToolSuggestionModal: React.FC<ToolSuggestionModalProps> = ({
         ) : (
           <ModalContent>
             <Description>
-              Based on the job posting and your industry, we&apos;ve identified tools
-              you may have used in your previous positions. Select the ones you have
-              experience with to add them to your CV.
-              <strong> Tools with yellow borders</strong> are required in the job posting
-              but missing from your CV.
+              Select tools you&apos;ve used. <HighlightText>Yellow borders</HighlightText> = required by job posting.
             </Description>
 
-            {suggestions?.experiences?.map((exp: ExperienceTools) => (
+            {sortedExperiences.map((exp: ExperienceTools) => (
               <ExperienceSection key={exp.experienceIndex}>
                 <ExperienceHeader>
-                  <ExperienceIcon>💼</ExperienceIcon>
+                  <IconWrapper>
+                    <Briefcase />
+                  </IconWrapper>
                   <ExperienceInfo>
                     <ExperienceTitle>{exp.title}</ExperienceTitle>
                     <ExperienceMeta>
@@ -527,7 +733,9 @@ export const ToolSuggestionModal: React.FC<ToolSuggestionModalProps> = ({
               suggestions.globalSuggestions.length > 0 && (
                 <GlobalSection>
                   <GlobalHeader>
-                    <ExperienceIcon>🎯</ExperienceIcon>
+                    <IconWrapper $variant="accent">
+                      <Target />
+                    </IconWrapper>
                     <GlobalTitle>Critical Tools from Job Posting</GlobalTitle>
                   </GlobalHeader>
                   <Description>
@@ -543,19 +751,30 @@ export const ToolSuggestionModal: React.FC<ToolSuggestionModalProps> = ({
             {/* Custom Tools Input Section */}
             <CustomToolsSection>
               <CustomToolsHeader>
-                <ExperienceIcon>➕</ExperienceIcon>
+                <IconWrapper $variant="muted">
+                  <Plus />
+                </IconWrapper>
                 <CustomToolsTitle>Add Other Tools</CustomToolsTitle>
               </CustomToolsHeader>
-              <CustomToolsInput
-                type="text"
-                placeholder="Type tool names separated by commas (e.g., Figma, Notion, Slack)"
-                value={customToolInput}
-                onChange={(e) => setCustomToolInput(e.target.value)}
-                onKeyDown={handleCustomToolInputKeyDown}
-                onBlur={addCustomTools}
-              />
+              <InputWrapper>
+                <CustomToolsInput
+                  type="text"
+                  placeholder="Type tool names separated by commas (e.g., Figma, Notion)"
+                  value={customToolInput}
+                  onChange={(e) => setCustomToolInput(e.target.value)}
+                  onKeyDown={handleCustomToolInputKeyDown}
+                />
+                <AddButton
+                  type="button"
+                  $visible={customToolInput.trim().length > 0}
+                  onClick={addCustomTools}
+                >
+                  <Plus />
+                  Add
+                </AddButton>
+              </InputWrapper>
               <CustomToolsHint>
-                Press Enter or click outside to add tools not listed above
+                Press Enter or click Add button
               </CustomToolsHint>
               {customTools.length > 0 && (
                 <CustomToolsList>
@@ -567,7 +786,7 @@ export const ToolSuggestionModal: React.FC<ToolSuggestionModalProps> = ({
                         onClick={() => removeCustomTool(tool)}
                         aria-label={`Remove ${tool}`}
                       >
-                        <CloseIconSvg />
+                        <X size={14} />
                       </button>
                     </CustomToolBadge>
                   ))}

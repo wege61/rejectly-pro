@@ -12,6 +12,8 @@ interface ModalProps {
   children: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl";
   showCloseButton?: boolean;
+  closeOnBackdropClick?: boolean;
+  closeOnEscape?: boolean;
 }
 
 const fadeIn = keyframes`
@@ -49,6 +51,11 @@ const Backdrop = styled.div<{ $isOpen: boolean }>`
   padding: ${({ theme }) => theme.spacing.lg};
   animation: ${fadeIn} 0.2s ease;
   overflow-y: auto;
+
+  @media (max-width: 640px) {
+    padding: 0;
+    align-items: flex-end;
+  }
 `;
 
 const ModalContainer = styled.div<{ $size: string }>`
@@ -83,32 +90,54 @@ const ModalContainer = styled.div<{ $size: string }>`
         `;
     }
   }}
+
+  @media (max-width: 640px) {
+    max-width: 100%;
+    max-height: 92vh;
+    margin: 0;
+    border-radius: 16px 16px 0 0;
+  }
 `;
 
 const ModalHeader = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
+  padding: 16px 20px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: ${({ theme }) => theme.spacing.sm};
+
+  @media (max-width: 640px) {
+    padding: 14px 16px;
+  }
 `;
 
 const ModalHeaderContent = styled.div`
   flex: 1;
+  min-width: 0;
 `;
 
 const ModalTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-size: 1.125rem;
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: 2px;
+  line-height: 1.3;
+
+  @media (max-width: 640px) {
+    font-size: 1rem;
+  }
 `;
 
 const ModalDescription = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: ${({ theme }) => theme.colors.textSecondary};
   margin-bottom: 0;
+  line-height: 1.4;
+
+  @media (max-width: 640px) {
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  }
 `;
 
 const CloseButton = styled.button`
@@ -134,18 +163,32 @@ const CloseButton = styled.button`
 `;
 
 const ModalBody = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
+  padding: 20px;
   overflow-y: auto;
   flex: 1;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
 `;
 
 const ModalFooter = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
+  padding: 16px 20px;
   border-top: 1px solid ${({ theme }) => theme.colors.border};
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing.sm};
+
+  @media (max-width: 640px) {
+    padding: 14px 16px;
+    flex-direction: column-reverse;
+    gap: 10px;
+
+    > button {
+      width: 100%;
+    }
+  }
 `;
 
 const CloseIcon = () => (
@@ -175,11 +218,13 @@ export const Modal: React.FC<ModalProps> & {
   children,
   size = "md",
   showCloseButton = true,
+  closeOnBackdropClick = true,
+  closeOnEscape = true,
 }) => {
   // ESC tuşu ile kapatma
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
+      if (e.key === "Escape" && isOpen && closeOnEscape) {
         onClose();
       }
     };
@@ -194,13 +239,13 @@ export const Modal: React.FC<ModalProps> & {
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, closeOnEscape]);
 
   if (!isOpen) return null;
 
   // Backdrop'a tıklayınca kapatma
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
+    if (e.target === e.currentTarget && closeOnBackdropClick) {
       onClose();
     }
   };

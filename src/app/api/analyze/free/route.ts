@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
-import { generateFreeSummaryPrompt } from "@/lib/ai/prompts";
+import { generateSystematicScoringPrompt } from "@/lib/ai/prompts";
+import { ScoreBreakdown } from "@/types/scoreBreakdown";
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,8 +59,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Jobs not found" }, { status: 404 });
     }
 
-    // Generate AI analysis
-    const prompt = generateFreeSummaryPrompt(
+    // Generate AI analysis with systematic scoring
+    const prompt = generateSystematicScoringPrompt(
       cvDoc.text,
       jobDocs.map((job) => job.text)
     );
@@ -67,25 +68,35 @@ export async function POST(request: NextRequest) {
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-      max_tokens: 1000,
+      temperature: 0.5, // Lower temperature for more consistent scoring
+      max_tokens: 2500, // Increased for detailed breakdown
       response_format: { type: "json_object" },
     });
 
-    const result = JSON.parse(completion.choices[0].message.content || "{}");
+    const scoreBreakdown: ScoreBreakdown = JSON.parse(
+      completion.choices[0].message.content || "{}"
+    );
 
-    // Save report to database
+    // Extract missing keywords from all components
+    const missingKeywords: string[] = [];
+    Object.values(scoreBreakdown.components).forEach((component) => {
+      if (component.missingItems) {
+        missingKeywords.push(...component.missingItems);
+      }
+    });
+    const uniqueMissingKeywords = [...new Set(missingKeywords)].slice(0, 10);
+
+    // Save report to database with score breakdown
     const { data: report, error: reportError } = await supabase
       .from("reports")
       .insert({
         user_id: user.id,
         cv_id: cvId,
         job_ids: jobIds,
-        fit_score: result.fitScore || 0,
-        summary_free: result.summary || "",
-        keywords: { missing: result.missingKeywords || [] },
-        sample_rewrite: result.sampleRewrite || null,
-        sample_role: result.sampleRole || null,
+        fit_score: scoreBreakdown.finalScore || 0,
+        summary_free: scoreBreakdown.summary || "",
+        keywords: { missing: uniqueMissingKeywords },
+        score_breakdown: scoreBreakdown,
         pro: false,
       })
       .select()
@@ -101,7 +112,8 @@ export async function POST(request: NextRequest) {
         id: report.id,
         fitScore: report.fit_score,
         summary: report.summary_free,
-        missingKeywords: result.missingKeywords || [],
+        missingKeywords: uniqueMissingKeywords,
+        scoreBreakdown: scoreBreakdown,
         createdAt: report.created_at,
       },
     });

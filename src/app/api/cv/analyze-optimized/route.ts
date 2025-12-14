@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
-import { generateFreeSummaryPrompt, generateImprovementBreakdownPrompt } from "@/lib/ai/prompts";
+import { generateOptimizedCVAnalysisPrompt, generateImprovementBreakdownPrompt } from "@/lib/ai/prompts";
 import { GeneratedCV } from "@/types/cv";
 
 // Helper function to convert GeneratedCV to text format
@@ -161,11 +161,13 @@ export async function POST(request: NextRequest) {
 
     // Convert generated CV to text
     const optimizedCVText = convertCVToText(report.generated_cv as GeneratedCV);
+    const originalScore = report.fit_score || 0;
 
-    // Generate AI analysis for optimized CV
-    const prompt = generateFreeSummaryPrompt(
+    // Generate AI analysis for optimized CV with original score context
+    const prompt = generateOptimizedCVAnalysisPrompt(
       optimizedCVText,
-      jobDocs.map((job) => job.text)
+      jobDocs.map((job) => job.text),
+      originalScore
     );
 
     const completion = await openai.chat.completions.create({
@@ -179,7 +181,6 @@ export async function POST(request: NextRequest) {
     const result = JSON.parse(completion.choices[0].message.content || "{}");
 
     // Calculate actual score difference
-    const originalScore = report.fit_score || 0;
     const optimizedScore = result.fitScore || 0;
     const actualScoreDifference = optimizedScore - originalScore;
 
@@ -208,7 +209,7 @@ export async function POST(request: NextRequest) {
 
     // Get fake it mode flag from report
     const fakeItMode = report.fake_it_mode || false;
-    let improvementBreakdown = null;
+    let improvementBreakdown: string[] = [];
 
     if (!cvError && cvDoc && actualScoreDifference > 0) {
       console.log('🎯 Generating improvement breakdown...');

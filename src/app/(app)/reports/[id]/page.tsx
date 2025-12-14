@@ -16,7 +16,9 @@ import { GeneratedCV } from "@/types/cv";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
 import { ToolSuggestionModal } from "@/components/features/ToolSuggestionModal";
+import { ScoreBreakdownModal } from "@/components/features/ScoreBreakdownModal";
 import { ToolSuggestionResponse } from "@/types/toolSuggestion";
+import { ScoreBreakdown } from "@/types/scoreBreakdown";
 import { PRICING } from "@/lib/constants";
 
 interface UserCredits {
@@ -530,6 +532,33 @@ const Grid = styled.div`
 
 const ScoreCard = styled(Card)`
   text-align: center;
+`;
+
+const ClickableScoreCard = styled(Card)`
+  text-align: center;
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const ScoreClickHint = styled.div`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.textTertiary};
+  margin-top: ${({ theme }) => theme.spacing.sm};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
 `;
 
 const ScoreValue = styled.div<{ $score?: number }>`
@@ -2912,6 +2941,7 @@ interface Report {
   improvement_breakdown: Improvement[] | null;
   fake_skills_recommendations: FakeSkillRecommendation[] | null;
   fake_it_mode: boolean;
+  score_breakdown: ScoreBreakdown | null;
   created_at: string;
 }
 
@@ -2953,6 +2983,7 @@ export default function ReportDetailPage() {
   const [isBuyingCredits, setIsBuyingCredits] = useState<string | null>(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [isToolSuggestionModalOpen, setIsToolSuggestionModalOpen] = useState(false);
+  const [isScoreBreakdownModalOpen, setIsScoreBreakdownModalOpen] = useState(false);
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
   const [pendingCVGeneration, setPendingCVGeneration] = useState<{ fakeItMode: boolean } | null>(null);
@@ -3191,25 +3222,26 @@ export default function ReportDetailPage() {
       const hasValidScore = typeof data.optimized_score === "number";
       const hasValidBreakdown =
         data.improvement_breakdown &&
-        Array.isArray(data.improvement_breakdown) &&
-        data.improvement_breakdown.length > 0;
+        Array.isArray(data.improvement_breakdown);
 
       console.log("🔍 Cache validation:", {
         hasValidScore,
         hasValidBreakdown,
         fakeItMode: data.fake_it_mode,
-        willLoadFromCache: hasValidScore && hasValidBreakdown,
+        willLoadFromCache: hasValidScore,
       });
 
-      if (hasValidScore && hasValidBreakdown) {
+      if (hasValidScore) {
         console.log("✅ Loading from cache:", {
           score: data.optimized_score,
           fakeItMode: data.fake_it_mode,
-          breakdownCount: data.improvement_breakdown.length,
+          breakdownCount: data.improvement_breakdown?.length ?? 0,
           breakdown: data.improvement_breakdown,
         });
         setOptimizedScore(data.optimized_score);
-        setImprovementBreakdown(data.improvement_breakdown);
+        if (hasValidBreakdown) {
+          setImprovementBreakdown(data.improvement_breakdown);
+        }
       } else {
         console.log("⚠️ Cache not available:", {
           reason: !hasValidScore ? "No valid score" : "No valid breakdown",
@@ -3877,7 +3909,7 @@ export default function ReportDetailPage() {
       </Header>
 
       <Grid>
-        {optimizedScore !== null && report.generated_cv ? (
+        {optimizedScore !== null && report.generated_cv && optimizedScore > report.fit_score ? (
           <ComparisonScoreCard variant="elevated">
             <ScoreComparison>
               <ScoreColumn>
@@ -3892,15 +3924,29 @@ export default function ReportDetailPage() {
                 </ComparisonValue>
               </ScoreColumn>
             </ScoreComparison>
-            {optimizedScore > report.fit_score && (
-              <ImprovementBadge>
-                ↑ +{optimizedScore - report.fit_score}% Improvement
-              </ImprovementBadge>
-            )}
+            <ImprovementBadge>
+              ↑ +{optimizedScore - report.fit_score}% Improvement
+            </ImprovementBadge>
             {isAnalyzingOptimized && (
               <LoadingText>Analyzing optimized CV...</LoadingText>
             )}
           </ComparisonScoreCard>
+        ) : report.score_breakdown ? (
+          <ClickableScoreCard
+            variant="elevated"
+            onClick={() => setIsScoreBreakdownModalOpen(true)}
+            title="Click to see detailed score breakdown"
+          >
+            <ScoreValue $score={report.fit_score}>{report.fit_score}%</ScoreValue>
+            <ScoreLabel>Match Score</ScoreLabel>
+            <ScoreContext $score={report.fit_score}>{getScoreLabel(report.fit_score)}</ScoreContext>
+            {report.generated_cv && isAnalyzingOptimized && (
+              <LoadingText>Analyzing optimized CV...</LoadingText>
+            )}
+            <ScoreClickHint>
+              <EyeIcon /> Click for breakdown
+            </ScoreClickHint>
+          </ClickableScoreCard>
         ) : (
           <ScoreCard variant="elevated">
             <ScoreValue $score={report.fit_score}>{report.fit_score}%</ScoreValue>
@@ -3989,6 +4035,7 @@ export default function ReportDetailPage() {
 
       {improvementBreakdown.length > 0 &&
         optimizedScore !== null &&
+        optimizedScore > report.fit_score &&
         !isAnalyzingOptimized && (
           <>
             {/* Problem Summary Card */}
@@ -5537,6 +5584,14 @@ export default function ReportDetailPage() {
         isOpen={isCoverLetterModalOpen}
         onClose={() => setIsCoverLetterModalOpen(false)}
         reportId={reportId}
+      />
+
+      {/* Score Breakdown Modal */}
+      <ScoreBreakdownModal
+        isOpen={isScoreBreakdownModalOpen}
+        onClose={() => setIsScoreBreakdownModalOpen(false)}
+        breakdown={report?.score_breakdown || null}
+        fitScore={report?.fit_score || 0}
       />
     </Container>
   );

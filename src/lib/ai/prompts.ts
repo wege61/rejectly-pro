@@ -545,32 +545,33 @@ YOU MUST:
 TASK: Create an optimized CV that includes ALL missing keywords.
 ` : `
 ═══════════════════════════════════════════════════════
-🛡️ SMART HONEST MODE - OPTIMIZE WITH INTEGRITY
+🛡️ HONEST MODE - PRESERVE ORIGINAL SKILLS ONLY
 ═══════════════════════════════════════════════════════
-The candidate wants CV optimization that improves match score while staying truthful.
+The candidate wants CV optimization WITHOUT adding any new skills they don't have.
 
-MISSING KEYWORDS TO CONSIDER: ${analysisResults.missingKeywords.join(", ")}
+🚨 CRITICAL RULES - DO NOT VIOLATE:
+❌ DO NOT add ANY new skills that are not in the original CV
+❌ DO NOT add "related" or "similar" technologies the candidate hasn't listed
+❌ DO NOT add tools from the "same ecosystem" if not explicitly in the original CV
+❌ DO NOT invent or assume any technical skills
+❌ DO NOT add skills to "Familiar with" or "Exposure to" sections if not in original
 
-⚖️ SMART INTEGRATION RULES:
-You CAN add missing keywords IF:
-✅ They are RELATED/SIMILAR to existing skills (e.g., CV has "JavaScript" → can add "TypeScript")
-✅ They are TOOLS in the same ecosystem (e.g., CV has "React" → can add "Next.js")
-✅ They are TRANSFERABLE from demonstrated experience (e.g., "Project Management" → can add "Agile")
-✅ They fit naturally in a "Familiar with" or "Exposure to" context
-
-You CANNOT add:
-❌ Completely unrelated technologies (e.g., "Python developer" → don't add "3D modeling")
-❌ Fabricated job titles, companies, or dates
-❌ Invented projects or achievements
-❌ Skills with zero connection to their background
+✅ WHAT YOU CAN DO:
+✅ Reorganize and better present EXISTING skills from the original CV
+✅ Improve wording and formatting of existing experience bullets
+✅ Add quantifiable achievements to existing experience (numbers, percentages)
+✅ Enhance professional summary using ONLY skills already in the CV
+✅ Optimize ATS formatting (clean sections, proper keywords from EXISTING skills)
+✅ Reorder skills by relevance to target job (but only existing ones)
 
 OPTIMIZATION STRATEGY:
-1. Enhance existing experience bullets with relevant keywords
-2. Add related skills to skills section with honest framing (e.g., "Proficient: React, Node.js" + "Familiar: Next.js, GraphQL")
-3. Integrate keywords naturally in professional summary if plausible
-4. Focus on making existing skills more discoverable by ATS
+1. Extract ALL skills mentioned anywhere in the original CV
+2. Present these existing skills more prominently and organized
+3. Enhance experience bullets with better action verbs and metrics
+4. Write a compelling summary using ONLY the candidate's actual skills
+5. Improve ATS compatibility through better formatting
 
-TASK: Create an optimized CV that IMPROVES the match score by strategic keyword integration while maintaining honesty.
+TASK: Create an optimized CV that presents the candidate's EXISTING skills in the best possible way, without adding anything they don't actually have.
 `}
 
 IMPORTANT INSTRUCTIONS:

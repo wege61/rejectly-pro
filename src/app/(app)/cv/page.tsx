@@ -117,22 +117,18 @@ type CVItem =
   | (OptimizedCV & { isOptimized: true; reportId: string });
 
 const PageContainer = styled.div`
-  min-height: calc(100vh - 80px);
-  background: ${({ theme }) => theme.colors.background};
-  display: flex;
-  flex-direction: column;
-`;
-
-const ContentWrapper = styled.div`
-  max-width: 1400px;
-  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing["2xl"]};
+  padding-bottom: 100px; /* Space for FAB */
 
-  @media (max-width: 968px) {
-    padding: ${({ theme }) => theme.spacing.md};
+  
+  @media (max-width: 450px) {
+    padding: ${({ theme }) => theme.spacing["lg"]};
+    padding-top: 52px;
   }
 `;
+
 
 const Header = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
@@ -998,10 +994,9 @@ export default function CVPage() {
 
   return (
     <PageContainer>
-      <ContentWrapper>
         <Header>
           <HeaderContent>
-            <Title>My CVs</Title>
+            <Title>My Resume</Title>
             <Subtitle>
               Upload and manage your resumes. Optimized versions are automatically generated from your job analysis reports.
             </Subtitle>
@@ -1013,7 +1008,7 @@ export default function CVPage() {
               </>
             ) : (
               <>
-                <UploadIcon /> Upload New CV
+                <UploadIcon /> Upload New Resume
               </>
             )}
           </UploadButton>
@@ -1030,10 +1025,10 @@ export default function CVPage() {
           <Card variant="bordered">
             <EmptyState
               icon={<EmptyState.DocumentIcon />}
-              title="No CVs yet"
+              title="No resumes yet"
               description="Upload your first resume to get started with job matching analysis and AI-powered optimization."
               action={{
-                label: isUploading ? "Uploading..." : "Upload Your First CV",
+                label: isUploading ? "Uploading..." : "Upload Your Resume",
                 onClick: handleUploadClick,
               }}
             />
@@ -1188,7 +1183,6 @@ export default function CVPage() {
             )}
           </>
         )}
-      </ContentWrapper>
 
       {/* PDF Preview Drawer */}
       <CVPreviewDrawer $isOpen={!!previewCV}>

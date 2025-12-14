@@ -704,22 +704,6 @@ const SectionTitle = styled.h2`
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
 `;
 
-const QuickActionsGrid = styled.div`
-  display: grid;
-  gap: ${({ theme }) => theme.spacing.lg};
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-`;
-
-const ActionCard = styled(Card)`
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: ${({ theme }) => theme.shadow.lg};
-  }
-`;
-
 const ReportsList = styled.div`
   display: flex;
   flex-direction: column;
@@ -1495,48 +1479,6 @@ export default function DashboardPage() {
             />
           </BentoGrid>
         </BentoGridContainer>
-
-        {/* Quick Actions */}
-        <Section>
-          <SectionHeader>
-            <SectionTitle>Quick Actions</SectionTitle>
-          </SectionHeader>
-          <QuickActionsGrid>
-            <ActionCard
-              variant="elevated"
-              onClick={() => router.push(ROUTES.APP.CV)}
-            >
-              <Card.Header>
-                <Card.Title>Upload Resume</Card.Title>
-                <Card.Description>
-                  Add a new resume to analyze against job postings
-                </Card.Description>
-              </Card.Header>
-            </ActionCard>
-            <ActionCard
-              variant="elevated"
-              onClick={() => router.push(ROUTES.APP.JOBS)}
-            >
-              <Card.Header>
-                <Card.Title>Add Job Posting</Card.Title>
-                <Card.Description>
-                  Save job postings to compare with your resume
-                </Card.Description>
-              </Card.Header>
-            </ActionCard>
-            <ActionCard
-              variant="elevated"
-              onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
-            >
-              <Card.Header>
-                <Card.Title>Generate Cover Letter</Card.Title>
-                <Card.Description>
-                  Create AI-powered cover letters for your applications
-                </Card.Description>
-              </Card.Header>
-            </ActionCard>
-          </QuickActionsGrid>
-        </Section>
 
         {/* Recent Cover Letters */}
         {recentCoverLetters.length > 0 && (

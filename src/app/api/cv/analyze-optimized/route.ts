@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
-import { generateOptimizedCVAnalysisPrompt, generateImprovementBreakdownPrompt } from "@/lib/ai/prompts";
+import { generateImprovementBreakdownPrompt, generateSystematicScoringPrompt } from "@/lib/ai/prompts";
 import { GeneratedCV } from "@/types/cv";
+import { ScoreBreakdown } from "@/types/scoreBreakdown";
 
 // Helper function to convert GeneratedCV to text format
 function convertCVToText(cv: GeneratedCV): string {
@@ -141,6 +142,7 @@ export async function POST(request: NextRequest) {
         originalScore: report.fit_score,
         actualScoreDifference: report.optimized_score - report.fit_score,
         fakeItMode: report.fake_it_mode || false,
+        optimizedScoreBreakdown: report.optimized_score_breakdown || null,
         cached: true,
       });
     }
@@ -163,35 +165,39 @@ export async function POST(request: NextRequest) {
     const optimizedCVText = convertCVToText(report.generated_cv as GeneratedCV);
     const originalScore = report.fit_score || 0;
 
-    // Generate AI analysis for optimized CV with original score context
-    const prompt = generateOptimizedCVAnalysisPrompt(
+    // Generate detailed score breakdown for optimized CV FIRST
+    // This ensures the displayed score matches the breakdown details
+    console.log('📊 Generating optimized score breakdown...');
+    const scoreBreakdownPrompt = generateSystematicScoringPrompt(
       optimizedCVText,
-      jobDocs.map((job) => job.text),
-      originalScore
+      jobDocs.map((job) => job.text)
     );
 
-    const completion = await openai.chat.completions.create({
+    const scoreBreakdownCompletion = await openai.chat.completions.create({
       model: AI_MODEL,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-      max_tokens: 1000,
+      messages: [{ role: "user", content: scoreBreakdownPrompt }],
+      temperature: 0.5,
+      max_tokens: 2500,
       response_format: { type: "json_object" },
     });
 
-    const result = JSON.parse(completion.choices[0].message.content || "{}");
+    const optimizedScoreBreakdown: ScoreBreakdown = JSON.parse(
+      scoreBreakdownCompletion.choices[0].message.content || "{}"
+    );
 
-    // Calculate actual score difference
-    const optimizedScore = result.fitScore || 0;
+    // Use the finalScore from breakdown for consistency
+    const optimizedScore = optimizedScoreBreakdown.finalScore || 0;
     const actualScoreDifference = optimizedScore - originalScore;
 
-    console.log('📊 Score calculation:', {
+    console.log('📊 Score calculation (from breakdown):', {
       originalScore,
       optimizedScore,
       actualScoreDifference,
-      shouldGenerateBreakdown: actualScoreDifference > 0
+      verdict: optimizedScoreBreakdown.assessment?.verdict,
+      shouldGenerateImprovementBreakdown: actualScoreDifference > 0
     });
 
-    // Fetch original CV for breakdown comparison
+    // Fetch original CV for improvement breakdown comparison
     const { data: cvDoc, error: cvError } = await supabase
       .from("documents")
       .select("text")
@@ -251,9 +257,10 @@ export async function POST(request: NextRequest) {
       .update({
         optimized_score: optimizedScore,
         improvement_breakdown: improvementBreakdown,
+        optimized_score_breakdown: optimizedScoreBreakdown,
       })
       .eq("id", reportId)
-      .select('id, optimized_score, improvement_breakdown');
+      .select('id, optimized_score, improvement_breakdown, optimized_score_breakdown');
 
     if (updateError) {
       console.error("❌ Failed to cache analysis results:", {
@@ -271,12 +278,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       fitScore: optimizedScore,
-      summary: result.summary || "",
-      missingKeywords: result.missingKeywords || [],
+      summary: optimizedScoreBreakdown.summary || "",
+      missingKeywords: [],
       improvementBreakdown,
       originalScore,
       actualScoreDifference,
       fakeItMode,
+      optimizedScoreBreakdown,
       cached: false,
     });
   } catch (error) {

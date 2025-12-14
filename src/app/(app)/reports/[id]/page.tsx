@@ -99,28 +99,6 @@ const EyeIcon = () => (
   </svg>
 );
 
-const RefreshIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: "20px",
-      height: "20px",
-      display: "inline-block",
-      verticalAlign: "middle",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-    />
-  </svg>
-);
-
 const LightBulbIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -616,6 +594,18 @@ const getScoreLabel = (score: number): string => {
 
 const ComparisonScoreCard = styled(Card)`
   text-align: center;
+`;
+
+const ClickableComparisonScoreCard = styled(Card)`
+  text-align: center;
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+    border-color: var(--success);
+  }
 `;
 
 const ScoreComparison = styled.div`
@@ -2942,6 +2932,7 @@ interface Report {
   fake_skills_recommendations: FakeSkillRecommendation[] | null;
   fake_it_mode: boolean;
   score_breakdown: ScoreBreakdown | null;
+  optimized_score_breakdown: ScoreBreakdown | null;
   created_at: string;
 }
 
@@ -2984,6 +2975,8 @@ export default function ReportDetailPage() {
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [isToolSuggestionModalOpen, setIsToolSuggestionModalOpen] = useState(false);
   const [isScoreBreakdownModalOpen, setIsScoreBreakdownModalOpen] = useState(false);
+  const [isOptimizedScoreBreakdownModalOpen, setIsOptimizedScoreBreakdownModalOpen] = useState(false);
+  const [optimizedScoreBreakdown, setOptimizedScoreBreakdown] = useState<ScoreBreakdown | null>(null);
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
   const [pendingCVGeneration, setPendingCVGeneration] = useState<{ fakeItMode: boolean } | null>(null);
@@ -3242,6 +3235,9 @@ export default function ReportDetailPage() {
         if (hasValidBreakdown) {
           setImprovementBreakdown(data.improvement_breakdown);
         }
+        if (data.optimized_score_breakdown) {
+          setOptimizedScoreBreakdown(data.optimized_score_breakdown);
+        }
       } else {
         console.log("⚠️ Cache not available:", {
           reason: !hasValidScore ? "No valid score" : "No valid breakdown",
@@ -3344,7 +3340,7 @@ export default function ReportDetailPage() {
 
     setIsGeneratingCV(true);
     try {
-      // Report is already pro, just regenerate CV with fake it mode (no credit cost)
+      // Report is already pro, generate CV with fake it mode (no credit cost)
       // The API will handle updating both generated_cv and fake_it_mode
       console.log('🚀 Starting fake it mode CV generation...');
 
@@ -3436,6 +3432,9 @@ export default function ReportDetailPage() {
           });
           setOptimizedScore(analysisResult.fitScore);
           setImprovementBreakdown(analysisResult.improvementBreakdown || []);
+          if (analysisResult.optimizedScoreBreakdown) {
+            setOptimizedScoreBreakdown(analysisResult.optimizedScoreBreakdown);
+          }
 
           // Refresh report to get updated cache from database
           const { data: finalReport } = await supabase
@@ -3457,7 +3456,7 @@ export default function ReportDetailPage() {
         }
       }
 
-      toast.success("CV regenerated with Fake It Mode!");
+      toast.success("CV generated with Fake It Mode!");
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -3514,7 +3513,7 @@ export default function ReportDetailPage() {
     }
   };
 
-  // Complete CV generation after tool selection (used by both upgrade and regenerate flows)
+  // Complete CV generation after tool selection (used by upgrade flow)
   const completeUpgradeWithCV = async (additionalTools: string[] = []) => {
     if (!report) return;
 
@@ -3597,6 +3596,9 @@ export default function ReportDetailPage() {
             const analysisResult = await analyzeResponse.json();
             setOptimizedScore(analysisResult.optimizedScore);
             setImprovementBreakdown(analysisResult.improvements || []);
+            if (analysisResult.optimizedScoreBreakdown) {
+              setOptimizedScoreBreakdown(analysisResult.optimizedScoreBreakdown);
+            }
           }
         }
 
@@ -3641,27 +3643,6 @@ export default function ReportDetailPage() {
     } finally {
       setIsLoadingToolSuggestions(false);
     }
-  };
-
-  // Handle CV generation button click
-  const handleGenerateCV = async () => {
-    if (!report) return;
-
-    // Store the current fakeItMode for later use
-    setPendingCVGeneration({ fakeItMode });
-
-    // If CV already exists (regenerate case), use existing tools without asking
-    if (report.generated_cv?.skills?.technical) {
-      const existingTools = report.generated_cv.skills.technical;
-      console.log('🔄 Regenerating with existing tools:', existingTools);
-      await completeUpgradeWithCV(existingTools);
-      return;
-    }
-
-    // First time generation - show tool suggestion modal
-    setIsToolSuggestionModalOpen(true);
-    const suggestions = await fetchToolSuggestions();
-    setToolSuggestions(suggestions);
   };
 
   // Handle tool selection confirm from modal
@@ -3910,27 +3891,58 @@ export default function ReportDetailPage() {
 
       <Grid>
         {optimizedScore !== null && report.generated_cv && optimizedScore > report.fit_score ? (
-          <ComparisonScoreCard variant="elevated">
-            <ScoreComparison>
-              <ScoreColumn>
-                <ScoreTitle>ORIGINAL</ScoreTitle>
-                <ComparisonValue>{report.fit_score}%</ComparisonValue>
-              </ScoreColumn>
-              <ScoreDivider />
-              <ScoreColumn>
-                <ScoreTitle>OPTIMIZED</ScoreTitle>
-                <ComparisonValue $isOptimized>
-                  {optimizedScore}%
-                </ComparisonValue>
-              </ScoreColumn>
-            </ScoreComparison>
-            <ImprovementBadge>
-              ↑ +{optimizedScore - report.fit_score}% Improvement
-            </ImprovementBadge>
-            {isAnalyzingOptimized && (
-              <LoadingText>Analyzing optimized CV...</LoadingText>
-            )}
-          </ComparisonScoreCard>
+          optimizedScoreBreakdown || report.optimized_score_breakdown ? (
+            <ClickableComparisonScoreCard
+              variant="elevated"
+              onClick={() => setIsOptimizedScoreBreakdownModalOpen(true)}
+              title="Click to see detailed score breakdown"
+            >
+              <ScoreComparison>
+                <ScoreColumn>
+                  <ScoreTitle>ORIGINAL</ScoreTitle>
+                  <ComparisonValue>{report.fit_score}%</ComparisonValue>
+                </ScoreColumn>
+                <ScoreDivider />
+                <ScoreColumn>
+                  <ScoreTitle>OPTIMIZED</ScoreTitle>
+                  <ComparisonValue $isOptimized>
+                    {optimizedScore}%
+                  </ComparisonValue>
+                </ScoreColumn>
+              </ScoreComparison>
+              <ImprovementBadge>
+                ↑ +{optimizedScore - report.fit_score}% Improvement
+              </ImprovementBadge>
+              {isAnalyzingOptimized && (
+                <LoadingText>Analyzing optimized CV...</LoadingText>
+              )}
+              <ScoreClickHint>
+                <EyeIcon /> Click for breakdown
+              </ScoreClickHint>
+            </ClickableComparisonScoreCard>
+          ) : (
+            <ComparisonScoreCard variant="elevated">
+              <ScoreComparison>
+                <ScoreColumn>
+                  <ScoreTitle>ORIGINAL</ScoreTitle>
+                  <ComparisonValue>{report.fit_score}%</ComparisonValue>
+                </ScoreColumn>
+                <ScoreDivider />
+                <ScoreColumn>
+                  <ScoreTitle>OPTIMIZED</ScoreTitle>
+                  <ComparisonValue $isOptimized>
+                    {optimizedScore}%
+                  </ComparisonValue>
+                </ScoreColumn>
+              </ScoreComparison>
+              <ImprovementBadge>
+                ↑ +{optimizedScore - report.fit_score}% Improvement
+              </ImprovementBadge>
+              {isAnalyzingOptimized && (
+                <LoadingText>Analyzing optimized CV...</LoadingText>
+              )}
+            </ComparisonScoreCard>
+          )
         ) : report.score_breakdown ? (
           <ClickableScoreCard
             variant="elevated"
@@ -5025,6 +5037,9 @@ export default function ReportDetailPage() {
                                 const analysisResult = await analyzeResponse.json();
                                 setOptimizedScore(analysisResult.optimizedScore);
                                 setImprovementBreakdown(analysisResult.improvements || []);
+                                if (analysisResult.optimizedScoreBreakdown) {
+                                  setOptimizedScoreBreakdown(analysisResult.optimizedScoreBreakdown);
+                                }
                               }
                             } catch (analyzeError) {
                               console.error("Score analysis error:", analyzeError);
@@ -5188,26 +5203,6 @@ export default function ReportDetailPage() {
                         <ActionCardDescription>
                           Create a tailored cover letter that perfectly complements
                           your optimized CV.
-                        </ActionCardDescription>
-                      </ActionCard>
-
-                      <ActionCard
-                        $variant="ghost"
-                        onClick={!isGeneratingCV ? handleGenerateCV : undefined}
-                        style={{ opacity: isGeneratingCV ? 0.6 : 1, cursor: isGeneratingCV ? 'not-allowed' : 'pointer' }}
-                      >
-                        <ActionCardHeader>
-                          <ActionCardIcon $variant="ghost">
-                            <RefreshIcon />
-                          </ActionCardIcon>
-                          <ActionCardTitle>
-                            {isGeneratingCV ? "Regenerating..." : "Regenerate CV"}
-                          </ActionCardTitle>
-                        </ActionCardHeader>
-                        <ActionCardDescription>
-                          {isGeneratingCV
-                            ? "Please wait while we regenerate your CV..."
-                            : "Not satisfied? Generate a new version with different optimizations."}
                         </ActionCardDescription>
                       </ActionCard>
                     </ActionCardsGrid>
@@ -5592,6 +5587,14 @@ export default function ReportDetailPage() {
         onClose={() => setIsScoreBreakdownModalOpen(false)}
         breakdown={report?.score_breakdown || null}
         fitScore={report?.fit_score || 0}
+      />
+
+      {/* Optimized Score Breakdown Modal */}
+      <ScoreBreakdownModal
+        isOpen={isOptimizedScoreBreakdownModalOpen}
+        onClose={() => setIsOptimizedScoreBreakdownModalOpen(false)}
+        breakdown={optimizedScoreBreakdown || report?.optimized_score_breakdown || null}
+        fitScore={optimizedScore || 0}
       />
     </Container>
   );

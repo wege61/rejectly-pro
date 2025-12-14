@@ -1464,8 +1464,8 @@ RESPONSE FORMAT (STRICT JSON - FOLLOW EXACTLY)
       "name": "Skills Match",
       "weight": <40|45|35 based on job level>,
       "maxPoints": <same as weight>,
-      "earnedPoints": <calculated value>,
-      "percentage": <(earnedPoints/maxPoints)*100>,
+      "earnedPoints": <value between 0 and maxPoints - NEVER exceeds maxPoints!>,
+      "percentage": <0-100, calculated as (earnedPoints/maxPoints)*100>,
       "details": "<1-2 sentences explaining the calculation>",
       "matchedItems": ["skill1", "skill2", "..."],
       "missingItems": ["skill1", "skill2", "..."]
@@ -1474,8 +1474,8 @@ RESPONSE FORMAT (STRICT JSON - FOLLOW EXACTLY)
       "name": "<Experience Match OR Potential & Projects for entry-level>",
       "weight": <20|30|40 based on job level>,
       "maxPoints": <same as weight>,
-      "earnedPoints": <calculated value>,
-      "percentage": <(earnedPoints/maxPoints)*100>,
+      "earnedPoints": <value between 0 and maxPoints - NEVER exceeds maxPoints!>,
+      "percentage": <0-100, calculated as (earnedPoints/maxPoints)*100>,
       "details": "<explain years comparison or projects evaluated>",
       "matchedItems": ["3 years Python", "Team lead experience", "..."],
       "missingItems": ["5 years required", "Leadership gap", "..."]
@@ -1484,8 +1484,8 @@ RESPONSE FORMAT (STRICT JSON - FOLLOW EXACTLY)
       "name": "Industry Relevance",
       "weight": 15,
       "maxPoints": 15,
-      "earnedPoints": <calculated value>,
-      "percentage": <(earnedPoints/15)*100>,
+      "earnedPoints": <value between 0 and 15 - NEVER exceeds 15!>,
+      "percentage": <0-100, calculated as (earnedPoints/15)*100>,
       "details": "<explain industry match assessment>",
       "matchedItems": ["Tech industry background", "..."],
       "missingItems": ["FinTech specific experience", "..."]
@@ -1494,8 +1494,8 @@ RESPONSE FORMAT (STRICT JSON - FOLLOW EXACTLY)
       "name": "<Education & Learning OR Education & Certs>",
       "weight": <25|10 based on job level>,
       "maxPoints": <same as weight>,
-      "earnedPoints": <calculated value>,
-      "percentage": <(earnedPoints/maxPoints)*100>,
+      "earnedPoints": <value between 0 and maxPoints - NEVER exceeds maxPoints!>,
+      "percentage": <0-100, calculated as (earnedPoints/maxPoints)*100>,
       "details": "<explain education/cert match>",
       "matchedItems": ["BS Computer Science", "AWS Certified", "..."],
       "missingItems": ["Masters preferred", "PMP required", "..."]
@@ -1511,9 +1511,9 @@ RESPONSE FORMAT (STRICT JSON - FOLLOW EXACTLY)
       "reason": "CV lacks Docker, Kubernetes, and CI/CD - all listed as required"
     }
   ],
-  "rawScore": <sum of all earnedPoints>,
+  "rawScore": <sum of all earnedPoints - should be between 0 and 100>,
   "totalPenalties": <sum of all pointsDeducted>,
-  "finalScore": <rawScore - totalPenalties, capped 0-100>,
+  "finalScore": <rawScore - totalPenalties, must be between 0 and 100>,
   "assessment": {
     "verdict": "<would_interview|maybe_with_reservations|would_not_interview>",
     "percentile": "<top 10%|top 25%|average|below average|bottom 25%>",
@@ -1551,16 +1551,30 @@ EXPERIENCED CANDIDATE REALITY CHECK:
 - Wrong field entirely: 15-30%
 
 =============================================================================
-MATHEMATICAL VERIFICATION
+MATHEMATICAL VERIFICATION (CRITICAL!)
 =============================================================================
 Before responding, verify:
 □ Sum of component maxPoints = 100
-□ Each earnedPoints <= corresponding maxPoints
-□ rawScore = sum of all earnedPoints
+□ Each earnedPoints <= corresponding maxPoints (NEVER exceed maxPoints!)
+□ rawScore = sum of all earnedPoints (should be between 0 and 100)
 □ totalPenalties = sum of all pointsDeducted
 □ finalScore = rawScore - totalPenalties (capped 0-100)
 □ No penalty applied twice
 □ Entry-level jobs don't have experience penalty
+
+=============================================================================
+EARNEDPOINTS CALCULATION EXAMPLE (READ CAREFULLY!)
+=============================================================================
+WRONG: If maxPoints=40 and match is 100%, earnedPoints=100 ❌
+CORRECT: If maxPoints=40 and match is 100%, earnedPoints=40, percentage=100 ✓
+
+WRONG: If maxPoints=35 and match is 80%, earnedPoints=80 ❌
+CORRECT: If maxPoints=35 and match is 80%, earnedPoints=28, percentage=80 ✓
+
+Formula: earnedPoints = (percentage / 100) * maxPoints
+Example: 80% match with maxPoints=40 → earnedPoints = (80/100) * 40 = 32
+
+earnedPoints can NEVER be greater than maxPoints!
 
 Respond with ONLY the JSON object. No markdown, no explanations.`;
 }

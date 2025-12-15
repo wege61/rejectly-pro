@@ -1,56 +1,72 @@
 'use client';
 
 import styled from 'styled-components';
+import Link from 'next/link';
 import { ROUTES } from '@/lib/constants';
+import AuthSidePanel from '@/components/auth/AuthSidePanel';
 
 const Container = styled.div`
+  display: grid;
   min-height: 100vh;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 3fr 2fr;
+  }
+`;
+
+const FormSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.xl};
+  background-color: var(--bg-color);
+
+  @media (min-width: 768px) {
+    padding: ${({ theme }) => theme.spacing['2xl']};
+  }
+`;
+
+const LogoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+
+  @media (min-width: 768px) {
+    justify-content: flex-start;
+  }
+`;
+
+const LogoLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  color: var(--text-color);
+  transition: opacity ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const FormContainer = styled.div`
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-color);
-  padding: ${({ theme }) => theme.spacing.lg};
 `;
 
-const Card = styled.div`
+const FormWrapper = styled.div`
   width: 100%;
-  max-width: 450px;
-  background-color: var(--surface-color);
-  border-radius: ${({ theme }) => theme.radius.xl};
-  box-shadow: ${({ theme }) => theme.shadow.xl};
-  padding: ${({ theme }) => theme.spacing['2xl']};
+  max-width: 360px;
 `;
 
-const Logo = styled.div`
-  text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing['2xl']};
-`;
+const SideSection = styled.div`
+  display: none;
 
-const LogoLink = styled.a`
-  text-decoration: none;
-  cursor: pointer;
-  display: inline-block;
-  transition: transform ${({ theme }) => theme.transitions.fast};
-
-  &:hover {
-    transform: scale(1.02);
+  @media (min-width: 1024px) {
+    display: block;
   }
-`;
-
-const LogoText = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--primary-color);
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-
-  ${LogoLink}:hover & {
-    filter: brightness(0.9);
-  }
-`;
-
-const LogoSubtext = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--text-secondary);
 `;
 
 export default function AuthLayout({
@@ -60,15 +76,21 @@ export default function AuthLayout({
 }) {
   return (
     <Container>
-      <Card>
-        <Logo>
+      <FormSection>
+        <LogoContainer>
           <LogoLink href={ROUTES.PUBLIC.HOME}>
-            <LogoText>Rejectly.pro</LogoText>
-            <LogoSubtext>AI-powered CV Analysis</LogoSubtext>
+            Rejectly.pro
           </LogoLink>
-        </Logo>
-        {children}
-      </Card>
+        </LogoContainer>
+        <FormContainer>
+          <FormWrapper>
+            {children}
+          </FormWrapper>
+        </FormContainer>
+      </FormSection>
+      <SideSection>
+        <AuthSidePanel />
+      </SideSection>
     </Container>
   );
 }

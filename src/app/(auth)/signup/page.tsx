@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import styled from 'styled-components';
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { signUp } from '@/lib/auth';
@@ -11,33 +12,64 @@ import { ROUTES } from '@/lib/constants';
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme }) => theme.spacing.xl};
 `;
 
-const Title = styled.h2`
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  text-align: center;
+`;
+
+const Title = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: var(--text-color);
 `;
 
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: var(--text-secondary);
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
-const Footer = styled.div`
-  margin-top: ${({ theme }) => theme.spacing.lg};
+const FieldGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.lg};
+`;
+
+const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const Label = styled.label`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: var(--text-color);
+`;
+
+const FieldDescription = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: var(--text-secondary);
+  margin-top: 2px;
+`;
+
+const Footer = styled.p`
   text-align: center;
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: var(--text-secondary);
 
   a {
-    color: var(--accent);
-    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+    color: var(--text-color);
+    text-decoration: underline;
+    text-underline-offset: 4px;
 
     &:hover {
-      text-decoration: underline;
+      color: var(--accent);
     }
   }
 `;
@@ -46,12 +78,15 @@ const TermsText = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
   color: var(--text-secondary);
   text-align: center;
+  line-height: 1.5;
 
   a {
-    color: var(--accent);
+    color: var(--text-color);
+    text-decoration: underline;
+    text-underline-offset: 2px;
 
     &:hover {
-      text-decoration: underline;
+      color: var(--accent);
     }
   }
 `;
@@ -60,14 +95,20 @@ export default function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password.length < 6) {
-      toast.error('Password must be at least 6 characters long.');
+    if (password.length < 8) {
+      toast.error('Password must be at least 8 characters long.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match.');
       return;
     }
 
@@ -75,75 +116,101 @@ export default function SignupPage() {
 
     try {
       await signUp(email, password, name);
-      toast.success('Sign up successful! Please check your email.');
-    } catch (error: any) {
-      toast.error(error.message || 'Sign up failed. Please try again.');
+      toast.success('Sign up successful! Please check your email to verify your account.');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Sign up failed. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <Title>Create an Account</Title>
-      <Subtitle>Sign up for free and start your resume analysis</Subtitle>
+    <Form onSubmit={handleSubmit}>
+      <Header>
+        <Title>Create your account</Title>
+        <Subtitle>Fill in the form below to create your account</Subtitle>
+      </Header>
 
-      <Form onSubmit={handleSubmit}>
-        <Input
-          label="Full Name"
-          type="text"
-          placeholder="John Doe"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          fullWidth
-          autoComplete="name"
-        />
+      <FieldGroup>
+        <Field>
+          <Label htmlFor="name">Full Name</Label>
+          <Input
+            id="name"
+            type="text"
+            placeholder="John Doe"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            fullWidth
+            autoComplete="name"
+          />
+        </Field>
 
-        <Input
-          label="Email"
-          type="email"
-          placeholder="example@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          fullWidth
-          autoComplete="email"
-        />
+        <Field>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            fullWidth
+            autoComplete="email"
+          />
+          <FieldDescription>
+            We&apos;ll use this to contact you. We will not share your email with anyone.
+          </FieldDescription>
+        </Field>
 
-        <Input
-          label="Password"
-          type="password"
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          fullWidth
-          autoComplete="new-password"
-          helperText="Minimum 6 characters"
-        />
+        <Field>
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            fullWidth
+            autoComplete="new-password"
+          />
+          <FieldDescription>
+            Must be at least 8 characters long.
+          </FieldDescription>
+        </Field>
+
+        <Field>
+          <Label htmlFor="confirm-password">Confirm Password</Label>
+          <Input
+            id="confirm-password"
+            type="password"
+            placeholder="Confirm your password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            fullWidth
+            autoComplete="new-password"
+          />
+        </Field>
 
         <Button type="submit" isLoading={isLoading} fullWidth size="lg">
-          Sign Up
+          Create Account
         </Button>
-      </Form>
 
-      <TermsText>
-        By signing up, you agree to our{' '}
-        <a href={ROUTES.PUBLIC.TERMS} target="_blank">
-          Terms of Service
-        </a>{' '}
-        and{' '}
-        <a href={ROUTES.PUBLIC.PRIVACY} target="_blank">
-          Privacy Policy
-        </a>
-        .
-      </TermsText>
+        <TermsText>
+          By signing up, you agree to our{' '}
+          <Link href={ROUTES.PUBLIC.TERMS} target="_blank">Terms of Service</Link>
+          {' '}and{' '}
+          <Link href={ROUTES.PUBLIC.PRIVACY} target="_blank">Privacy Policy</Link>.
+        </TermsText>
+      </FieldGroup>
 
       <Footer>
         Already have an account?{' '}
-        <a href={ROUTES.AUTH.LOGIN}>Log in</a>
+        <Link href={ROUTES.AUTH.LOGIN}>Sign in</Link>
       </Footer>
-    </>
+    </Form>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import styled from "styled-components";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { signIn } from "@/lib/auth";
@@ -12,68 +13,75 @@ import { useRouter } from "next/navigation";
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme }) => theme.spacing.xl};
 `;
 
-const Title = styled.h2`
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  text-align: center;
+`;
+
+const Title = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: var(--text-color);
 `;
 
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: var(--text-secondary);
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
-const ForgotPasswordLink = styled.div`
-  text-align: right;
-  margin-top: -${({ theme }) => theme.spacing.sm};
+const FieldGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.lg};
+`;
 
-  a {
-    font-size: ${({ theme }) => theme.typography.fontSize.sm};
-    color: var(--accent);
+const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
 
-    &:hover {
-      text-decoration: underline;
-    }
+const LabelRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const Label = styled.label`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: var(--text-color);
+`;
+
+const ForgotLink = styled(Link)`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: var(--text-secondary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;
 
-const Footer = styled.div`
-  margin-top: ${({ theme }) => theme.spacing.lg};
+const Footer = styled.p`
   text-align: center;
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: var(--text-secondary);
 
   a {
-    color: var(--accent);
-    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+    color: var(--text-color);
+    text-decoration: underline;
+    text-underline-offset: 4px;
 
     &:hover {
-      text-decoration: underline;
+      color: var(--accent);
     }
-  }
-`;
-
-const Divider = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  margin: ${({ theme }) => theme.spacing.lg} 0;
-
-  &::before,
-  &::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background-color: var(--border-color);
-  }
-
-  span {
-    font-size: ${({ theme }) => theme.typography.fontSize.sm};
-    color: var(--text-secondary);
   }
 `;
 
@@ -92,57 +100,64 @@ export default function LoginPage() {
       await signIn(email, password);
       toast.success("Login successful! Redirecting...");
       router.push(ROUTES.APP.DASHBOARD);
-    } catch (error: any) {
-      toast.error(error.message || "Login failed. Please try again.");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Login failed. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <Title>Log In</Title>
-      <Subtitle>Access your account and continue your resume analysis</Subtitle>
+    <Form onSubmit={handleSubmit}>
+      <Header>
+        <Title>Login to your account</Title>
+        <Subtitle>Enter your email below to login to your account</Subtitle>
+      </Header>
 
-      <Form onSubmit={handleSubmit}>
-        <Input
-          label="Email"
-          type="email"
-          placeholder="example@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          fullWidth
-          autoComplete="email"
-        />
+      <FieldGroup>
+        <Field>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            fullWidth
+            autoComplete="email"
+          />
+        </Field>
 
-        <Input
-          label="Password"
-          type="password"
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          fullWidth
-          autoComplete="current-password"
-        />
-
-        <ForgotPasswordLink>
-          <a href={ROUTES.AUTH.FORGOT_PASSWORD}>Forgot password?</a>
-        </ForgotPasswordLink>
+        <Field>
+          <LabelRow>
+            <Label htmlFor="password">Password</Label>
+            <ForgotLink href={ROUTES.AUTH.FORGOT_PASSWORD}>
+              Forgot your password?
+            </ForgotLink>
+          </LabelRow>
+          <Input
+            id="password"
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            fullWidth
+            autoComplete="current-password"
+          />
+        </Field>
 
         <Button type="submit" isLoading={isLoading} fullWidth size="lg">
-          Log In
+          Login
         </Button>
-      </Form>
-
-      <Divider>
-        <span>or</span>
-      </Divider>
+      </FieldGroup>
 
       <Footer>
-        Don’t have an account? <a href={ROUTES.AUTH.SIGNUP}>Sign up for free</a>
+        Don&apos;t have an account?{" "}
+        <Link href={ROUTES.AUTH.SIGNUP}>Sign up</Link>
       </Footer>
-    </>
+    </Form>
   );
 }

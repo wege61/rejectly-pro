@@ -66,24 +66,6 @@ const DeleteIcon = () => (
   </svg>
 );
 
-const FileIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" />
-    <line x1="16" y1="17" x2="8" y2="17" />
-    <polyline points="10 9 9 9 8 9" />
-  </svg>
-);
 
 interface CVDocument {
   id: string;
@@ -163,13 +145,12 @@ const Subtitle = styled.p`
 
 const CVGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: ${({ theme }) => theme.spacing.lg};
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 
-  @media (max-width: 768px) {
+  @media (max-width: 480px) {
     grid-template-columns: 1fr;
-    gap: ${({ theme }) => theme.spacing.md};
   }
 `;
 
@@ -193,80 +174,79 @@ const CVSectionIcon = styled.span`
 `;
 
 const CVCard = styled.div<{ $isOptimized?: boolean }>`
-  padding: ${({ theme }) => theme.spacing.lg};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
-  border: 2px solid ${({ $isOptimized, theme }) =>
-    $isOptimized ? "var(--success-light)" : theme.colors.border};
-  background: ${({ $isOptimized, theme }) =>
-    $isOptimized
-      ? "var(--success-bg)"
-      : theme.colors.surface};
-  box-shadow: ${({ theme }) => theme.shadow.sm};
   position: relative;
   overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-alt);
+  cursor: pointer;
+  transition: all 0.3s ease;
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: ${({ $isOptimized, theme }) =>
-      $isOptimized
-        ? "var(--success)"
-        : "var(--gradient-primary)"};
-    opacity: 0;
-    transition: opacity ${({ theme }) => theme.transitions.fast};
+  /* Subtle depth through shadows */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: ${({ theme }) => theme.shadow.lg};
-    border-color: ${({ $isOptimized, theme }) =>
-      $isOptimized ? "var(--success)" : "var(--accent)"};
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
 
-    &::before {
-      opacity: 1;
-    }
+  &:hover .cv-content {
+    transform: translateY(-8px);
+  }
+
+  &:hover .cv-cta {
+    transform: translateY(0);
+    opacity: 1;
   }
 `;
 
-const CVCardHeader = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+const CVCardBackground = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  opacity: 0.12;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 100%);
+  word-break: break-word;
+  white-space: pre-wrap;
 `;
 
-const CVCardIcon = styled.div<{ $isOptimized?: boolean }>`
-  width: 48px;
-  height: 48px;
-  border-radius: ${({ theme }) => theme.radius.md};
+const CVCardInner = styled.div`
+  position: relative;
+  z-index: 1;
+  padding: 24px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${({ $isOptimized, theme }) =>
-    $isOptimized
-      ? "var(--success-light)"
-      : "var(--primary-50)"};
-  color: ${({ $isOptimized, theme }) =>
-    $isOptimized ? "var(--success)" : "var(--accent)"};
-  flex-shrink: 0;
+  flex-direction: column;
+  min-height: 200px;
+  justify-content: flex-end;
 `;
 
-const CVCardContent = styled.div`
-  flex: 1;
-  min-width: 0;
+const CVCardContentInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
 `;
 
 const CVCardTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -275,41 +255,77 @@ const CVCardTitle = styled.h3`
 const CVCardMeta = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.xs};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  gap: 6px;
+  margin-bottom: 8px;
 `;
 
 const CVCardDate = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
+  font-size: 14px;
+  color: var(--text-secondary);
 `;
 
 const CVCardJobInfo = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-top: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  background: rgba(34, 197, 94, 0.1);
-  border-radius: ${({ theme }) => theme.radius.sm};
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 8px;
 
   span {
-    color: #22c55e;
-    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+    color: #FF7A73;
+    font-weight: 500;
   }
 `;
 
-const CVCardActions = styled.div`
+const CTAContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  gap: ${({ theme }) => theme.spacing.xs};
-  margin-top: ${({ theme }) => theme.spacing.md};
-  padding-top: ${({ theme }) => theme.spacing.md};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  align-items: center;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  background: linear-gradient(to top, var(--bg-alt) 60%, transparent);
+  gap: 8px;
+
+  @media (max-width: 768px) {
+    transform: translateY(0);
+    opacity: 1;
+    position: relative;
+    padding-top: 12px;
+    background: none;
+  }
+`;
+
+const ActionButton = styled.button<{ $variant?: 'danger' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: var(--text-secondary);
+
+  &:hover {
+    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--accent);
+  }
+
+  ${({ $variant }) =>
+    $variant === 'danger' &&
+    `
+    &:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+  `}
 `;
 
 const UploadButton = styled(Button)`
@@ -1049,11 +1065,11 @@ export default function CVPage() {
                       const optimizedCV = cv as OptimizedCV & { isOptimized: true; reportId: string };
                       return (
                       <CVCard key={cv.id} $isOptimized={true} onClick={() => setPreviewCV(cv)}>
-                        <CVCardHeader>
-                          <CVCardIcon $isOptimized={true}>
-                            <FileIcon />
-                          </CVCardIcon>
-                          <CVCardContent>
+                        <CVCardBackground>
+                          {cv.text}
+                        </CVCardBackground>
+                        <CVCardInner>
+                          <CVCardContentInner className="cv-content">
                             <CVCardTitle>{cv.title}</CVCardTitle>
                             <CVCardMeta>
                               <Badge size="sm" variant="success">
@@ -1065,7 +1081,7 @@ export default function CVPage() {
                                 </Badge>
                               )}
                               <Badge size="sm" variant="info">
-                                {cv.lang === "tr" ? "🇹🇷 Turkish" : "🇬🇧 English"}
+                                {cv.lang === "tr" ? "🇹🇷 TR" : "🇬🇧 EN"}
                               </Badge>
                             </CVCardMeta>
                             <CVCardDate>
@@ -1076,38 +1092,36 @@ export default function CVPage() {
                                 For: <span>{optimizedCV.job_title}</span>
                               </CVCardJobInfo>
                             )}
-                          </CVCardContent>
-                        </CVCardHeader>
-                        <CVCardActions>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setPreviewCV(cv);
-                            }}
-                            style={{ flex: 1 }}
-                          >
-                            <EyeIcon /> Preview
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDownload(cv);
-                            }}
-                          >
-                            <DownloadIcon />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => handleDeleteClick(cv, e)}
-                          >
-                            <DeleteIcon />
-                          </Button>
-                        </CVCardActions>
+                          </CVCardContentInner>
+                          <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPreviewCV(cv);
+                              }}
+                            >
+                              <EyeIcon /> Preview
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownload(cv);
+                              }}
+                            >
+                              <DownloadIcon />
+                            </Button>
+                            <ActionButton
+                              $variant="danger"
+                              onClick={(e) => handleDeleteClick(cv, e)}
+                            >
+                              <DeleteIcon />
+                            </ActionButton>
+                          </CTAContainer>
+                        </CVCardInner>
                       </CVCard>
                     );
                     })}
@@ -1127,55 +1141,53 @@ export default function CVPage() {
                     .filter((cv) => !("isOptimized" in cv) || !cv.isOptimized)
                     .map((cv) => (
                       <CVCard key={cv.id} onClick={() => setPreviewCV(cv)}>
-                        <CVCardHeader>
-                          <CVCardIcon>
-                            <FileIcon />
-                          </CVCardIcon>
-                          <CVCardContent>
+                        <CVCardBackground>
+                          {cv.text}
+                        </CVCardBackground>
+                        <CVCardInner>
+                          <CVCardContentInner className="cv-content">
                             <CVCardTitle>{cv.title}</CVCardTitle>
                             <CVCardMeta>
                               <Badge size="sm" variant="default">
                                 Original
                               </Badge>
                               <Badge size="sm" variant="info">
-                                {cv.lang === "tr" ? "🇹🇷 Turkish" : "🇬🇧 English"}
+                                {cv.lang === "tr" ? "🇹🇷 TR" : "🇬🇧 EN"}
                               </Badge>
                             </CVCardMeta>
                             <CVCardDate>
                               Uploaded {formatDate(cv.created_at)}
                             </CVCardDate>
-                          </CVCardContent>
-                        </CVCardHeader>
-                        <CVCardActions>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setPreviewCV(cv);
-                            }}
-                            style={{ flex: 1 }}
-                          >
-                            <EyeIcon /> Preview
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDownload(cv);
-                            }}
-                          >
-                            <DownloadIcon />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => handleDeleteClick(cv, e)}
-                          >
-                            <DeleteIcon />
-                          </Button>
-                        </CVCardActions>
+                          </CVCardContentInner>
+                          <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPreviewCV(cv);
+                              }}
+                            >
+                              <EyeIcon /> Preview
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownload(cv);
+                              }}
+                            >
+                              <DownloadIcon />
+                            </Button>
+                            <ActionButton
+                              $variant="danger"
+                              onClick={(e) => handleDeleteClick(cv, e)}
+                            >
+                              <DeleteIcon />
+                            </ActionButton>
+                          </CTAContainer>
+                        </CVCardInner>
                       </CVCard>
                     ))}
                 </CVGrid>
@@ -1286,7 +1298,7 @@ export default function CVPage() {
                 {"isOptimized" in (previewCV || {}) && (previewCV as any).job_title && (
                   <CVPreviewJobInfo>
                     <span>Created for:</span>
-                    <strong style={{ color: '#22c55e' }}>{(previewCV as any).job_title}</strong>
+                    <strong style={{ color: '#FF7A73' }}>{(previewCV as any).job_title}</strong>
                   </CVPreviewJobInfo>
                 )}
               </CVPreviewTitleWrapper>

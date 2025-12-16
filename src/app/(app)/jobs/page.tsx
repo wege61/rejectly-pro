@@ -16,6 +16,25 @@ import { createClient } from "@/lib/supabase/client";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useClickOutside } from "@/hooks/useClickOutside";
 
+// Icons
+const DeleteIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <line x1="10" y1="11" x2="10" y2="17" />
+    <line x1="14" y1="11" x2="14" y2="17" />
+  </svg>
+);
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -47,9 +66,13 @@ const Subtitle = styled.p`
 `;
 
 const JobsList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const FormGroup = styled.div`
@@ -96,17 +119,77 @@ const ExpandedFormGroup = styled.div`
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-// Job card with motion
+// Job card with motion - Bento style
 const JobCardWrapper = styled(motion.div)`
   cursor: pointer;
 `;
 
-const JobCardInner = styled(Card)`
-  transition: box-shadow 0.2s ease;
+const JobCardInner = styled.div`
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-alt);
+  transition: all 0.3s ease;
+
+  /* Subtle depth through shadows */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
   &:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
   }
+
+  &:hover .job-content {
+    transform: translateY(-8px);
+  }
+
+  &:hover .job-cta {
+    transform: translateY(0);
+    opacity: 1;
+  }
+`;
+
+const JobCardBackground = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  opacity: 0.12;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 100%);
+  word-break: break-word;
+  white-space: pre-wrap;
+`;
+
+const JobCardContent = styled.div`
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  justify-content: flex-end;
+`;
+
+const ContentInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
 `;
 
 const CardTitleWrapper = styled.div`
@@ -117,10 +200,57 @@ const CardTitleWrapper = styled.div`
 
 const CardTitleContent = styled.div``;
 
-const CardActions = styled.div`
+const CTAContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 16px 20px;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  background: linear-gradient(to top, var(--bg-alt) 60%, transparent);
   gap: 8px;
-  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    transform: translateY(0);
+    opacity: 1;
+    position: relative;
+    padding-top: 12px;
+    background: none;
+  }
+`;
+
+const ActionButton = styled.button<{ $variant?: 'danger' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: var(--text-secondary);
+
+  &:hover {
+    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--accent);
+  }
+
+  ${({ $variant }) =>
+    $variant === 'danger' &&
+    `
+    &:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+  `}
 `;
 
 // Backdrop
@@ -559,43 +689,46 @@ export default function JobsPage() {
               layoutId={`card-${job.id}-${id}`}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <JobCardInner variant="elevated">
-                <Card.Header>
-                  <CardTitleWrapper>
-                    <CardTitleContent>
-                      <motion.h3
-                        layout
-                        layoutId={`title-${job.id}-${id}`}
-                        style={{
-                          fontSize: "1rem",
-                          fontWeight: 600,
-                          margin: 0,
-                          color: "inherit",
-                        }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      >
-                        {job.title}
-                      </motion.h3>
-                      <motion.p
-                        layout
-                        layoutId={`description-${job.id}-${id}`}
-                        style={{
-                          fontSize: "0.875rem",
-                          color: "#6b7280",
-                          margin: 0,
-                          marginTop: "4px",
-                        }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      >
-                        Added on{" "}
-                        {new Date(job.created_at).toLocaleDateString("tr-TR")}
-                      </motion.p>
-                    </CardTitleContent>
-                    <Badge>{job.text.length.toLocaleString()} characters</Badge>
-                  </CardTitleWrapper>
-                </Card.Header>
-                <Card.Footer>
-                  <CardActions>
+              <JobCardInner>
+                <JobCardBackground>
+                  {job.text}
+                </JobCardBackground>
+                <JobCardContent>
+                  <ContentInner className="job-content">
+                    <CardTitleWrapper>
+                      <CardTitleContent>
+                        <motion.h3
+                          layout
+                          layoutId={`title-${job.id}-${id}`}
+                          style={{
+                            fontSize: "1.125rem",
+                            fontWeight: 600,
+                            margin: 0,
+                            color: "var(--text-color)",
+                          }}
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        >
+                          {job.title}
+                        </motion.h3>
+                        <motion.p
+                          layout
+                          layoutId={`description-${job.id}-${id}`}
+                          style={{
+                            fontSize: "0.875rem",
+                            color: "var(--text-secondary)",
+                            margin: 0,
+                            marginTop: "4px",
+                          }}
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        >
+                          Added on{" "}
+                          {new Date(job.created_at).toLocaleDateString("tr-TR")}
+                        </motion.p>
+                      </CardTitleContent>
+                      <Badge>{job.text.length.toLocaleString()} chars</Badge>
+                    </CardTitleWrapper>
+                  </ContentInner>
+                  <CTAContainer className="job-cta" onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -603,15 +736,14 @@ export default function JobsPage() {
                     >
                       Edit
                     </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
+                    <ActionButton
+                      $variant="danger"
                       onClick={(e) => handleDeleteClick(job.id, e)}
                     >
-                      Delete
-                    </Button>
-                  </CardActions>
-                </Card.Footer>
+                      <DeleteIcon />
+                    </ActionButton>
+                  </CTAContainer>
+                </JobCardContent>
               </JobCardInner>
             </JobCardWrapper>
           ))}

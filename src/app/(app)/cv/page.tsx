@@ -196,12 +196,28 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
   }
 
   &:hover .cv-content {
-    transform: translateY(-8px);
+    transform: translateY(-32px);
   }
 
   &:hover .cv-cta {
     transform: translateY(0);
     opacity: 1;
+  }
+
+  &:hover .cv-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .cv-overlay {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &:hover .cv-content {
+      transform: none;
+    }
   }
 `;
 
@@ -240,6 +256,17 @@ const CVCardContentInner = styled.div`
   gap: 4px;
   transform-origin: bottom left;
   transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
+  }
+`;
+
+const CVCardOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  transition: all 0.3s ease;
 `;
 
 const CVCardTitle = styled.h3`
@@ -270,7 +297,7 @@ const CVCardJobInfo = styled.div`
   margin-top: 8px;
 
   span {
-    color: #FF7A73;
+    color: var(--primary-500);
     font-weight: 500;
   }
 `;
@@ -287,7 +314,6 @@ const CTAContainer = styled.div`
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
-  background: linear-gradient(to top, var(--bg-alt) 60%, transparent);
   gap: 8px;
 
   @media (max-width: 768px) {
@@ -437,16 +463,16 @@ const CVPreviewSidebarItem = styled.div<{ $active: boolean; $isOptimized?: boole
   border-radius: ${({ theme }) => theme.radius.md};
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
-  border: 2px solid ${({ $active, $isOptimized, theme }) =>
+  border-left: 1px solid ${({ $active, $isOptimized, theme }) =>
     $active
       ? $isOptimized
-        ? "var(--success)"
+        ? "var(--primary-500)"
         : "var(--accent)"
       : "transparent"};
   background: ${({ $active, $isOptimized, theme }) =>
     $active
       ? $isOptimized
-        ? "var(--success-light)"
+        ? "var(--primary-50)"
         : "var(--primary-50)"
       : theme.colors.surface};
   position: relative;
@@ -481,7 +507,7 @@ const CVPreviewSidebarItem = styled.div<{ $active: boolean; $isOptimized?: boole
       background: ${({ $active, $isOptimized, theme }) =>
         $active
           ? $isOptimized
-            ? "var(--success)"
+            ? "var(--primary-500)"
             : "var(--accent)"
           : theme.colors.textTertiary};
     }
@@ -1072,8 +1098,8 @@ export default function CVPage() {
                           <CVCardContentInner className="cv-content">
                             <CVCardTitle>{cv.title}</CVCardTitle>
                             <CVCardMeta>
-                              <Badge size="sm" variant="success">
-                                ✨ Optimized
+                              <Badge size="sm">
+                                Optimized
                               </Badge>
                               {optimizedCV.fake_it_mode && (
                                 <Badge size="sm" variant="warning">
@@ -1122,6 +1148,7 @@ export default function CVPage() {
                             </ActionButton>
                           </CTAContainer>
                         </CVCardInner>
+                        <CVCardOverlay className="cv-overlay" />
                       </CVCard>
                     );
                     })}
@@ -1188,6 +1215,7 @@ export default function CVPage() {
                             </ActionButton>
                           </CTAContainer>
                         </CVCardInner>
+                        <CVCardOverlay className="cv-overlay" />
                       </CVCard>
                     ))}
                 </CVGrid>
@@ -1225,7 +1253,7 @@ export default function CVPage() {
                     <CVPreviewSidebarItemMeta>
                       {isOptimized ? (
                         <>
-                          <span style={{ color: "#22c55e" }}>✨ Optimized</span>
+                          <span style={{ color: "var(--primary-500)" }}>Optimized</span>
                           {(cv as any).fake_it_mode && (
                             <>
                               <span>•</span>
@@ -1234,7 +1262,7 @@ export default function CVPage() {
                           )}
                         </>
                       ) : (
-                        <span>📄 Original</span>
+                        <span>Original</span>
                       )}
                       <span>•</span>
                       <span>{cv.lang === "tr" ? "TR" : "EN"}</span>
@@ -1286,7 +1314,7 @@ export default function CVPage() {
                   {previewCV?.title}
                   {"isOptimized" in (previewCV || {}) && (previewCV as any).isOptimized && (
                     <Badge size="sm" variant="success">
-                      ✨ Optimized
+                       Optimized
                     </Badge>
                   )}
                   {"isOptimized" in (previewCV || {}) && (previewCV as any).fake_it_mode && (
@@ -1298,7 +1326,7 @@ export default function CVPage() {
                 {"isOptimized" in (previewCV || {}) && (previewCV as any).job_title && (
                   <CVPreviewJobInfo>
                     <span>Created for:</span>
-                    <strong style={{ color: '#FF7A73' }}>{(previewCV as any).job_title}</strong>
+                    <strong style={{ color: 'var(--primary-500)' }}>{(previewCV as any).job_title}</strong>
                   </CVPreviewJobInfo>
                 )}
               </CVPreviewTitleWrapper>

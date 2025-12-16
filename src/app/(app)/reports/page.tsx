@@ -1,6 +1,6 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -119,17 +119,14 @@ const CategoryBadge = styled.span<{ $variant: 'excellent' | 'good' | 'needsWork'
     switch ($variant) {
       case 'excellent':
         return `
-          background: rgba(34, 197, 94, 0.1);
-          color: #22c55e;
+          color: var(--primary-500);
         `;
       case 'good':
         return `
-          background: rgba(59, 130, 246, 0.1);
-          color: #3b82f6;
+          color: #2a57a0ff;
         `;
       case 'needsWork':
         return `
-          background: rgba(249, 115, 22, 0.1);
           color: #f97316;
         `;
     }
@@ -141,7 +138,7 @@ const CategoryCount = styled.span`
   color: var(--text-secondary);
 `;
 
-const ReportCard = styled.div<{ $fakeItMode?: boolean }>`
+const ReportCard = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -162,11 +159,6 @@ const ReportCard = styled.div<{ $fakeItMode?: boolean }>`
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  ${({ $fakeItMode }) =>
-    $fakeItMode &&
-    `
-    margin-top: 14px;
-  `}
 
   &:hover {
     transform: translateY(-4px);
@@ -174,7 +166,7 @@ const ReportCard = styled.div<{ $fakeItMode?: boolean }>`
   }
 
   &:hover .report-content {
-    transform: translateY(-10px);
+    transform: translateY(-32px);
   }
 
   &:hover .report-cta {
@@ -183,36 +175,37 @@ const ReportCard = styled.div<{ $fakeItMode?: boolean }>`
   }
 
   &:hover .report-overlay {
-    background: rgba(0, 0, 0, 0.02);
+    background: rgba(0, 0, 0, 0.03);
   }
 
   @media (prefers-color-scheme: dark) {
     &:hover .report-overlay {
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &:hover .report-content {
+      transform: none;
     }
   }
 `;
 
 const FakeItBanner = styled.div`
   position: absolute;
-  top: -14px;
-  right: 20px;
-  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-  color: white;
-  padding: 6px 14px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: 8px;
+  top: 12px;
+  right: 12px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 6px;
   z-index: 10;
   display: flex;
   align-items: center;
   gap: 4px;
-
-  &::before {
-    content: '🚀';
-  }
 `;
 
 const CardContent = styled.div`
@@ -231,16 +224,29 @@ const ContentInner = styled.div`
   gap: 4px;
   transform-origin: bottom left;
   transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
+  }
 `;
 
 const ScoreDisplay = styled.div`
   margin-bottom: 8px;
 `;
 
-const ScoreValue = styled.span`
+const ScoreValue = styled.span<{ $category: 'excellent' | 'good' | 'needsWork' }>`
   font-size: 48px;
   font-weight: 700;
-  color: var(--accent);
+  color: ${({ $category }) => {
+    switch ($category) {
+      case 'excellent':
+        return 'var(--primary-500)';
+      case 'good':
+        return '#2a57a0ff';
+      case 'needsWork':
+        return '#f97316';
+    }
+  }};
   line-height: 1;
 
   &::after {
@@ -292,6 +298,14 @@ const MetaItem = styled.span`
   gap: 4px;
 `;
 
+const MetaItemProOrFree = styled.span<{ $isPro?: boolean }>`
+  font-size: 13px;
+  color: ${({ $isPro }) => $isPro ? '#FF7A73' : 'var(--text-secondary)'};
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
 const CTAContainer = styled.div`
   position: absolute;
   bottom: 0;
@@ -304,7 +318,6 @@ const CTAContainer = styled.div`
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
-  background: linear-gradient(to top, var(--bg-alt) 60%, transparent);
 
   @media (max-width: 768px) {
     transform: translateY(0);
@@ -368,6 +381,117 @@ const Overlay = styled.div`
   inset: 0;
   transition: all 0.3s ease;
 `;
+
+// Background Animation Components
+const floatAnimation = keyframes`
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+  50% { transform: translateY(-8px) rotate(2deg); opacity: 0.8; }
+`;
+
+const fadeInUp = keyframes`
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+`;
+
+const scrollText = keyframes`
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+`;
+
+const ReportCardBackgroundWrapper = styled.div`
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
+`;
+
+const KeywordContainer = styled.div`
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 80px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  opacity: 0.5;
+`;
+
+const KeywordBadge = styled.span<{ $delay: number }>`
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 9px;
+  font-weight: 500;
+  background: rgba(var(--accent-rgb), 0.08);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  border: 1px solid rgba(var(--accent-rgb), 0.1);
+  animation: ${fadeInUp} 0.4s ease-out forwards, ${floatAnimation} 3s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay}s, ${({ $delay }) => $delay + 0.4}s;
+  opacity: 0;
+`;
+
+const SummaryScrollContainer = styled.div`
+  position: absolute;
+  top: 50px;
+  left: 12px;
+  right: 12px;
+  bottom: 60px;
+  overflow: hidden;
+  opacity: 0.15;
+`;
+
+const SummaryText = styled.div`
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  animation: ${scrollText} 20s linear infinite;
+
+  &:hover {
+    animation-play-state: paused;
+  }
+`;
+
+const SummaryTextDuplicate = styled.div`
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+`;
+
+interface ReportCardBackgroundProps {
+  keywords?: string[];
+  summary?: string;
+}
+
+const ReportCardBackground = ({ keywords, summary }: ReportCardBackgroundProps) => {
+  const displayKeywords = keywords?.slice(0, 5) || [];
+  const summaryText = summary || '';
+
+  return (
+    <ReportCardBackgroundWrapper>
+      {displayKeywords.length > 0 && (
+        <KeywordContainer>
+          {displayKeywords.map((keyword, idx) => (
+            <KeywordBadge key={idx} $delay={idx * 0.1}>
+              {keyword}
+            </KeywordBadge>
+          ))}
+        </KeywordContainer>
+      )}
+      {summaryText && (
+        <SummaryScrollContainer>
+          <SummaryText>
+            {summaryText}
+            <SummaryTextDuplicate>
+              {summaryText}
+            </SummaryTextDuplicate>
+          </SummaryText>
+        </SummaryScrollContainer>
+      )}
+    </ReportCardBackgroundWrapper>
+  );
+};
 
 interface Report {
   id: string;
@@ -517,15 +641,18 @@ export default function ReportsPage() {
               return (
                 <ReportCard
                   key={report.id}
-                  $fakeItMode={report.fake_it_mode ?? false}
                   onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}
                 >
-                  {report.fake_it_mode && <FakeItBanner>Fake It Mode</FakeItBanner>}
+                  <ReportCardBackground
+                    keywords={report.keywords?.missing}
+                    summary={report.summary_free}
+                  />
+                  {report.fake_it_mode && <FakeItBanner>🎭 Fake It</FakeItBanner>}
 
                   <CardContent>
                     <ContentInner className="report-content">
                       <ScoreDisplay>
-                        <ScoreValue>{report.fit_score}</ScoreValue>
+                        <ScoreValue $category={report.fit_score >= 70 ? 'excellent' : report.fit_score >= 41 ? 'good' : 'needsWork'}>{report.fit_score}</ScoreValue>
                       </ScoreDisplay>
                       <ReportTitle>
                         {jobTitles || "CV Analysis Report"}
@@ -541,9 +668,9 @@ export default function ReportsPage() {
                         <MetaItem>
                           {report.keywords?.missing?.length || 0} missing keywords
                         </MetaItem>
-                        <MetaItem>
+                        <MetaItemProOrFree $isPro={report.pro}>
                           {report.pro ? "Pro" : "Free"}
-                        </MetaItem>
+                        </MetaItemProOrFree>
                       </MetaRow>
                     </ContentInner>
 

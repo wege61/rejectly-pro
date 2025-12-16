@@ -1,6 +1,6 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -146,12 +146,28 @@ const JobCardInner = styled.div`
   }
 
   &:hover .job-content {
-    transform: translateY(-8px);
+    transform: translateY(-32px);
   }
 
   &:hover .job-cta {
     transform: translateY(0);
     opacity: 1;
+  }
+
+  &:hover .job-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .job-overlay {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &:hover .job-content {
+      transform: none;
+    }
   }
 `;
 
@@ -189,6 +205,17 @@ const ContentInner = styled.div`
   flex-direction: column;
   gap: 4px;
   transform-origin: bottom left;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
+  }
+`;
+
+const JobCardOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
   transition: all 0.3s ease;
 `;
 
@@ -744,6 +771,7 @@ export default function JobsPage() {
                     </ActionButton>
                   </CTAContainer>
                 </JobCardContent>
+                <JobCardOverlay className="job-overlay" />
               </JobCardInner>
             </JobCardWrapper>
           ))}

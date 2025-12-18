@@ -34,6 +34,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://www.rejectly.pro/blog",
+    types: {
+      "application/rss+xml": "https://www.rejectly.pro/blog/feed.xml",
+    },
   },
 };
 

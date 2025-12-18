@@ -3,7 +3,8 @@ import { BlogListSchema } from "@/components/seo/StructuredData";
 import { BlogPageContent } from "@/components/blog/BlogPageContent";
 import type { BlogFilters } from "@/types/blog";
 
-export const dynamic = "force-dynamic";
+// ISR: Revalidate every 60 seconds for fresh content
+export const revalidate = 60;
 
 interface BlogPageProps {
   searchParams: Promise<{

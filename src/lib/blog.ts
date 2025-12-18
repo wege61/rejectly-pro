@@ -1,4 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createDirectClient } from '@supabase/supabase-js';
+import { config } from '@/lib/config';
 import type { BlogPost, BlogPostWithRelations, BlogCategory, BlogTag, BlogFilters } from '@/types/blog';
 
 const DEFAULT_PAGE_SIZE = 12;
@@ -115,7 +117,8 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPostWithRelat
 export async function getRelatedPosts(post: BlogPostWithRelations, limit = 3): Promise<BlogPostWithRelations[]> {
   const supabase = await createClient();
 
-  let query = supabase
+  // Get all published posts except current one
+  const { data: allPosts, error } = await supabase
     .from('blog_posts')
     .select(`
       *,
@@ -124,25 +127,82 @@ export async function getRelatedPosts(post: BlogPostWithRelations, limit = 3): P
     `)
     .eq('is_published', true)
     .neq('id', post.id)
-    .order('published_at', { ascending: false })
-    .limit(limit);
+    .order('published_at', { ascending: false });
 
-  // Prefer posts from the same category
-  if (post.category_id) {
-    query = query.eq('category_id', post.category_id);
-  }
-
-  const { data, error } = await query;
-
-  if (error || !data) {
+  if (error || !allPosts || allPosts.length === 0) {
     return [];
   }
 
-  // Transform the nested tags structure
-  return (data || []).map((p: BlogPost & { tags: { tag: BlogTag }[] }) => ({
+  // Transform posts
+  const transformedPosts: BlogPostWithRelations[] = allPosts.map((p: BlogPost & { tags: { tag: BlogTag }[] }) => ({
     ...p,
     tags: p.tags?.map(t => t.tag) || [],
   }));
+
+  // Current post's tag IDs for comparison
+  const currentTagIds = new Set(post.tags?.map(t => t.id) || []);
+
+  // Score each post for relevance
+  const scoredPosts = transformedPosts.map(p => {
+    let score = 0;
+
+    // Same category: +10 points
+    if (post.category_id && p.category_id === post.category_id) {
+      score += 10;
+    }
+
+    // Shared tags: +3 points per tag
+    const postTagIds = p.tags?.map(t => t.id) || [];
+    const sharedTags = postTagIds.filter(id => currentTagIds.has(id)).length;
+    score += sharedTags * 3;
+
+    // Popularity boost: up to +2 points based on views
+    const viewsBoost = Math.min(2, (p.views_count || 0) / 100);
+    score += viewsBoost;
+
+    // Recency boost: +1 point for posts within last 30 days
+    const publishDate = new Date(p.published_at || p.created_at);
+    const daysSincePublish = (Date.now() - publishDate.getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSincePublish < 30) {
+      score += 1;
+    }
+
+    return { post: p, score };
+  });
+
+  // Sort by score (highest first), then by date
+  scoredPosts.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return new Date(b.post.published_at || b.post.created_at).getTime() -
+           new Date(a.post.published_at || a.post.created_at).getTime();
+  });
+
+  // Get top scored posts, ensuring some variety if possible
+  const result: BlogPostWithRelations[] = [];
+  const usedCategories = new Set<string>();
+
+  // First pass: get highest scored posts with category variety
+  for (const { post: p } of scoredPosts) {
+    if (result.length >= limit) break;
+
+    // Try to get variety in categories (but don't skip high-scored same-category posts)
+    if (result.length < limit - 1 || !usedCategories.has(p.category_id || '')) {
+      result.push(p);
+      if (p.category_id) usedCategories.add(p.category_id);
+    }
+  }
+
+  // Fill remaining slots if needed
+  if (result.length < limit) {
+    for (const { post: p } of scoredPosts) {
+      if (result.length >= limit) break;
+      if (!result.find(r => r.id === p.id)) {
+        result.push(p);
+      }
+    }
+  }
+
+  return result.slice(0, limit);
 }
 
 export async function getAllCategories(): Promise<BlogCategory[]> {
@@ -184,7 +244,8 @@ export async function incrementPostViews(slug: string): Promise<void> {
 }
 
 export async function getAllPublishedSlugs(): Promise<string[]> {
-  const supabase = await createClient();
+  // Use direct Supabase client for build-time access (no cookies needed)
+  const supabase = createDirectClient(config.supabase.url, config.supabase.anonKey);
 
   const { data, error } = await supabase
     .from('blog_posts')

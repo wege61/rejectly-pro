@@ -1,9 +1,12 @@
 "use client";
 
 import styled from "styled-components";
+import Image from "next/image";
 import { Calendar, Clock, User, Tag, ArrowLeft, Share2 } from "lucide-react";
 import { BlogCard } from "./BlogCard";
 import { Footer } from "@/components/ui/Footer";
+import { TableOfContents, extractHeadings, addHeadingIds } from "./TableOfContents";
+import { BlogCTA, SidebarCTA } from "./BlogCTA";
 import type { BlogPostWithRelations } from "@/types/blog";
 
 const Container = styled.div`
@@ -118,11 +121,14 @@ const FeaturedImageWrapper = styled.div`
 const FeaturedImage = styled.div`
   max-width: 900px;
   margin: 0 auto;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
 
   img {
-    width: 100%;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    object-fit: cover;
   }
 `;
 
@@ -134,9 +140,55 @@ const ArticleSection = styled.div`
   }
 `;
 
+const ArticleLayout = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    max-width: 720px;
+  }
+`;
+
 const ArticleContent = styled.article`
   max-width: 720px;
-  margin: 0 auto;
+`;
+
+const TOCSidebar = styled.aside`
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: calc(100vh - 120px);
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+`;
+
+const TOCWrapper = styled.div`
+  flex: 1;
+  min-height: 0;
+  max-height: calc(100vh - 320px);
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+  }
 `;
 
 const Content = styled.div`
@@ -402,6 +454,35 @@ interface BlogPostContentProps {
   relatedPosts: BlogPostWithRelations[];
 }
 
+// Determine CTA type based on post content/tags
+function getCTAType(post: BlogPostWithRelations): "resume" | "cover-letter" | "general" {
+  const tagSlugs = post.tags?.map(t => t.slug.toLowerCase()) || [];
+  const categorySlug = post.category?.slug?.toLowerCase() || "";
+  const titleLower = post.title.toLowerCase();
+
+  // Check for cover letter related content
+  if (
+    tagSlugs.includes("cover-letter") ||
+    titleLower.includes("cover letter")
+  ) {
+    return "cover-letter";
+  }
+
+  // Check for resume/ATS related content
+  if (
+    tagSlugs.includes("resume") ||
+    tagSlugs.includes("ats") ||
+    categorySlug === "ats-optimization" ||
+    categorySlug === "resume-tips" ||
+    titleLower.includes("resume") ||
+    titleLower.includes("ats")
+  ) {
+    return "resume";
+  }
+
+  return "general";
+}
+
 export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
   const formattedDate = post.published_at
     ? new Date(post.published_at).toLocaleDateString("en-US", {
@@ -451,18 +532,26 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
       {post.featured_image && (
         <FeaturedImageWrapper>
           <FeaturedImage>
-            <img
+            <Image
               src={post.featured_image}
               alt={post.featured_image_alt || post.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 900px"
+              priority
             />
           </FeaturedImage>
         </FeaturedImageWrapper>
       )}
 
       <ArticleSection>
-        <ArticleContent>
-          {/* Content is stored as HTML in Supabase */}
-          <Content dangerouslySetInnerHTML={{ __html: post.content }} />
+        <ArticleLayout>
+          <ArticleContent>
+            {/* Content is stored as HTML in Supabase */}
+            <Content
+              dangerouslySetInnerHTML={{
+                __html: addHeadingIds(post.content, extractHeadings(post.content))
+              }}
+            />
 
           {post.tags && post.tags.length > 0 && (
             <TagsSection>
@@ -479,6 +568,9 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
               </TagsList>
             </TagsSection>
           )}
+
+          {/* Main CTA */}
+          <BlogCTA type={getCTAType(post)} variant="primary" />
 
           <ShareSection>
             <ShareTitle>
@@ -507,6 +599,14 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
             </ShareButton>
           </ShareSection>
         </ArticleContent>
+
+          <TOCSidebar>
+            <TOCWrapper>
+              <TableOfContents content={post.content} />
+            </TOCWrapper>
+            <SidebarCTA type={getCTAType(post)} />
+          </TOCSidebar>
+        </ArticleLayout>
       </ArticleSection>
 
       {relatedPosts.length > 0 && (

@@ -169,6 +169,10 @@ export function BlogPostingSchema({
   dateModified,
   authorName,
   slug,
+  wordCount,
+  category,
+  tags,
+  readingTime,
 }: {
   title: string;
   description: string;
@@ -177,30 +181,59 @@ export function BlogPostingSchema({
   dateModified: string;
   authorName: string;
   slug: string;
+  wordCount?: number;
+  category?: string;
+  tags?: string[];
+  readingTime?: number;
 }) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
+    '@id': `https://www.rejectly.pro/blog/${slug}#article`,
     headline: title,
     description: description,
-    image: image || 'https://www.rejectly.pro/og-image.png',
+    image: {
+      '@type': 'ImageObject',
+      url: image || 'https://www.rejectly.pro/og-image.png',
+      width: 1200,
+      height: 630,
+    },
     datePublished: datePublished,
     dateModified: dateModified,
     author: {
       '@type': 'Person',
       name: authorName,
+      url: 'https://www.rejectly.pro/about',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Rejectly.pro',
+      url: 'https://www.rejectly.pro',
       logo: {
         '@type': 'ImageObject',
         url: 'https://www.rejectly.pro/logo.png',
+        width: 512,
+        height: 512,
       },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': `https://www.rejectly.pro/blog/${slug}`,
+    },
+    isPartOf: {
+      '@type': 'Blog',
+      '@id': 'https://www.rejectly.pro/blog',
+      name: 'Rejectly.pro Blog',
+    },
+    inLanguage: 'en-US',
+    isAccessibleForFree: true,
+    ...(wordCount && { wordCount }),
+    ...(readingTime && { timeRequired: `PT${readingTime}M` }),
+    ...(category && { articleSection: category }),
+    ...(tags && tags.length > 0 && { keywords: tags.join(', ') }),
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', 'h2', '.article-content p:first-of-type'],
     },
   }
 
@@ -211,6 +244,80 @@ export function BlogPostingSchema({
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
   )
+}
+
+export function ArticleFAQSchema({
+  faqs,
+  articleUrl,
+}: {
+  faqs: Array<{ question: string; answer: string }>;
+  articleUrl: string;
+}) {
+  if (!faqs || faqs.length === 0) return null;
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${articleUrl}#faq`,
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+    isPartOf: {
+      '@type': 'WebPage',
+      '@id': articleUrl,
+    },
+  };
+
+  return (
+    <Script
+      id="article-faq-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+export function HowToSchema({
+  name,
+  description,
+  steps,
+  totalTime,
+  image,
+}: {
+  name: string;
+  description: string;
+  steps: Array<{ name: string; text: string; image?: string }>;
+  totalTime?: string;
+  image?: string;
+}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name,
+    description,
+    ...(totalTime && { totalTime }),
+    ...(image && { image }),
+    step: steps.map((step, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+      ...(step.image && { image: step.image }),
+    })),
+  };
+
+  return (
+    <Script
+      id="howto-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
 }
 
 export function BlogListSchema({

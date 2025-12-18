@@ -2,6 +2,7 @@
 
 import styled from "styled-components";
 import Link from "next/link";
+import Image from "next/image";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import type { BlogPostWithRelations } from "@/types/blog";
 
@@ -37,14 +38,18 @@ const ImageWrapper = styled.div`
   background: var(--surface-color);
 `;
 
-const Image = styled.img`
+const StyledImageWrapper = styled.div`
+  position: relative;
   width: 100%;
   height: 100%;
-  object-fit: cover;
   transition: transform 0.3s ease;
 
   ${Card}:hover & {
     transform: scale(1.05);
+  }
+
+  img {
+    object-fit: cover;
   }
 `;
 
@@ -207,7 +212,15 @@ export function BlogCard({ post }: BlogCardProps) {
       <CardLink href={`/blog/${post.slug}`}>
         <ImageWrapper>
           {post.featured_image ? (
-            <Image src={post.featured_image} alt={post.featured_image_alt || post.title} />
+            <StyledImageWrapper>
+              <Image
+                src={post.featured_image}
+                alt={post.featured_image_alt || post.title}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                loading="lazy"
+              />
+            </StyledImageWrapper>
           ) : (
             <PlaceholderImage>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">

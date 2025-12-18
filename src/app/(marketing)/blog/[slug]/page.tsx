@@ -4,6 +4,7 @@ import {
   getBlogPostBySlug,
   getRelatedPosts,
   incrementPostViews,
+  getAllPublishedSlugs,
 } from "@/lib/blog";
 import {
   BlogPostingSchema,
@@ -11,8 +12,14 @@ import {
 } from "@/components/seo/StructuredData";
 import { BlogPostContent } from "@/components/blog/BlogPostContent";
 
-// Use dynamic rendering for blog posts (no static generation at build time)
-export const dynamic = "force-dynamic";
+// ISR: Revalidate every 60 seconds for fresh content while keeping pages static
+export const revalidate = 60;
+
+// Generate static params for all published blog posts at build time
+export async function generateStaticParams() {
+  const slugs = await getAllPublishedSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
 
 // Generate metadata for each post
 export async function generateMetadata({
@@ -37,14 +44,28 @@ export async function generateMetadata({
     title: `${title} | Rejectly.pro Blog`,
     description,
     keywords: post.meta_keywords || [],
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
     openGraph: {
       title,
       description,
       url: `https://www.rejectly.pro/blog/${slug}`,
+      siteName: "Rejectly.pro",
       type: "article",
       publishedTime: post.published_at || undefined,
       modifiedTime: post.updated_at,
       authors: [post.author_name],
+      section: post.category?.name,
+      tags: post.tags?.map(t => t.name),
       images: [
         {
           url: image,
@@ -59,6 +80,7 @@ export async function generateMetadata({
       title,
       description,
       images: [image],
+      creator: "@rejectlypro",
     },
     alternates: {
       canonical: post.canonical_url || `https://www.rejectly.pro/blog/${slug}`,
@@ -83,6 +105,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const relatedPosts = await getRelatedPosts(post, 3);
 
+  // Calculate word count from content
+  const wordCount = post.content.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
+
   return (
     <>
       <BlogPostingSchema
@@ -93,6 +118,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         dateModified={post.updated_at}
         authorName={post.author_name}
         slug={slug}
+        wordCount={wordCount}
+        category={post.category?.name}
+        tags={post.tags?.map(t => t.name)}
+        readingTime={post.reading_time_minutes}
       />
       <BreadcrumbSchema
         items={[

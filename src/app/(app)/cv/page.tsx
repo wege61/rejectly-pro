@@ -1,6 +1,6 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -208,6 +208,10 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
     background: rgba(0, 0, 0, 0.03);
   }
 
+  &:hover .cv-icon {
+    transform: scale(0.85);
+  }
+
   @media (prefers-color-scheme: dark) {
     &:hover .cv-overlay {
       background: rgba(255, 255, 255, 0.05);
@@ -221,32 +225,156 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
   }
 `;
 
-const CVCardBackground = styled.div`
+// Background Animation Keyframes
+const fadeInUp = keyframes`
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+`;
+
+const shimmer = keyframes`
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+`;
+
+const CVCardBackgroundWrapper = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 20px;
-  font-size: 10px;
-  line-height: 1.5;
-  color: var(--text-secondary);
-  opacity: 0.12;
+  inset: 0;
   overflow: hidden;
   pointer-events: none;
-  mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 100%);
-  word-break: break-word;
-  white-space: pre-wrap;
+  mask-image: linear-gradient(to top, transparent 40%, #000 100%);
+  -webkit-mask-image: linear-gradient(to top, transparent 40%, #000 100%);
 `;
+
+const ResumePreviewContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+
+  @media (max-width: 640px) {
+    width: 120px;
+    right: 8px;
+  }
+`;
+
+const ResumePreviewCard = styled.div<{ $delay: number }>`
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 10px;
+  padding: 10px;
+  animation: ${fadeInUp} 0.5s ease-out forwards;
+  animation-delay: ${({ $delay }) => $delay}s;
+  opacity: 0;
+  filter: blur(0.4px);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    filter: blur(0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const ResumeSection = styled.div`
+  margin-bottom: 6px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const ResumeSectionTitle = styled.div`
+  font-size: 7px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+`;
+
+const ResumeLine = styled.div<{ $width?: string }>`
+  height: 4px;
+  width: ${({ $width }) => $width || '100%'};
+  background: linear-gradient(
+    90deg,
+    rgba(var(--accent-rgb), 0.15) 0%,
+    rgba(var(--accent-rgb), 0.25) 50%,
+    rgba(var(--accent-rgb), 0.15) 100%
+  );
+  background-size: 200% 100%;
+  animation: ${shimmer} 3s linear infinite;
+  border-radius: 2px;
+  margin-bottom: 3px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+interface CVCardBackgroundProps {
+  text?: string;
+  isOptimized?: boolean;
+}
+
+const CVCardBackgroundComponent = ({ isOptimized }: CVCardBackgroundProps) => {
+  return (
+    <CVCardBackgroundWrapper>
+      <ResumePreviewContainer>
+        <ResumePreviewCard $delay={0}>
+          <ResumeSection>
+            <ResumeSectionTitle>Contact</ResumeSectionTitle>
+            <ResumeLine $width="80%" />
+            <ResumeLine $width="60%" />
+          </ResumeSection>
+          <ResumeSection>
+            <ResumeSectionTitle>Summary</ResumeSectionTitle>
+            <ResumeLine />
+            <ResumeLine $width="90%" />
+            <ResumeLine $width="70%" />
+          </ResumeSection>
+        </ResumePreviewCard>
+
+        <ResumePreviewCard $delay={0.15}>
+          <ResumeSection>
+            <ResumeSectionTitle>Experience</ResumeSectionTitle>
+            <ResumeLine $width="85%" />
+            <ResumeLine $width="95%" />
+            <ResumeLine $width="60%" />
+          </ResumeSection>
+          <ResumeSection>
+            <ResumeSectionTitle>Skills</ResumeSectionTitle>
+            <ResumeLine $width="70%" />
+            <ResumeLine $width="50%" />
+          </ResumeSection>
+        </ResumePreviewCard>
+
+        {isOptimized && (
+          <ResumePreviewCard $delay={0.3} style={{ borderColor: 'var(--success)', borderWidth: '2px' }}>
+            <ResumeSection>
+              <ResumeSectionTitle style={{ color: 'var(--success)' }}>Optimized</ResumeSectionTitle>
+              <ResumeLine $width="100%" style={{ background: 'rgba(16, 185, 129, 0.2)' }} />
+              <ResumeLine $width="80%" style={{ background: 'rgba(16, 185, 129, 0.15)' }} />
+            </ResumeSection>
+          </ResumePreviewCard>
+        )}
+      </ResumePreviewContainer>
+    </CVCardBackgroundWrapper>
+  );
+};
 
 const CVCardInner = styled.div`
   position: relative;
   z-index: 1;
-  padding: 24px;
+  padding: 20px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  min-height: 200px;
+  min-height: 220px;
   justify-content: flex-end;
 `;
 
@@ -262,6 +390,25 @@ const CVCardContentInner = styled.div`
   }
 `;
 
+const CVCardIcon = styled.div<{ $isOptimized?: boolean }>`
+  transform-origin: left;
+  transition: all 0.3s ease;
+  color: ${({ $isOptimized }) => $isOptimized ? 'var(--success)' : 'var(--accent)'};
+  margin-bottom: 8px;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  @media (max-width: 640px) {
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
+`;
+
 const CVCardOverlay = styled.div`
   pointer-events: none;
   position: absolute;
@@ -273,31 +420,38 @@ const CVCardTitle = styled.h3`
   font-size: 18px;
   font-weight: 600;
   color: var(--text-color);
-  margin-bottom: 4px;
+  margin-top: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font-size: 16px;
+  }
 `;
 
 const CVCardMeta = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-top: 8px;
 `;
 
-const CVCardDate = styled.div`
-  font-size: 14px;
+const CVCardDate = styled.p`
   color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+  margin-top: 2px;
 `;
 
 const CVCardJobInfo = styled.div`
   font-size: 13px;
   color: var(--text-secondary);
-  margin-top: 8px;
+  margin-top: 6px;
+  line-height: 1.4;
 
   span {
-    color: var(--primary-500);
+    color: var(--text-secondary);
     font-weight: 500;
   }
 `;
@@ -1091,28 +1245,31 @@ export default function CVPage() {
                       const optimizedCV = cv as OptimizedCV & { isOptimized: true; reportId: string };
                       return (
                       <CVCard key={cv.id} $isOptimized={true} onClick={() => setPreviewCV(cv)}>
-                        <CVCardBackground>
-                          {cv.text}
-                        </CVCardBackground>
+                        <CVCardBackgroundComponent text={cv.text} isOptimized={true} />
                         <CVCardInner>
                           <CVCardContentInner className="cv-content">
+                            <CVCardIcon $isOptimized={true} className="cv-icon">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </CVCardIcon>
                             <CVCardTitle>{cv.title}</CVCardTitle>
+                            <CVCardDate>
+                              Generated {formatDate(cv.created_at)}
+                            </CVCardDate>
                             <CVCardMeta>
-                              <Badge size="sm">
+                              <Badge size="sm" variant="success">
                                 Optimized
                               </Badge>
                               {optimizedCV.fake_it_mode && (
                                 <Badge size="sm" variant="warning">
-                                  🎭 Fake It
+                                  Fake It
                                 </Badge>
                               )}
                               <Badge size="sm" variant="info">
-                                {cv.lang === "tr" ? "🇹🇷 TR" : "🇬🇧 EN"}
+                                {cv.lang === "tr" ? "TR" : "EN"}
                               </Badge>
                             </CVCardMeta>
-                            <CVCardDate>
-                              Generated {formatDate(cv.created_at)}
-                            </CVCardDate>
                             {optimizedCV.job_title && (
                               <CVCardJobInfo>
                                 For: <span>{optimizedCV.job_title}</span>
@@ -1168,23 +1325,26 @@ export default function CVPage() {
                     .filter((cv) => !("isOptimized" in cv) || !cv.isOptimized)
                     .map((cv) => (
                       <CVCard key={cv.id} onClick={() => setPreviewCV(cv)}>
-                        <CVCardBackground>
-                          {cv.text}
-                        </CVCardBackground>
+                        <CVCardBackgroundComponent text={cv.text} isOptimized={false} />
                         <CVCardInner>
                           <CVCardContentInner className="cv-content">
+                            <CVCardIcon className="cv-icon">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                              </svg>
+                            </CVCardIcon>
                             <CVCardTitle>{cv.title}</CVCardTitle>
+                            <CVCardDate>
+                              Uploaded {formatDate(cv.created_at)}
+                            </CVCardDate>
                             <CVCardMeta>
                               <Badge size="sm" variant="default">
                                 Original
                               </Badge>
                               <Badge size="sm" variant="info">
-                                {cv.lang === "tr" ? "🇹🇷 TR" : "🇬🇧 EN"}
+                                {cv.lang === "tr" ? "TR" : "EN"}
                               </Badge>
                             </CVCardMeta>
-                            <CVCardDate>
-                              Uploaded {formatDate(cv.created_at)}
-                            </CVCardDate>
                           </CVCardContentInner>
                           <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
                             <Button

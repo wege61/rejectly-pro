@@ -6,10 +6,9 @@ import { useRef } from 'react';
 
 const PanelWrapper = styled.div`
   position: sticky;
-  top: 5vh;
-  height: 90vh;
-  padding: 16px;
-  padding-left: 0;
+  top: 0;
+  height: 100vh;
+  padding: 0;
   display: flex;
   flex-direction: column;
 `;
@@ -18,9 +17,10 @@ const ImagePanel = styled.div`
   position: relative;
   height: 100%;
   width: 100%;
-  border-radius: 32px;
+  border-radius: 32px 0 0 32px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   background: #0a0a0f;
   display: flex;
@@ -35,10 +35,10 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 32px;
+  padding: 40px;
 
   @media (max-width: 1280px) {
-    padding: 24px;
+    padding: 32px;
   }
 `;
 
@@ -152,8 +152,8 @@ const CarouselCard = styled.div<{ $bgImage: string }>`
   flex-shrink: 0;
   width: calc(50% - 6px);
   height: 100%;
-  min-height: 240px;
-  border-radius: 20px;
+  min-height: 340px;
+  border-radius: 24px;
   overflow: hidden;
   background-image: url(${({ $bgImage }) => $bgImage});
   background-size: cover;
@@ -166,7 +166,7 @@ const CarouselCard = styled.div<{ $bgImage: string }>`
   }
 
   @media (max-width: 1280px) {
-    min-height: 200px;
+    min-height: 280px;
   }
 `;
 
@@ -184,11 +184,11 @@ const CardOverlay = styled.div`
 const CardContent = styled.div`
   position: relative;
   z-index: 10;
-  padding: 16px;
+  padding: 20px;
 `;
 
 const CardCategory = styled.span`
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
   text-transform: uppercase;
@@ -196,15 +196,15 @@ const CardCategory = styled.span`
 `;
 
 const CardTitle = styled.h3`
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   color: white;
-  margin-top: 6px;
+  margin-top: 8px;
   line-height: 1.3;
   max-width: 20ch;
 
   @media (max-width: 1280px) {
-    font-size: 14px;
+    font-size: 15px;
   }
 `;
 

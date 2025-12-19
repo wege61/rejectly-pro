@@ -171,24 +171,190 @@ const JobCardInner = styled.div`
   }
 `;
 
-const JobCardBackground = styled.div`
+// Background Animation Keyframes
+const floatAnimation = keyframes`
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+`;
+
+const fadeInUp = keyframes`
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+`;
+
+const scrollTextAnimation = keyframes`
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+`;
+
+const JobCardBackgroundWrapper = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 20px;
-  font-size: 10px;
-  line-height: 1.5;
-  color: var(--text-secondary);
-  opacity: 0.12;
+  inset: 0;
   overflow: hidden;
   pointer-events: none;
-  mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 100%);
-  word-break: break-word;
-  white-space: pre-wrap;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
 `;
+
+const KeywordCloud = styled.div`
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  z-index: 2;
+`;
+
+const KeywordBadge = styled.span<{ $delay: number; $variant?: 'primary' | 'secondary' }>`
+  font-size: 9px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: ${({ $variant }) =>
+    $variant === 'primary'
+      ? 'rgba(var(--accent-rgb), 0.12)'
+      : 'rgba(var(--accent-rgb), 0.06)'};
+  color: ${({ $variant }) =>
+    $variant === 'primary'
+      ? 'var(--accent)'
+      : 'var(--text-secondary)'};
+  animation: ${fadeInUp} 0.5s ease-out forwards;
+  animation-delay: ${({ $delay }) => $delay}s;
+  opacity: 0;
+  filter: blur(0.3px);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    filter: blur(0);
+    transform: translateY(-2px);
+  }
+`;
+
+const TextScrollContainer = styled.div`
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 1;
+`;
+
+const ScrollingTextTrack = styled.div`
+  animation: ${scrollTextAnimation} 40s linear infinite;
+`;
+
+const ScrollingTextLine = styled.div<{ $delay: number }>`
+  font-size: 9px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  opacity: 0.4;
+  padding: 2px 0;
+  animation: ${fadeInUp} 0.4s ease-out forwards;
+  animation-delay: ${({ $delay }) => $delay}s;
+  filter: blur(0.4px);
+
+  &:nth-child(odd) {
+    opacity: 0.25;
+    transform: translateX(8px);
+  }
+`;
+
+const FloatingIcon = styled.div<{ $delay: number; $position: 'topRight' | 'bottomLeft' }>`
+  position: absolute;
+  ${({ $position }) => $position === 'topRight' ? 'top: 8px; right: 8px;' : 'bottom: 60px; left: 8px;'}
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(var(--accent-rgb), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: ${floatAnimation} 4s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay}s;
+  z-index: 3;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: var(--accent);
+    opacity: 0.6;
+  }
+`;
+
+// Helper function to extract keywords from text
+const extractKeywords = (text: string): string[] => {
+  const commonWords = new Set([
+    'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with',
+    'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had',
+    'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must',
+    'shall', 'can', 'need', 'dare', 'ought', 'used', 'this', 'that', 'these', 'those',
+    'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'whom',
+    'your', 'our', 'their', 'its', 'his', 'her', 'my', 'our', 'if', 'then', 'else',
+    'when', 'where', 'why', 'how', 'all', 'each', 'every', 'both', 'few', 'more',
+    'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so',
+    'than', 'too', 'very', 'just', 'about', 'into', 'through', 'during', 'before',
+    'after', 'above', 'below', 'between', 'under', 'again', 'further', 'once', 'here',
+    'there', 'any', 'also', 'etc', 'including', 'within', 'across', 'along', 'among',
+  ]);
+
+  const words = text.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(word => word.length > 3 && !commonWords.has(word));
+
+  const wordCount: Record<string, number> = {};
+  words.forEach(word => {
+    wordCount[word] = (wordCount[word] || 0) + 1;
+  });
+
+  return Object.entries(wordCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([word]) => word.charAt(0).toUpperCase() + word.slice(1));
+};
+
+interface JobCardBackgroundProps {
+  text: string;
+}
+
+const JobCardBackgroundComponent = ({ text }: JobCardBackgroundProps) => {
+  const keywords = extractKeywords(text);
+  const lines = text.split(/[.!?\n]+/).filter(line => line.trim().length > 20).slice(0, 12);
+
+  return (
+    <JobCardBackgroundWrapper>
+      <FloatingIcon $delay={0} $position="topRight">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+        </svg>
+      </FloatingIcon>
+      <KeywordCloud>
+        {keywords.map((keyword, idx) => (
+          <KeywordBadge
+            key={idx}
+            $delay={idx * 0.08}
+            $variant={idx < 3 ? 'primary' : 'secondary'}
+          >
+            {keyword}
+          </KeywordBadge>
+        ))}
+      </KeywordCloud>
+      <TextScrollContainer>
+        <ScrollingTextTrack>
+          {[...lines, ...lines].map((line, idx) => (
+            <ScrollingTextLine key={idx} $delay={idx * 0.05}>
+              {line.trim().slice(0, 80)}...
+            </ScrollingTextLine>
+          ))}
+        </ScrollingTextTrack>
+      </TextScrollContainer>
+    </JobCardBackgroundWrapper>
+  );
+};
 
 const JobCardContent = styled.div`
   position: relative;
@@ -717,9 +883,7 @@ export default function JobsPage() {
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               <JobCardInner>
-                <JobCardBackground>
-                  {job.text}
-                </JobCardBackground>
+                <JobCardBackgroundComponent text={job.text} />
                 <JobCardContent>
                   <ContentInner className="job-content">
                     <CardTitleWrapper>

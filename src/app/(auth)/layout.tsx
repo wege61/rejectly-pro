@@ -10,7 +10,7 @@ const Container = styled.div`
   min-height: 100vh;
 
   @media (min-width: 1024px) {
-    grid-template-columns: 3fr 2fr;
+    grid-template-columns: 5fr 4fr;
   }
 `;
 

@@ -10,6 +10,15 @@ import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
 import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
 import { ProblemBentoGrid } from "@/components/marketing/ProblemBentoGrid";
 import { LampContainer } from "@/components/ui/LampContainer";
+import {
+  DemoCard as NewDemoCard,
+  DemoCardHeader,
+  DemoCardTitle,
+  DemoCardDescription,
+  DemoCardContent,
+} from "@/components/ui/DemoCard";
+import { FileUpload } from "@/components/ui/FileUpload";
+import { DemoTextarea as NewDemoTextarea } from "@/components/ui/DemoTextarea";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -43,16 +52,6 @@ const CheckIcon = () => (
   </svg>
 );
 
-const XIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M6 18L18 6M6 6l12 12"
-    />
-  </svg>
-);
 
 const SparklesIcon = () => (
   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,17 +154,6 @@ const BriefcaseIcon = () => (
       strokeLinejoin="round"
       strokeWidth={2}
       d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"
-    />
-  </svg>
-);
-
-const RefreshIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
     />
   </svg>
 );
@@ -712,6 +700,66 @@ const DemoCard = styled.div`
   }
 `;
 
+// New Demo Components
+const DemoTitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  font-weight: 700;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: var(--accent);
+  }
+`;
+
+const DemoInputsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+`;
+
+const DemoInputSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const DemoInputContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const DemoOrDivider = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+  }
+
+  span {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+`;
+
 const DemoHeader = styled.div`
   text-align: center;
   margin-bottom: 32px;
@@ -736,25 +784,45 @@ const DemoSubtitle = styled.p`
 const LoadSampleButton = styled.button`
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.1) 0%, rgba(var(--primary-500-rgb), 0.1) 100%);
-  border: 1px solid var(--primary-500);
-  color: var(--accent);
-  padding: 10px 20px;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-size: 14px;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0;
+  font-weight: 500;
+  font-size: 13px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  position: relative;
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: width 0.2s ease;
   }
 
   &:hover {
-    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.15) 0%, rgba(var(--primary-500-rgb), 0.15) 100%);
-    border-color: var(--primary-500);
+    color: var(--accent);
+
+    svg {
+      opacity: 1;
+    }
+
+    &::after {
+      width: 100%;
+    }
   }
 `;
 
@@ -887,133 +955,6 @@ const OrDivider = styled.div`
       transform: translateY(-50%);
       background: linear-gradient(90deg, transparent, var(--border-color), transparent);
     }
-  }
-`;
-
-const UploadedFileCard = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(var(--success-rgb), 0.05) 0%,
-    rgba(var(--success-rgb), 0.1) 100%
-  );
-  border: 2px solid var(--success);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  animation: ${fadeIn} 0.3s ease;
-`;
-
-const FileHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-`;
-
-const FileIconWrapper = styled.div`
-  width: 56px;
-  height: 56px;
-  background: var(--success);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  svg {
-    width: 32px;
-    height: 32px;
-    color: white;
-  }
-`;
-
-const FileInfo = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
-
-const FileName = styled.div`
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--text-color);
-  margin-bottom: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const FileStats = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  color: var(--text-secondary);
-  flex-wrap: wrap;
-`;
-
-const FileStat = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  svg {
-    width: 16px;
-    height: 16px;
-    color: var(--success);
-  }
-`;
-
-const FileActions = styled.div`
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-
-  @media (max-width: 640px) {
-    flex-direction: column;
-  }
-`;
-
-const FileActionButton = styled.button<{ $variant?: "primary" | "danger" }>`
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid;
-
-  ${({ $variant }) =>
-    $variant === "danger"
-      ? `
-    background: linear-gradient(135deg, rgba(255, 179, 186, 0.08) 0%, rgba(255, 204, 229, 0.08) 100%);
-    border-color: rgba(255, 143, 163, 0.3);
-    color: #FF8FA3;
-
-    &:hover {
-      background: linear-gradient(135deg, rgba(255, 179, 186, 0.15) 0%, rgba(255, 204, 229, 0.15) 100%);
-      border-color: rgba(255, 143, 163, 0.5);
-    }
-  `
-      : `
-    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.08) 0%, rgba(var(--primary-500-rgb), 0.08) 100%);
-    border-color: var(--primary-500);
-    color: var(--accent);
-
-    &:hover {
-      background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.15) 0%, rgba(var(--primary-500-rgb), 0.15) 100%);
-      border-color: var(--primary-500);
-    }
-  `}
-
-  svg {
-    width: 16px;
-    height: 16px;
   }
 `;
 
@@ -2581,9 +2522,8 @@ export default function Page() {
     missingKeywords: string[];
   } | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [hasUploadedFile, setHasUploadedFile] = useState(false);
   const [isUploadingCV, setIsUploadingCV] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const faqs = [
     {
@@ -2625,17 +2565,15 @@ export default function Page() {
     setJobText(
       "Senior Frontend Developer\n\nRequirements:\n- 5+ years React experience\n- TypeScript expertise\n- Next.js knowledge\n- Testing experience (Jest, React Testing Library)\n- CI/CD pipelines\n- Team leadership"
     );
-    setUploadedFileName(null);
+    setHasUploadedFile(false);
   };
 
-  const handleCVFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
+  // Handler for FileUpload dropzone component
+  const handleCVFileUploadFromDropzone = async (file: File) => {
     if (!file) return;
 
     setIsUploadingCV(true);
-    setUploadedFileName(null);
+    setHasUploadedFile(false);
 
     try {
       const formData = new FormData();
@@ -2653,15 +2591,13 @@ export default function Page() {
       }
 
       setCvText(data.text);
-      setUploadedFileName(data.fileName);
+      setHasUploadedFile(true);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Upload failed";
       alert(errorMessage);
     } finally {
       setIsUploadingCV(false);
-      // Reset file input so user can upload the same file again
-      event.target.value = "";
     }
   };
 
@@ -3013,127 +2949,96 @@ export default function Page() {
               </SectionSubtitle>
             </SectionHeader>
 
-        <DemoCard>
+        <NewDemoCard>
           {step === "upload" && !result && (
             <>
-              <DemoHeader>
-                <DemoTitle>Quick Demo</DemoTitle>
-                <DemoSubtitle>
-                  Upload or paste your resume and job description, get instant
-                  AI feedback
-                </DemoSubtitle>
-                <LoadSampleButton onClick={loadSample}>
-                  <PencilIcon />
-                  Load Sample Data
+              <DemoCardHeader>
+                <DemoCardTitle>
+                  <DemoTitleRow>
+                    <SparklesIcon />
+                    Quick Demo
+                  </DemoTitleRow>
+                </DemoCardTitle>
+                <DemoCardDescription>
+                  Upload or paste your resume and job description to get instant AI feedback
+                </DemoCardDescription>
+                <LoadSampleButton onClick={loadSample} style={{ marginTop: '12px' }}>
+                  <SparklesIcon />
+                  Try with sample data
                 </LoadSampleButton>
-              </DemoHeader>
+              </DemoCardHeader>
 
-              <InputWrapper>
-                <InputLabel>
-                  <DocumentTextIcon />
-                  Your Resume
-                </InputLabel>
-                {!uploadedFileName ? (
-                  <UploadOrText>
-                    <UploadBox>
-                      <UploadIcon />
-                      <div className="upload-text">
-                        {isUploadingCV ? "Uploading..." : "Upload PDF/DOCX"}
-                      </div>
-                      <div className="upload-subtext">Click to browse files</div>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
+              <DemoCardContent>
+                <DemoInputsGrid>
+                  {/* Resume Input Section */}
+                  <DemoInputSection>
+                    <InputLabel>
+                      <DocumentTextIcon />
+                      Your Resume
+                    </InputLabel>
+                    <DemoInputContent>
+                      <FileUpload
                         accept=".pdf,.docx"
-                        onChange={handleCVFileUpload}
-                        disabled={isUploadingCV}
-                      />
-                    </UploadBox>
-
-                    <OrDivider>
-                      <span>or</span>
-                    </OrDivider>
-
-                    <TextBox>
-                      
-                      <DemoTextarea
-                        placeholder="Paste your resume text here..."
-                        value={cvText}
-                        onChange={(e) => setCvText(e.target.value)}
-                      />
-                    </TextBox>
-                  </UploadOrText>
-                ) : (
-                  <UploadedFileCard>
-                    <FileHeader>
-                      <FileIconWrapper>
-                        <CheckIcon />
-                      </FileIconWrapper>
-                      <FileInfo>
-                        <FileName>{uploadedFileName}</FileName>
-                        <FileStats>
-                          <FileStat>
-                            <CheckIcon />
-                            Successfully parsed
-                          </FileStat>
-                          <FileStat>
-                            <DocumentTextIcon />
-                            {cvText.length.toLocaleString()} characters
-                          </FileStat>
-                        </FileStats>
-                      </FileInfo>
-                    </FileHeader>
-                    <FileActions>
-                      <FileActionButton
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        <RefreshIcon />
-                        Change File
-                      </FileActionButton>
-                      <FileActionButton
-                        $variant="danger"
-                        onClick={() => {
-                          setUploadedFileName(null);
+                        onChange={(files) => {
+                          if (files.length > 0) {
+                            handleCVFileUploadFromDropzone(files[0]);
+                          }
+                        }}
+                        onRemove={() => {
+                          setHasUploadedFile(false);
                           setCvText("");
                         }}
-                      >
-                        <XIcon />
-                        Remove & Use Text
-                      </FileActionButton>
-                    </FileActions>
-                  </UploadedFileCard>
-                )}
-              </InputWrapper>
+                      />
+                      {!hasUploadedFile && (
+                        <>
+                          <DemoOrDivider>
+                            <span>or paste text</span>
+                          </DemoOrDivider>
+                          <NewDemoTextarea
+                            placeholder="Paste your resume text here..."
+                            value={cvText}
+                            onChange={(e) => setCvText(e.target.value)}
+                            style={{ minHeight: '120px' }}
+                          />
+                        </>
+                      )}
+                    </DemoInputContent>
+                  </DemoInputSection>
 
-              <InputWrapper>
-                <InputLabel>
-                  <BriefcaseIcon />
-                  Job Description
-                </InputLabel>
-                <DemoTextarea
-                  placeholder="Paste the job description here..."
-                  value={jobText}
-                  onChange={(e) => setJobText(e.target.value)}
-                />
-              </InputWrapper>
+                  {/* Job Description Input Section */}
+                  <DemoInputSection>
+                    <InputLabel>
+                      <BriefcaseIcon />
+                      Job Description
+                    </InputLabel>
+                    <NewDemoTextarea
+                      placeholder="Paste the job description here..."
+                      value={jobText}
+                      onChange={(e) => setJobText(e.target.value)}
+                      style={{ minHeight: '200px', flex: 1 }}
+                    />
+                  </DemoInputSection>
+                </DemoInputsGrid>
 
-              <AnalyzeButton
-                onClick={handleAnalyze}
-                disabled={!cvText || !jobText || isAnalyzing}
-                $isLoading={isAnalyzing}
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Spinner />
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <ZapIcon />
-                    Analyze Now
-                  </>
-                )}
-              </AnalyzeButton>
+                <AnalyzeButton
+                  onClick={handleAnalyze}
+                  disabled={!cvText || !jobText || isAnalyzing}
+                  $isLoading={isAnalyzing}
+                  style={{ marginTop: '24px' }}
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Spinner />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <ZapIcon />
+                      Analyze Now
+                    </>
+                  )}
+                </AnalyzeButton>
+              </DemoCardContent>
             </>
           )}
 
@@ -3356,7 +3261,7 @@ export default function Page() {
               </CTASection>
             </ResultsCard>
           )}
-          </DemoCard>
+          </NewDemoCard>
           </DemoSection>
         </LampContainer>
       </DemoSectionWrapper>

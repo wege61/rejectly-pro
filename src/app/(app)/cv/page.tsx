@@ -1258,9 +1258,7 @@ export default function CVPage() {
                               Generated {formatDate(cv.created_at)}
                             </CVCardDate>
                             <CVCardMeta>
-                              <Badge size="sm" variant="success">
-                                Optimized
-                              </Badge>
+                              
                               {optimizedCV.fake_it_mode && (
                                 <Badge size="sm" variant="warning">
                                   Fake It
@@ -1338,9 +1336,6 @@ export default function CVPage() {
                               Uploaded {formatDate(cv.created_at)}
                             </CVCardDate>
                             <CVCardMeta>
-                              <Badge size="sm" variant="default">
-                                Original
-                              </Badge>
                               <Badge size="sm" variant="info">
                                 {cv.lang === "tr" ? "TR" : "EN"}
                               </Badge>

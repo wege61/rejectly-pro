@@ -9,12 +9,9 @@
       "Bash(curl:*)",
       "Bash(find:*)",
       "Bash(done)",
-<<<<<<< HEAD
-      "Bash(ls:*)"
-=======
       "Bash(ls:*)",
-      "Bash(npx supabase:*)"
->>>>>>> 7a4ea4a (CoverLetterGenerator düzenlemesiiiii)
+      "Bash(npx supabase:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

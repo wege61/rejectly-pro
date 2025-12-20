@@ -20,12 +20,24 @@ import { ScoreBreakdownModal } from "@/components/features/ScoreBreakdownModal";
 import { ToolSuggestionResponse } from "@/types/toolSuggestion";
 import { ScoreBreakdown } from "@/types/scoreBreakdown";
 import { PRICING } from "@/lib/constants";
-
-interface UserCredits {
-  credits: number;
-  hasSubscription: boolean;
-  canAnalyze: boolean;
-}
+import {
+  Report,
+  UserCredits,
+  Improvement,
+  RoleRecommendation,
+  FakeSkillRecommendation,
+  ScoreRange,
+  UserState,
+  getScoreRange,
+  getUserState,
+  getVisibleSections,
+  getScoreMessage,
+  getProblemStats as getReportProblemStats,
+  getSeverityInfo as getReportSeverityInfo,
+  getScoreLabel,
+  CHART_COLORS,
+  hasSignificantImprovements,
+} from "@/components/report";
 
 // Icons
 const TargetIcon = () => (
@@ -387,6 +399,175 @@ const ShieldCheckIcon = () => (
   </svg>
 );
 
+// Problem Summary Icons
+const MagnifyingGlassIcon = ({ size = "24" }: { size?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2.5}
+    stroke="currentColor"
+    style={{
+      width: `${size}px`,
+      height: `${size}px`,
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+    />
+  </svg>
+);
+
+const CriticalIssueIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    style={{
+      width: "28px",
+      height: "28px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      fillRule="evenodd"
+      d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+const ImportantIssueIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    style={{
+      width: "28px",
+      height: "28px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      fillRule="evenodd"
+      d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+const MinorIssueIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    style={{
+      width: "28px",
+      height: "28px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      fillRule="evenodd"
+      d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+const ArrowRightLongIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2.5}
+    stroke="currentColor"
+    style={{
+      width: "24px",
+      height: "24px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+    />
+  </svg>
+);
+
+const CheckCircleFilledIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    style={{
+      width: "20px",
+      height: "20px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      fillRule="evenodd"
+      d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+const ChartBarIcon = ({ size = "24" }: { size?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: `${size}px`,
+      height: `${size}px`,
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
+    />
+  </svg>
+);
+
+const TrendingUpIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2.5}
+    stroke="currentColor"
+    style={{
+      width: "16px",
+      height: "16px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"
+    />
+  </svg>
+);
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -586,11 +767,7 @@ const ScoreContext = styled.div<{ $score?: number }>`
   display: inline-block;
 `;
 
-const getScoreLabel = (score: number): string => {
-  if (score >= 80) return 'Excellent Match';
-  if (score >= 60) return 'Good Match';
-  return 'Needs Improvement';
-};
+// getScoreLabel is now imported from @/components/report
 
 const ComparisonScoreCard = styled(Card)`
   text-align: center;
@@ -831,13 +1008,13 @@ const TotalValue = styled.div`
 // Problem Summary Components - Enhanced Modern Design
 const ProblemSummaryCard = styled.div`
   position: relative;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 24px;
-  padding: 48px;
-  color: white;
+  background: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 40px;
   margin-bottom: ${({ theme }) => theme.spacing.xl};
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: ${({ theme }) => theme.shadow.lg};
 
   &::before {
     content: '';
@@ -845,13 +1022,12 @@ const ProblemSummaryCard = styled.div`
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
-    pointer-events: none;
+    height: 4px;
+    background: linear-gradient(90deg, ${({ theme }) => theme.colors.primary} 0%, #0B666A 100%);
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: 32px 24px;
+    padding: 28px 20px;
   }
 `;
 
@@ -875,34 +1051,40 @@ const ProblemSummaryTitleSection = styled.div`
 `;
 
 const ProblemSummaryTitle = styled.h3`
-  font-size: 32px;
-  font-weight: 800;
-  margin-bottom: 8px;
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
   letter-spacing: -0.5px;
-  line-height: 1.2;
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+
+  svg {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: 24px;
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
   }
 `;
 
 const ProblemSummarySubtitle = styled.p`
-  font-size: 16px;
-  opacity: 0.95;
-  font-weight: 400;
-  line-height: 1.5;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.normal};
+  line-height: ${({ theme }) => theme.typography.lineHeight.normal};
 `;
 
 const BeforeAfterScore = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  padding: 16px 24px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  gap: ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.lg}`};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     width: 100%;
@@ -917,31 +1099,32 @@ const BeforeAfterScoreValue = styled.div<{ $highlight?: boolean }>`
   gap: 4px;
 
   .score-number {
-    font-size: ${({ $highlight }) => ($highlight ? '36px' : '28px')};
-    font-weight: 900;
+    font-size: ${({ $highlight }) => ($highlight ? '32px' : '24px')};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
     line-height: 1;
-    color: ${({ $highlight }) => ($highlight ? '#fff' : 'rgba(255, 255, 255, 0.7)')};
+    color: ${({ $highlight, theme }) => ($highlight ? theme.colors.success : theme.colors.textSecondary)};
   }
 
   .score-label {
-    font-size: 11px;
-    opacity: 0.8;
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+    color: ${({ theme }) => theme.colors.textTertiary};
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-weight: 600;
+    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   }
 `;
 
 const BeforeAfterScoreArrow = styled.div`
-  font-size: 24px;
-  opacity: 0.8;
+  color: ${({ theme }) => theme.colors.primary};
+  display: flex;
+  align-items: center;
 `;
 
 const ProblemStats = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: ${({ theme }) => theme.spacing.md};
+  margin: ${({ theme }) => theme.spacing.xl} 0;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     grid-template-columns: 1fr;
@@ -949,13 +1132,12 @@ const ProblemStats = styled.div`
 `;
 
 const StatCard = styled.div<{ $severity: 'critical' | 'important' | 'minor' }>`
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  padding: 24px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
   text-align: center;
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: all 0.3s ease;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  transition: all ${({ theme }) => theme.transitions.normal};
   position: relative;
   overflow: hidden;
 
@@ -965,70 +1147,445 @@ const StatCard = styled.div<{ $severity: 'critical' | 'important' | 'minor' }>`
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: ${({ $severity }) => {
-      if ($severity === 'critical') return 'linear-gradient(90deg, #ef4444, #dc2626)';
-      if ($severity === 'important') return 'linear-gradient(90deg, #f59e0b, #d97706)';
-      return 'linear-gradient(90deg, #22c55e, #16a34a)';
+    height: 3px;
+    background: ${({ $severity, theme }) => {
+      if ($severity === 'critical') return theme.colors.error;
+      if ($severity === 'important') return theme.colors.warning;
+      return theme.colors.success;
     }};
   }
 
   &:hover {
-    transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.18);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    border-color: ${({ theme }) => theme.colors.borderHover};
+    box-shadow: ${({ theme }) => theme.shadow.md};
   }
 `;
 
-const StatIcon = styled.div`
-  font-size: 32px;
-  margin-bottom: 12px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+const StatIcon = styled.div<{ $severity?: 'critical' | 'important' | 'minor' }>`
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  display: flex;
+  justify-content: center;
+
+  svg {
+    color: ${({ $severity, theme }) => {
+      if ($severity === 'critical') return theme.colors.error;
+      if ($severity === 'important') return theme.colors.warning;
+      return theme.colors.success;
+    }};
+  }
 `;
 
 const StatCount = styled.div`
-  font-size: 48px;
-  font-weight: 900;
-  margin-bottom: 8px;
+  font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
   line-height: 1;
   letter-spacing: -1px;
+  color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
 const StatLabel = styled.div`
-  font-size: 14px;
-  opacity: 0.95;
-  font-weight: 600;
-  margin-bottom: 8px;
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
 
 const StatImpact = styled.div`
-  font-size: 13px;
-  opacity: 0.85;
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 6px 12px;
-  border-radius: 8px;
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.success};
+  background: ${({ theme }) => theme.colors.successLight};
+  padding: 4px 10px;
+  border-radius: ${({ theme }) => theme.radius.md};
   display: inline-block;
 `;
 
 const ResultMessage = styled.div`
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  padding: 24px;
+  background: ${({ theme }) => theme.colors.successLight};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
   text-align: center;
-  font-size: 20px;
-  font-weight: 700;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  border: 1px solid ${({ theme }) => theme.colors.success};
+  color: ${({ theme }) => theme.colors.success};
   letter-spacing: -0.2px;
-  line-height: 1.4;
+  line-height: ${({ theme }) => theme.typography.lineHeight.normal};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+
+  svg {
+    flex-shrink: 0;
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: 18px;
-    padding: 20px;
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+    padding: ${({ theme }) => theme.spacing.md};
+  }
+`;
+
+// ATS Optimized Card - For high-score users showing what was done
+const ATSOptimizedCard = styled.div`
+  position: relative;
+  background: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: 40px;
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: ${({ theme }) => theme.shadow.lg};
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, ${({ theme }) => theme.colors.success} 0%, ${({ theme }) => theme.colors.primary} 100%);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: 28px 20px;
+  }
+`;
+
+const ATSOptimizedHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 24px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
+const ATSOptimizedTitleSection = styled.div`
+  flex: 1;
+  min-width: 280px;
+`;
+
+const ATSOptimizedTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+
+  svg {
+    color: ${({ theme }) => theme.colors.success};
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  }
+`;
+
+const ATSOptimizedSubtitle = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const ATSScoreBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.successLight};
+  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.lg}`};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid ${({ theme }) => theme.colors.success};
+
+  .score-number {
+    font-size: 32px;
+    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+    color: ${({ theme }) => theme.colors.success};
+    line-height: 1;
+  }
+
+  .score-label {
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+    color: ${({ theme }) => theme.colors.success};
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    width: 100%;
+    justify-content: center;
+  }
+`;
+
+const ATSFeaturesList = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+`;
+
+const ATSFeatureItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: ${({ theme }) => theme.colors.success};
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+    color: ${({ theme }) => theme.colors.textPrimary};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  }
+`;
+
+const ATSResultMessage = styled.div`
+  background: ${({ theme }) => theme.colors.successLight};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  text-align: center;
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  border: 1px solid ${({ theme }) => theme.colors.success};
+  color: ${({ theme }) => theme.colors.success};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+
+  svg {
+    flex-shrink: 0;
+  }
+`;
+
+// Keywords Modal Styled Components
+const KeywordsModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing.lg};
+`;
+
+const KeywordsModalContent = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  max-width: 600px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: ${({ theme }) => theme.shadow.xl};
+`;
+
+const KeywordsModalHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: ${({ theme }) => `${theme.spacing.xl} ${theme.spacing.xl} ${theme.spacing.lg}`};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  position: sticky;
+  top: 0;
+  background: ${({ theme }) => theme.colors.surface};
+  z-index: 1;
+`;
+
+const KeywordsModalTitle = styled.h2`
+  font-size: ${({ theme }) => theme.typography.fontSize["xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: ${({ theme }) => theme.colors.success};
+  }
+`;
+
+const KeywordsModalCloseButton = styled.button`
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: ${({ theme }) => theme.spacing.sm};
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.border};
+    color: ${({ theme }) => theme.colors.textPrimary};
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+`;
+
+const KeywordsModalBody = styled.div`
+  padding: ${({ theme }) => theme.spacing.xl};
+`;
+
+const KeywordsModalSummary = styled.div`
+  background: ${({ theme }) => theme.colors.successLight};
+  border: 1px solid ${({ theme }) => theme.colors.success};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+
+  .count {
+    font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+    color: ${({ theme }) => theme.colors.success};
+    line-height: 1;
+  }
+
+  .text {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+    color: ${({ theme }) => theme.colors.success};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  }
+`;
+
+const KeywordItemCard = styled.div`
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const KeywordItemHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+`;
+
+const KeywordBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+  background: ${({ theme }) => theme.colors.successLight};
+  color: ${({ theme }) => theme.colors.success};
+  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
+  border-radius: ${({ theme }) => theme.radius.full};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+`;
+
+const KeywordImpact = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  background: rgba(53, 162, 159, 0.1);
+  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
+  border-radius: ${({ theme }) => theme.radius.md};
+`;
+
+const KeywordDescription = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  margin: 0;
+`;
+
+const KeywordContextList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const KeywordContext = styled.div`
+  background: ${({ theme }) => theme.colors.background};
+  border-radius: ${({ theme }) => theme.radius.md};
+  padding: ${({ theme }) => theme.spacing.md};
+  border-left: 3px solid ${({ theme }) => theme.colors.primary};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+
+  .section-label {
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+    color: ${({ theme }) => theme.colors.textTertiary};
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: ${({ theme }) => theme.spacing.xs};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  }
+
+  .highlight {
+    background: rgba(53, 162, 159, 0.2);
+    color: ${({ theme }) => theme.colors.primary};
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  }
+`;
+
+const KeywordNotFound = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.textTertiary};
+  font-style: italic;
+  padding: ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.background};
+  border-radius: ${({ theme }) => theme.radius.md};
+  text-align: center;
+`;
+
+const ClickableKeywordsCard = styled(Card)`
+  text-align: center;
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(53, 162, 159, 0.2);
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -2749,23 +3306,34 @@ const RoleMatchIcon = styled.div`
 `;
 
 const ImprovementVisualization = styled.div`
-  padding: ${({ theme }) => theme.spacing["2xl"]};
+  padding: ${({ theme }) => theme.spacing.lg};
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.xl};
-  margin-top: ${({ theme }) => theme.spacing.xl};
+  border-radius: ${({ theme }) => theme.radius.lg};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: ${({ theme }) => theme.spacing.md};
+  }
 `;
 
 const VisualizationHeader = styled.div`
   text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
 const VisualizationTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+
+  svg {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 const VisualizationSubtitle = styled.p`
@@ -2777,23 +3345,25 @@ const ChartContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing["3xl"]};
-  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing["2xl"]};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
     flex-direction: column;
+    gap: ${({ theme }) => theme.spacing.lg};
   }
 `;
 
 const CircularChart = styled.div`
   position: relative;
-  width: 280px;
-  height: 280px;
+  width: 220px;
+  height: 220px;
+  flex-shrink: 0;
 `;
 
 const ScoreRing = styled.svg`
   transform: rotate(-90deg);
-  filter: drop-shadow(0 4px 12px rgba(16, 185, 129, 0.2));
+  width: 100%;
+  height: 100%;
 `;
 
 const ChartCenter = styled.div`
@@ -2805,136 +3375,88 @@ const ChartCenter = styled.div`
 `;
 
 const CenterScore = styled.div`
-  font-size: 48px;
+  font-size: ${({ theme }) => theme.typography.fontSize["5xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--success);
+  color: ${({ theme }) => theme.colors.success};
   line-height: 1;
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
 const CenterLabel = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  margin-top: 4px;
+`;
+
+const CenterFromScore = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.xs};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.textTertiary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  svg {
+    color: ${({ theme }) => theme.colors.success};
+  }
 `;
 
 const ImprovementsList = styled.div`
   flex: 1;
-  min-width: 300px;
-  max-width: 500px;
+  min-width: 0;
+  max-width: 420px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
+    width: 100%;
+    max-width: 100%;
+  }
 `;
 
 const ImprovementItem = styled.div<{ $color: string }>`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-left: 4px solid ${({ $color }) => $color};
-  border-radius: ${({ theme }) => theme.radius.md};
-  transition: all ${({ theme }) => theme.transitions.normal};
+  padding: ${({ theme }) => theme.spacing.sm} 0;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 
-  &:hover {
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  &:last-child {
+    border-bottom: none;
   }
 `;
 
 const ImprovementIcon = styled.div<{ $color: string }>`
-  width: 40px;
-  height: 40px;
+  width: 8px;
+  height: 8px;
   background: ${({ $color }) => $color};
-  border-radius: ${({ theme }) => theme.radius.md};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  border-radius: 50%;
   flex-shrink: 0;
 `;
 
 const ImprovementContent = styled.div`
   flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.md};
 `;
 
 const ImprovementCategory = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
-const ImprovementDescription = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.4;
+const ImprovementImpact = styled.div<{ $color: string }>`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ $color }) => $color};
+  flex-shrink: 0;
 `;
 
-interface RoleRecommendation {
-  title: string;
-  fit: number;
-}
-
-interface Improvement {
-  category: string;
-  action: string;
-  impact: number;
-  reason: string;
-  section?: string; // Optional for backward compatibility with existing data
-  problem?: string; // What was wrong in the original CV
-  before?: string; // Original text/content before optimization
-  after?: string; // Optimized text/content after changes
-  severity?: "critical" | "important" | "minor"; // Problem severity level
-}
-
-interface FakeSkillRecommendation {
-  skill: string;
-  category: string;
-  learningPath: string[];
-  projectIdeas: string[];
-  estimatedTime: string;
-}
-
-interface Report {
-  id: string;
-  user_id: string;
-  cv_id: string;
-  job_ids: string[];
-  fit_score: number;
-  summary_free: string;
-  summary_pro: {
-    rewrittenBullets?: string[];
-    roleRecommendations?: RoleRecommendation[];
-    atsFlags?: string[];
-  } | null;
-  keywords: {
-    missing?: string[];
-  } | null;
-  sample_rewrite: {
-    original: string;
-    rewritten: string;
-  } | null;
-  sample_role: {
-    title: string;
-    fit: number;
-    description: string;
-  } | null;
-  role_fit: RoleRecommendation[] | null;
-  ats_flags: string[] | null;
-  pro: boolean;
-  generated_cv: GeneratedCV | null;
-  optimized_score: number | null;
-  improvement_breakdown: Improvement[] | null;
-  fake_skills_recommendations: FakeSkillRecommendation[] | null;
-  fake_it_mode: boolean;
-  score_breakdown: ScoreBreakdown | null;
-  optimized_score_breakdown: ScoreBreakdown | null;
-  created_at: string;
-}
+// Types are now imported from @/components/report
 
 export default function ReportDetailPage() {
   const params = useParams();
@@ -2976,6 +3498,7 @@ export default function ReportDetailPage() {
   const [isToolSuggestionModalOpen, setIsToolSuggestionModalOpen] = useState(false);
   const [isScoreBreakdownModalOpen, setIsScoreBreakdownModalOpen] = useState(false);
   const [isOptimizedScoreBreakdownModalOpen, setIsOptimizedScoreBreakdownModalOpen] = useState(false);
+  const [isKeywordsModalOpen, setIsKeywordsModalOpen] = useState(false);
   const [optimizedScoreBreakdown, setOptimizedScoreBreakdown] = useState<ScoreBreakdown | null>(null);
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
@@ -2987,6 +3510,19 @@ export default function ReportDetailPage() {
     hasSubscription: false,
     canAnalyze: false,
   });
+
+  // Computed values for systematic rendering
+  const scoreRange: ScoreRange = report ? getScoreRange(report.fit_score) : "medium";
+  const userState: UserState = report ? getUserState(report) : "free";
+  const visibleSections = report
+    ? getVisibleSections(
+        scoreRange,
+        userState,
+        improvementBreakdown.length > 0,
+        optimizedScore !== null && optimizedScore > report.fit_score
+      )
+    : null;
+  const scoreMessage = getScoreMessage(scoreRange, userState);
 
   // Fetch user credits
   const fetchCredits = async () => {
@@ -3333,6 +3869,61 @@ export default function ReportDetailPage() {
           "🎯 Great score! Make it perfect - upgraded users in your range got 3x more responses. Stand out from other qualified candidates.",
       };
     }
+  };
+
+  // Helper function to find where keywords appear in the generated CV
+  interface KeywordMatch {
+    section: string;
+    text: string;
+  }
+
+  const findKeywordInCV = (keyword: string, cv: GeneratedCV): KeywordMatch[] => {
+    const matches: KeywordMatch[] = [];
+    const keywordLower = keyword.toLowerCase();
+
+    // Check summary
+    if (cv.summary && cv.summary.toLowerCase().includes(keywordLower)) {
+      matches.push({
+        section: "Professional Summary",
+        text: cv.summary,
+      });
+    }
+
+    // Check experience bullets
+    cv.experience?.forEach((exp) => {
+      exp.bullets?.forEach((bullet) => {
+        if (bullet.toLowerCase().includes(keywordLower)) {
+          matches.push({
+            section: `${exp.title} at ${exp.company}`,
+            text: bullet,
+          });
+        }
+      });
+    });
+
+    // Check skills
+    const allSkills = [...(cv.skills?.technical || []), ...(cv.skills?.soft || [])];
+    const matchingSkill = allSkills.find(skill =>
+      skill.toLowerCase().includes(keywordLower) || keywordLower.includes(skill.toLowerCase())
+    );
+    if (matchingSkill) {
+      matches.push({
+        section: "Skills",
+        text: `Added to skills section: ${matchingSkill}`,
+      });
+    }
+
+    return matches;
+  };
+
+  // Helper to highlight keyword in text
+  const highlightKeyword = (text: string, keyword: string): React.ReactNode => {
+    const parts = text.split(new RegExp(`(${keyword})`, 'gi'));
+    return parts.map((part, index) =>
+      part.toLowerCase() === keyword.toLowerCase()
+        ? <span key={index} className="highlight">{part}</span>
+        : part
+    );
   };
 
   const handleCreateFakeItReport = async () => {
@@ -3890,7 +4481,7 @@ export default function ReportDetailPage() {
       </Header>
 
       <Grid>
-        {optimizedScore !== null && report.generated_cv && optimizedScore > report.fit_score ? (
+        {visibleSections?.showScoreComparison ? (
           optimizedScoreBreakdown || report.optimized_score_breakdown ? (
             <ClickableComparisonScoreCard
               variant="elevated"
@@ -3911,7 +4502,7 @@ export default function ReportDetailPage() {
                 </ScoreColumn>
               </ScoreComparison>
               <ImprovementBadge>
-                ↑ +{optimizedScore - report.fit_score}% Improvement
+                ↑ +{optimizedScore! - report.fit_score}% Improvement
               </ImprovementBadge>
               {isAnalyzingOptimized && (
                 <LoadingText>Analyzing optimized CV...</LoadingText>
@@ -3936,7 +4527,7 @@ export default function ReportDetailPage() {
                 </ScoreColumn>
               </ScoreComparison>
               <ImprovementBadge>
-                ↑ +{optimizedScore - report.fit_score}% Improvement
+                ↑ +{optimizedScore! - report.fit_score}% Improvement
               </ImprovementBadge>
               {isAnalyzingOptimized && (
                 <LoadingText>Analyzing optimized CV...</LoadingText>
@@ -3970,14 +4561,26 @@ export default function ReportDetailPage() {
           </ScoreCard>
         )}
 
-        <ScoreCard variant="elevated">
-          <ScoreValue>{missingKeywords.length}</ScoreValue>
-          <ScoreLabel>
-            {report.pro && report.generated_cv ? "Keywords Added" : "Missing Keywords"}
-          </ScoreLabel>
-        </ScoreCard>
+        {report.pro && report.generated_cv ? (
+          <ClickableKeywordsCard
+            variant="elevated"
+            onClick={() => setIsKeywordsModalOpen(true)}
+            title="Click to see keyword details"
+          >
+            <ScoreValue>{missingKeywords.length}</ScoreValue>
+            <ScoreLabel>Keywords Added</ScoreLabel>
+            <ScoreClickHint>
+              <EyeIcon /> Click for details
+            </ScoreClickHint>
+          </ClickableKeywordsCard>
+        ) : (
+          <ScoreCard variant="elevated">
+            <ScoreValue>{missingKeywords.length}</ScoreValue>
+            <ScoreLabel>Missing Keywords</ScoreLabel>
+          </ScoreCard>
+        )}
 
-        {report.pro && (
+        {visibleSections?.showRoleRecommendations && (
           <ScoreCard variant="elevated">
             <ScoreValue>{roleRecommendations.length}</ScoreValue>
             <ScoreLabel>Role Recommendations</ScoreLabel>
@@ -3986,7 +4589,7 @@ export default function ReportDetailPage() {
       </Grid>
 
       {/* Personalized Alert - Show immediately after scores for free users */}
-      {!report.pro && (
+      {visibleSections?.showUpgradePrompt && (
         <PersonalizedAlert
           $variant={getPersonalizedMessage(report.fit_score).variant}
         >
@@ -3994,9 +4597,8 @@ export default function ReportDetailPage() {
         </PersonalizedAlert>
       )}
 
-      {report.fit_score < 50 &&
-        roleRecommendations.length > 0 &&
-        report.pro && (
+      {visibleSections?.showCareerInsight &&
+        roleRecommendations.length > 0 && (
           <CareerInsightCard>
             <InsightHeader>
               <InsightIcon><LightBulbIcon /></InsightIcon>
@@ -4045,9 +4647,57 @@ export default function ReportDetailPage() {
         </Section>
       )}
 
-      {improvementBreakdown.length > 0 &&
-        optimizedScore !== null &&
-        optimizedScore > report.fit_score &&
+      {/* ATS Optimized Card - For high-score users showing what was done */}
+      {visibleSections?.showPerfectMatch && !isAnalyzingOptimized && (
+        <Section>
+          <ATSOptimizedCard>
+            <ATSOptimizedHeader>
+              <ATSOptimizedTitleSection>
+                <ATSOptimizedTitle>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style={{ width: 28, height: 28 }}>
+                    <path fillRule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                  </svg>
+                  CV Optimized & ATS-Ready
+                </ATSOptimizedTitle>
+                <ATSOptimizedSubtitle>
+                  Your CV has been professionally optimized with ATS-friendly formatting and enhanced language
+                </ATSOptimizedSubtitle>
+              </ATSOptimizedTitleSection>
+
+              <ATSScoreBadge>
+                <div className="score-number">{report.fit_score}%</div>
+                <div className="score-label">Match Score</div>
+              </ATSScoreBadge>
+            </ATSOptimizedHeader>
+
+            <ATSFeaturesList>
+              <ATSFeatureItem>
+                <CheckCircleFilledIcon />
+                <span>ATS-Friendly Formatting</span>
+              </ATSFeatureItem>
+              <ATSFeatureItem>
+                <CheckCircleFilledIcon />
+                <span>Optimized Keywords</span>
+              </ATSFeatureItem>
+              <ATSFeatureItem>
+                <CheckCircleFilledIcon />
+                <span>Professional Language</span>
+              </ATSFeatureItem>
+              <ATSFeatureItem>
+                <CheckCircleFilledIcon />
+                <span>Achievement-Focused Bullets</span>
+              </ATSFeatureItem>
+            </ATSFeaturesList>
+
+            <ATSResultMessage>
+              <CheckCircleFilledIcon />
+              Your CV is ready to apply! Download it below or generate a cover letter.
+            </ATSResultMessage>
+          </ATSOptimizedCard>
+        </Section>
+      )}
+
+      {visibleSections?.showProblemSummary &&
         !isAnalyzingOptimized && (
           <>
             {/* Problem Summary Card */}
@@ -4056,7 +4706,8 @@ export default function ReportDetailPage() {
                 <ProblemSummaryHeader>
                   <ProblemSummaryTitleSection>
                     <ProblemSummaryTitle>
-                      🔍 {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed in Your CV
+                      <MagnifyingGlassIcon size="28" />
+                      {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed in Your CV
                     </ProblemSummaryTitle>
                     <ProblemSummarySubtitle>
                       Your original CV had these critical issues - we solved all of them
@@ -4068,7 +4719,7 @@ export default function ReportDetailPage() {
                       <div className="score-number">{report.fit_score}%</div>
                       <div className="score-label">Before</div>
                     </BeforeAfterScoreValue>
-                    <BeforeAfterScoreArrow>→</BeforeAfterScoreArrow>
+                    <BeforeAfterScoreArrow><ArrowRightLongIcon /></BeforeAfterScoreArrow>
                     <BeforeAfterScoreValue $highlight>
                       <div className="score-number">{optimizedScore}%</div>
                       <div className="score-label">After</div>
@@ -4079,7 +4730,7 @@ export default function ReportDetailPage() {
                 <ProblemStats>
                   {getProblemStats(improvementBreakdown).critical.count > 0 && (
                     <StatCard $severity="critical">
-                      <StatIcon>🔴</StatIcon>
+                      <StatIcon $severity="critical"><CriticalIssueIcon /></StatIcon>
                       <StatCount>{getProblemStats(improvementBreakdown).critical.count}</StatCount>
                       <StatLabel>Critical Issues</StatLabel>
                       <StatImpact>
@@ -4089,7 +4740,7 @@ export default function ReportDetailPage() {
                   )}
                   {getProblemStats(improvementBreakdown).important.count > 0 && (
                     <StatCard $severity="important">
-                      <StatIcon>🟡</StatIcon>
+                      <StatIcon $severity="important"><ImportantIssueIcon /></StatIcon>
                       <StatCount>{getProblemStats(improvementBreakdown).important.count}</StatCount>
                       <StatLabel>Important Gaps</StatLabel>
                       <StatImpact>
@@ -4099,7 +4750,7 @@ export default function ReportDetailPage() {
                   )}
                   {getProblemStats(improvementBreakdown).minor.count > 0 && (
                     <StatCard $severity="minor">
-                      <StatIcon>🟢</StatIcon>
+                      <StatIcon $severity="minor"><MinorIssueIcon /></StatIcon>
                       <StatCount>{getProblemStats(improvementBreakdown).minor.count}</StatCount>
                       <StatLabel>Minor Tweaks</StatLabel>
                       <StatImpact>
@@ -4122,7 +4773,8 @@ export default function ReportDetailPage() {
                 )}
 
                 <ResultMessage>
-                  ✅ All Problems Solved! Your new CV recovered +{Math.round(getProblemStats(improvementBreakdown).totalImpact * 10) / 10}% match score
+                  <CheckCircleFilledIcon />
+                  All Problems Solved! Your new CV recovered +{Math.round(getProblemStats(improvementBreakdown).totalImpact * 10) / 10}% match score
                 </ResultMessage>
               </ProblemSummaryCard>
             </Section>
@@ -4261,7 +4913,8 @@ export default function ReportDetailPage() {
               <ImprovementVisualization>
                 <VisualizationHeader>
                   <VisualizationTitle>
-                    📊 Score Improvement Breakdown
+                    <ChartBarIcon size="28" />
+                    Score Improvement Breakdown
                   </VisualizationTitle>
                   <VisualizationSubtitle>
                     Visual representation of how each optimization contributed
@@ -4271,48 +4924,87 @@ export default function ReportDetailPage() {
 
                 <ChartContainer>
                   <CircularChart>
-                    <ScoreRing width="280" height="280">
+                    <ScoreRing viewBox="0 0 200 200">
+                      {/* Background circle */}
                       <circle
-                        cx="140"
-                        cy="140"
-                        r="120"
+                        cx="100"
+                        cy="100"
+                        r="85"
                         fill="none"
-                        stroke="#e5e7eb"
-                        strokeWidth="20"
+                        stroke="rgba(255, 255, 255, 0.08)"
+                        strokeWidth="12"
                       />
+                      {/* Base score (original fit_score) */}
                       <circle
-                        cx="140"
-                        cy="140"
-                        r="120"
+                        cx="100"
+                        cy="100"
+                        r="85"
                         fill="none"
-                        stroke="var(--success)"
-                        strokeWidth="20"
-                        strokeDasharray={`${(optimizedScore / 100) * 754} 754`}
-                        strokeLinecap="round"
+                        stroke="rgba(255, 255, 255, 0.2)"
+                        strokeWidth="12"
+                        strokeDasharray={`${(report.fit_score / 100) * 534} 534`}
                         style={{
                           transition: "stroke-dasharray 1s ease-in-out",
                         }}
                       />
+                      {/* Improvement segments */}
+                      {(() => {
+                        const colors = [
+                          "#35A29F",
+                          "#3b82f6",
+                          "#8b5cf6",
+                          "#f59e0b",
+                          "#ec4899",
+                          "#14b8a6",
+                        ];
+                        const circumference = 534; // 2 * PI * 85
+                        const baseOffset = (report.fit_score / 100) * circumference;
+
+                        let cumulativeLength = 0;
+                        const segments = improvementBreakdown.map((improvement, index) => {
+                          const segmentLength = (improvement.impact / 100) * circumference;
+                          const offset = baseOffset + cumulativeLength;
+                          cumulativeLength += segmentLength;
+                          return {
+                            color: colors[index % colors.length],
+                            length: segmentLength,
+                            offset: offset,
+                            index
+                          };
+                        });
+
+                        return segments.reverse().map((segment) => (
+                          <circle
+                            key={segment.index}
+                            cx="100"
+                            cy="100"
+                            r="85"
+                            fill="none"
+                            stroke={segment.color}
+                            strokeWidth="12"
+                            strokeDasharray={`${segment.offset + segment.length} ${circumference}`}
+                            strokeLinecap="round"
+                            style={{
+                              transition: "stroke-dasharray 0.8s ease-in-out",
+                            }}
+                          />
+                        ));
+                      })()}
                     </ScoreRing>
                     <ChartCenter>
                       <CenterScore>{optimizedScore}%</CenterScore>
                       <CenterLabel>New Score</CenterLabel>
-                      <div
-                        style={{
-                          marginTop: "8px",
-                          fontSize: "14px",
-                          color: "#6b7280",
-                        }}
-                      >
+                      <CenterFromScore>
+                        <TrendingUpIcon />
                         from {report.fit_score}%
-                      </div>
+                      </CenterFromScore>
                     </ChartCenter>
                   </CircularChart>
 
                   <ImprovementsList>
                     {improvementBreakdown.map((improvement, index) => {
                       const colors = [
-                        "var(--success)",
+                        "#35A29F",
                         "#3b82f6",
                         "#8b5cf6",
                         "#f59e0b",
@@ -4323,16 +5015,14 @@ export default function ReportDetailPage() {
 
                       return (
                         <ImprovementItem key={index} $color={color}>
-                          <ImprovementIcon $color={color}>
-                            +{Math.round(improvement.impact * 10) / 10}%
-                          </ImprovementIcon>
+                          <ImprovementIcon $color={color} />
                           <ImprovementContent>
                             <ImprovementCategory>
                               {improvement.category}
                             </ImprovementCategory>
-                            <ImprovementDescription>
-                              {improvement.action}
-                            </ImprovementDescription>
+                            <ImprovementImpact $color={color}>
+                              +{Math.round(improvement.impact * 10) / 10}%
+                            </ImprovementImpact>
                           </ImprovementContent>
                         </ImprovementItem>
                       );
@@ -4358,36 +5048,30 @@ export default function ReportDetailPage() {
         </Card>
       </Section>
 
-      <Section>
-        <Card variant="bordered">
-          <Card.Header>
-            <Card.Title>
-              {report.pro && report.generated_cv
-                ? "Keywords Successfully Added ✓"
-                : "Missing Keywords"}
-            </Card.Title>
-            <Card.Description>
-              {report.pro && report.generated_cv
-                ? "These keywords have been strategically integrated into your optimized CV to improve ATS matching"
-                : "Add these keywords to improve your match score"}
-            </Card.Description>
-          </Card.Header>
-          <Card.Content>
-            <KeywordList>
-              {missingKeywords.map((keyword: string) => (
-                <Badge
-                  key={keyword}
-                  variant={report.pro && report.generated_cv ? "success" : "warning"}
-                >
-                  {keyword}
-                </Badge>
-              ))}
-            </KeywordList>
-          </Card.Content>
-        </Card>
-      </Section>
+      {/* Missing Keywords - Only show for users without generated CV */}
+      {!(report.pro && report.generated_cv) && (
+        <Section>
+          <Card variant="bordered">
+            <Card.Header>
+              <Card.Title>Missing Keywords</Card.Title>
+              <Card.Description>
+                Add these keywords to improve your match score
+              </Card.Description>
+            </Card.Header>
+            <Card.Content>
+              <KeywordList>
+                {missingKeywords.map((keyword: string) => (
+                  <Badge key={keyword} variant="warning">
+                    {keyword}
+                  </Badge>
+                ))}
+              </KeywordList>
+            </Card.Content>
+          </Card>
+        </Section>
+      )}
 
-      {!report.pro ? (
+      {visibleSections?.showSampleContent ? (
         <>
           {/* Rewritten Bullets with Before/After Example */}
           <Section>
@@ -5596,6 +6280,73 @@ export default function ReportDetailPage() {
         breakdown={optimizedScoreBreakdown || report?.optimized_score_breakdown || null}
         fitScore={optimizedScore || 0}
       />
+
+      {/* Keywords Added Modal */}
+      {isKeywordsModalOpen && createPortal(
+        <KeywordsModalOverlay onClick={() => setIsKeywordsModalOpen(false)}>
+          <KeywordsModalContent onClick={(e) => e.stopPropagation()}>
+            <KeywordsModalHeader>
+              <KeywordsModalTitle>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                </svg>
+                Keywords Added
+              </KeywordsModalTitle>
+              <KeywordsModalCloseButton onClick={() => setIsKeywordsModalOpen(false)}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </KeywordsModalCloseButton>
+            </KeywordsModalHeader>
+            <KeywordsModalBody>
+              <KeywordsModalSummary>
+                <span className="count">{missingKeywords.length}</span>
+                <span className="text">Keywords strategically integrated into your optimized CV</span>
+              </KeywordsModalSummary>
+
+              {missingKeywords.map((keyword: string) => {
+                const matches = report.generated_cv ? findKeywordInCV(keyword, report.generated_cv) : [];
+                return (
+                  <KeywordItemCard key={keyword}>
+                    <KeywordItemHeader>
+                      <KeywordBadge>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                          <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                        </svg>
+                        {keyword}
+                      </KeywordBadge>
+                      <KeywordImpact>
+                        {matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}` : 'Added'}
+                      </KeywordImpact>
+                    </KeywordItemHeader>
+
+                    {matches.length > 0 ? (
+                      <KeywordContextList>
+                        {matches.slice(0, 3).map((match, idx) => (
+                          <KeywordContext key={idx}>
+                            <div className="section-label">{match.section}</div>
+                            <div>{highlightKeyword(match.text, keyword)}</div>
+                          </KeywordContext>
+                        ))}
+                        {matches.length > 3 && (
+                          <KeywordDescription style={{ marginTop: '8px', textAlign: 'center' }}>
+                            +{matches.length - 3} more occurrence{matches.length - 3 > 1 ? 's' : ''} in your CV
+                          </KeywordDescription>
+                        )}
+                      </KeywordContextList>
+                    ) : (
+                      <KeywordNotFound>
+                        This keyword was strategically added to your skills section to improve ATS matching
+                      </KeywordNotFound>
+                    )}
+                  </KeywordItemCard>
+                );
+              })}
+            </KeywordsModalBody>
+          </KeywordsModalContent>
+        </KeywordsModalOverlay>,
+        document.body
+      )}
     </Container>
   );
 }

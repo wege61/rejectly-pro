@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/DemoCard";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { DemoTextarea as NewDemoTextarea } from "@/components/ui/DemoTextarea";
+import { Carousel, AppleCard, Card } from "@/components/ui/AppleCarousel";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -2558,6 +2559,111 @@ export default function Page() {
     },
   ];
 
+  const featureCards: Card[] = [
+    {
+      src: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=800&auto=format&fit=crop",
+      title: "AI Resume Analysis",
+      category: "Smart Insights",
+      content: (
+        <div>
+          <p>See exactly what&apos;s wrong with your resume. Our AI analyzes your resume against the job description and reveals:</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Missing keywords that ATS systems are looking for</li>
+            <li>Formatting issues that hurt readability</li>
+            <li>Weak action verbs and how to strengthen them</li>
+            <li>Quantifiable achievements you should highlight</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Get instant, actionable feedback in seconds—not hours.</p>
+        </div>
+      ),
+    },
+    {
+      src: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800&auto=format&fit=crop",
+      title: "Smart Job Matching",
+      category: "Find Your Fit",
+      content: (
+        <div>
+          <p>Stop applying blindly. Our AI finds jobs where your skills actually match what employers are looking for.</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Match score for every job posting</li>
+            <li>Skills gap analysis and recommendations</li>
+            <li>Salary insights based on your experience</li>
+            <li>Company culture compatibility indicators</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Apply smarter, not harder. Focus on roles where you&apos;ll succeed.</p>
+        </div>
+      ),
+    },
+    {
+      src: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=800&auto=format&fit=crop",
+      title: "Cover Letter Generator",
+      category: "One Click",
+      content: (
+        <div>
+          <p>One click. Personalized letter. Tailored to the job description and your unique experience.</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Professionally written in seconds</li>
+            <li>Matches the job requirements perfectly</li>
+            <li>Highlights your most relevant achievements</li>
+            <li>Multiple tone options (formal, creative, casual)</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Never stare at a blank page again.</p>
+        </div>
+      ),
+    },
+    {
+      src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
+      title: "ATS-Optimized Resume Builder",
+      category: "Built to Pass",
+      content: (
+        <div>
+          <p>Start fresh with an ATS-optimized resume. Clean formatting, right keywords, professional structure.</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Templates designed for ATS systems</li>
+            <li>Automatic keyword optimization</li>
+            <li>Professional formatting that works everywhere</li>
+            <li>Export to PDF, Word, or plain text</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Built from the ground up to get past the robots.</p>
+        </div>
+      ),
+    },
+    {
+      src: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
+      title: "Interview Preparation",
+      category: "Be Ready",
+      content: (
+        <div>
+          <p>Walk into every interview with confidence. Our AI prepares you with:</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Common questions for your specific role</li>
+            <li>Company-specific talking points</li>
+            <li>STAR method response frameworks</li>
+            <li>Questions to ask your interviewer</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Be the most prepared candidate in the room.</p>
+        </div>
+      ),
+    },
+    {
+      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+      title: "Application Tracker",
+      category: "Stay Organized",
+      content: (
+        <div>
+          <p>Keep track of every application in one place. Never lose an opportunity.</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Automatic status tracking</li>
+            <li>Follow-up reminders</li>
+            <li>Response rate analytics</li>
+            <li>Interview scheduling integration</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Your job search command center.</p>
+        </div>
+      ),
+    },
+  ];
+
   const loadSample = () => {
     setCvText(
       "John Doe\nSoftware Engineer\n\nExperience:\n- 3 years of React development\n- Built 5 web applications\n- Team collaboration\n\nSkills: React, JavaScript, HTML, CSS"
@@ -3271,61 +3377,17 @@ export default function Page() {
       {/* FEATURES */}
       <Section id="features">
         <SectionHeader>
-          <SectionTitle>Four tools. One goal.</SectionTitle>
+          <SectionTitle>Six powerful tools. One goal.</SectionTitle>
           <SectionSubtitle>
             Everything works together to get you hired.
           </SectionSubtitle>
         </SectionHeader>
 
-        <FeatureGrid>
-          <FeatureCard>
-            <FeatureIcon>
-              <DocumentCheckIcon />
-            </FeatureIcon>
-            <FeatureTitle>Resume Analysis</FeatureTitle>
-            <FeatureDescription>
-              See exactly what's wrong with your resume. Missing keywords,
-              formatting issues, ATS compatibility—fixed in 30 seconds.
-            </FeatureDescription>
-            <FeatureHighlight>Instant feedback</FeatureHighlight>
-          </FeatureCard>
-
-          <FeatureCard>
-            <FeatureIcon>
-              <BriefcaseSearchIcon />
-            </FeatureIcon>
-            <FeatureTitle>Smart Job Matching</FeatureTitle>
-            <FeatureDescription>
-              Stop applying blindly. AI finds jobs where your skills
-              actually match what employers are looking for.
-            </FeatureDescription>
-            <FeatureHighlight>Better targeting</FeatureHighlight>
-          </FeatureCard>
-
-          <FeatureCard>
-            <FeatureIcon>
-              <PencilIcon />
-            </FeatureIcon>
-            <FeatureTitle>Cover Letters</FeatureTitle>
-            <FeatureDescription>
-              One click. Personalized letter. Tailored to the job description
-              and your experience.
-            </FeatureDescription>
-            <FeatureHighlight>Ready in seconds</FeatureHighlight>
-          </FeatureCard>
-
-          <FeatureCard>
-            <FeatureIcon>
-              <DocumentDuplicateIcon />
-            </FeatureIcon>
-            <FeatureTitle>Resume Builder</FeatureTitle>
-            <FeatureDescription>
-              Start fresh with an ATS-optimized resume. Clean formatting,
-              right keywords, professional structure.
-            </FeatureDescription>
-            <FeatureHighlight>Built to pass ATS</FeatureHighlight>
-          </FeatureCard>
-        </FeatureGrid>
+        <Carousel
+          items={featureCards.map((card, index) => (
+            <AppleCard key={card.title} card={card} index={index} layout />
+          ))}
+        />
       </Section>
 
       <Divider />

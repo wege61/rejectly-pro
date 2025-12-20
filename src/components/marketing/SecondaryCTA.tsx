@@ -4,41 +4,109 @@ import styled from "styled-components";
 import Image from "next/image";
 import { ROUTES } from "@/lib/constants";
 
-const Section = styled.section`
-  padding: 80px 24px;
-  margin-top: 60px;
+const SectionWrapper = styled.section`
+  background: var(--bg-color);
+  padding: 96px 24px;
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
 
   @media (max-width: 768px) {
-    padding: 60px 16px;
+    padding: 64px 16px;
   }
 `;
 
-const CTASection = styled(Section)`
-  position: relative;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-  width: 100vw;
-  padding-left: 24px;
-  padding-right: 24px;
-  background-image: url('https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=1920&q=80');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+const Container = styled.div`
+  max-width: 1280px;
+  margin: 0 auto;
+`;
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0.8) 0%,
-      rgba(0, 0, 0, 0.7) 100%
-    );
+const CTABox = styled.div`
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--bg-alt);
+  padding: 64px 24px 0;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+
+  @media (min-width: 640px) {
+    padding: 64px 64px 0;
   }
 
-  @media (max-width: 768px) {
-    padding-left: 16px;
-    padding-right: 16px;
+  @media (min-width: 1024px) {
+    display: flex;
+    gap: 80px;
+    padding: 0 96px;
+  }
+`;
+
+const GradientCircle = styled.svg`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  width: 1024px;
+  height: 1024px;
+  transform: translateY(-50%);
+  mask-image: radial-gradient(closest-side, white, transparent);
+  -webkit-mask-image: radial-gradient(closest-side, white, transparent);
+
+  @media (min-width: 640px) {
+    left: 100%;
+    margin-left: -320px;
+  }
+
+  @media (min-width: 1024px) {
+    left: 50%;
+    margin-left: 0;
+    transform: translateX(-50%) translateY(0);
+  }
+`;
+
+const ContentSection = styled.div`
+  max-width: 448px;
+  margin: 0 auto;
+  text-align: center;
+
+  @media (min-width: 1024px) {
+    margin: 0;
+    flex: 1 1 auto;
+    padding: 128px 0;
+    text-align: left;
+  }
+`;
+
+const Title = styled.h2`
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-color);
+  text-wrap: balance;
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+
+  @media (min-width: 640px) {
+    font-size: 36px;
+  }
+`;
+
+const Description = styled.p`
+  margin-top: 24px;
+  font-size: 18px;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+`;
+
+const ButtonGroup = styled.div`
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+
+  @media (min-width: 1024px) {
+    justify-content: flex-start;
   }
 `;
 
@@ -46,246 +114,136 @@ const PrimaryButton = styled.a`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  background: var(--landing-button);
-  color: #FFFFFF;
-  padding: 18px 40px;
-  border-radius: 9999px;
-  font-weight: 700;
-  font-size: 18px;
-  transition: all 0.3s ease;
-  cursor: pointer;
+  border-radius: 8px;
+  background: var(--primary-500);
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
   text-decoration: none;
-  box-shadow: 0 8px 24px rgba(255, 122, 115, 0.25);
+  box-shadow: 0 4px 12px rgba(53, 162, 159, 0.3);
+  transition: all 0.2s ease;
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
 
   &:hover {
-    background: #FF6A64;
-    transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(255, 122, 115, 0.4);
+    background: var(--primary-700);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(53, 162, 159, 0.4);
   }
 
-  svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 640px) {
-    width: 100%;
-    max-width: 320px;
-    font-size: 16px;
-    padding: 16px 32px;
+  &:focus-visible {
+    outline: 2px solid var(--primary-500);
+    outline-offset: 2px;
   }
 `;
 
-const CTACard = styled.div`
-  position: relative;
-  z-index: 1;
-  background: var(--bg-alt);
-  border: 2px solid var(--accent);
-  border-radius: 24px;
-  padding: 64px 48px;
-  text-align: center;
-  max-width: 800px;
-  margin: 0 auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-
-  @media (max-width: 768px) {
-    padding: 40px 24px;
-  }
-`;
-
-const AvatarStack = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 24px;
-`;
-
-const AvatarWrapper = styled.div<{ $isFirst?: boolean }>`
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid var(--bg-color);
-  margin-left: ${({ $isFirst }) => ($isFirst ? "0" : "-12px")};
-  position: relative;
-  flex-shrink: 0;
-`;
-
-const CTATitle = styled.h2`
-  font-size: 36px;
-  font-weight: 800;
-  margin-bottom: 16px;
-  color: var(--text-color);
-
-  @media (max-width: 768px) {
-    font-size: 28px;
-  }
-`;
-
-const CTASubtitle = styled.p`
-  font-size: 18px;
-  color: var(--text-secondary);
-  margin-bottom: 32px;
-  line-height: 1.6;
-
-  @media (max-width: 768px) {
-    font-size: 16px;
-  }
-`;
-
-
-const CTAButton = styled(PrimaryButton)`
-  font-size: 20px;
-  padding: 20px 48px;
-
-  @media (max-width: 768px) {
-    font-size: 18px;
-    padding: 18px 36px;
-    width: 100%;
-  }
-`;
-
-const CTAFeatures = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  margin-top: 32px;
-  flex-wrap: wrap;
-
-  @media (max-width: 768px) {
-    gap: 16px;
-  }
-`;
-
-const CTAFeature = styled.div`
-  display: flex;
+const SecondaryButton = styled.a`
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: var(--text-secondary);
-  font-size: 14px;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
 
-  svg {
-    width: 18px;
-    height: 18px;
-    color: var(--success);
+  &:hover {
+    color: var(--primary-500);
+  }
+
+  span {
+    margin-left: 4px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover span {
+    transform: translateX(4px);
   }
 `;
 
-const RocketIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
-    <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-    <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
-    <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
-  </svg>
-);
+const ImageSection = styled.div`
+  position: relative;
+  margin-top: 64px;
+  height: 320px;
 
-const CheckIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
+  @media (min-width: 1024px) {
+    margin-top: 32px;
+  }
+`;
+
+const AppScreenshot = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 912px;
+  max-width: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 20px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+`;
 
 export function SecondaryCTA() {
   return (
-    <CTASection>
-      <CTACard>
-        <AvatarStack>
-          <AvatarWrapper $isFirst>
-            <Image
-              src="https://i.pravatar.cc/150?img=1"
-              alt="Professional who achieved interview success with Rejectly AI resume optimizer"
-              fill
-              sizes="44px"
-              style={{ objectFit: "cover" }}
+    <SectionWrapper>
+      <Container>
+        <CTABox>
+          <GradientCircle viewBox="0 0 1024 1024" aria-hidden="true">
+            <circle
+              r={512}
+              cx={512}
+              cy={512}
+              fill="url(#gradient-cta)"
+              fillOpacity="0.7"
             />
-          </AvatarWrapper>
-          <AvatarWrapper>
-            <Image
-              src="https://i.pravatar.cc/150?img=2"
-              alt="Job seeker who transformed career using Rejectly ATS-friendly resume builder"
-              fill
-              sizes="44px"
-              style={{ objectFit: "cover" }}
-            />
-          </AvatarWrapper>
-          <AvatarWrapper>
-            <Image
-              src="https://i.pravatar.cc/150?img=3"
-              alt="Tech professional who landed interviews at top companies with Rejectly"
-              fill
-              sizes="44px"
-              style={{ objectFit: "cover" }}
-            />
-          </AvatarWrapper>
-          <AvatarWrapper>
-            <Image
-              src="https://i.pravatar.cc/150?img=4"
-              alt="Career changer who beat applicant tracking systems using Rejectly"
-              fill
-              sizes="44px"
-              style={{ objectFit: "cover" }}
-            />
-          </AvatarWrapper>
-          <AvatarWrapper>
-            <Image
-              src="https://i.pravatar.cc/150?img=5"
-              alt="Success story from professionals who transformed job search with Rejectly"
-              fill
-              sizes="44px"
-              style={{ objectFit: "cover" }}
-            />
-          </AvatarWrapper>
-        </AvatarStack>
+            <defs>
+              <radialGradient id="gradient-cta">
+                <stop stopColor="#35A29F" />
+                <stop offset={1} stopColor="#0B666A" />
+              </radialGradient>
+            </defs>
+          </GradientCircle>
 
-        <CTATitle>
-          Still Deciding? Every Day You Wait is Another Day of Rejections.
-        </CTATitle>
+          <ContentSection>
+            <Title>
+              Stop Getting Rejected. Start Getting Interviews.
+            </Title>
+            <Description>
+              Join 500+ professionals who transformed their job search with AI-powered resume optimization. Get past ATS filters and land more interviews in just 30 seconds.
+            </Description>
+            <ButtonGroup>
+              <PrimaryButton href={ROUTES.AUTH.SIGNUP}>
+                Get started
+              </PrimaryButton>
+              <SecondaryButton href="#features">
+                Learn more
+                <span aria-hidden="true">→</span>
+              </SecondaryButton>
+            </ButtonGroup>
+          </ContentSection>
 
-        <CTASubtitle>
-          Join 500+ professionals who transformed their job search with Rejectly.pro.
-          Stop wasting hours on applications that go nowhere. Start getting interviews
-          within 7 days—or your money back.
-        </CTASubtitle>
-
-        <CTAButton href={ROUTES.AUTH.SIGNUP}>
-          <RocketIcon />
-          Yes, I Want to Fix My Resume Now
-        </CTAButton>
-
-        <CTAFeatures>
-          <CTAFeature>
-            <CheckIcon />
-            No credit card required
-          </CTAFeature>
-          <CTAFeature>
-            <CheckIcon />
-            Results in 30 seconds
-          </CTAFeature>
-          <CTAFeature>
-            <CheckIcon />
-            Cancel anytime, no questions
-          </CTAFeature>
-        </CTAFeatures>
-      </CTACard>
-    </CTASection>
+          <ImageSection>
+            <AppScreenshot>
+              <Image
+                src="/dashboard-screenshot.png"
+                alt="Rejectly app screenshot showing resume analysis dashboard"
+                width={1824}
+                height={1080}
+                priority
+              />
+            </AppScreenshot>
+          </ImageSection>
+        </CTABox>
+      </Container>
+    </SectionWrapper>
   );
 }

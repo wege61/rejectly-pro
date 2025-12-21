@@ -549,9 +549,35 @@ export function generateOptimizedCVPrompt(
     atsFlags?: string[];
   },
   fakeItMode: boolean = false,
-  additionalTools: string[] = []
+  additionalTools: string[] = [],
+  extractedMetrics: string[] = [],
+  achievementsSection: string = ''
 ): string {
+  const metricsWarning = extractedMetrics.length > 0 ? `
+🚨🚨🚨 MANDATORY METRICS - THESE MUST ALL APPEAR IN YOUR OUTPUT! 🚨🚨🚨
+================================================================================
+We found these metrics in the original CV. EVERY SINGLE ONE must appear:
+${extractedMetrics.map((m, i) => `${i + 1}. "${m}"`).join('\n')}
+
+If you miss ANY of these, you have FAILED. Double-check before responding!
+================================================================================
+` : '';
+
+  const achievementsWarning = achievementsSection ? `
+🏆🏆🏆 ACHIEVEMENTS SECTION FOUND - MUST BE INTEGRATED! 🏆🏆🏆
+================================================================================
+The original CV has these achievements. EACH ONE must become a bullet point:
+
+${achievementsSection}
+
+Integrate these into the relevant job experience bullets!
+================================================================================
+` : '';
+
   return `You are an expert CV writer and ATS optimization specialist. Create a fully optimized, ATS-friendly CV based on the original CV, target job postings, and analysis results.
+
+${metricsWarning}
+${achievementsWarning}
 
 ORIGINAL CV:
 """
@@ -623,33 +649,63 @@ YOU MUST:
 TASK: Create an optimized CV that includes ALL missing keywords.
 ` : `
 ═══════════════════════════════════════════════════════
-🛡️ HONEST MODE - PRESERVE ORIGINAL SKILLS ONLY
+🛡️ HONEST MODE - AGGRESSIVE OPTIMIZATION WITHOUT NEW SKILLS
 ═══════════════════════════════════════════════════════
-The candidate wants CV optimization WITHOUT adding any new skills they don't have.
+The candidate wants AGGRESSIVE CV optimization but WITHOUT adding skills they don't have.
 
-🚨 CRITICAL RULES - DO NOT VIOLATE:
-❌ DO NOT add ANY new skills that are not in the original CV
-❌ DO NOT add "related" or "similar" technologies the candidate hasn't listed
-❌ DO NOT add tools from the "same ecosystem" if not explicitly in the original CV
-❌ DO NOT invent or assume any technical skills
-❌ DO NOT add skills to "Familiar with" or "Exposure to" sections if not in original
+🚨 SKILL RESTRICTIONS (DO NOT VIOLATE):
+❌ DO NOT add ANY new technical skills not in the original CV
+❌ DO NOT invent technologies or tools
 
-✅ WHAT YOU CAN DO:
-✅ Reorganize and better present EXISTING skills from the original CV
-✅ Improve wording and formatting of existing experience bullets
-✅ Add quantifiable achievements to existing experience (numbers, percentages)
-✅ Enhance professional summary using ONLY skills already in the CV
-✅ Optimize ATS formatting (clean sections, proper keywords from EXISTING skills)
-✅ Reorder skills by relevance to target job (but only existing ones)
+🏆 CRITICAL: PRESERVE ALL EXISTING ACHIEVEMENTS & METRICS!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-OPTIMIZATION STRATEGY:
-1. Extract ALL skills mentioned anywhere in the original CV
-2. Present these existing skills more prominently and organized
-3. Enhance experience bullets with better action verbs and metrics
-4. Write a compelling summary using ONLY the candidate's actual skills
-5. Improve ATS compatibility through better formatting
+STEP 1: EXTRACT ALL METRICS FROM ORIGINAL CV
+Before writing anything, create a mental list of EVERY metric in the original:
+- Percentages (satisfaction scores, improvement rates, etc.)
+- Money (revenue, savings, costs, etc.)
+- Counts (users, customers, vehicles, products, etc.)
+- Rankings (regional ranks, performance standings, etc.)
+- Time periods (months, weeks, consecutive periods, etc.)
+- Team/scale sizes (team members, partners, etc.)
 
-TASK: Create an optimized CV that presents the candidate's EXISTING skills in the best possible way, without adding anything they don't actually have.
+STEP 2: COUNT THEM
+Count the total number of unique metrics/achievements. Remember this number.
+
+STEP 3: VERIFY AFTER WRITING
+After creating the optimized CV, count again. The number must be EQUAL or HIGHER.
+If ANY metric is missing → add it back immediately!
+
+⚠️ ZERO TOLERANCE POLICY:
+Every single metric from the original CV MUST appear in the optimized version.
+This includes ALL: percentages, dollar amounts, user counts, rankings, time periods, and volume metrics.
+
+If the original has an "ACHIEVEMENTS" section:
+1. Each achievement becomes a bullet point in the relevant job experience
+2. Top 2-3 achievements are ALSO mentioned in the summary
+3. NO achievement is left out - they are the candidate's proof of value!
+
+🚀 MANDATORY OPTIMIZATIONS (YOU MUST DO ALL OF THESE):
+✅ COMPLETELY REWRITE the professional summary - make it powerful and compelling
+✅ TRANSFORM every experience bullet - add metrics, results, impact
+✅ PRESERVE ALL original metrics and achievements (integrate them better!)
+✅ REORGANIZE skills by relevance to the target job
+✅ ENHANCE wording with stronger action verbs throughout
+✅ IMPROVE ATS compatibility with better formatting
+
+⚠️ IMPORTANT: This is NOT a "keep everything the same" mode!
+You MUST significantly improve the CV's presentation and impact.
+The ONLY restriction is: don't add skills the candidate doesn't have.
+Everything else should be dramatically improved.
+
+MANDATORY TRANSFORMATIONS:
+1. Summary → Rewrite with powerful opening, include TOP achievements (NO clichés!)
+2. Each bullet → Integrate original metrics + add estimated metrics where missing
+3. Achievements → Weave into experience bullets where they belong (don't lose them!)
+4. Skills → Reorganize by job relevance, group logically
+5. Action verbs → Replace weak verbs (managed, helped, worked) with strong ones (spearheaded, pioneered, drove, accelerated)
+
+TASK: Create a SIGNIFICANTLY IMPROVED CV that PRESERVES all original achievements while presenting them more powerfully.
 `}
 
 IMPORTANT INSTRUCTIONS:
@@ -659,25 +715,45 @@ IMPORTANT INSTRUCTIONS:
 - Add a compelling professional summary tailored to target jobs
 - Organize skills by relevance to target roles
 - Keep formatting clean and ATS-friendly
+- CRITICAL: Order work experience in REVERSE CHRONOLOGICAL order (most recent job FIRST, oldest job LAST). This is the standard CV format expected by recruiters and ATS systems.
 
 =============================================================================
 PROFESSIONAL SUMMARY GUIDE (3-4 powerful sentences)
 =============================================================================
-Structure:
-1. Lead with years of experience + primary expertise
-2. Mention 2-3 key technologies/skills matching job requirements
-3. Include a quantified achievement if available
-4. End with value proposition or career focus
 
-Example:
-"Results-driven Software Engineer with 5+ years building scalable web applications using React, Node.js, and AWS. Proven track record of reducing page load times by 40% and leading teams of up to 8 developers. Passionate about clean code architecture and mentoring junior developers."
+🚫 BANNED CLICHÉS - NEVER USE THESE:
+❌ "I am eager to apply..."
+❌ "I am excited about this opportunity..."
+❌ "I believe I would be a great fit..."
+❌ "I have always been passionate about..."
+❌ "Seeking a challenging position..."
+❌ "Looking to leverage my skills..."
+❌ "Dedicated and hardworking professional..."
+❌ Any sentence starting with "I am" or "I have"
+
+✅ CORRECT STRUCTURE:
+1. Lead with [Role] + [Years] + [Primary expertise] (no "I am")
+2. Highlight 2-3 specific achievements with metrics
+3. Mention key technologies/skills matching job requirements
+4. End with value proposition (what you bring, not what you want)
+
+✅ GOOD EXAMPLE STRUCTURE:
+"[Role] with [X] years [expertise]. [Achievement with metric] and [another achievement]. [Key skills/technologies]."
+
+❌ BAD EXAMPLE (what NOT to do):
+"I am a passionate professional who is eager to apply my skills. I believe I would be a great fit for your company."
 
 =============================================================================
-BULLET TRANSFORMATION EXAMPLES
+🔥 MANDATORY BULLET TRANSFORMATION (EVERY BULLET MUST BE TRANSFORMED!)
 =============================================================================
-Transform weak bullets into achievement-focused statements:
 
-WEAK → STRONG:
+⚠️ DO NOT copy bullets from the original CV as-is!
+EVERY bullet must be rewritten to be more impactful.
+
+TRANSFORMATION FORMULA:
+[Strong Action Verb] + [Specific Action] + [Quantified Result/Impact]
+
+WEAK → STRONG EXAMPLES:
 
 "Responsible for customer support"
 → "Resolved 50+ customer inquiries daily, maintaining 98% satisfaction rating and reducing average response time by 30%"
@@ -691,9 +767,19 @@ WEAK → STRONG:
 "Helped with data analysis"
 → "Analyzed datasets of 100K+ records using Python and SQL, delivering insights that informed $500K in cost-saving decisions"
 
-Structure: [Action Verb] + [What you did] + [Result/Impact]
+"Optimized service processes"
+→ "Streamlined service workflows reducing customer wait times by 35%, directly contributing to 97.3% CSAT achievement"
 
-NOTE: Only use specific numbers if they appear in or can be reasonably inferred from original CV.
+🎯 METRIC ESTIMATION RULES:
+If exact numbers aren't in the CV, use reasonable estimates:
+- Customer interactions → "50+", "100+", "500+"
+- Team size → "team of 4-6", "cross-functional teams of 10+"
+- Satisfaction → "95%+", "97%+"
+- Improvement → "20%", "35%", "2x"
+- Revenue/Cost → "$50K+", "$100K+"
+
+💪 STRONG ACTION VERBS TO USE:
+Spearheaded, Orchestrated, Transformed, Accelerated, Pioneered, Championed, Architected, Streamlined, Drove, Delivered, Achieved, Generated, Increased, Reduced, Optimized
 
 =============================================================================
 ATS OPTIMIZATION CHECKLIST
@@ -707,6 +793,13 @@ Your optimized CV must:
 □ Use standard fonts and simple formatting
 □ Keep bullet points concise (1-2 lines each)
 
+🚨 FINAL REMINDER BEFORE YOU WRITE JSON 🚨
+================================================================================
+RE-CHECK the original CV for ALL metrics and achievements.
+Every number, percentage, ranking, and achievement MUST appear in your output.
+If the original has an ACHIEVEMENTS section, integrate EACH into relevant experience bullets!
+================================================================================
+
 Respond in JSON format:
 {
   "contact": {
@@ -718,7 +811,7 @@ Respond in JSON format:
     "portfolio": "portfolio.com" // optional
   },
   "summary": "Compelling 3-4 sentence professional summary tailored to target roles, incorporating key strengths and missing keywords...",
-  "experience": [
+  "experience": [ // MUST be in REVERSE CHRONOLOGICAL order (most recent job FIRST, oldest job LAST)
     {
       "title": "Job Title",
       "company": "Company Name",
@@ -731,6 +824,7 @@ Respond in JSON format:
         "Third bullet demonstrating impact and skills..."
       ]
     }
+    // Continue with older positions in reverse chronological order...
   ],
   "education": [
     {
@@ -791,18 +885,39 @@ ${fakeItMode ? `
 FINAL QUALITY VERIFICATION
 =============================================================================
 Before responding, verify:
-□ All contact information preserved from original
-□ All job titles, companies, and dates are EXACT from original
+
+🔒 PRESERVE (must be identical to original):
+□ Contact information (name, email, phone, linkedin)
+□ Job titles, company names, and employment dates
+□ Education details
+
+🏆 ACHIEVEMENTS CHECK (CRITICAL - DO NOT SKIP!):
+□ Count ALL metrics in original CV (percentages, money, counts, rankings, time periods)
+□ Count ALL metrics in your optimized CV
+□ Optimized count must be >= original count (ZERO metrics can be lost!)
+□ Verify ALL metric types are preserved: volumes, revenue, rankings, time periods, satisfaction scores
+□ If original had ACHIEVEMENTS section → EACH item must be in a relevant experience bullet
+
+🔄 MUST BE DIFFERENT FROM ORIGINAL (these should be noticeably improved):
+□ Professional summary → COMPLETELY REWRITTEN (no clichés!) + TOP achievements included
+□ Every experience bullet → TRANSFORMED with metrics and strong verbs
+□ Skills organization → REORGANIZED by job relevance
+□ Work experience order → REVERSE CHRONOLOGICAL (most recent first)
+
+📋 VALIDATION CHECKLIST:
 ${additionalTools.length > 0 ? `□ CRITICAL: ALL ${additionalTools.length} user-confirmed tools (${additionalTools.join(', ')}) are in skills.technical array
 □ CRITICAL: Each user-confirmed tool appears in at least ONE experience bullet point` : ''}
-${fakeItMode ? '□ All missing keywords aggressively added per Fake It Mode' : '□ Related/transferable keywords strategically integrated to IMPROVE MATCH SCORE'}
-□ Bullets enhanced but based on real content
-□ Summary accurately represents the candidate
+${fakeItMode ? '□ All missing keywords aggressively added per Fake It Mode' : '□ Bullets enhanced with quantified metrics'}
+□ Summary does NOT start with "I am" or "I have"
+□ Summary does NOT contain "eager to apply" or similar clichés
+□ ALL original achievements preserved and integrated
 □ JSON is valid and complete
-□ Professional summary follows guide structure
-□ Experience bullets follow transformation examples
 □ ATS checklist requirements met
-${!fakeItMode ? '□ CRITICAL: Optimized CV should score HIGHER than original (aim for +10-20% improvement)' : ''}
+
+⚠️ CRITICAL CHECK: Compare your output to the original CV.
+If the summary and bullets look almost identical → YOU FAILED. Rewrite them!
+If ANY achievement from original is missing → YOU FAILED. Add them back!
+The optimized CV should be NOTICEABLY BETTER, not a copy of the original.
 
 Respond with ONLY the JSON object. No explanations, no markdown.`;
 }

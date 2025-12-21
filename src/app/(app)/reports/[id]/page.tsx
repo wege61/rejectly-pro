@@ -568,6 +568,26 @@ const TrendingUpIcon = () => (
   </svg>
 );
 
+const RefreshIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "20px",
+      height: "20px",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+    />
+  </svg>
+);
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -4268,6 +4288,45 @@ export default function ReportDetailPage() {
     }
   };
 
+  const handleRegenerateCV = async () => {
+    if (!report) return;
+
+    setIsGeneratingCV(true);
+    try {
+      const response = await fetch("/api/cv/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportId: report.id,
+          fakeItMode: report.fake_it_mode || false,
+          forceRegenerate: true,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to regenerate CV");
+      }
+
+      // Update local state with new CV
+      setReport((prev) => prev ? { ...prev, generated_cv: data.cv } : null);
+
+      // Generate and preview the new PDF
+      const pdf = await generateCVPDF(data.cv);
+      const pdfBlob = pdf.output("blob");
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      setPdfPreviewUrl(blobUrl);
+
+      toast.success("CV regenerated successfully!");
+    } catch (error) {
+      console.error("CV regeneration error:", error);
+      toast.error("Failed to regenerate CV. Please try again.");
+    } finally {
+      setIsGeneratingCV(false);
+    }
+  };
+
   const savePDFToStorage = async (pdfBlob: Blob) => {
     if (!report) return;
 
@@ -5887,6 +5946,25 @@ export default function ReportDetailPage() {
                         <ActionCardDescription>
                           Create a tailored cover letter that perfectly complements
                           your optimized CV.
+                        </ActionCardDescription>
+                      </ActionCard>
+
+                      <ActionCard
+                        $variant="secondary"
+                        onClick={handleRegenerateCV}
+                        style={{
+                          opacity: isGeneratingCV ? 0.6 : 1,
+                          cursor: isGeneratingCV ? 'not-allowed' : 'pointer',
+                        }}
+                      >
+                        <ActionCardHeader>
+                          <ActionCardIcon $variant="secondary">
+                            {isGeneratingCV ? <Spinner size="sm" /> : <RefreshIcon />}
+                          </ActionCardIcon>
+                          <ActionCardTitle>Regenerate CV</ActionCardTitle>
+                        </ActionCardHeader>
+                        <ActionCardDescription>
+                          Not satisfied? Regenerate your CV with improved optimization.
                         </ActionCardDescription>
                       </ActionCard>
                     </ActionCardsGrid>

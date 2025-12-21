@@ -5,6 +5,8 @@ import { generateOptimizedCVPrompt, generateFakeSkillsRecommendationsPrompt } fr
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 
 export async function POST(request: NextRequest) {
+  console.log('\n\n🔴🔴🔴 CV GENERATE ENDPOINT CALLED 🔴🔴🔴\n\n');
+
   try {
     // Get authenticated user
     const supabase = await createClient();
@@ -18,14 +20,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Get request body
-    const { reportId, fakeItMode = false, additionalTools = [] } = await request.json();
+    const { reportId, fakeItMode = false, additionalTools = [], forceRegenerate = false } = await request.json();
 
     console.log('🔍 CV Generation Request:', {
       reportId,
       fakeItMode,
       fakeItModeType: typeof fakeItMode,
       fakeItModeValue: fakeItMode === true ? 'TRUE' : 'FALSE',
-      additionalTools: additionalTools.length > 0 ? additionalTools : 'none'
+      additionalTools: additionalTools.length > 0 ? additionalTools : 'none',
+      forceRegenerate
     });
 
     if (!reportId) {
@@ -49,15 +52,20 @@ export async function POST(request: NextRequest) {
 
     // Check if CV already generated with same settings
     // Always regenerate if additionalTools are provided (user selected new tools)
+    // Always regenerate if forceRegenerate is true
     const hasAdditionalTools = additionalTools && additionalTools.length > 0;
 
-    if (report.generated_cv && report.fake_it_mode === fakeItMode && !hasAdditionalTools) {
+    if (report.generated_cv && report.fake_it_mode === fakeItMode && !hasAdditionalTools && !forceRegenerate) {
       console.log('✅ CV already generated with same settings, returning cached version');
       return NextResponse.json({
         success: true,
         message: "CV already generated",
         cv: report.generated_cv,
       });
+    }
+
+    if (forceRegenerate) {
+      console.log('🔄 Force regenerating CV due to forceRegenerate flag');
     }
 
     // Log regeneration reason
@@ -127,26 +135,68 @@ export async function POST(request: NextRequest) {
       fakeSkillsRecommendations = recommendationsResult.recommendations || [];
     }
 
+    // Extract achievements and metrics from original CV
+    const cvText = report.cv.text;
+    console.log('📝 Original CV text length:', cvText?.length || 0);
+    console.log('📝 Original CV contains ACHIEVEMENTS?:', cvText?.includes('ACHIEVEMENT') || false);
+    console.log('📝 Original CV contains "2,500" or "2500"?:', cvText?.includes('2,500') || cvText?.includes('2500') || false);
+
+    const extractedMetrics: string[] = [];
+
+    // Look for common metric patterns
+    const metricPatterns = [
+      /\d{1,3}(?:,\d{3})*\+?\s*(?:vehicles?|users?|customers?|clients?)/gi,
+      /\$\d{1,3}(?:,\d{3})*(?:\.\d{2})?\+?(?:\s*(?:K|M|B|revenue|savings?))?/gi,
+      /#\d+\s*(?:rank|position|in\s+\w+)/gi,
+      /\d{1,3}(?:\.\d+)?%\s*(?:CSAT|NPS|satisfaction|retention|increase|decrease|improvement)/gi,
+      /within\s+\d+\s*(?:months?|weeks?|days?)/gi,
+      /\d+\s*consecutive\s*months?/gi,
+      /\d+\s*(?:in\s+)?(?:one\s+)?week/gi,
+      /EMEA\s*(?:#?\d+|region|rank)/gi,
+    ];
+
+    metricPatterns.forEach(pattern => {
+      const matches = cvText.match(pattern);
+      if (matches) {
+        extractedMetrics.push(...matches);
+      }
+    });
+
+    // Look for ACHIEVEMENTS section
+    const achievementMatch = cvText.match(/ACHIEVEMENTS?([\s\S]*?)(?=EDUCATION|SKILLS|CERTIFICATIONS|LANGUAGES|$)/i);
+    const achievementsSection = achievementMatch ? achievementMatch[1].trim() : '';
+
+    console.log('📊 Extracted metrics from CV:', extractedMetrics);
+    console.log('🏆 Achievements section found:', achievementsSection ? 'YES' : 'NO');
+
     // Generate optimized CV using AI
     const prompt = generateOptimizedCVPrompt(
       report.cv.text,
       jobDocs.map((job) => job.text),
       analysisResults,
       fakeItMode,
-      additionalTools
+      additionalTools,
+      extractedMetrics,
+      achievementsSection
     );
 
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.7,
-      max_tokens: 3000,
+      temperature: 0.85,
+      max_tokens: 8000,
       response_format: { type: "json_object" },
     });
 
     const generatedCV = JSON.parse(
       completion.choices[0].message.content || "{}"
     );
+
+    // Log generated CV for debugging
+    console.log('📄 Generated CV Experience:', JSON.stringify(generatedCV.experience?.map((e: { title: string; bullets: string[] }) => ({
+      title: e.title,
+      bullets: e.bullets
+    })), null, 2));
 
     // Save generated CV to database (always succeeds)
     const updateData: { generated_cv: any; fake_it_mode: boolean } = {

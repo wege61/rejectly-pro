@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
-import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 import { WelcomeModal } from "@/components/ui/WelcomeModal";
@@ -80,6 +79,21 @@ const CoverLettersIcon = () => (
       strokeLinejoin="round"
       d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
     />
+  </svg>
+);
+
+const ArrowRightIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M5 12h14M12 5l7 7-7 7" />
   </svg>
 );
 
@@ -596,6 +610,332 @@ const CoverLettersBackground = () => (
   </CoverLettersBackgroundWrapper>
 );
 
+// Report Card Animations (matching reports page)
+const floatAnimation = keyframes`
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+  50% { transform: translateY(-8px) rotate(2deg); opacity: 0.8; }
+`;
+
+const scrollText = keyframes`
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+`;
+
+// Report Card Styled Components (matching reports page)
+const RecentReportCard = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-alt);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 200px;
+
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  &:hover .report-content {
+    transform: translateY(-32px);
+  }
+
+  &:hover .report-cta {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  &:hover .report-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .report-overlay {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &:hover .report-content {
+      transform: none;
+    }
+  }
+`;
+
+const RecentReportFakeItBanner = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 6px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const RecentReportCardContent = styled.div`
+  padding: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 1;
+`;
+
+const RecentReportContentInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
+  }
+`;
+
+const RecentReportScoreDisplay = styled.div`
+  margin-bottom: 8px;
+`;
+
+const RecentReportScoreValue = styled.span<{ $category: 'excellent' | 'good' | 'needsWork' }>`
+  font-size: 48px;
+  font-weight: 700;
+  color: ${({ $category }) => {
+    switch ($category) {
+      case 'excellent':
+        return 'var(--primary-500)';
+      case 'good':
+        return '#2a57a0ff';
+      case 'needsWork':
+        return '#f97316';
+    }
+  }};
+  line-height: 1;
+
+  &::after {
+    content: '%';
+    font-size: 24px;
+    margin-left: 2px;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 640px) {
+    font-size: 40px;
+
+    &::after {
+      font-size: 20px;
+    }
+  }
+`;
+
+const RecentReportTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-top: 4px;
+
+  @media (max-width: 640px) {
+    font-size: 16px;
+  }
+`;
+
+const RecentReportMeta = styled.p`
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+  margin-top: 2px;
+`;
+
+const RecentReportMetaRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+`;
+
+const RecentReportMetaItem = styled.span`
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const RecentReportMetaItemProOrFree = styled.span<{ $isPro?: boolean }>`
+  font-size: 13px;
+  color: ${({ $isPro }) => $isPro ? '#FF7A73' : 'var(--text-secondary)'};
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const RecentReportCTAContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    transform: translateY(0);
+    opacity: 1;
+    position: relative;
+    padding-top: 16px;
+    background: none;
+  }
+`;
+
+const RecentReportCTALink = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 14px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const RecentReportOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  transition: all 0.3s ease;
+`;
+
+// Report Card Background Components
+const RecentReportCardBackgroundWrapper = styled.div`
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
+`;
+
+const RecentReportKeywordContainer = styled.div`
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 80px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  opacity: 0.5;
+`;
+
+const RecentReportKeywordBadge = styled.span<{ $delay: number }>`
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 9px;
+  font-weight: 500;
+  background: rgba(var(--accent-rgb), 0.08);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  border: 1px solid rgba(var(--accent-rgb), 0.1);
+  animation: ${fadeInUp} 0.4s ease-out forwards, ${floatAnimation} 3s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay}s, ${({ $delay }) => $delay + 0.4}s;
+  opacity: 0;
+`;
+
+const RecentReportSummaryScrollContainer = styled.div`
+  position: absolute;
+  top: 50px;
+  left: 12px;
+  right: 12px;
+  bottom: 60px;
+  overflow: hidden;
+  opacity: 0.15;
+`;
+
+const RecentReportSummaryText = styled.div`
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  animation: ${scrollText} 20s linear infinite;
+
+  &:hover {
+    animation-play-state: paused;
+  }
+`;
+
+const RecentReportSummaryTextDuplicate = styled.div`
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+`;
+
+interface RecentReportCardBackgroundProps {
+  keywords?: string[];
+  summary?: string;
+}
+
+const RecentReportCardBackground = ({ keywords, summary }: RecentReportCardBackgroundProps) => {
+  const displayKeywords = keywords?.slice(0, 5) || [];
+  const summaryText = summary || '';
+
+  return (
+    <RecentReportCardBackgroundWrapper>
+      {displayKeywords.length > 0 && (
+        <RecentReportKeywordContainer>
+          {displayKeywords.map((keyword, idx) => (
+            <RecentReportKeywordBadge key={idx} $delay={idx * 0.1}>
+              {keyword}
+            </RecentReportKeywordBadge>
+          ))}
+        </RecentReportKeywordContainer>
+      )}
+      {summaryText && (
+        <RecentReportSummaryScrollContainer>
+          <RecentReportSummaryText>
+            {summaryText}
+            <RecentReportSummaryTextDuplicate>
+              {summaryText}
+            </RecentReportSummaryTextDuplicate>
+          </RecentReportSummaryText>
+        </RecentReportSummaryScrollContainer>
+      )}
+    </RecentReportCardBackgroundWrapper>
+  );
+};
+
+const RecentReportsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -710,106 +1050,6 @@ const ReportsList = styled.div`
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const ReportCard = styled(Card)`
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.shadow.lg};
-  }
-`;
-
-const FakeItBanner = styled.div`
-  position: absolute;
-  top: -10px;
-  right: 12px;
-  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-  color: white;
-  padding: 6px 16px;
-  font-size: 10px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-  border-radius: 6px 6px 0 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  &::before {
-    content: '🚀';
-  }
-`;
-
-const ReportCardWithFakeIt = styled(ReportCard)<{ $fakeItMode?: boolean }>`
-  ${({ $fakeItMode }) =>
-    $fakeItMode &&
-    `
-    position: relative;
-    border: 2px solid rgba(245, 158, 11, 0.3);
-    margin-top: 12px;
-    overflow: visible;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, #f59e0b 0%, #ea580c 100%);
-    }
-
-    &:hover {
-      border-color: rgba(245, 158, 11, 0.5);
-      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
-    }
-  `}
-`;
-
-const ReportHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-`;
-
-const ReportTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-`;
-
-const ReportDate = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const ScoreBadge = styled(Badge)`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
-`;
-
-const ReportMeta = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing.sm};
-  flex-wrap: wrap;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-`;
-
-const ReportSummary = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
 const ViewAllLink = styled.div`
   display: flex;
   justify-content: center;
@@ -824,10 +1064,86 @@ const ViewAllLink = styled.div`
   }
 `;
 
-const CoverLetterCard = styled(Card)<{ $tone: string }>`
+// Recent Cover Letter Card Animations
+const recentLetterScrollAnimation = keyframes`
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+`;
+
+const recentLetterFadeIn = keyframes`
+  0% { opacity: 0; transform: translateX(10px); }
+  100% { opacity: 1; transform: translateX(0); }
+`;
+
+// Recent Cover Letter Card Styles - Matching cover-letters page
+const RecentCoverLetterCard = styled.div<{ $tone: string }>`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--bg-alt);
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-  border-left: 4px solid ${({ $tone }) => {
+  transition: all 0.3s ease;
+  min-height: 160px;
+
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 8px 16px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -15px 60px -15px rgba(255, 255, 255, 0.1) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  }
+
+  &:hover .recent-letter-content {
+    transform: translateY(-28px);
+  }
+
+  &:hover .recent-letter-cta {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  &:hover .recent-letter-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .recent-letter-overlay {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &:hover .recent-letter-content {
+      transform: none;
+    }
+  }
+`;
+
+const RecentCoverLetterToneBadge = styled.div<{ $tone: string }>`
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: ${({ $tone }) => {
+    switch ($tone) {
+      case 'professional':
+        return 'rgba(59, 130, 246, 0.15)';
+      case 'friendly':
+        return 'rgba(16, 185, 129, 0.15)';
+      case 'formal':
+        return 'rgba(139, 92, 246, 0.15)';
+      default:
+        return 'rgba(107, 114, 128, 0.15)';
+    }
+  }};
+  color: ${({ $tone }) => {
     switch ($tone) {
       case 'professional':
         return '#3b82f6';
@@ -839,27 +1155,187 @@ const CoverLetterCard = styled(Card)<{ $tone: string }>`
         return '#6b7280';
     }
   }};
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 6px;
+  z-index: 10;
+  text-transform: capitalize;
+`;
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.shadow.md};
+const RecentCoverLetterCardContent = styled.div`
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 1;
+`;
+
+const RecentCoverLetterContentInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
+  max-width: 65%;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
+    max-width: 100%;
   }
 `;
 
-const CoverLetterTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
+const RecentCoverLetterTitle = styled.h3`
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
-const CoverLetterMeta = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+const RecentCoverLetterMeta = styled.p`
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 2px;
 `;
+
+const RecentCoverLetterCTAContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 14px 20px;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    transform: translateY(0);
+    opacity: 1;
+    position: relative;
+    padding-top: 12px;
+    background: none;
+  }
+`;
+
+const RecentCoverLetterCTALink = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 13px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const RecentCoverLetterOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  transition: all 0.3s ease;
+`;
+
+// Recent Cover Letter Card Background Components (right side animation)
+const RecentCoverLetterBackgroundWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 45%;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to left, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+`;
+
+const RecentCoverLetterTextPreview = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  width: calc(100% - 20px);
+  overflow: hidden;
+  opacity: 0.2;
+  animation: ${recentLetterFadeIn} 0.5s ease-out forwards;
+`;
+
+const RecentCoverLetterScrollingText = styled.div`
+  font-size: 9px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  animation: ${recentLetterScrollAnimation} 25s linear infinite;
+  white-space: pre-wrap;
+  word-break: break-word;
+`;
+
+const RecentCoverLetterScrollingTextDuplicate = styled.div`
+  font-size: 9px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-top: 20px;
+`;
+
+// Arrow icon for cover letter CTA
+const ArrowRightIconLetter = () => (
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M5 12h14M12 5l7 7-7 7" />
+  </svg>
+);
+
+const RecentCoverLettersGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+interface RecentCoverLetterBackgroundProps {
+  content?: string;
+}
+
+const RecentCoverLetterBackground = ({ content }: RecentCoverLetterBackgroundProps) => {
+  if (!content) return null;
+
+  const previewText = content.slice(0, 500);
+
+  return (
+    <RecentCoverLetterBackgroundWrapper>
+      <RecentCoverLetterTextPreview>
+        <RecentCoverLetterScrollingText>
+          {previewText}
+          <RecentCoverLetterScrollingTextDuplicate>
+            {previewText}
+          </RecentCoverLetterScrollingTextDuplicate>
+        </RecentCoverLetterScrollingText>
+      </RecentCoverLetterTextPreview>
+    </RecentCoverLetterBackgroundWrapper>
+  );
+};
 
 // Floating Action Button (FAB)
 const FAB = styled.button<{ $showHint?: boolean }>`
@@ -1127,6 +1603,7 @@ interface CoverLetter {
   id: string;
   created_at: string;
   tone: string;
+  content?: string;
   job?: {
     id: string;
     title: string;
@@ -1362,12 +1839,6 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, [user]);
 
-  const getScoreColor = (score: number): "success" | "warning" | "error" => {
-    if (score >= 75) return "success";
-    if (score >= 50) return "warning";
-    return "error";
-  };
-
   const getToneIcon = (tone: string) => {
     const icons: Record<string, string> = {
       professional: "💼",
@@ -1486,27 +1957,44 @@ export default function DashboardPage() {
             <SectionHeader>
               <SectionTitle>Recent Cover Letters</SectionTitle>
             </SectionHeader>
-            <ReportsList>
+            <RecentCoverLettersGrid>
               {recentCoverLetters.map((letter) => (
-                <CoverLetterCard
+                <RecentCoverLetterCard
                   key={letter.id}
-                  variant="elevated"
                   $tone={letter.tone}
                   onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
                 >
-                  <CoverLetterTitle>
-                    {getToneIcon(letter.tone)} {letter.job?.title || "Cover Letter"}
-                  </CoverLetterTitle>
-                  <CoverLetterMeta>
-                    Created on {new Date(letter.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </CoverLetterMeta>
-                </CoverLetterCard>
+                  <RecentCoverLetterBackground content={letter.content} />
+                  <RecentCoverLetterToneBadge $tone={letter.tone}>
+                    {letter.tone.charAt(0).toUpperCase() + letter.tone.slice(1)}
+                  </RecentCoverLetterToneBadge>
+
+                  <RecentCoverLetterCardContent>
+                    <RecentCoverLetterContentInner className="recent-letter-content">
+                      <RecentCoverLetterTitle>
+                        {letter.job?.title || "Cover Letter"}
+                      </RecentCoverLetterTitle>
+                      <RecentCoverLetterMeta>
+                        {new Date(letter.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </RecentCoverLetterMeta>
+                    </RecentCoverLetterContentInner>
+
+                    <RecentCoverLetterCTAContainer className="recent-letter-cta">
+                      <RecentCoverLetterCTALink>
+                        View & Edit
+                        <ArrowRightIconLetter />
+                      </RecentCoverLetterCTALink>
+                    </RecentCoverLetterCTAContainer>
+                  </RecentCoverLetterCardContent>
+
+                  <RecentCoverLetterOverlay className="recent-letter-overlay" />
+                </RecentCoverLetterCard>
               ))}
-            </ReportsList>
+            </RecentCoverLettersGrid>
             <ViewAllLink>
               <Button
                 variant="secondary"
@@ -1539,64 +2027,62 @@ export default function DashboardPage() {
             </Card>
           ) : (
             <>
-              <ReportsList>
-                {recentReports.map((report) => (
-                  <ReportCardWithFakeIt
-                    key={report.id}
-                    variant="elevated"
-                    onClick={() =>
-                      router.push(ROUTES.APP.REPORT_DETAIL(report.id))
-                    }
-                    $fakeItMode={report.fake_it_mode ?? false}
-                  >
-                    {report.fake_it_mode && (
-                      <FakeItBanner>
-                        Fake It Mode
-                      </FakeItBanner>
-                    )}
-                    <ReportHeader>
-                      <div>
-                        <ReportTitle>Resume Analysis Report</ReportTitle>
-                        <ReportDate>
-                          Created on{" "}
-                          {new Date(report.created_at).toLocaleDateString(
-                            "en-EN",
-                            {
+              <RecentReportsGrid>
+                {recentReports.map((report) => {
+                  const jobTitles = report.job_ids
+                    ?.map((id) => jobTitlesMap[id])
+                    .filter(Boolean)
+                    .join(" • ");
+
+                  return (
+                    <RecentReportCard
+                      key={report.id}
+                      onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}
+                    >
+                      <RecentReportCardBackground
+                        keywords={report.keywords?.missing}
+                        summary={report.summary_free}
+                      />
+                      {report.fake_it_mode && <RecentReportFakeItBanner>🎭 Fake It</RecentReportFakeItBanner>}
+
+                      <RecentReportCardContent>
+                        <RecentReportContentInner className="report-content">
+                          <RecentReportScoreDisplay>
+                            <RecentReportScoreValue $category={report.fit_score >= 70 ? 'excellent' : report.fit_score >= 41 ? 'good' : 'needsWork'}>{report.fit_score}</RecentReportScoreValue>
+                          </RecentReportScoreDisplay>
+                          <RecentReportTitle>
+                            {jobTitles || "CV Analysis Report"}
+                          </RecentReportTitle>
+                          <RecentReportMeta>
+                            {new Date(report.created_at).toLocaleDateString("en-US", {
                               year: "numeric",
                               month: "long",
                               day: "numeric",
-                            }
-                          )}
-                        </ReportDate>
-                        {report.job_ids && report.job_ids.length > 0 && (
-                          <div style={{ marginTop: "4px", fontSize: "13px" }}>
-                            <span style={{ color: "#6b7280", fontWeight: "500" }}>
-                              Job{report.job_ids.length > 1 ? "s" : ""}:{" "}
-                            </span>
-                            <span style={{ color: "#6b7280", fontWeight: "600" }}>
-                              {report.job_ids
-                                .map((id: string) => jobTitlesMap[id] || "Unknown")
-                                .join(" • ")}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <ScoreBadge variant={getScoreColor(report.fit_score)}>
-                        {report.fit_score}% Match
-                      </ScoreBadge>
-                    </ReportHeader>
-                    <ReportMeta>
-                      <Badge size="sm">
-                        {report.keywords?.missing?.length || 0} Missing Keywords
-                      </Badge>
-                      <Badge variant={report.pro ? "info" : "default"} size="sm">
-                        {report.pro ? "Pro Report" : "Free Report"}
-                      </Badge>
-                    </ReportMeta>
-                    <ReportSummary>{report.summary_free}</ReportSummary>
-                  </ReportCardWithFakeIt>
-                ))}
-              </ReportsList>
+                            })}
+                          </RecentReportMeta>
+                          <RecentReportMetaRow>
+                            <RecentReportMetaItem>
+                              {report.keywords?.missing?.length || 0} missing keywords
+                            </RecentReportMetaItem>
+                            <RecentReportMetaItemProOrFree $isPro={report.pro}>
+                              {report.pro ? "Pro" : "Free"}
+                            </RecentReportMetaItemProOrFree>
+                          </RecentReportMetaRow>
+                        </RecentReportContentInner>
+
+                        <RecentReportCTAContainer className="report-cta">
+                          <RecentReportCTALink>
+                            View Details
+                            <ArrowRightIcon />
+                          </RecentReportCTALink>
+                        </RecentReportCTAContainer>
+                      </RecentReportCardContent>
+
+                      <RecentReportOverlay className="report-overlay" />
+                    </RecentReportCard>
+                  );
+                })}
+              </RecentReportsGrid>
               <ViewAllLink>
                 <Button
                   variant="secondary"

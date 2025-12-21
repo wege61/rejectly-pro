@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { useToast } from "@/contexts/ToastContext";
 import { Modal } from "@/components/ui/Modal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
@@ -287,227 +286,380 @@ const Grid = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
-// Report Card Styles - Compact & Professional
-const ReportCard = styled.div<{ $isPremium: boolean }>`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.md};
-  transition: all ${({ theme }) => theme.transitions.fast};
-  cursor: pointer;
+// Mini Report Card Animations (matching reports page style)
+const floatAnimationMini = keyframes`
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+  50% { transform: translateY(-4px) rotate(1deg); opacity: 0.7; }
+`;
+
+const fadeInUpMini = keyframes`
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+`;
+
+const scrollTextMini = keyframes`
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+`;
+
+// Mini Report Card Styled Components (matching reports page style - compact version)
+const MiniReportCard = styled.div<{ $isPremium: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
-  height: 100%;
+  justify-content: space-between;
   overflow: hidden;
+  border-radius: 12px;
+  background: var(--bg-alt);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 140px;
 
-  ${({ $isPremium, theme }) =>
-    $isPremium &&
-    `
-    border-color: ${theme.colors.primary};
-    box-shadow: 0 0 0 1px ${theme.colors.primary}15;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 8px 16px rgba(0, 0, 0, 0.05);
 
-    &::after {
-      content: 'PRO';
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: linear-gradient(135deg, ${theme.colors.primary} 0%, var(--primary-600) 100%);
-      color: white;
-      font-size: 9px;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 3px;
-      letter-spacing: 0.5px;
-    }
-  `}
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -15px 60px -15px rgba(255, 255, 255, 0.1) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
   }
 
-  &:active {
+  &:hover .mini-report-content {
+    transform: translateY(-24px);
+  }
+
+  &:hover .mini-report-cta {
     transform: translateY(0);
+    opacity: 1;
+  }
+
+  &:hover .mini-report-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .mini-report-overlay {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &:hover .mini-report-content {
+      transform: none;
+    }
   }
 `;
 
-const ReportCardHeader = styled.div`
+const MiniReportProBadge = styled.div`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  color: var(--accent);
+  padding: 3px 8px;
+  font-size: 9px;
+  font-weight: 600;
+  border-radius: 4px;
+  z-index: 10;
+  letter-spacing: 0.5px;
+`;
+
+const MiniReportCardContent = styled.div`
+  padding: 16px;
+  height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.sm};
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 1;
 `;
 
-const ReportCardInfo = styled.div`
-  flex: 1;
-  min-width: 0;
+const MiniReportContentInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
+  }
 `;
 
-const ReportCardTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-bottom: 2px;
+const MiniReportScoreDisplay = styled.div`
+  margin-bottom: 4px;
 `;
 
-const ReportCardSubtitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const ReportScore = styled.div<{ $score: number }>`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ $score }) => {
-    if ($score >= 80) return 'var(--success)';
-    if ($score >= 60) return '#f59e0b';
-    return '#ef4444';
+const MiniReportScoreValue = styled.span<{ $category: 'excellent' | 'good' | 'needsWork' }>`
+  font-size: 32px;
+  font-weight: 700;
+  color: ${({ $category }) => {
+    switch ($category) {
+      case 'excellent':
+        return 'var(--primary-500)';
+      case 'good':
+        return '#2a57a0ff';
+      case 'needsWork':
+        return '#f97316';
+    }
   }};
   line-height: 1;
-  flex-shrink: 0;
 
   &::after {
     content: '%';
-    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+    font-size: 16px;
     margin-left: 1px;
+    opacity: 0.7;
   }
 `;
 
-const ReportMeta = styled.div`
+const MiniReportTitle = styled.h3`
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const MiniReportMeta = styled.p`
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.3;
+  margin-top: 2px;
+`;
+
+const MiniReportCTAContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding-top: ${({ theme }) => theme.spacing.xs};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  justify-content: flex-start;
+  padding: 12px 16px;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    transform: translateY(0);
+    opacity: 1;
+    position: relative;
+    padding-top: 8px;
+    background: none;
+  }
 `;
 
-const GenerateButton = styled(Button)`
-  width: 100%;
-  margin-top: ${({ theme }) => theme.spacing.md};
-  padding-top: ${({ theme }) => theme.spacing.md};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+const MiniReportCTALink = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 12px;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
-// Cover Letter Card Styles - Refined & Symmetric
+const MiniReportOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  transition: all 0.3s ease;
+`;
+
+// Mini Report Card Background Components
+const MiniReportCardBackgroundWrapper = styled.div`
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 100%);
+`;
+
+const MiniReportKeywordContainer = styled.div`
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 50px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  opacity: 0.4;
+`;
+
+const MiniReportKeywordBadge = styled.span<{ $delay: number }>`
+  display: inline-block;
+  padding: 2px 5px;
+  font-size: 7px;
+  font-weight: 500;
+  background: rgba(var(--accent-rgb), 0.08);
+  color: var(--text-secondary);
+  border-radius: 3px;
+  border: 1px solid rgba(var(--accent-rgb), 0.1);
+  animation: ${fadeInUpMini} 0.3s ease-out forwards, ${floatAnimationMini} 3s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay}s, ${({ $delay }) => $delay + 0.3}s;
+  opacity: 0;
+`;
+
+const MiniReportSummaryScrollContainer = styled.div`
+  position: absolute;
+  top: 30px;
+  left: 8px;
+  right: 8px;
+  bottom: 40px;
+  overflow: hidden;
+  opacity: 0.12;
+`;
+
+const MiniReportSummaryText = styled.div`
+  font-size: 8px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  animation: ${scrollTextMini} 15s linear infinite;
+`;
+
+const MiniReportSummaryTextDuplicate = styled.div`
+  font-size: 8px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+`;
+
+// Arrow icon for CTA
+const ArrowRightIconMini = () => (
+  <svg
+    width="10"
+    height="10"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M5 12h14M12 5l7 7-7 7" />
+  </svg>
+);
+
+interface MiniReportCardBackgroundProps {
+  cvTitle?: string;
+}
+
+const MiniReportCardBackground = ({ cvTitle }: MiniReportCardBackgroundProps) => {
+  const keywords = cvTitle ? cvTitle.split(/[\s_\-\.]+/).slice(0, 3) : [];
+
+  return (
+    <MiniReportCardBackgroundWrapper>
+      {keywords.length > 0 && (
+        <MiniReportKeywordContainer>
+          {keywords.map((keyword, idx) => (
+            <MiniReportKeywordBadge key={idx} $delay={idx * 0.08}>
+              {keyword}
+            </MiniReportKeywordBadge>
+          ))}
+        </MiniReportKeywordContainer>
+      )}
+      {cvTitle && (
+        <MiniReportSummaryScrollContainer>
+          <MiniReportSummaryText>
+            {cvTitle}
+            <MiniReportSummaryTextDuplicate>
+              {cvTitle}
+            </MiniReportSummaryTextDuplicate>
+          </MiniReportSummaryText>
+        </MiniReportSummaryScrollContainer>
+      )}
+    </MiniReportCardBackgroundWrapper>
+  );
+};
+
+// Cover Letter Card Animations
+const letterScrollAnimation = keyframes`
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+`;
+
+const letterFadeIn = keyframes`
+  0% { opacity: 0; transform: translateX(10px); }
+  100% { opacity: 1; transform: translateX(0); }
+`;
+
+// Cover Letter Card Styles - Matching Report Card Style
 const CoverLetterCard = styled.div<{ $tone: string }>`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.md};
-  transition: all ${({ theme }) => theme.transitions.fast};
-  cursor: pointer;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--bg-alt);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 160px;
 
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 12px;
-    bottom: 12px;
-    width: 3px;
-    border-radius: 0 2px 2px 0;
-    background: ${({ $tone }) => {
-      switch ($tone) {
-        case 'professional':
-          return '#3b82f6';
-        case 'friendly':
-          return 'var(--success)';
-        case 'formal':
-          return '#8b5cf6';
-        default:
-          return '#6b7280';
-      }
-    }};
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 8px 16px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -15px 60px -15px rgba(255, 255, 255, 0.1) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   &:hover {
-    border-color: ${({ $tone, theme }) => {
-      switch ($tone) {
-        case 'professional':
-          return '#3b82f6';
-        case 'friendly':
-          return 'var(--success)';
-        case 'formal':
-          return '#8b5cf6';
-        default:
-          return theme.colors.primary;
-      }
-    }};
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
   }
 
-  &:active {
+  &:hover .letter-content {
+    transform: translateY(-28px);
+  }
+
+  &:hover .letter-cta {
     transform: translateY(0);
+    opacity: 1;
+  }
+
+  &:hover .letter-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .letter-overlay {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &:hover .letter-content {
+      transform: none;
+    }
   }
 `;
 
-const CardHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding-left: 8px;
-`;
-
-const CardTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  line-height: 1.3;
-`;
-
-const CardSubtitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const DateBadge = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  white-space: nowrap;
-`;
-
-const MetaTags = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding-left: 8px;
-`;
-
-const Tag = styled.div<{ $tone?: string }>`
-  padding: 3px 8px;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+const CoverLetterToneBadge = styled.div<{ $tone: string }>`
+  position: absolute;
+  top: 10px;
+  right: 12px;
   background: ${({ $tone }) => {
     switch ($tone) {
       case 'professional':
-        return 'rgba(59, 130, 246, 0.1)';
+        return 'rgba(59, 130, 246, 0.15)';
       case 'friendly':
-        return 'rgba(16, 185, 129, 0.1)';
+        return 'rgba(16, 185, 129, 0.15)';
       case 'formal':
-        return 'rgba(139, 92, 246, 0.1)';
+        return 'rgba(139, 92, 246, 0.15)';
       default:
-        return 'rgba(102, 126, 234, 0.1)';
+        return 'rgba(107, 114, 128, 0.15)';
     }
   }};
   color: ${({ $tone }) => {
@@ -519,62 +671,236 @@ const Tag = styled.div<{ $tone?: string }>`
       case 'formal':
         return '#8b5cf6';
       default:
-        return 'var(--accent)';
+        return '#6b7280';
     }
   }};
-`;
-
-const QuickActions = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing.xs};
-  margin-top: ${({ theme }) => theme.spacing.sm};
-  padding-left: 8px;
-`;
-
-const QuickActionButton = styled.button<{ $variant?: 'copy' | 'delete' }>`
   padding: 4px 10px;
-  border: none;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 6px;
+  z-index: 10;
+  text-transform: capitalize;
+`;
+
+const CoverLetterCardContent = styled.div`
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 1;
+`;
+
+const CoverLetterContentInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
+  max-width: 65%;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
+    max-width: 100%;
+  }
+`;
+
+const CoverLetterTitle = styled.h3`
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const CoverLetterMeta = styled.p`
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 2px;
+`;
+
+const CoverLetterMetaRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+`;
+
+const CoverLetterMetaItem = styled.span`
+  font-size: 11px;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 4px;
+`;
 
-  ${({ $variant = 'copy', theme }) => {
-    if ($variant === 'delete') {
-      return `
-        background: transparent;
-        color: #ef4444;
-        &:hover {
-          background: rgba(239, 68, 68, 0.1);
-        }
-        &:active {
-          background: rgba(239, 68, 68, 0.15);
-        }
-      `;
-    } else {
-      return `
-        background: transparent;
-        color: ${theme.colors.textSecondary};
-        &:hover {
-          background: ${theme.colors.surfaceHover};
-          color: ${theme.colors.textPrimary};
-        }
-        &:active {
-          background: ${theme.colors.border};
-        }
-      `;
+const CoverLetterCTAContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    transform: translateY(0);
+    opacity: 1;
+    position: relative;
+    padding-top: 12px;
+    background: none;
+  }
+`;
+
+const CoverLetterCTALink = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 13px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const CoverLetterActions = styled.div`
+  display: flex;
+  gap: 6px;
+`;
+
+const CoverLetterActionButton = styled.button<{ $variant?: 'danger' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: var(--text-secondary);
+  gap: 4px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+  }
+
+  ${({ $variant }) =>
+    $variant === 'danger' &&
+    `
+    &:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
     }
-  }}
+  `}
 
   svg {
     width: 12px;
     height: 12px;
   }
 `;
+
+const CoverLetterOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  transition: all 0.3s ease;
+`;
+
+// Cover Letter Card Background Components (right side animation)
+const CoverLetterBackgroundWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 45%;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to left, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+`;
+
+const CoverLetterTextPreview = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  width: calc(100% - 20px);
+  overflow: hidden;
+  opacity: 0.2;
+  animation: ${letterFadeIn} 0.5s ease-out forwards;
+`;
+
+const CoverLetterScrollingText = styled.div`
+  font-size: 9px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  animation: ${letterScrollAnimation} 25s linear infinite;
+  white-space: pre-wrap;
+  word-break: break-word;
+`;
+
+const CoverLetterScrollingTextDuplicate = styled.div`
+  font-size: 9px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-top: 20px;
+`;
+
+interface CoverLetterBackgroundProps {
+  content?: string;
+}
+
+const CoverLetterBackground = ({ content }: CoverLetterBackgroundProps) => {
+  if (!content) return null;
+
+  // Truncate content for preview
+  const previewText = content.slice(0, 500);
+
+  return (
+    <CoverLetterBackgroundWrapper>
+      <CoverLetterTextPreview>
+        <CoverLetterScrollingText>
+          {previewText}
+          <CoverLetterScrollingTextDuplicate>
+            {previewText}
+          </CoverLetterScrollingTextDuplicate>
+        </CoverLetterScrollingText>
+      </CoverLetterTextPreview>
+    </CoverLetterBackgroundWrapper>
+  );
+};
+
+// Arrow icon for CTA
+const ArrowRightIconLetter = () => (
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M5 12h14M12 5l7 7-7 7" />
+  </svg>
+);
 
 const LoadingContainer = styled.div`
   display: flex;
@@ -941,33 +1267,49 @@ export default function CoverLettersPage() {
             </Card>
           ) : (
             <Grid>
-              {reports.map((report) => (
-                <ReportCard
-                  key={report.id}
-                  $isPremium={report.is_premium}
-                  onClick={() => handleReportClick(report.id)}
-                >
-                  <ReportCardHeader>
-                    <ReportCardInfo>
-                      <ReportCardTitle>
-                        {report.job?.title || "Job Analysis"}
-                      </ReportCardTitle>
-                      {report.cv && (
-                        <ReportCardSubtitle>
-                          {report.cv.title}
-                        </ReportCardSubtitle>
-                      )}
-                    </ReportCardInfo>
-                    <ReportScore $score={report.fit_score}>
-                      {report.fit_score}
-                    </ReportScore>
-                  </ReportCardHeader>
+              {reports.map((report) => {
+                const getScoreCategory = (score: number) => {
+                  if (score >= 70) return 'excellent';
+                  if (score >= 41) return 'good';
+                  return 'needsWork';
+                };
 
-                  <ReportMeta>
-                    {formatDate(report.created_at)}
-                  </ReportMeta>
-                </ReportCard>
-              ))}
+                return (
+                  <MiniReportCard
+                    key={report.id}
+                    $isPremium={report.is_premium}
+                    onClick={() => handleReportClick(report.id)}
+                  >
+                    <MiniReportCardBackground cvTitle={report.cv?.title} />
+                    {report.is_premium && <MiniReportProBadge>PRO</MiniReportProBadge>}
+
+                    <MiniReportCardContent>
+                      <MiniReportContentInner className="mini-report-content">
+                        <MiniReportScoreDisplay>
+                          <MiniReportScoreValue $category={getScoreCategory(report.fit_score)}>
+                            {report.fit_score}
+                          </MiniReportScoreValue>
+                        </MiniReportScoreDisplay>
+                        <MiniReportTitle>
+                          {report.job?.title || "Job Analysis"}
+                        </MiniReportTitle>
+                        <MiniReportMeta>
+                          {formatDate(report.created_at)}
+                        </MiniReportMeta>
+                      </MiniReportContentInner>
+
+                      <MiniReportCTAContainer className="mini-report-cta">
+                        <MiniReportCTALink>
+                          Generate Letter
+                          <ArrowRightIconMini />
+                        </MiniReportCTALink>
+                      </MiniReportCTAContainer>
+                    </MiniReportCardContent>
+
+                    <MiniReportOverlay className="mini-report-overlay" />
+                  </MiniReportCard>
+                );
+              })}
             </Grid>
           )}
         </Column>
@@ -1000,42 +1342,58 @@ export default function CoverLettersPage() {
                   $tone={letter.tone}
                   onClick={() => handleCardClick(letter)}
                 >
-                  <CardHeader>
-                    <div style={{ flex: 1 }}>
-                      <CardTitle>
+                  <CoverLetterBackground content={letter.content} />
+                  <CoverLetterToneBadge $tone={letter.tone}>
+                    {getToneLabel(letter.tone)}
+                  </CoverLetterToneBadge>
+
+                  <CoverLetterCardContent>
+                    <CoverLetterContentInner className="letter-content">
+                      <CoverLetterTitle>
                         {letter.job?.title || "Cover Letter"}
-                      </CardTitle>
-                      <CardSubtitle>
-                        {getToneLabel(letter.tone)} · {getWordCount(letter.content)} words
-                      </CardSubtitle>
-                    </div>
-                    <DateBadge>{formatDate(letter.created_at)}</DateBadge>
-                  </CardHeader>
+                      </CoverLetterTitle>
+                      <CoverLetterMeta>
+                        {formatDate(letter.created_at)}
+                      </CoverLetterMeta>
+                      <CoverLetterMetaRow>
+                        <CoverLetterMetaItem>
+                          {getWordCount(letter.content)} words
+                        </CoverLetterMetaItem>
+                        <CoverLetterMetaItem>
+                          {getLanguageLabel(letter.language)}
+                        </CoverLetterMetaItem>
+                      </CoverLetterMetaRow>
+                    </CoverLetterContentInner>
 
-                  <MetaTags>
-                    <Tag $tone={letter.tone}>{getToneLabel(letter.tone)}</Tag>
-                  </MetaTags>
+                    <CoverLetterCTAContainer className="letter-cta" onClick={(e) => e.stopPropagation()}>
+                      <CoverLetterCTALink onClick={() => handleCardClick(letter)}>
+                        View & Edit
+                        <ArrowRightIconLetter />
+                      </CoverLetterCTALink>
+                      <CoverLetterActions>
+                        <CoverLetterActionButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(letter.content);
+                            toast.success("Copied to clipboard!");
+                          }}
+                        >
+                          <CopyIcon /> Copy
+                        </CoverLetterActionButton>
+                        <CoverLetterActionButton
+                          $variant="danger"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(letter.id);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </CoverLetterActionButton>
+                      </CoverLetterActions>
+                    </CoverLetterCTAContainer>
+                  </CoverLetterCardContent>
 
-                  <QuickActions onClick={(e) => e.stopPropagation()}>
-                    <QuickActionButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigator.clipboard.writeText(letter.content);
-                        toast.success("Copied to clipboard!");
-                      }}
-                    >
-                      <CopyIcon /> Copy
-                    </QuickActionButton>
-                    <QuickActionButton
-                      $variant="delete"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteClick(letter.id);
-                      }}
-                    >
-                      <DeleteIcon /> Delete
-                    </QuickActionButton>
-                  </QuickActions>
+                  <CoverLetterOverlay className="letter-overlay" />
                 </CoverLetterCard>
               ))}
             </Grid>

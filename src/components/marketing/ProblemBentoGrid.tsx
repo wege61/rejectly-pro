@@ -29,35 +29,16 @@ const BentoGridItemWrapper = styled.div`
   overflow: hidden;
   transition: all 0.3s ease;
   min-height: 280px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 107, 107, 0.2) 0%,
-      rgba(255, 107, 107, 0.05) 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+  @media (prefers-color-scheme: dark) {
+    outline-color: rgba(255, 255, 255, 0.15);
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-
-    &::before {
-      background: linear-gradient(
-        180deg,
-        rgba(255, 107, 107, 0.4) 0%,
-        rgba(255, 107, 107, 0.1) 100%
-      );
-    }
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
   }
 
   &.md-col-span-2 {

@@ -149,8 +149,8 @@ export default function RootLayout({
                 --success-border: rgba(110, 231, 183, 0.3);
 
                 /* Dark Mode Neutrals */
-                --dark-bg: #002332;
-                --dark-card: #121623;
+                --dark-bg: #151517;
+                --dark-card: #000000;
                 --dark-text: #F3F4F8;
                 --dark-subtext: #A5A9B3;
 

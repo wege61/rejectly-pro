@@ -11,11 +11,12 @@ const CardWrapper = styled.div`
   flex-direction: column;
   gap: 24px;
   border-radius: 16px;
-  border: 1px solid var(--border-color);
   padding: 24px 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
 
+  
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }

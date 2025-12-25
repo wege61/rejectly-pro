@@ -32,10 +32,6 @@ const BentoGridItemWrapper = styled.div`
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   outline: 1px solid rgba(0, 0, 0, 0.05);
 
-  @media (prefers-color-scheme: dark) {
-    outline-color: rgba(255, 255, 255, 0.15);
-  }
-
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
@@ -64,34 +60,9 @@ const ItemHeader = styled.div`
 const ItemContent = styled.div`
   transition: transform 0.3s ease;
   padding-top: 8px;
-  border-top: 1px solid var(--border-color);
 
   ${BentoGridItemWrapper}:hover & {
     transform: translateY(-2px);
-  }
-`;
-
-const ItemIconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-`;
-
-const ItemIcon = styled.div`
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: var(--landing-button);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  svg {
-    width: 16px;
-    height: 16px;
-    color: white;
   }
 `;
 
@@ -100,7 +71,7 @@ const ItemTitle = styled.h4`
   font-weight: 700;
   color: var(--text-color);
   line-height: 1.4;
-  margin: 0;
+  margin: 0 0 6px 0;
 `;
 
 const ItemDescription = styled.span`
@@ -108,7 +79,6 @@ const ItemDescription = styled.span`
   color: var(--text-secondary);
   line-height: 1.6;
   display: block;
-  margin-top: 6px;
 `;
 
 // Dot background pattern
@@ -748,62 +718,6 @@ const SkeletonFive = () => {
   );
 };
 
-// Icons
-const XIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M6 18L18 6M6 6l12 12"
-    />
-  </svg>
-);
-
-const TargetIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
-  </svg>
-);
-
-const RobotIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zm8-12v2m-2 4h.01M13 11h.01"
-    />
-  </svg>
-);
-
-const ChartIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-    />
-  </svg>
-);
-
-const SparklesIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-    />
-  </svg>
-);
-
 // Bento Grid Components
 const BentoGrid = ({
   className,
@@ -824,13 +738,11 @@ const BentoGridItem = ({
   title,
   description,
   header,
-  icon,
 }: {
   className?: string;
   title?: string | React.ReactNode;
   description?: string | React.ReactNode;
   header?: React.ReactNode;
-  icon?: React.ReactNode;
 }) => {
   const isColSpan2 = className?.includes("md:col-span-2");
 
@@ -838,10 +750,7 @@ const BentoGridItem = ({
     <BentoGridItemWrapper className={cn(isColSpan2 && "md-col-span-2", className)}>
       <ItemHeader>{header}</ItemHeader>
       <ItemContent>
-        <ItemIconWrapper>
-          <ItemIcon>{icon}</ItemIcon>
-          <ItemTitle>{title}</ItemTitle>
-        </ItemIconWrapper>
+        <ItemTitle>{title}</ItemTitle>
         <ItemDescription>{description}</ItemDescription>
       </ItemContent>
     </BentoGridItemWrapper>
@@ -951,7 +860,6 @@ const items = [
     ),
     header: <SkeletonOne />,
     className: "md:col-span-1",
-    icon: <XIcon />,
   },
   {
     title: "Invisible Skills Gap",
@@ -962,7 +870,6 @@ const items = [
     ),
     header: <SkeletonTwo />,
     className: "md:col-span-1",
-    icon: <ChartIcon />,
   },
   {
     title: "Wrong Language",
@@ -973,7 +880,6 @@ const items = [
     ),
     header: <SkeletonThree />,
     className: "md:col-span-1",
-    icon: <RobotIcon />,
   },
   {
     title: "The Difference Between Rejection and Interview",
@@ -984,7 +890,6 @@ const items = [
     ),
     header: <SkeletonFour />,
     className: "md:col-span-2",
-    icon: <TargetIcon />,
   },
   {
     title: "Instant AI Feedback",
@@ -995,7 +900,6 @@ const items = [
     ),
     header: <SkeletonFive />,
     className: "md:col-span-1",
-    icon: <SparklesIcon />,
   },
 ];
 
@@ -1004,9 +908,9 @@ export function ProblemBentoGrid() {
   return (
     <ProblemSectionWrapper>
       <SectionHeader>
-        <SectionTitle>Why Your Applications Keep Getting Rejected</SectionTitle>
+        <SectionTitle>Why you keep getting rejected</SectionTitle>
         <SectionSubtitle>
-          The brutal truth about modern job hunting that nobody tells you
+          The brutal truth about modern job hunting
         </SectionSubtitle>
       </SectionHeader>
 
@@ -1018,7 +922,6 @@ export function ProblemBentoGrid() {
             description={item.description}
             header={item.header}
             className={item.className}
-            icon={item.icon}
           />
         ))}
       </BentoGrid>

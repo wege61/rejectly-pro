@@ -4,79 +4,6 @@ import styled from "styled-components";
 import { useState } from "react";
 import { Footer } from "@/components/ui/Footer";
 
-// ==================== ICONS ====================
-const RocketIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M13 10V3L4 14h7v7l9-11h-7z"
-    />
-  </svg>
-);
-
-const CreditCardIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-    />
-  </svg>
-);
-
-const LockIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-    />
-  </svg>
-);
-
-const SparklesIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-    />
-  </svg>
-);
-
-const WrenchIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-    />
-  </svg>
-);
-
-const MailIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-    />
-  </svg>
-);
-
 const Container = styled.div`
   min-height: 100vh;
   background-color: var(--bg-color);
@@ -129,48 +56,9 @@ const CategoryTitle = styled.h2`
   font-weight: 700;
   margin-bottom: 24px;
   color: var(--text-color);
-  display: flex;
-  align-items: center;
-  gap: 12px;
 
   @media (max-width: 768px) {
     font-size: 20px;
-  }
-`;
-
-const CategoryIcon = styled.div<{ $variant?: string }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  ${({ $variant }) => {
-    switch ($variant) {
-      case 'rocket':
-        return `svg { color: #FF8FA3; }`;
-      case 'credit':
-        return `svg { color: var(--primary-500); }`;
-      case 'lock':
-        return `svg { color: var(--success); }`;
-      case 'sparkles':
-        return `svg { color: var(--accent); }`;
-      case 'wrench':
-        return `svg { color: #E6B566; }`;
-      default:
-        return `svg { color: var(--primary-500); }`;
-    }
-  }}
-
-  svg {
-    width: 28px;
-    height: 28px;
-  }
-
-  @media (max-width: 768px) {
-    svg {
-      width: 24px;
-      height: 24px;
-    }
   }
 `;
 
@@ -294,9 +182,7 @@ const CTABox = styled.div`
   }
 
   a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    display: inline-block;
     background: var(--primary-500);
     color: white;
     padding: 14px 28px;
@@ -304,11 +190,6 @@ const CTABox = styled.div`
     font-weight: 600;
     text-decoration: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-    svg {
-      width: 20px;
-      height: 20px;
-    }
 
     &:hover {
       transform: translateY(-2px);
@@ -340,8 +221,6 @@ type FAQ = {
 
 type FAQCategory = {
   title: string;
-  icon: React.ReactNode;
-  variant: string;
   questions: FAQ[];
 };
 
@@ -357,8 +236,6 @@ export default function FAQPage() {
   const faqCategories: FAQCategory[] = [
     {
       title: "Getting Started",
-      icon: <RocketIcon />,
-      variant: "rocket",
       questions: [
         {
           question: "How does Rejectly.pro work?",
@@ -384,8 +261,6 @@ export default function FAQPage() {
     },
     {
       title: "Pricing & Plans",
-      icon: <CreditCardIcon />,
-      variant: "credit",
       questions: [
         {
           question: "How does the credit system work?",
@@ -416,8 +291,6 @@ export default function FAQPage() {
     },
     {
       title: "Privacy & Security",
-      icon: <LockIcon />,
-      variant: "lock",
       questions: [
         {
           question: "Is my data secure?",
@@ -443,8 +316,6 @@ export default function FAQPage() {
     },
     {
       title: "Features & Functionality",
-      icon: <SparklesIcon />,
-      variant: "sparkles",
       questions: [
         {
           question: "What languages do you support?",
@@ -475,8 +346,6 @@ export default function FAQPage() {
     },
     {
       title: "Technical & Troubleshooting",
-      icon: <WrenchIcon />,
-      variant: "wrench",
       questions: [
         {
           question: "My PDF isn't uploading. What should I do?",
@@ -540,10 +409,7 @@ export default function FAQPage() {
 
         {faqCategories.map((category, categoryIndex) => (
           <FAQSection key={categoryIndex}>
-            <CategoryTitle>
-              <CategoryIcon $variant={category.variant}>{category.icon}</CategoryIcon>
-              {category.title}
-            </CategoryTitle>
+            <CategoryTitle>{category.title}</CategoryTitle>
             <FAQList>
               {category.questions.map((faq, questionIndex) => {
                 const itemId = `${categoryIndex}-${questionIndex}`;
@@ -576,7 +442,6 @@ export default function FAQPage() {
             to help.
           </p>
           <a href="mailto:support@rejectly.pro">
-            <MailIcon />
             Contact Support
           </a>
         </CTABox>

@@ -25,9 +25,10 @@ const CTABox = styled.div`
   overflow: hidden;
   background: var(--bg-alt);
   padding: 64px 24px 0;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   border-radius: 24px;
-  border: 1px solid var(--border-color);
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
 
   @media (min-width: 640px) {
     padding: 64px 64px 0;
@@ -215,7 +216,7 @@ export function SecondaryCTA() {
 
           <ContentSection>
             <Title>
-              Stop Getting Rejected. Start Getting Interviews.
+              Stop getting rejected. Start getting interviews.
             </Title>
             <Description>
               Join 500+ professionals who transformed their job search with AI-powered resume optimization. Get past ATS filters and land more interviews in just 30 seconds.

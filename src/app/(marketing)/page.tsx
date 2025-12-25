@@ -20,6 +20,7 @@ import {
 import { FileUpload } from "@/components/ui/FileUpload";
 import { DemoTextarea as NewDemoTextarea } from "@/components/ui/DemoTextarea";
 import { Carousel, AppleCard, Card } from "@/components/ui/AppleCarousel";
+import { b } from "framer-motion/client";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -258,6 +259,7 @@ const Container = styled.div`
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
+  overflow-x: hidden;
 `;
 
 // ==================== HERO SECTION ====================
@@ -785,43 +787,42 @@ const DemoSubtitle = styled.p`
 const LoadSampleButton = styled.button`
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
   background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  padding: 0;
-  font-weight: 500;
-  font-size: 13px;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 16px 32px;
+  font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
-  position: relative;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  min-width: 180px;
 
   svg {
-    width: 14px;
-    height: 14px;
-    opacity: 0.7;
-    transition: all 0.2s ease;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--accent);
-    transition: width 0.2s ease;
+    width: 20px;
+    height: 20px;
   }
 
   &:hover {
+    border-color: var(--accent);
     color: var(--accent);
+    background: rgba(var(--primary-500-rgb), 0.05);
+  }
+`;
 
-    svg {
-      opacity: 1;
-    }
+const ButtonsRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
 
-    &::after {
+  @media (max-width: 480px) {
+    flex-direction: column;
+
+    button {
       width: 100%;
     }
   }
@@ -989,7 +990,6 @@ const DemoTextarea = styled.textarea`
 `;
 
 const AnalyzeButton = styled.button<{ $isLoading?: boolean }>`
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1004,6 +1004,7 @@ const AnalyzeButton = styled.button<{ $isLoading?: boolean }>`
   cursor: pointer;
   transition: all 0.3s ease;
   opacity: ${({ $isLoading }) => ($isLoading ? 0.7 : 1)};
+  min-width: 180px;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
@@ -1285,13 +1286,14 @@ const TestimonialGrid = styled.div`
 
 const TestimonialCard = styled.div`
   background: var(--bg-alt);
-  border: 1px solid var(--border-color);
   border-radius: ${({ theme }) => theme.radius.xl};
   padding: 32px;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
 
   @media (min-width: 768px) and (max-width: 850px) {
     gap: 16px;
@@ -1553,10 +1555,12 @@ const FAQList = styled.div`
 
 const FAQItem = styled.div<{ $isOpen?: boolean }>`
   background: var(--bg-alt);
-  border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
 
   ${({ $isOpen }) =>
     $isOpen &&
@@ -2109,11 +2113,17 @@ const TimelineWrapper = styled.div`
 const TimelineEntry = styled.div`
   display: flex;
   justify-content: flex-start;
-  padding-top: 40px;
+  padding-top: 48px;
+  padding-bottom: 48px;
   gap: 40px;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
 
   @media (min-width: 768px) {
     padding-top: 160px;
+    padding-bottom: 0;
     gap: 40px;
   }
 `;
@@ -2201,27 +2211,27 @@ const TimelineMobilePeriod = styled.h3`
 `;
 
 const TimelineHeadline = styled.h4`
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
   color: var(--text-color);
   line-height: 1.4;
   margin-bottom: 16px;
 
   @media (min-width: 768px) {
-    font-size: 26px;
+    font-size: 32px;
     margin-bottom: 20px;
   }
 `;
 
 const TimelineText = styled.p`
-  font-size: 15px;
+  font-size: 18px;
   color: var(--text-secondary);
   line-height: 1.8;
   margin-bottom: 24px;
   max-width: 480px;
 
   @media (min-width: 768px) {
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 28px;
   }
 `;
@@ -2231,34 +2241,12 @@ const TimelineHighlight = styled.span`
   font-weight: 600;
 `;
 
-const TimelineMetrics = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-`;
-
-const TimelineMetric = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--landing-button);
+const TimelineMetadata = styled.p`
   font-size: 13px;
-  font-weight: 600;
-  background: rgba(255, 107, 107, 0.08);
-  padding: 8px 14px;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 107, 107, 0.15);
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(255, 107, 107, 0.12);
-    border-color: rgba(255, 107, 107, 0.25);
-  }
-
-  svg {
-    width: 14px;
-    height: 14px;
-  }
+  color: var(--text-muted);
+  margin-top: 16px;
+  line-height: 1.5;
+  font-style: italic;
 `;
 
 const TimelineLineContainer = styled.div<{ $height: number }>`
@@ -2439,7 +2427,7 @@ interface TimelineEntryData {
   period: string;
   headline: string;
   text: React.ReactNode;
-  metrics: { icon: React.ReactNode; label: string }[];
+  metadata: string;
 }
 
 function Timeline({ data }: { data: TimelineEntryData[] }) {
@@ -2478,13 +2466,7 @@ function Timeline({ data }: { data: TimelineEntryData[] }) {
               <TimelineMobilePeriod>{item.period}</TimelineMobilePeriod>
               <TimelineHeadline>{item.headline}</TimelineHeadline>
               <TimelineText>{item.text}</TimelineText>
-              <TimelineMetrics>
-                {item.metrics.map((metric, idx) => (
-                  <TimelineMetric key={idx}>
-                    {metric.icon} {metric.label}
-                  </TimelineMetric>
-                ))}
-              </TimelineMetrics>
+              <TimelineMetadata>{item.metadata}</TimelineMetadata>
             </TimelineContent>
           </TimelineEntry>
         ))}
@@ -3048,7 +3030,7 @@ export default function Page() {
             <SectionHeader>
               <SectionTitle style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
 
-                Try It Now - Free
+                Try it now - Free
               </SectionTitle>
               <SectionSubtitle>
                 Paste your resume and job description, get instant AI feedback
@@ -3061,17 +3043,12 @@ export default function Page() {
               <DemoCardHeader>
                 <DemoCardTitle>
                   <DemoTitleRow>
-                    <SparklesIcon />
                     Quick Demo
                   </DemoTitleRow>
                 </DemoCardTitle>
                 <DemoCardDescription>
                   Upload or paste your resume and job description to get instant AI feedback
                 </DemoCardDescription>
-                <LoadSampleButton onClick={loadSample} style={{ marginTop: '12px' }}>
-                  <SparklesIcon />
-                  Try with sample data
-                </LoadSampleButton>
               </DemoCardHeader>
 
               <DemoCardContent>
@@ -3126,24 +3103,28 @@ export default function Page() {
                   </DemoInputSection>
                 </DemoInputsGrid>
 
-                <AnalyzeButton
-                  onClick={handleAnalyze}
-                  disabled={!cvText || !jobText || isAnalyzing}
-                  $isLoading={isAnalyzing}
-                  style={{ marginTop: '24px' }}
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <Spinner />
-                      Analyzing...
-                    </>
-                  ) : (
-                    <>
-                      <ZapIcon />
-                      Analyze Now
-                    </>
-                  )}
-                </AnalyzeButton>
+                <ButtonsRow>
+                  <LoadSampleButton onClick={loadSample}>
+                    Try Sample Data
+                  </LoadSampleButton>
+                  <AnalyzeButton
+                    onClick={handleAnalyze}
+                    disabled={!cvText || !jobText || isAnalyzing}
+                    $isLoading={isAnalyzing}
+                  >
+                    {isAnalyzing ? (
+                      <>
+                        <Spinner />
+                        Analyzing...
+                      </>
+                    ) : (
+                      <>
+                        <ZapIcon />
+                        Analyze Now
+                      </>
+                    )}
+                  </AnalyzeButton>
+                </ButtonsRow>
               </DemoCardContent>
             </>
           )}
@@ -3395,9 +3376,9 @@ export default function Page() {
       {/* TIMELINE SECTION */}
       <TimelineSection>
         <SectionHeader>
-          <SectionTitle>Your Career Transformation Journey</SectionTitle>
+          <SectionTitle>A clearer path forward</SectionTitle>
           <SectionSubtitle>
-            From &quot;auto-rejected&quot; to &quot;dream job offer&quot; in 4 proven stages
+            What changes when your resume finally works for you
           </SectionSubtitle>
         </SectionHeader>
 
@@ -3405,7 +3386,7 @@ export default function Page() {
           data={[
             {
               period: "Day 1",
-              headline: "Your resume goes from invisible to irresistible",
+              headline: "Your resume becomes visible",
               text: (
                 <>
                   AI reveals <TimelineHighlight>exactly why</TimelineHighlight> you were getting rejected.
@@ -3413,53 +3394,42 @@ export default function Page() {
                   perfect formatting, and language that both robots and humans love.
                 </>
               ),
-              metrics: [
-                { icon: <CheckIcon />, label: "85% ATS pass rate" },
-                { icon: <CheckIcon />, label: "15 min setup" },
-              ],
+              metadata: "Optimized for modern ATS systems · Setup takes under 15 minutes",
             },
             {
               period: "Week 1",
-              headline: "Interview invitations start rolling in",
+              headline: "Recruiters start noticing",
               text: (
                 <>
-                  Your resume cuts through ATS filters. <TimelineHighlight>Recruiters actually see it.</TimelineHighlight> Response
-                  rate jumps from 2% to 10% because you&apos;re finally targeting the right roles
-                  with the right message.
+                  Your resume passes automated filters and reaches real decision-makers.<br/>
+You’re no longer applying broadly — <TimelineHighlight>you’re applying precisely.</TimelineHighlight>
                 </>
               ),
-              metrics: [
-                { icon: <CheckIcon />, label: "3x more responses" },
-                { icon: <CheckIcon />, label: "Better-fit roles" },
-              ],
+              metadata: "Higher response rate · Better role alignment",
             },
             {
               period: "Month 1",
-              headline: "Multiple offers give you leverage",
+              headline: "You gain leverage",
               text: (
                 <>
-                  Better targeting means higher conversion. You get <TimelineHighlight>2-3 competing offers.</TimelineHighlight> Negotiation
-                  power you never had before. One of them is your dream company—and they want you.
+                  Interviews turn into offers.<br/>
+Not one — but multiple conversations happening at the same time.<br/>
+For the first time, you’re choosing, not waiting.
                 </>
               ),
-              metrics: [
-                { icon: <CheckIcon />, label: "2-3 job offers" },
-                { icon: <CheckIcon />, label: "15-25% salary boost" },
-              ],
+              metadata: "Multiple offers · Negotiation confidence",
             },
             {
               period: "Year 1",
-              headline: "Your career trajectory changes forever",
+              headline: "Your trajectory changes",
               text: (
                 <>
-                  You&apos;re thriving. The confidence carries into promotions. Your network grows exponentially.
-                  Your <TimelineHighlight>earning power compounds.</TimelineHighlight> You know how to position yourself for anything that comes next.
+                  Promotions feel attainable.<br/>
+Your confidence compounds.<br/>
+You understand how to position yourself — for any role that comes next.
                 </>
               ),
-              metrics: [
-                { icon: <CheckIcon />, label: "40-60% higher comp" },
-                { icon: <CheckIcon />, label: "Career momentum" },
-              ],
+              metadata: "Long-term earning growth · Career momentum",
             },
           ]}
         />
@@ -3470,7 +3440,7 @@ export default function Page() {
       {/* TESTIMONIALS - WHAT OUR USERS SAY */}
       <Section id="testimonials">
         <SectionHeader>
-          <SectionTitle>What Our Users Say</SectionTitle>
+          <SectionTitle>What our users say</SectionTitle>
           <SectionSubtitle>
             Real results from real professionals
           </SectionSubtitle>
@@ -3570,7 +3540,7 @@ export default function Page() {
       {/* PRICING - SIMPLIFIED */}
       <Section id="pricing">
         <SectionHeader>
-          <SectionTitle>Simple and Transparent Pricing</SectionTitle>
+          <SectionTitle>Simple and transparent pricing</SectionTitle>
           <SectionSubtitle>
             Affordable plans to help you succeed
           </SectionSubtitle>
@@ -3737,7 +3707,7 @@ export default function Page() {
       {/* FAQ */}
       <Section id="faq">
         <SectionHeader>
-          <SectionTitle>Frequently Asked Questions</SectionTitle>
+          <SectionTitle>Frequently asked questions</SectionTitle>
           <SectionSubtitle>Everything you need to know</SectionSubtitle>
         </SectionHeader>
 

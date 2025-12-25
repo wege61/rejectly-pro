@@ -4,18 +4,15 @@ import React, { ReactNode } from "react";
 import styled, { keyframes } from "styled-components";
 
 const auroraAnimation = keyframes`
-  0% {
+  from {
     background-position: 50% 50%, 50% 50%;
   }
-  50% {
+  to {
     background-position: 350% 50%, 350% 50%;
-  }
-  100% {
-    background-position: 50% 50%, 50% 50%;
   }
 `;
 
-const AuroraWrapper = styled.div<{ $showRadialGradient?: boolean }>`
+const AuroraWrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -23,7 +20,24 @@ const AuroraWrapper = styled.div<{ $showRadialGradient?: boolean }>`
   justify-content: center;
   background: var(--bg-color);
   transition: background 0.3s ease;
-  overflow: hidden;
+  min-height: 600px;
+
+  @media (min-width: 768px) {
+    min-height: 600px;
+  }
+
+  /* Top fade overlay for smooth blend-in */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, var(--bg-color) 0%, transparent 100%);
+    z-index: 5;
+    pointer-events: none;
+  }
 `;
 
 const AuroraOverlay = styled.div`
@@ -31,29 +45,40 @@ const AuroraOverlay = styled.div`
   inset: 0;
   overflow: hidden;
 
+  --green-400: #4ade80;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-300: #86efac;
+  --green-700: #15803d;
+  --black: #000;
+  --white: #fff;
+  --transparent: transparent;
+
   --aurora: repeating-linear-gradient(
     100deg,
-    #22c55e 10%,
-    #4ade80 15%,
-    #16a34a 20%,
-    #86efac 25%,
-    #15803d 30%
+    var(--green-500) 10%,
+    var(--green-400) 15%,
+    var(--green-600) 20%,
+    var(--green-300) 25%,
+    var(--green-700) 30%
   );
+
   --dark-gradient: repeating-linear-gradient(
     100deg,
-    var(--bg-color) 0%,
-    var(--bg-color) 7%,
-    transparent 10%,
-    transparent 12%,
-    var(--bg-color) 16%
+    var(--black) 0%,
+    var(--black) 7%,
+    var(--transparent) 10%,
+    var(--transparent) 12%,
+    var(--black) 16%
   );
-  --light-gradient: repeating-linear-gradient(
+
+  --white-gradient: repeating-linear-gradient(
     100deg,
-    var(--bg-color) 0%,
-    var(--bg-color) 7%,
-    transparent 10%,
-    transparent 12%,
-    var(--bg-color) 16%
+    var(--white) 0%,
+    var(--white) 7%,
+    var(--transparent) 10%,
+    var(--transparent) 12%,
+    var(--white) 16%
   );
 `;
 
@@ -87,13 +112,32 @@ const AuroraEffect = styled.div<{ $showRadialGradient?: boolean }>`
     -webkit-mask-image: radial-gradient(ellipse at 100% 0%, black 10%, transparent 70%);
   `}
 
-  /* Light mode adjustments */
-  [data-theme="light"] & {
+  /* Light mode - add invert */
+  @media (prefers-color-scheme: light) {
     filter: blur(10px) invert(1);
-    background-image: var(--light-gradient), var(--aurora);
+    background-image: var(--white-gradient), var(--aurora);
 
     &::after {
-      background-image: var(--light-gradient), var(--aurora);
+      background-image: var(--white-gradient), var(--aurora);
+    }
+  }
+
+  /* Support for data-theme attribute */
+  [data-theme="light"] & {
+    filter: blur(10px) invert(1);
+    background-image: var(--white-gradient), var(--aurora);
+
+    &::after {
+      background-image: var(--white-gradient), var(--aurora);
+    }
+  }
+
+  [data-theme="dark"] & {
+    filter: blur(10px);
+    background-image: var(--dark-gradient), var(--aurora);
+
+    &::after {
+      background-image: var(--dark-gradient), var(--aurora);
     }
   }
 `;

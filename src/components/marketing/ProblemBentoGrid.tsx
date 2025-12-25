@@ -25,7 +25,7 @@ const BentoGridItemWrapper = styled.div`
   justify-content: space-between;
   padding: 24px;
   border-radius: 24px;
-  background: var(--bg-alt);
+  background: var(--bg-color);
   overflow: hidden;
   transition: all 0.3s ease;
   min-height: 280px;
@@ -760,7 +760,7 @@ const BentoGridItem = ({
 // Section styled components
 const ProblemSectionWrapper = styled.section`
   padding: 80px 24px;
-  background: var(--bg-color);
+  background: var(--bg-alt);
 
   @media (max-width: 768px) {
     padding: 60px 16px;

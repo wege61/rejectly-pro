@@ -18,7 +18,7 @@ const AuroraWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--bg-color);
+  background: var(--bg-alt);
   transition: background 0.3s ease;
   min-height: 600px;
 
@@ -34,7 +34,7 @@ const AuroraWrapper = styled.div`
     left: 0;
     right: 0;
     height: 80px;
-    background: linear-gradient(to bottom, var(--bg-color) 0%, transparent 100%);
+    background: linear-gradient(to bottom, var(--bg-alt) 0%, transparent 100%);
     z-index: 5;
     pointer-events: none;
   }

@@ -70,7 +70,10 @@ const FAQList = styled.div`
 
 const FAQItem = styled.div<{ $isOpen: boolean }>`
   background: var(--bg-alt);
-  border: 1px solid var(--border-color);
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
+
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;

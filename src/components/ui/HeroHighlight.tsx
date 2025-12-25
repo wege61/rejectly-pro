@@ -119,9 +119,10 @@ const highlightAnimation = keyframes`
 const HighlightSpan = styled.span`
   position: relative;
   display: inline-block;
-  background: linear-gradient(to right, #FF7A73, #FF9D98);
+  background: linear-gradient(to right, var(--landing));
   background-repeat: no-repeat;
   background-position: left center;
+  color: white;
   background-size: 0% 100%;
   border-radius: 8px;
   padding: 0 4px 4px;

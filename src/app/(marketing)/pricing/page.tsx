@@ -77,8 +77,12 @@ const PricingGrid = styled.div`
 
 const PricingCard = styled.div<{ $featured?: boolean }>`
   background: var(--bg-alt);
-  border: 2px solid ${({ $featured }) => ($featured ? "var(--accent)" : "var(--border-color)")};
+  border: 2px solid ${({ $featured }) => ($featured ? "var(--accent)" : "none)")};
   border-radius: 20px;
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
+
   padding: 48px;
   position: relative;
   transition: all 0.3s ease;
@@ -217,7 +221,10 @@ const SectionSubtitle = styled.p`
 
 const ComparisonTable = styled.div`
   background: var(--bg-alt);
-  border: 1px solid var(--border-color);
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
+
   border-radius: 16px;
   overflow: hidden;
   max-width: 900px;
@@ -288,7 +295,10 @@ const FAQList = styled.div`
 
 const FAQItem = styled.div<{ $isOpen: boolean }>`
   background: var(--bg-alt);
-  border: 1px solid var(--border-color);
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
+
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;

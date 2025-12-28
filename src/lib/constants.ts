@@ -126,6 +126,7 @@ export const ROUTES = {
     REPORTS: "/reports",
     REPORT_DETAIL: (id: string) => `/reports/${id}`,
     CV: "/cv",
+    ATS_OPTIMIZER: "/ats-optimizer",
     JOBS: "/jobs",
     ANALYZE: "/analyze",
     COVER_LETTERS: "/cover-letters",

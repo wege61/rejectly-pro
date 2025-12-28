@@ -2,7 +2,6 @@ import { jsPDF } from "jspdf";
 
 /**
  * Converts ArrayBuffer to base64 string
- * Browser-only implementation
  */
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -10,35 +9,61 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   for (let i = 0; i < bytes.byteLength; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
+  // Use Buffer.from for server, btoa for browser
+  if (typeof window === 'undefined') {
+    return Buffer.from(binary, 'binary').toString('base64');
+  }
   return btoa(binary);
 }
 
 /**
  * Loads Roboto fonts and adds them to jsPDF document
- * This enables Unicode character support (Turkish, Arabic, Chinese, etc.)
- * Browser-only - this function should only be called from client components
+ * Works in both browser and server environments
  */
 export async function loadFontsToDocument(doc: jsPDF): Promise<void> {
-  // This function only works in browser environment
-  if (typeof window === 'undefined') {
-    throw new Error("loadFontsToDocument can only be called in browser environment");
-  }
-
   try {
-    // Fetch fonts via HTTP
-    const regularResponse = await fetch("/fonts/Roboto-Regular.ttf");
-    if (!regularResponse.ok) {
-      throw new Error("Failed to load Roboto-Regular.ttf");
-    }
-    const regularBuffer = await regularResponse.arrayBuffer();
-    const regularBase64 = arrayBufferToBase64(regularBuffer);
+    let regularBase64: string;
+    let boldBase64: string;
 
-    const boldResponse = await fetch("/fonts/Roboto-Bold.ttf");
-    if (!boldResponse.ok) {
-      throw new Error("Failed to load Roboto-Bold.ttf");
+    // Server-side: use dynamic import for fs
+    if (typeof window === 'undefined') {
+      const fs = await import('fs');
+      const path = await import('path');
+
+      const publicDir = path.join(process.cwd(), 'public');
+      const regularPath = path.join(publicDir, 'fonts', 'Roboto-Regular.ttf');
+      const boldPath = path.join(publicDir, 'fonts', 'Roboto-Bold.ttf');
+
+      // Check if fonts exist
+      if (!fs.existsSync(regularPath) || !fs.existsSync(boldPath)) {
+        console.warn("Font files not found, using default font");
+        return; // Use default font
+      }
+
+      const regularBuffer = fs.readFileSync(regularPath);
+      const boldBuffer = fs.readFileSync(boldPath);
+
+      regularBase64 = regularBuffer.toString('base64');
+      boldBase64 = boldBuffer.toString('base64');
     }
-    const boldBuffer = await boldResponse.arrayBuffer();
-    const boldBase64 = arrayBufferToBase64(boldBuffer);
+    // Browser-side: fetch via HTTP
+    else {
+      const regularResponse = await fetch("/fonts/Roboto-Regular.ttf");
+      if (!regularResponse.ok) {
+        console.warn("Failed to load Roboto-Regular.ttf, using default font");
+        return;
+      }
+      const regularBuffer = await regularResponse.arrayBuffer();
+      regularBase64 = arrayBufferToBase64(regularBuffer);
+
+      const boldResponse = await fetch("/fonts/Roboto-Bold.ttf");
+      if (!boldResponse.ok) {
+        console.warn("Failed to load Roboto-Bold.ttf, using default font");
+        return;
+      }
+      const boldBuffer = await boldResponse.arrayBuffer();
+      boldBase64 = arrayBufferToBase64(boldBuffer);
+    }
 
     // Add fonts to jsPDF virtual file system
     doc.addFileToVFS("Roboto-Regular.ttf", regularBase64);
@@ -52,10 +77,7 @@ export async function loadFontsToDocument(doc: jsPDF): Promise<void> {
     doc.setFont("Roboto", "normal");
   } catch (error) {
     console.error("Failed to load fonts:", error);
-    // Fallback to default font if loading fails
-    // This ensures PDF generation doesn't fail completely
-    throw new Error(
-      "Font loading failed. Please ensure font files are in public/fonts directory."
-    );
+    // Continue with default font instead of throwing
+    console.warn("Using default Helvetica font");
   }
 }

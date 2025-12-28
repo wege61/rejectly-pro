@@ -53,6 +53,21 @@ export async function POST(request: NextRequest) {
     let textToAnalyze: string;
 
     if (documentId) {
+      console.log("🔍 Looking for document:", {
+        documentId,
+        userId: user.id,
+        type: "cv"
+      });
+
+      // First, check if document exists at all (without user filter)
+      const { data: anyDoc, error: anyError } = await supabase
+        .from("documents")
+        .select("id, user_id, type")
+        .eq("id", documentId)
+        .single();
+
+      console.log("🔎 Document lookup (no user filter):", { anyDoc, anyError });
+
       const { data: doc, error: docError } = await supabase
         .from("documents")
         .select("text, ats_score, ats_breakdown, ats_unlocked")
@@ -62,9 +77,18 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (docError || !doc) {
-        console.error("Document not found:", docError);
+        console.error("❌ Document not found:", {
+          error: docError,
+          documentId,
+          userId: user.id,
+          docExistsWithoutFilter: !!anyDoc,
+          docUserId: anyDoc?.user_id,
+          docType: anyDoc?.type
+        });
         return NextResponse.json({ error: "CV not found" }, { status: 404 });
       }
+
+      console.log("✅ Document found:", { hasText: !!doc.text, textLength: doc.text?.length });
 
       textToAnalyze = doc.text;
 

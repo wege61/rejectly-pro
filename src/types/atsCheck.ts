@@ -114,3 +114,31 @@ export const ATS_CATEGORY_WEIGHTS = {
   keywords: 30,
   readability: 20,
 } as const;
+
+// ATS Optimization Types
+export interface ATSOptimizationChange {
+  category: "format" | "structure" | "keywords" | "readability" | "content";
+  issue: string;
+  fix: string;
+  impact: "high" | "medium" | "low";
+}
+
+export interface ATSOptimizationResult {
+  success: boolean;
+  pdfUrl: string;
+  beforeScore: number;
+  afterScore: number;
+  improvement: number;
+  changes: ATSOptimizationChange[];
+  optimizedCVId: string;
+}
+
+export interface ATSOptimizeRequest {
+  documentId: string;
+}
+
+export interface ATSOptimizeResponse {
+  success: boolean;
+  result?: ATSOptimizationResult;
+  error?: string;
+}

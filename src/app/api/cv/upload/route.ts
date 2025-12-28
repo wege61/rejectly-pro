@@ -132,6 +132,12 @@ export async function POST(request: NextRequest) {
       throw new Error(`Database error: ${dbError.message}`);
     }
 
+    console.log("✅ CV uploaded:", {
+      documentId: document.id,
+      userId: user.id,
+      type: "cv"
+    });
+
     return NextResponse.json({
       success: true,
       document: {

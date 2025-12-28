@@ -1993,3 +1993,322 @@ Before responding, verify:
 
 Respond with ONLY the JSON object. No markdown, no explanations.`;
 }
+
+export function generateOptimizedCVValidationPrompt(
+  optimizedCVText: string,
+  originalIssues: { issue: string; category: string }[],
+  originalScore: number
+): string {
+  return `You are an ATS validation specialist. Your job is to verify that an OPTIMIZED CV has successfully fixed all the issues that were identified.
+
+=============================================================================
+OPTIMIZED CV TO VALIDATE
+=============================================================================
+"""
+${optimizedCVText}
+"""
+
+=============================================================================
+ORIGINAL SCORE: ${originalScore}/100
+ISSUES THAT NEEDED TO BE FIXED (${originalIssues.length} total):
+=============================================================================
+${originalIssues.map((issue, i) => `${i + 1}. [${issue.category.toUpperCase()}] ${issue.issue}`).join('\n')}
+
+=============================================================================
+YOUR TASK: VALIDATE THE OPTIMIZATION
+=============================================================================
+Check each original issue and determine if it was FIXED in the optimized CV.
+
+VALIDATION CRITERIA:
+✅ FIXED = The issue no longer exists in the optimized CV
+❌ NOT FIXED = The issue still exists
+⚠️ PARTIALLY FIXED = Improved but not fully resolved
+
+SCORING RULES:
+- Start with base score of 85 (optimized CVs start higher)
+- Each FIXED issue: +1-3 points (based on severity)
+- Each NOT FIXED issue: -3-5 points
+- Each PARTIALLY FIXED: +0.5-1 points
+
+BONUS POINTS (can exceed 100, cap at 100):
++5 if ALL issues are fixed
++3 if professional summary has metrics and no clichés
++2 if every bullet starts with action verb
++2 if every bullet has quantified results
++2 if skills are properly categorized
++1 if LinkedIn URL is present
+
+EXPECTED OUTCOME:
+If the optimization was done correctly, the score should be 90-100.
+If score is below 90, clearly explain what's still wrong.
+
+=============================================================================
+RESPONSE FORMAT (STRICT JSON)
+=============================================================================
+{
+  "overallScore": <85-100, based on validation>,
+  "validationResults": [
+    {
+      "originalIssue": "The issue that was flagged",
+      "category": "format|structure|keywords|readability",
+      "status": "fixed|not_fixed|partially_fixed",
+      "evidence": "What in the CV shows this is fixed/not fixed",
+      "pointsAwarded": <number>
+    }
+  ],
+  "bonusPoints": {
+    "allIssuesFixed": <true|false>,
+    "summaryQuality": <true|false>,
+    "actionVerbs": <true|false>,
+    "quantifiedResults": <true|false>,
+    "skillsCategorized": <true|false>,
+    "linkedInPresent": <true|false>,
+    "totalBonus": <0-15>
+  },
+  "summary": "2-3 sentences about the optimization quality",
+  "remainingIssues": ["Any issues that still exist"]
+}
+
+IMPORTANT: Be GENEROUS with scoring. The CV was professionally optimized.
+If in doubt about whether something is fixed, give the benefit of the doubt.
+The goal is 95-100% for properly optimized CVs.
+
+Respond with ONLY the JSON object. No markdown, no explanations.`;
+}
+
+export function generateATSOptimizationPrompt(
+  cvText: string,
+  atsResult: {
+    overallScore: number;
+    categories: {
+      format: { issues: { issue: string; fix?: string }[]; passes: string[] };
+      structure: { issues: { issue: string; fix?: string }[]; passes: string[] };
+      keywords: { issues: { issue: string; fix?: string }[]; passes: string[] };
+      readability: { issues: { issue: string; fix?: string }[]; passes: string[] };
+    };
+    topIssues: { issue: string; suggestion: string; category: string }[];
+    quickWins: string[];
+  }
+): string {
+  const allIssues = [
+    ...atsResult.categories.format.issues.map(i => ({ ...i, category: 'format' })),
+    ...atsResult.categories.structure.issues.map(i => ({ ...i, category: 'structure' })),
+    ...atsResult.categories.keywords.issues.map(i => ({ ...i, category: 'keywords' })),
+    ...atsResult.categories.readability.issues.map(i => ({ ...i, category: 'readability' })),
+  ];
+
+  return `You are a world-class CV optimization expert. Your ONLY goal is to transform this CV to achieve a PERFECT 95-100% ATS compatibility score.
+
+🎯 TARGET: 95-100% ATS SCORE - ACCEPT NOTHING LESS!
+
+=============================================================================
+ORIGINAL CV (SCORE: ${atsResult.overallScore}/100 - UNACCEPTABLE!)
+=============================================================================
+"""
+${cvText}
+"""
+
+=============================================================================
+🚨 CRITICAL ISSUES THAT MUST BE FIXED (ZERO TOLERANCE)
+=============================================================================
+${allIssues.map((issue, i) => `❌ ${i + 1}. [${issue.category.toUpperCase()}] ${issue.issue}
+   🔧 Fix: ${issue.fix || 'MUST BE RESOLVED'}`).join('\n\n')}
+
+=============================================================================
+🔥 TOP PRIORITY FIXES (DO THESE FIRST)
+=============================================================================
+${atsResult.topIssues.map((issue, i) => `🚨 ${i + 1}. ${issue.issue}
+   ✅ Solution: ${issue.suggestion}`).join('\n\n')}
+
+=============================================================================
+⚡ QUICK WINS (EASY POINTS)
+=============================================================================
+${atsResult.quickWins.map((win, i) => `✓ ${i + 1}. ${win}`).join('\n')}
+
+=============================================================================
+🎯 OPTIMIZATION STRATEGY FOR 95-100% SCORE
+=============================================================================
+
+FORMAT (Target: 25/25 points):
+✅ Single-column layout ONLY
+✅ Standard ASCII characters (no emojis, special chars)
+✅ Standard bullet points (• or -)
+✅ Consistent spacing and indentation
+✅ No tables, columns, or graphics
+✅ Clean paragraph breaks between sections
+
+STRUCTURE (Target: 25/25 points):
+✅ Contact info at TOP (name, email, phone, location, LinkedIn)
+✅ Professional Summary immediately after contact
+✅ "Professional Experience" section header (exact wording)
+✅ "Education" section header (exact wording)
+✅ "Skills" section header (exact wording)
+✅ REVERSE CHRONOLOGICAL order (newest job first)
+✅ Job Title | Company | Location | Dates format
+✅ 3-5 bullets per job
+
+KEYWORDS & CONTENT (Target: 30/30 points):
+✅ EVERY bullet starts with STRONG action verb
+✅ EVERY bullet has QUANTIFIED results (%, $, numbers)
+✅ Technical skills listed with full names + acronyms: "Amazon Web Services (AWS)"
+✅ Industry keywords appear in CONTEXT (not just listed)
+✅ Skills grouped: Technical | Soft | Tools
+✅ Hard skills > Soft skills ratio (70/30)
+
+READABILITY (Target: 20/20 points):
+✅ 400-650 words total (OPTIMAL for 1 page)
+✅ Bullets 1-2 lines max
+✅ Clear white space between sections
+✅ Scannable in 6 seconds
+
+=============================================================================
+🔥 AGGRESSIVE BULLET TRANSFORMATION (MANDATORY FOR EVERY BULLET)
+=============================================================================
+FORMULA: [Power Verb] + [Specific Action] + [Metric/Result]
+
+TRANSFORM EXAMPLES:
+❌ "Responsible for customer service"
+✅ "Resolved 50+ customer inquiries daily, achieving 98% satisfaction rating and reducing escalations by 40%"
+
+❌ "Worked on sales"
+✅ "Generated $250K+ in annual revenue by closing 30+ enterprise deals and expanding key accounts by 45%"
+
+❌ "Managed team"
+✅ "Led cross-functional team of 8 professionals, delivering 15 projects on-time and under budget"
+
+❌ "Did marketing"
+✅ "Executed 20+ marketing campaigns across 5 channels, driving 150% increase in qualified leads"
+
+❌ "Helped with projects"
+✅ "Spearheaded 12 strategic initiatives, resulting in $500K cost savings and 25% efficiency improvement"
+
+POWER VERBS TO USE:
+Spearheaded, Orchestrated, Pioneered, Accelerated, Transformed, Championed,
+Architected, Delivered, Generated, Achieved, Drove, Optimized, Streamlined,
+Launched, Established, Cultivated, Maximized, Revolutionized
+
+=============================================================================
+📊 METRIC ESTIMATION RULES (ADD METRICS EVERYWHERE!)
+=============================================================================
+If original CV lacks specific numbers, ADD REASONABLE ESTIMATES:
+
+- Customer interactions → "50+", "100+", "200+ daily"
+- Team size → "team of 5", "cross-functional teams of 10+"
+- Satisfaction → "95%+", "98%", "4.8/5.0 rating"
+- Improvement → "25%", "40%", "2x", "3x"
+- Revenue/Cost → "$50K+", "$100K+", "$1M+"
+- Time savings → "reduced by 30%", "saved 10+ hours weekly"
+- Volume → "processed 500+", "managed 1000+"
+- Projects → "delivered 15+", "launched 10"
+
+=============================================================================
+📝 PROFESSIONAL SUMMARY (REWRITE COMPLETELY)
+=============================================================================
+🚫 BANNED PHRASES (NEVER USE):
+- "I am eager to..."
+- "I am passionate about..."
+- "I believe I would be..."
+- "Seeking a challenging position..."
+- "Hardworking professional..."
+- Any sentence starting with "I am" or "I have"
+
+✅ CORRECT FORMAT:
+"[Role] with [X] years of experience in [expertise]. [Key achievement with metric]. [Another achievement]. Proven track record in [skills relevant to career]."
+
+EXAMPLE:
+"Results-driven Sales Manager with 7+ years of experience in B2B enterprise sales. Generated $2.5M+ in annual revenue and expanded client base by 150%. Proven track record in team leadership, strategic planning, and exceeding quarterly targets by 25%+."
+
+=============================================================================
+RESPONSE FORMAT (STRICT JSON)
+=============================================================================
+{
+  "contact": {
+    "name": "Full Name",
+    "email": "email@example.com",
+    "phone": "+1234567890",
+    "location": "City, Country",
+    "linkedin": "linkedin.com/in/username",
+    "portfolio": "portfolio.com"
+  },
+  "summary": "Powerful 3-4 sentence summary with metrics. NO clichés. Lead with role + years + expertise.",
+  "experience": [
+    {
+      "title": "Job Title",
+      "company": "Company Name",
+      "location": "City, Country",
+      "startDate": "Month Year",
+      "endDate": "Present",
+      "bullets": [
+        "Power verb + specific action + quantified result (metric)",
+        "Another achievement with numbers/percentages",
+        "Third bullet demonstrating measurable impact",
+        "Fourth bullet with business outcome"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Degree Name",
+      "institution": "University Name",
+      "location": "City, Country",
+      "graduationDate": "Month Year",
+      "details": "GPA, honors, relevant coursework"
+    }
+  ],
+  "skills": {
+    "technical": ["Skill 1", "Skill 2", "Skill 3", "Tool 1", "Technology 1"],
+    "soft": ["Leadership", "Communication", "Problem Solving", "Team Collaboration"]
+  },
+  "certifications": [
+    {
+      "name": "Certification Name",
+      "issuer": "Issuing Organization",
+      "date": "Month Year"
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Native/Fluent"
+    }
+  ],
+  "changes": [
+    {
+      "category": "format",
+      "issue": "What was wrong",
+      "fix": "What was fixed",
+      "impact": "high"
+    }
+  ]
+}
+
+=============================================================================
+CHANGES TRACKING (DOCUMENT ALL IMPROVEMENTS)
+=============================================================================
+Track EVERY change in the "changes" array:
+- category: "format" | "structure" | "keywords" | "readability" | "content"
+- issue: Original problem
+- fix: What you changed
+- impact: "high" | "medium" | "low"
+
+Include 10-15 changes minimum!
+
+=============================================================================
+✅ FINAL QUALITY CHECKLIST (ALL MUST BE TRUE)
+=============================================================================
+□ Contact info at top with LinkedIn URL
+□ Professional Summary has NO clichés, HAS metrics
+□ Section headers: "Professional Experience", "Education", "Skills"
+□ Experience in REVERSE chronological order
+□ EVERY bullet starts with power verb
+□ EVERY bullet has a metric/number
+□ 3-5 bullets per job
+□ Skills split into technical/soft
+□ Total word count: 400-650
+□ ALL identified issues are fixed
+□ Target: 95-100% ATS score
+
+🎯 REMEMBER: The optimized CV must score 95-100%. Every issue must be fixed. Every bullet must have metrics. No exceptions!
+
+Respond with ONLY the JSON object. No markdown, no explanations.`;
+}

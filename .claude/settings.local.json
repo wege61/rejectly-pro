@@ -12,7 +12,8 @@
       "Bash(ls:*)",
       "Bash(npx supabase:*)",
       "Bash(npm install:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": []

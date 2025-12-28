@@ -2,56 +2,10 @@
 
 import styled from "styled-components";
 import { Footer } from "@/components/ui/Footer";
-import { Button } from "@/components/ui/Button";
-import { useRouter } from "next/navigation";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { FlipWords } from "@/components/ui/FlipWords";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
-
-// ==================== ICONS ====================
-const UploadIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-    />
-  </svg>
-);
-
-const SparklesIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-    />
-  </svg>
-);
-
-const DocumentTextIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-    />
-  </svg>
-);
-
-const CheckCircleIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
-  </svg>
-);
+import { Carousel, AppleCard, Card } from "@/components/ui/AppleCarousel";
 
 // ==================== STYLED COMPONENTS ====================
 const Container = styled.div`
@@ -176,248 +130,266 @@ const SectionSubtitle = styled.p`
   }
 `;
 
-const ProcessGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 48px;
-
-  @media (max-width: 968px) {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-`;
-
-const ProcessCard = styled.div<{ $color: string; $bgGradient: string }>`
-  background: ${({ $bgGradient }) => $bgGradient};
-  border: 1px solid ${({ $color }) => `${$color}40`};
-  border-radius: 20px;
-  padding: 40px;
-  position: relative;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px ${({ $color }) => `${$color}20`};
-  }
-
-  @media (max-width: 768px) {
-    padding: 32px;
-  }
-`;
-
-const StepNumber = styled.div<{ $color: string }>`
-  position: absolute;
-  top: -16px;
-  left: 40px;
-  width: 48px;
-  height: 48px;
-  background: ${({ $color }) => $color};
-  color: white;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: 900;
-  box-shadow: 0 8px 16px ${({ $color }) => `${$color}40`};
-
-  @media (max-width: 768px) {
-    left: 32px;
-  }
-`;
-
-const IconWrapper = styled.div<{ $color: string }>`
-  width: 80px;
-  height: 80px;
-  background: white;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-
-  svg {
-    width: 40px;
-    height: 40px;
-    color: ${({ $color }) => $color};
-  }
-`;
-
-const ProcessTitle = styled.h3`
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: var(--text-color);
-
-  @media (max-width: 768px) {
-    font-size: 24px;
-  }
-`;
-
-const ProcessDescription = styled.p`
-  font-size: 16px;
-  color: var(--text-secondary);
-  line-height: 1.7;
-  margin-bottom: 24px;
-`;
-
-const FeaturesList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const FeatureItem = styled.li<{ $color: string }>`
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  font-size: 15px;
-  color: var(--text-secondary);
-
-  svg {
-    width: 20px;
-    height: 20px;
-    color: ${({ $color }) => $color};
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-`;
-
 const BenefitsSection = styled.section`
   padding: 80px 24px;
-  background: linear-gradient(135deg, rgba(191, 172, 226, 0.03) 0%, rgba(180, 231, 245, 0.03) 100%);
+  background: var(--bg-color);
 
   @media (max-width: 768px) {
     padding: 60px 16px;
   }
 `;
 
-const BenefitsGrid = styled.div`
+const BentoGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  gap: 16px;
   max-width: 1200px;
   margin: 0 auto;
 
-  @media (max-width: 968px) {
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  @media (max-width: 1023px) {
     grid-template-columns: 1fr;
-    gap: 24px;
   }
 `;
 
-const BenefitCard = styled.div`
-  background: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 32px;
-  text-align: center;
+const BentoCard = styled.div<{ $span?: "tall" | "normal"; $position?: "left" | "right" | "top" | "bottom" }>`
+  position: relative;
+  background: var(--bg-alt);
+  border-radius: 24px;
+  overflow: hidden;
   transition: all 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
 
   &:hover {
-    border-color: var(--primary-200);
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(var(--primary-500-rgb), 0.1);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
   }
+
+  @media (min-width: 1024px) {
+    ${({ $span }) => $span === "tall" && `grid-row: span 2;`}
+
+    ${({ $position }) => {
+      if ($position === "left") return `border-radius: 32px 24px 24px 32px;`;
+      if ($position === "right") return `border-radius: 24px 32px 32px 24px;`;
+      return "";
+    }}
+  }
+
+  @media (max-width: 1023px) {
+    ${({ $position }) => {
+      if ($position === "left") return `border-radius: 32px 32px 24px 24px;`;
+      if ($position === "right") return `border-radius: 24px 24px 32px 32px;`;
+      return "";
+    }}
+  }
+`;
+
+const BentoCardContent = styled.div<{ $tall?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 32px;
+
+  ${({ $tall }) => $tall && `
+    min-height: 400px;
+
+    @media (min-width: 1024px) {
+      min-height: 100%;
+    }
+  `}
 
   @media (max-width: 768px) {
     padding: 24px;
   }
 `;
 
-const BenefitIcon = styled.div`
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.1) 0%, rgba(var(--primary-700-rgb), 0.1) 100%);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20px;
-
-  svg {
-    width: 32px;
-    height: 32px;
-    color: var(--primary-500);
-  }
-`;
-
-const BenefitTitle = styled.h4`
+const BentoCardTitle = styled.h4`
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 12px;
   color: var(--text-color);
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
 `;
 
-const BenefitDescription = styled.p`
+const BentoCardDescription = styled.p`
   font-size: 15px;
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.7;
+  margin-bottom: 24px;
 `;
 
+const BentoCardVisual = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 120px;
+`;
+
+const StatHighlight = styled.div`
+  text-align: center;
+
+  .number {
+    font-size: 64px;
+    font-weight: 900;
+    background: var(--landing-button);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 8px;
+
+    @media (max-width: 768px) {
+      font-size: 48px;
+    }
+  }
+
+  .label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+`;
+
+const FeatureList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+`;
+
+const FeatureListItem = styled.li`
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.6;
+
+  &::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--primary-500);
+    font-weight: 600;
+  }
+`;
 
 export default function HowItWorksPage() {
-  const router = useRouter();
-
-  const processes = [
+  const featureCards: Card[] = [
     {
-      number: 1,
-      title: "Upload & Analyze",
-      description: "Upload your resume and job description. Our AI analyzes the match in 15-30 seconds and gives you an instant score.",
-      icon: <UploadIcon />,
-      color: "#FF8FA3",
-      bgGradient: "linear-gradient(135deg, rgba(255, 179, 186, 0.08) 0%, rgba(255, 204, 229, 0.08) 100%)",
-      features: [
-        "PDF, DOCX, or text paste",
-        "Instant AI analysis",
-        "Match score (0-100%)",
-        "Missing keywords identification",
-      ],
+      src: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=800&auto=format&fit=crop",
+      title: "AI Resume Analysis",
+      category: "Smart Insights",
+      content: (
+        <div>
+          <p>See exactly what&apos;s wrong with your resume. Our AI analyzes your resume against the job description and reveals:</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Missing keywords that ATS systems are looking for</li>
+            <li>Formatting issues that hurt readability</li>
+            <li>Weak action verbs and how to strengthen them</li>
+            <li>Quantifiable achievements you should highlight</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Get instant, actionable feedback in seconds—not hours.</p>
+        </div>
+      ),
     },
     {
-      number: 2,
-      title: "Get Smart Recommendations",
-      description: "Receive detailed AI-powered feedback with actionable suggestions to improve your resume and increase your match score.",
-      icon: <SparklesIcon />,
-      color: "var(--primary-500)",
-      bgGradient: "linear-gradient(135deg, rgba(180, 231, 245, 0.08) 0%, rgba(199, 233, 251, 0.08) 100%)",
-      features: [
-        "ATS optimization tips",
-        "Professional rewriting suggestions",
-        "Formatting improvements",
-        "Keyword integration advice",
-      ],
+      src: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800&auto=format&fit=crop",
+      title: "Smart Job Matching",
+      category: "Find Your Fit",
+      content: (
+        <div>
+          <p>Stop applying blindly. Our AI finds jobs where your skills actually match what employers are looking for.</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Match score for every job posting</li>
+            <li>Skills gap analysis and recommendations</li>
+            <li>Salary insights based on your experience</li>
+            <li>Company culture compatibility indicators</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Apply smarter, not harder. Focus on roles where you&apos;ll succeed.</p>
+        </div>
+      ),
     },
     {
-      number: 3,
-      title: "Generate Cover Letter",
-      description: "Create compelling, personalized cover letters with AI. Get job recommendations tailored to your skills and experience.",
-      icon: <DocumentTextIcon />,
-      color: "var(--accent)",
-      bgGradient: "linear-gradient(135deg, rgba(191, 172, 226, 0.08) 0%, rgba(212, 197, 249, 0.08) 100%)",
-      features: [
-        "AI-generated cover letters",
-        "Personalized job matches",
-        "Alternative role suggestions",
-        "One-click creation",
-      ],
+      src: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=800&auto=format&fit=crop",
+      title: "Cover Letter Generator",
+      category: "One Click",
+      content: (
+        <div>
+          <p>One click. Personalized letter. Tailored to the job description and your unique experience.</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Professionally written in seconds</li>
+            <li>Matches the job requirements perfectly</li>
+            <li>Highlights your most relevant achievements</li>
+            <li>Multiple tone options (formal, creative, casual)</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Never stare at a blank page again.</p>
+        </div>
+      ),
     },
     {
-      number: 4,
-      title: "Download Optimized Resume",
-      description: "Get a professionally optimized resume with all improvements. ATS-friendly formatting and 85% higher pass rate.",
-      icon: <CheckCircleIcon />,
-      color: "var(--success)",
-      bgGradient: "linear-gradient(135deg, rgba(185, 232, 216, 0.08) 0%, rgba(208, 240, 228, 0.08) 100%)",
-      features: [
-        "AI-optimized resume",
-        "Professional formatting",
-        "Keyword integration",
-        "Download as PDF",
-      ],
+      src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
+      title: "ATS-Optimized Resume Builder",
+      category: "Built to Pass",
+      content: (
+        <div>
+          <p>Start fresh with an ATS-optimized resume. Clean formatting, right keywords, professional structure.</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Templates designed for ATS systems</li>
+            <li>Automatic keyword optimization</li>
+            <li>Professional formatting that works everywhere</li>
+            <li>Export to PDF, Word, or plain text</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Built from the ground up to get past the robots.</p>
+        </div>
+      ),
+    },
+    {
+      src: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
+      title: "Interview Preparation",
+      category: "Be Ready",
+      content: (
+        <div>
+          <p>Walk into every interview with confidence. Our AI prepares you with:</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Common questions for your specific role</li>
+            <li>Company-specific talking points</li>
+            <li>STAR method response frameworks</li>
+            <li>Questions to ask your interviewer</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Preparation meets opportunity. Be the candidate they remember.</p>
+        </div>
+      ),
+    },
+    {
+      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+      title: "Application Tracking",
+      category: "Stay Organized",
+      content: (
+        <div>
+          <p>Never lose track of where you applied. Keep your entire job search organized:</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Dashboard view of all applications</li>
+            <li>Status tracking and follow-up reminders</li>
+            <li>Interview scheduling and notes</li>
+            <li>Response rate analytics</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Your command center for landing the perfect role.</p>
+        </div>
+      ),
     },
   ];
 
@@ -520,101 +492,104 @@ export default function HowItWorksPage() {
 
       <ProcessSection>
         <SectionHeader>
-          <SectionTitle>How It Works</SectionTitle>
+          <SectionTitle>Everything you need.</SectionTitle>
           <SectionSubtitle>
-            Four simple steps to create a resume that stands out
+            Everything works together to get you hired.
           </SectionSubtitle>
         </SectionHeader>
 
-        <ProcessGrid>
-          {processes.map((process) => (
-            <ProcessCard key={process.number} $color={process.color} $bgGradient={process.bgGradient}>
-              <StepNumber $color={process.color}>{process.number}</StepNumber>
-              <IconWrapper $color={process.color}>{process.icon}</IconWrapper>
-              <ProcessTitle>{process.title}</ProcessTitle>
-              <ProcessDescription>{process.description}</ProcessDescription>
-              <FeaturesList>
-                {process.features.map((feature, idx) => (
-                  <FeatureItem key={idx} $color={process.color}>
-                    <CheckCircleIcon />
-                    <span>{feature}</span>
-                  </FeatureItem>
-                ))}
-              </FeaturesList>
-            </ProcessCard>
+        <Carousel
+          items={featureCards.map((card, index) => (
+            <AppleCard key={card.title} card={card} index={index} layout />
           ))}
-        </ProcessGrid>
+        />
       </ProcessSection>
 
       <BenefitsSection>
         <SectionHeader>
-          <SectionTitle>Why Choose Rejectly.pro?</SectionTitle>
+          <SectionTitle>Why choose Rejectly.pro?</SectionTitle>
           <SectionSubtitle>
             Powerful features designed to help you succeed
           </SectionSubtitle>
         </SectionHeader>
 
-        <BenefitsGrid>
-          <BenefitCard>
-            <BenefitIcon>
-              <SparklesIcon />
-            </BenefitIcon>
-            <BenefitTitle>GPT-4 Powered</BenefitTitle>
-            <BenefitDescription>
-              Advanced AI technology that understands context, not just keywords.
-            </BenefitDescription>
-          </BenefitCard>
+        <BentoGrid>
+          {/* Left tall card - GPT-4 Powered */}
+          <BentoCard $span="tall" $position="left">
+            <BentoCardContent $tall>
+              <BentoCardTitle>Advanced AI Analysis</BentoCardTitle>
+              <BentoCardDescription>
+                Cutting-edge language models that understand context, not just keywords. Our AI reads your resume like a human recruiter would.
+              </BentoCardDescription>
+              <BentoCardVisual>
+                <StatHighlight>
+                  <div className="number">GPT-4</div>
+                  <div className="label">Next-Gen Intelligence</div>
+                </StatHighlight>
+              </BentoCardVisual>
+              <FeatureList>
+                <FeatureListItem>Contextual understanding</FeatureListItem>
+                <FeatureListItem>Smart keyword extraction</FeatureListItem>
+                <FeatureListItem>Industry-specific analysis</FeatureListItem>
+                <FeatureListItem>Continuous improvements</FeatureListItem>
+              </FeatureList>
+            </BentoCardContent>
+          </BentoCard>
 
-          <BenefitCard>
-            <BenefitIcon>
-              <SparklesIcon />
-            </BenefitIcon>
-            <BenefitTitle>Instant Results</BenefitTitle>
-            <BenefitDescription>
-              Get detailed analysis and recommendations in 30 seconds or less.
-            </BenefitDescription>
-          </BenefitCard>
+          {/* Top middle card - Instant Results */}
+          <BentoCard>
+            <BentoCardContent>
+              <BentoCardTitle>Instant Results</BentoCardTitle>
+              <BentoCardDescription>
+                Get detailed analysis and recommendations in seconds, not hours.
+              </BentoCardDescription>
+              <BentoCardVisual>
+                <StatHighlight>
+                  <div className="number">30s</div>
+                  <div className="label">Average Analysis Time</div>
+                </StatHighlight>
+              </BentoCardVisual>
+            </BentoCardContent>
+          </BentoCard>
 
-          <BenefitCard>
-            <BenefitIcon>
-              <SparklesIcon />
-            </BenefitIcon>
-            <BenefitTitle>ATS Optimized</BenefitTitle>
-            <BenefitDescription>
-              85% higher pass rate through automated resume screening systems.
-            </BenefitDescription>
-          </BenefitCard>
+          {/* Right tall card - ATS Optimized */}
+          <BentoCard $span="tall" $position="right">
+            <BentoCardContent $tall>
+              <BentoCardTitle>ATS Optimized</BentoCardTitle>
+              <BentoCardDescription>
+                Beat the robots. Our AI ensures your resume passes through automated screening systems with flying colors.
+              </BentoCardDescription>
+              <BentoCardVisual>
+                <StatHighlight>
+                  <div className="number">85%</div>
+                  <div className="label">Higher Pass Rate</div>
+                </StatHighlight>
+              </BentoCardVisual>
+              <FeatureList>
+                <FeatureListItem>Keyword optimization</FeatureListItem>
+                <FeatureListItem>Format compatibility</FeatureListItem>
+                <FeatureListItem>Section structure analysis</FeatureListItem>
+                <FeatureListItem>Parsing verification</FeatureListItem>
+              </FeatureList>
+            </BentoCardContent>
+          </BentoCard>
 
-          <BenefitCard>
-            <BenefitIcon>
-              <SparklesIcon />
-            </BenefitIcon>
-            <BenefitTitle>Privacy First</BenefitTitle>
-            <BenefitDescription>
-              GDPR compliant with encrypted data storage and no third-party sharing.
-            </BenefitDescription>
-          </BenefitCard>
-
-          <BenefitCard>
-            <BenefitIcon>
-              <SparklesIcon />
-            </BenefitIcon>
-            <BenefitTitle>Multi-Language</BenefitTitle>
-            <BenefitDescription>
-              Support for English and Turkish resumes with high accuracy.
-            </BenefitDescription>
-          </BenefitCard>
-
-          <BenefitCard>
-            <BenefitIcon>
-              <SparklesIcon />
-            </BenefitIcon>
-            <BenefitTitle>Job Matching</BenefitTitle>
-            <BenefitDescription>
-              Discover better-fit positions with our smart job recommendation engine.
-            </BenefitDescription>
-          </BenefitCard>
-        </BenefitsGrid>
+          {/* Bottom middle card - Multi-Language */}
+          <BentoCard>
+            <BentoCardContent>
+              <BentoCardTitle>Works in Any Language</BentoCardTitle>
+              <BentoCardDescription>
+                Upload resumes and job descriptions in any language. Our AI understands and analyzes content globally.
+              </BentoCardDescription>
+              <BentoCardVisual>
+                <StatHighlight>
+                  <div className="number">50+</div>
+                  <div className="label">Languages Supported</div>
+                </StatHighlight>
+              </BentoCardVisual>
+            </BentoCardContent>
+          </BentoCard>
+        </BentoGrid>
       </BenefitsSection>
 
       <SecondaryCTA />

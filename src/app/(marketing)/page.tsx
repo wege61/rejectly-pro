@@ -66,16 +66,7 @@ const SparklesIcon = () => (
   </svg>
 );
 
-const ZapIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M13 10V3L4 14h7v7l9-11h-7z"
-    />
-  </svg>
-);
+
 
 const TargetIcon = () => (
   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,39 +92,6 @@ const ArrowRightIcon = () => (
       strokeLinejoin="round"
       strokeWidth={2}
       d="M9 5l7 7-7 7"
-    />
-  </svg>
-);
-
-const RocketIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M13 10V3L4 14h7v7l9-11h-7z"
-    />
-  </svg>
-);
-
-const ChevronDownIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M19 9l-7 7-7-7"
-    />
-  </svg>
-);
-
-const UploadIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
     />
   </svg>
 );
@@ -259,7 +217,7 @@ const Container = styled.div`
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
-  overflow-x: hidden;
+  overflow-x: clip;
 `;
 
 // ==================== HERO SECTION ====================
@@ -2088,205 +2046,19 @@ const TransitionBox = styled.div`
 `;
 
 // ==================== TIMELINE SECTION ====================
-const TimelineSection = styled(Section)`
+const TimelineSection = styled.section`
   background: var(--bg-color);
-`;
-
-const TimelineContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-  padding: 0 16px;
-
-  @media (min-width: 768px) {
-    padding: 0 40px;
-  }
-`;
-
-const TimelineWrapper = styled.div`
-  position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-bottom: 80px;
-`;
-
-const TimelineEntry = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  padding-top: 48px;
-  padding-bottom: 48px;
-  gap: 40px;
-
-  &:last-child {
-    padding-bottom: 0;
-  }
-
-  @media (min-width: 768px) {
-    padding-top: 160px;
-    padding-bottom: 0;
-    gap: 40px;
-  }
-`;
-
-const TimelineStickyLeft = styled.div`
-  position: sticky;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  top: 160px;
-  align-self: flex-start;
-  z-index: 40;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    width: 100%;
-    max-width: 280px;
-  }
-
-  @media (min-width: 1024px) {
-    max-width: 360px;
-  }
-`;
-
-const TimelineDotWrapper = styled.div`
-  height: 40px;
-  width: 40px;
-  position: absolute;
-  left: 12px;
-  border-radius: 50%;
-  background: var(--bg-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (min-width: 768px) {
-    left: 12px;
-  }
-`;
-
-const TimelineDotInner = styled.div`
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
-`;
-
-const TimelinePeriod = styled.h3`
-  display: none;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-muted);
-
-  @media (min-width: 768px) {
-    display: block;
-    padding-left: 80px;
-    font-size: 48px;
-  }
-`;
-
-const TimelineContent = styled.div`
-  position: relative;
-  padding-left: 80px;
-  padding-right: 16px;
+  padding: 80px 0;
   width: 100%;
 
-  @media (min-width: 768px) {
-    padding-left: 16px;
-    padding-right: 0;
-  }
-`;
-
-const TimelineMobilePeriod = styled.h3`
-  display: block;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-muted);
-  margin-bottom: 16px;
-  text-align: left;
-
-  @media (min-width: 768px) {
-    display: none;
-  }
-`;
-
-const TimelineHeadline = styled.h4`
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--text-color);
-  line-height: 1.4;
-  margin-bottom: 16px;
-
-  @media (min-width: 768px) {
-    font-size: 32px;
-    margin-bottom: 20px;
-  }
-`;
-
-const TimelineText = styled.p`
-  font-size: 18px;
-  color: var(--text-secondary);
-  line-height: 1.8;
-  margin-bottom: 24px;
-  max-width: 480px;
-
-  @media (min-width: 768px) {
-    font-size: 18px;
-    margin-bottom: 28px;
+  @media (max-width: 768px) {
+    padding: 60px 0;
   }
 `;
 
 const TimelineHighlight = styled.span`
   color: var(--text-color);
   font-weight: 600;
-`;
-
-const TimelineMetadata = styled.p`
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-top: 16px;
-  line-height: 1.5;
-  font-style: italic;
-`;
-
-const TimelineLineContainer = styled.div<{ $height: number }>`
-  position: absolute;
-  left: 32px;
-  top: 0;
-  overflow: hidden;
-  width: 2px;
-  height: ${({ $height }) => $height}px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    var(--border-color) 10%,
-    var(--border-color) 90%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 10%,
-    black 90%,
-    transparent 100%
-  );
-
-  @media (min-width: 768px) {
-    left: 32px;
-  }
-`;
-
-const TimelineLineProgress = styled(motion.div)`
-  position: absolute;
-  inset: 0;
-  width: 2px;
-  background: linear-gradient(
-    to top,
-    var(--landing-button) 0%,
-    rgba(255, 107, 107, 0.5) 10%,
-    transparent 100%
-  );
-  border-radius: 9999px;
 `;
 
 // ==================== VALUE STACK (Enhanced Pricing) ====================
@@ -2451,35 +2223,160 @@ function Timeline({ data }: { data: TimelineEntryData[] }) {
   const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
   return (
-    <TimelineContainer ref={containerRef}>
-      <TimelineWrapper ref={ref}>
+    <div
+      ref={containerRef}
+      style={{
+        width: "100%",
+        background: "var(--bg-color)",
+        padding: "0 40px",
+      }}
+    >
+      <div
+        ref={ref}
+        style={{
+          position: "relative",
+          maxWidth: "1280px",
+          margin: "0 auto",
+          paddingBottom: "80px",
+        }}
+      >
         {data.map((item, index) => (
-          <TimelineEntry key={index}>
-            <TimelineStickyLeft>
-              <TimelineDotWrapper>
-                <TimelineDotInner />
-              </TimelineDotWrapper>
-              <TimelinePeriod>{item.period}</TimelinePeriod>
-            </TimelineStickyLeft>
+          <div
+            key={index}
+            style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              paddingTop: index === 0 ? "40px" : "160px",
+              gap: "40px",
+            }}
+          >
+            {/* Sticky left column */}
+            <div
+              style={{
+                position: "sticky",
+                display: "flex",
+                flexDirection: "row",
+                zIndex: 40,
+                alignItems: "center",
+                top: "160px",
+                alignSelf: "flex-start",
+                width: "100%",
+                maxWidth: "384px",
+              }}
+            >
+              {/* Dot */}
+              <div
+                style={{
+                  height: "40px",
+                  width: "40px",
+                  position: "absolute",
+                  left: "12px",
+                  borderRadius: "9999px",
+                  background: "var(--bg-color)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <div
+                  style={{
+                    height: "16px",
+                    width: "16px",
+                    borderRadius: "9999px",
+                    background: "var(--bg-alt)",
+                    border: "1px solid var(--border-color)",
+                  }}
+                />
+              </div>
+              {/* Period text */}
+              <h3
+                style={{
+                  display: "block",
+                  paddingLeft: "80px",
+                  fontSize: "48px",
+                  fontWeight: 700,
+                  color: "var(--text-muted)",
+                }}
+              >
+                {item.period}
+              </h3>
+            </div>
 
-            <TimelineContent>
-              <TimelineMobilePeriod>{item.period}</TimelineMobilePeriod>
-              <TimelineHeadline>{item.headline}</TimelineHeadline>
-              <TimelineText>{item.text}</TimelineText>
-              <TimelineMetadata>{item.metadata}</TimelineMetadata>
-            </TimelineContent>
-          </TimelineEntry>
+            {/* Content column */}
+            <div
+              style={{
+                position: "relative",
+                paddingLeft: "16px",
+                width: "100%",
+              }}
+            >
+              <h4
+                style={{
+                  fontSize: "32px",
+                  fontWeight: 700,
+                  color: "var(--text-color)",
+                  lineHeight: 1.4,
+                  marginBottom: "20px",
+                }}
+              >
+                {item.headline}
+              </h4>
+              <p
+                style={{
+                  fontSize: "18px",
+                  color: "var(--text-secondary)",
+                  lineHeight: 1.8,
+                  marginBottom: "28px",
+                  maxWidth: "480px",
+                }}
+              >
+                {item.text}
+              </p>
+              <p
+                style={{
+                  fontSize: "13px",
+                  color: "var(--text-muted)",
+                  marginTop: "16px",
+                  lineHeight: 1.5,
+                  fontStyle: "italic",
+                }}
+              >
+                {item.metadata}
+              </p>
+            </div>
+          </div>
         ))}
-        <TimelineLineContainer $height={height}>
-          <TimelineLineProgress
+
+        {/* Vertical line */}
+        <div
+          style={{
+            height: height + "px",
+            position: "absolute",
+            left: "32px",
+            top: 0,
+            overflow: "hidden",
+            width: "2px",
+            background: "linear-gradient(to bottom, transparent 0%, var(--border-color) 10%, var(--border-color) 90%, transparent 99%)",
+            maskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+          }}
+        >
+          <motion.div
             style={{
               height: heightTransform,
               opacity: opacityTransform,
+              position: "absolute",
+              left: 0,
+              right: 0,
+              top: 0,
+              width: "2px",
+              background: "linear-gradient(to top, var(--landing-button) 0%, rgba(255, 107, 107, 0.5) 10%, transparent 100%)",
+              borderRadius: "9999px",
             }}
           />
-        </TimelineLineContainer>
-      </TimelineWrapper>
-    </TimelineContainer>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -2965,7 +2862,7 @@ export default function Page() {
 
           <ButtonGroup>
             <PrimaryButton href={ROUTES.AUTH.SIGNUP}>
-              <RocketIcon />
+              
               Analyze for Free
             </PrimaryButton>
             <SecondaryButton href={ROUTES.PUBLIC.HOW_IT_WORKS}>
@@ -3119,7 +3016,7 @@ export default function Page() {
                       </>
                     ) : (
                       <>
-                        <ZapIcon />
+                        
                         Analyze Now
                       </>
                     )}
@@ -3375,12 +3272,14 @@ export default function Page() {
 
       {/* TIMELINE SECTION */}
       <TimelineSection>
-        <SectionHeader>
-          <SectionTitle>A clearer path forward</SectionTitle>
-          <SectionSubtitle>
-            What changes when your resume finally works for you
-          </SectionSubtitle>
-        </SectionHeader>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
+          <SectionHeader>
+            <SectionTitle>A clearer path forward</SectionTitle>
+            <SectionSubtitle>
+              What changes when your resume finally works for you
+            </SectionSubtitle>
+          </SectionHeader>
+        </div>
 
         <Timeline
           data={[

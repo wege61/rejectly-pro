@@ -33,7 +33,7 @@ const BentoGridItemWrapper = styled.div`
   outline: 1px solid rgba(0, 0, 0, 0.05);
 
   &:hover {
-    transform: translateY(-4px);
+   
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
   }
 
@@ -93,167 +93,213 @@ const DotBackground = styled.div`
   opacity: 0.15;
 `;
 
-// Skeleton One - ATS Rejection Animation (Chat bubbles)
+// Skeleton One - ATS Resume to Trash Animation (Refined)
 const SkeletonOne = () => {
-  const variants = {
-    initial: { x: 0 },
-    animate: {
-      x: 10,
-      rotate: 5,
-      transition: { duration: 0.2 },
-    },
-  };
-  const variantsSecond = {
-    initial: { x: 0 },
-    animate: {
-      x: -10,
-      rotate: -5,
-      transition: { duration: 0.2 },
-    },
-  };
+  const [phase, setPhase] = useState<"idle" | "scanning" | "rejected" | "falling">("idle");
+
+  useEffect(() => {
+    const runAnimation = () => {
+      setPhase("scanning");
+      setTimeout(() => setPhase("rejected"), 800);
+      setTimeout(() => setPhase("falling"), 1400);
+      setTimeout(() => setPhase("idle"), 2400);
+    };
+
+    runAnimation();
+    const interval = setInterval(runAnimation, 3500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <motion.div
-      initial="initial"
-      whileHover="animate"
+    <div
       style={{
         display: "flex",
         flex: 1,
         width: "100%",
         height: "100%",
         minHeight: "6rem",
-        flexDirection: "column",
-        gap: "8px",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
         position: "relative",
+        gap: "16px",
+        padding: "8px",
       }}
     >
       <DotBackground />
+
+      {/* Resume Document */}
       <motion.div
-        variants={variants}
+        animate={{
+          x: phase === "falling" ? 50 : 0,
+          y: phase === "falling" ? 40 : 0,
+          rotate: phase === "falling" ? 20 : 0,
+          scale: phase === "falling" ? 0.5 : 1,
+          opacity: phase === "falling" ? 0 : 1,
+        }}
+        transition={{
+          duration: phase === "falling" ? 0.5 : 0.3,
+          ease: "easeInOut",
+        }}
         style={{
-          display: "flex",
-          flexDirection: "row",
-          borderRadius: "9999px",
-          border: "1px solid var(--border-color)",
-          padding: "8px",
-          alignItems: "center",
-          gap: "8px",
+          position: "relative",
+          zIndex: 2,
+          width: "56px",
+          height: "72px",
           background: "var(--bg-color)",
+          borderRadius: "6px",
+          border: "1px solid var(--border-color)",
+          padding: "8px 6px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+        }}
+      >
+        {/* Resume lines */}
+        <div style={{ width: "100%", height: "6px", background: "var(--bg-alt)", borderRadius: "3px" }} />
+        <div style={{ width: "100%", height: "3px", background: "var(--bg-alt)", borderRadius: "2px" }} />
+        <div style={{ width: "75%", height: "3px", background: "var(--bg-alt)", borderRadius: "2px" }} />
+        <div style={{ width: "90%", height: "3px", background: "var(--bg-alt)", borderRadius: "2px" }} />
+        <div style={{ width: "60%", height: "3px", background: "var(--bg-alt)", borderRadius: "2px" }} />
+
+        {/* Scanning line */}
+        <motion.div
+          animate={{
+            top: phase === "scanning" ? ["0%", "100%"] : "0%",
+            opacity: phase === "scanning" ? 1 : 0,
+          }}
+          transition={{ duration: 0.6, ease: "linear" }}
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            height: "2px",
+            background: "linear-gradient(90deg, transparent, #ef4444, transparent)",
+            boxShadow: "0 0 8px #ef4444",
+          }}
+        />
+
+        {/* REJECTED stamp */}
+        <motion.div
+          animate={{
+            opacity: phase === "rejected" || phase === "falling" ? 1 : 0,
+            scale: phase === "rejected" ? [1.3, 1] : 1,
+          }}
+          transition={{ duration: 0.15 }}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%) rotate(-12deg)",
+            background: "#ef4444",
+            color: "white",
+            fontSize: "7px",
+            fontWeight: 800,
+            padding: "2px 4px",
+            borderRadius: "2px",
+            letterSpacing: "0.3px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          REJECTED
+        </motion.div>
+      </motion.div>
+
+      {/* Arrow */}
+      <motion.div
+        animate={{
+          opacity: phase === "rejected" ? 1 : 0.3,
+          x: phase === "rejected" ? [0, 4, 0] : 0,
+        }}
+        transition={{ duration: 0.3 }}
+        style={{
+          fontSize: "16px",
+          color: phase === "rejected" ? "#ef4444" : "var(--text-muted)",
+          zIndex: 1,
+        }}
+      >
+        →
+      </motion.div>
+
+      {/* Trash Can */}
+      <motion.div
+        animate={{
+          scale: phase === "falling" ? [1, 1.1, 1] : 1,
+        }}
+        transition={{ duration: 0.3 }}
+        style={{
           position: "relative",
           zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
         <div
           style={{
-            height: "24px",
-            width: "24px",
-            borderRadius: "9999px",
-            background: "linear-gradient(to right, #FF6B6B, #ee5a5a)",
-            flexShrink: 0,
+            width: "36px",
+            height: "6px",
+            background: "#6b7280",
+            borderRadius: "2px 2px 0 0",
           }}
         />
         <div
           style={{
-            width: "100%",
-            background: "var(--bg-alt)",
-            height: "16px",
-            borderRadius: "9999px",
+            width: "32px",
+            height: "32px",
+            background: "linear-gradient(to bottom, #4b5563, #374151)",
+            borderRadius: "0 0 4px 4px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "3px",
           }}
-        />
+        >
+          <div style={{ width: "2px", height: "14px", background: "#6b7280", borderRadius: "1px" }} />
+          <div style={{ width: "2px", height: "14px", background: "#6b7280", borderRadius: "1px" }} />
+          <div style={{ width: "2px", height: "14px", background: "#6b7280", borderRadius: "1px" }} />
+        </div>
+
+        {/* Label */}
+        <motion.span
+          animate={{ opacity: phase === "falling" ? 1 : 0 }}
+          style={{
+            marginTop: "4px",
+            fontSize: "8px",
+            color: "#ef4444",
+            fontWeight: 600,
+          }}
+        >
+          75% end here
+        </motion.span>
       </motion.div>
-      <motion.div
-        variants={variantsSecond}
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          borderRadius: "9999px",
-          border: "1px solid var(--border-color)",
-          padding: "8px",
-          alignItems: "center",
-          gap: "8px",
-          width: "75%",
-          marginLeft: "auto",
-          background: "var(--bg-color)",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            background: "var(--bg-alt)",
-            height: "16px",
-            borderRadius: "9999px",
-          }}
-        />
-        <div
-          style={{
-            height: "24px",
-            width: "24px",
-            borderRadius: "9999px",
-            background: "linear-gradient(to right, #FF6B6B, #ee5a5a)",
-            flexShrink: 0,
-          }}
-        />
-      </motion.div>
-      <motion.div
-        variants={variants}
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          borderRadius: "9999px",
-          border: "1px solid var(--border-color)",
-          padding: "8px",
-          alignItems: "center",
-          gap: "8px",
-          background: "var(--bg-color)",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <div
-          style={{
-            height: "24px",
-            width: "24px",
-            borderRadius: "9999px",
-            background: "linear-gradient(to right, #FF6B6B, #ee5a5a)",
-            flexShrink: 0,
-          }}
-        />
-        <div
-          style={{
-            width: "100%",
-            background: "var(--bg-alt)",
-            height: "16px",
-            borderRadius: "9999px",
-          }}
-        />
-      </motion.div>
-    </motion.div>
+    </div>
   );
 };
 
-// Skeleton Two - Skills Gap Analysis (Progress bars)
+// Skeleton Two - Skills Gap Analysis (Compact version)
 const SkeletonTwo = () => {
-  const variants = {
-    initial: { width: 0 },
-    animate: {
-      width: "100%",
-      transition: { duration: 0.2 },
-    },
-    hover: {
-      width: ["0%", "100%"],
-      transition: { duration: 2 },
-    },
-  };
-  const arr = new Array(6).fill(0);
-  const widths = [85, 45, 70, 30, 60, 50];
+  const [step, setStep] = useState(0);
+
+  const requirements = [
+    { skill: "TypeScript", hasIt: false },
+    { skill: "AWS", hasIt: false },
+    { skill: "Docker", hasIt: true },
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStep((prev) => (prev + 1) % (requirements.length + 2));
+    }, 700);
+    return () => clearInterval(interval);
+  }, []);
+
+  const matchCount = requirements.filter(r => r.hasIt).length;
+  const matchPercent = Math.round((matchCount / requirements.length) * 100);
 
   return (
-    <motion.div
-      initial="initial"
-      animate="animate"
-      whileHover="hover"
+    <div
       style={{
         display: "flex",
         flex: 1,
@@ -261,33 +307,94 @@ const SkeletonTwo = () => {
         height: "100%",
         minHeight: "6rem",
         flexDirection: "column",
-        gap: "8px",
         position: "relative",
+        gap: "4px",
+        justifyContent: "center",
+        padding: "4px 0",
       }}
     >
       <DotBackground />
-      {arr.map((_, i) => (
+
+      {/* Header */}
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginBottom: "2px",
+        position: "relative",
+        zIndex: 1,
+      }}>
+        <span style={{ fontSize: "8px", color: "#22c55e", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.3px" }}>
+          Required
+        </span>
+        <span style={{ fontSize: "8px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.3px" }}>
+          You
+        </span>
+      </div>
+
+      {/* Skills list */}
+      {requirements.map((req, i) => (
         <motion.div
-          key={"skeleton-two" + i}
-          variants={variants}
+          key={req.skill}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{
+            opacity: step > i ? 1 : 0,
+            x: step > i ? 0 : -10,
+          }}
+          transition={{ duration: 0.2 }}
           style={{
-            maxWidth: widths[i] + "%",
             display: "flex",
-            flexDirection: "row",
-            borderRadius: "9999px",
-            border: "1px solid var(--border-color)",
-            padding: "8px",
+            justifyContent: "space-between",
             alignItems: "center",
-            gap: "8px",
-            background: i % 2 === 0 ? "rgba(255, 107, 107, 0.1)" : "var(--bg-alt)",
-            width: "100%",
-            height: "16px",
+            padding: "3px 6px",
+            background: req.hasIt ? "rgba(34, 197, 94, 0.08)" : "rgba(239, 68, 68, 0.08)",
+            borderRadius: "4px",
+            border: `1px solid ${req.hasIt ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"}`,
             position: "relative",
             zIndex: 1,
           }}
-        />
+        >
+          <span style={{ fontSize: "10px", color: "var(--text-color)", fontWeight: 500 }}>
+            {req.skill}
+          </span>
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: step > i ? 1 : 0 }}
+            transition={{ duration: 0.15, delay: 0.1 }}
+            style={{
+              fontSize: "9px",
+              fontWeight: 700,
+              color: req.hasIt ? "#22c55e" : "#ef4444",
+            }}
+          >
+            {req.hasIt ? "✓" : "✗"}
+          </motion.span>
+        </motion.div>
       ))}
-    </motion.div>
+
+      {/* Match Score */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{
+          opacity: step > requirements.length ? 1 : 0,
+          scale: step > requirements.length ? 1 : 0.9,
+        }}
+        transition={{ duration: 0.2 }}
+        style={{
+          marginTop: "4px",
+          padding: "4px 8px",
+          background: "rgba(239, 68, 68, 0.12)",
+          borderRadius: "6px",
+          border: "1px solid rgba(239, 68, 68, 0.25)",
+          textAlign: "center",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <span style={{ fontSize: "9px", color: "#ef4444", fontWeight: 700 }}>
+          Match: {matchPercent}% 😬
+        </span>
+      </motion.div>
+    </div>
   );
 };
 

@@ -8,13 +8,13 @@ const darkColors = {
   primaryLight: "rgba(53, 162, 159, 0.1)", // primary-500 with opacity
 
   // Secondary
-  secondary: "#121623", // dark-card
+  secondary: "#000000", // dark-card
   secondaryHover: "#1a1f2e", // slightly lighter
 
   // Neutral - DARK MODE
-  background: "#0C0F18", // dark-bg
-  backgroundAlt: "#121623", // dark-card
-  surface: "#121623", // dark-card
+  background: "#151517", // dark-bg
+  backgroundAlt: "#151517", // content area
+  surface: "#000000", // dark-card (sidebar)
   surfaceHover: "#1a1f2e", // slightly lighter
 
   // Text - DARK MODE

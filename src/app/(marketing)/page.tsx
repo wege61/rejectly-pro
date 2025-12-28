@@ -2846,10 +2846,7 @@ export default function Page() {
       <HeroSection>
         <HeroHighlightWrapper>
         <HeroContent>
-          <TrustBadge>
-            <CheckIcon />
-            <span>OpenAI GPT-4 Powered • GDPR Compliant</span>
-          </TrustBadge>
+          
 
           <HeroTitle>
             Optimize Your Resume for <Highlight>Job Postings</Highlight>

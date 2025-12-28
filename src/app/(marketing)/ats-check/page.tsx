@@ -1,9 +1,12 @@
 "use client";
 
 import styled, { keyframes } from "styled-components";
-import { useState, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
+import { motion } from "motion/react";
 import { ROUTES } from "@/lib/constants";
+import { Footer } from "@/components/ui/Footer";
+import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
 
 const pulse = keyframes`
   0%, 100% { transform: scale(1); }
@@ -17,7 +20,8 @@ const shimmer = keyframes`
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: ${({ theme }) => theme.colors.background};
+  background-color: var(--bg-color);
+  color: var(--text-color);
 `;
 
 const HeroSection = styled.section`
@@ -31,37 +35,24 @@ const HeroSection = styled.section`
   }
 `;
 
-const Badge = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #6366f1;
-  margin-bottom: 20px;
-`;
-
 const Title = styled.h1`
-  font-size: 48px;
+  font-size: 56px;
   font-weight: 800;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 16px;
+  color: var(--text-color);
+  margin-bottom: 20px;
   line-height: 1.1;
+  letter-spacing: -0.02em;
 
   @media (max-width: 768px) {
-    font-size: 32px;
+    font-size: 36px;
   }
 `;
 
 const Subtitle = styled.p`
-  font-size: 18px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 20px;
+  color: var(--text-secondary);
   line-height: 1.6;
-  max-width: 600px;
+  max-width: 640px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
@@ -83,51 +74,261 @@ const UploadSection = styled.div<{ $isAnalyzing?: boolean }>`
   display: ${({ $isAnalyzing }) => $isAnalyzing ? "none" : "block"};
 `;
 
-const DropzoneArea = styled.div<{ $isDragActive: boolean; $hasFile: boolean }>`
-  border: 2px dashed ${({ $isDragActive, $hasFile, theme }) =>
-    $isDragActive ? "#6366f1" : $hasFile ? "#10b981" : theme.colors.border};
-  border-radius: 16px;
-  padding: 48px;
-  text-align: center;
+// Animation variants for file upload
+const mainVariant = {
+  initial: { x: 0, y: 0 },
+  animate: { x: 20, y: -20, opacity: 0.9 },
+};
+
+const secondaryVariant = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+};
+
+const UploadWrapper = styled.div`
+  width: 100%;
+`;
+
+const UploadContainer = styled(motion.div)`
+  padding: 40px;
+  display: block;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  background: ${({ $isDragActive, $hasFile }) =>
-    $isDragActive ? "rgba(99, 102, 241, 0.05)" :
-    $hasFile ? "rgba(16, 185, 129, 0.05)" : "transparent"};
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-color);
+  border: 2px dashed var(--border-color);
+  transition: all 0.3s ease;
 
   &:hover {
-    border-color: #6366f1;
-    background: rgba(99, 102, 241, 0.03);
+    border-color: var(--primary-500);
+    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.05) 0%, rgba(var(--primary-500-rgb), 0.08) 100%);
   }
 `;
 
-const UploadIcon = styled.div`
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 20px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+const GridPatternContainer = styled.div`
+  position: absolute;
+  inset: 0;
+  mask-image: radial-gradient(ellipse at center, white, transparent);
+  -webkit-mask-image: radial-gradient(ellipse at center, white, transparent);
+  pointer-events: none;
+`;
+
+const GridPatternInner = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+  transform: scale(1.05);
+  background: var(--bg-color);
+`;
+
+const GridCell = styled.div<{ $isEven: boolean }>`
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  background: var(--bg-alt);
+  box-shadow: ${({ $isEven }) => !$isEven ? 'inset 0 0 1px 3px var(--bg-color)' : 'none'};
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+`;
+
+const UploadTitle = styled.p`
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-color);
+`;
+
+const UploadDescription = styled.p`
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+`;
+
+const FilePreviewContainer = styled.div`
+  position: relative;
+  width: 100%;
+  margin-top: 40px;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+const FileCard = styled(motion.div)`
+  position: relative;
+  overflow: hidden;
+  z-index: 40;
+  background: var(--bg-alt);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 16px;
+  margin-top: 16px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
+`;
+
+const FileHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  gap: 16px;
+`;
+
+const FileName = styled(motion.p)`
+  font-size: 16px;
+  color: var(--text-color);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 320px;
+`;
+
+const FileSize = styled(motion.p)`
+  border-radius: 8px;
+  padding: 4px 8px;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: var(--bg-color);
+`;
+
+const FileMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 8px;
+  justify-content: space-between;
+  color: var(--text-secondary);
+  font-size: 14px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+  }
+`;
+
+const FileType = styled(motion.p)`
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--bg-color);
+`;
+
+const FileDate = styled(motion.p)`
+  color: var(--text-secondary);
+`;
+
+const FileActions = styled(motion.div)`
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+`;
+
+const FileActionButton = styled.button<{ $variant?: "primary" | "danger" }>`
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: var(--bg-color);
+  color: ${({ $variant }) => $variant === "danger" ? "#ef4444" : "var(--text-color)"};
+
+  &:hover {
+    background: ${({ $variant }) => $variant === "danger" ? "rgba(239, 68, 68, 0.1)" : "var(--bg-alt)"};
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+`;
+
+const UploadIconBox = styled(motion.div)<{ $isDragActive: boolean }>`
+  position: relative;
+  z-index: 40;
+  background: var(--bg-alt);
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 128px;
+  margin-top: 16px;
+  width: 100%;
+  max-width: 128px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  transition: box-shadow 0.3s ease;
+
+  ${UploadContainer}:hover & {
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  }
 
   svg {
-    width: 32px;
-    height: 32px;
-    color: white;
+    width: 24px;
+    height: 24px;
+    color: var(--text-secondary);
   }
 `;
 
-const DropzoneText = styled.p`
-  font-size: 16px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 8px;
-  font-weight: 500;
+const DropText = styled(motion.p)`
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
 `;
 
-const DropzoneSubtext = styled.p`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+const DashedBorder = styled(motion.div)`
+  position: absolute;
+  opacity: 0;
+  border: 2px dashed var(--primary-500);
+  inset: 0;
+  z-index: 30;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 128px;
+  margin-top: 16px;
+  width: 100%;
+  max-width: 128px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 12px;
+`;
+
+const HiddenInput = styled.input`
+  display: none;
 `;
 
 const ErrorMessage = styled.div`
@@ -151,8 +352,8 @@ const ResultsSection = styled.div`
 `;
 
 const ScoreCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 40px;
   text-align: center;
@@ -174,7 +375,7 @@ const ScoreCircle = styled.div<{ $score: number }>`
       $score >= 60 ? "#f59e0b" :
       $score >= 40 ? "#f97316" : "#ef4444"
     } ${({ $score }) => $score * 3.6}deg,
-    ${({ theme }) => theme.colors.border} 0deg
+    var(--border-color) 0deg
   );
   position: relative;
 
@@ -184,7 +385,7 @@ const ScoreCircle = styled.div<{ $score: number }>`
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background: ${({ theme }) => theme.colors.surface};
+    background: var(--surface-color);
   }
 `;
 
@@ -204,7 +405,7 @@ const ScoreLabel = styled.div`
   position: relative;
   z-index: 1;
   font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   font-weight: 500;
 `;
 
@@ -221,7 +422,7 @@ const ScoreTitle = styled.h2<{ $score: number }>`
 
 const ScoreSummary = styled.p`
   font-size: 16px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   line-height: 1.6;
   max-width: 500px;
   margin: 0 auto;
@@ -239,8 +440,8 @@ const MetricsGrid = styled.div`
 `;
 
 const MetricCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
 `;
@@ -255,7 +456,7 @@ const MetricHeader = styled.div`
 const MetricTitle = styled.h3`
   font-size: 14px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
 `;
 
 const MetricScore = styled.span<{ $score: number; $max: number }>`
@@ -271,7 +472,7 @@ const MetricScore = styled.span<{ $score: number; $max: number }>`
 
 const MetricBar = styled.div`
   height: 8px;
-  background: ${({ theme }) => theme.colors.border};
+  background: var(--border-color);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 12px;
@@ -298,9 +499,9 @@ const MetricIssues = styled.ul`
 
 const MetricIssue = styled.li`
   font-size: 13px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   padding: 6px 0;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -316,51 +517,114 @@ const MetricIssue = styled.li`
 `;
 
 const CTASection = styled.div`
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 20px;
-  padding: 40px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--bg-alt);
+  padding: 48px 32px;
+  border-radius: 24px;
   text-align: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
+
+  @media (max-width: 768px) {
+    padding: 32px 24px;
+  }
+`;
+
+const CTAGradientCircle = styled.svg`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  width: 600px;
+  height: 600px;
+  transform: translate(-50%, -50%);
+  mask-image: radial-gradient(closest-side, white, transparent);
+  -webkit-mask-image: radial-gradient(closest-side, white, transparent);
+  opacity: 0.6;
 `;
 
 const CTATitle = styled.h3`
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 12px;
+  letter-spacing: -0.025em;
+  color: var(--text-color);
+  margin-bottom: 16px;
+  text-wrap: balance;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
 `;
 
 const CTAText = styled.p`
   font-size: 16px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 24px;
-  max-width: 400px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  max-width: 480px;
   margin-left: auto;
   margin-right: auto;
+  text-wrap: pretty;
+`;
+
+const CTAButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
 `;
 
 const CTAButton = styled.a`
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px 32px;
-  font-size: 16px;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-size: 15px;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  border-radius: 12px;
+  background: var(--primary-500);
+  border-radius: 8px;
   text-decoration: none;
+  box-shadow: 0 4px 12px rgba(53, 162, 159, 0.3);
   transition: all 0.2s ease;
-  animation: ${pulse} 2s ease-in-out infinite;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    background: var(--primary-700);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(53, 162, 159, 0.4);
   }
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const CTASecondaryButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--primary-500);
+  }
+
+  span {
+    margin-left: 4px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover span {
+    transform: translateX(4px);
   }
 `;
 
@@ -372,7 +636,7 @@ const LoadingSection = styled.div`
 const LoadingSpinner = styled.div`
   width: 60px;
   height: 60px;
-  border: 4px solid ${({ theme }) => theme.colors.border};
+  border: 4px solid var(--border-color);
   border-top-color: #6366f1;
   border-radius: 50%;
   margin: 0 auto 24px;
@@ -386,13 +650,13 @@ const LoadingSpinner = styled.div`
 const LoadingText = styled.p`
   font-size: 18px;
   font-weight: 500;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   margin-bottom: 8px;
 `;
 
 const LoadingSubtext = styled.p`
   font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
 `;
 
 const TryAgainButton = styled.button`
@@ -402,24 +666,24 @@ const TryAgainButton = styled.button`
   padding: 12px 24px;
   font-size: 14px;
   font-weight: 500;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   background: transparent;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
   margin-top: 32px;
   transition: all 0.2s ease;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.surface};
-    border-color: ${({ theme }) => theme.colors.textSecondary};
+    background: var(--surface-color);
+    border-color: var(--text-secondary);
   }
 `;
 
 // ATS System Compatibility Section
 const ATSCompatibilitySection = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
@@ -428,7 +692,7 @@ const ATSCompatibilitySection = styled.div`
 const ATSCompatibilityTitle = styled.h3`
   font-size: 16px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -462,7 +726,7 @@ const ATSSystemCard = styled.div<{ $level: string }>`
 const ATSSystemName = styled.div`
   font-size: 13px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   margin-bottom: 4px;
 `;
 
@@ -489,8 +753,8 @@ const StatsSection = styled.div`
 `;
 
 const StatCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
   text-align: center;
@@ -499,19 +763,19 @@ const StatCard = styled.div`
 const StatValue = styled.div`
   font-size: 24px;
   font-weight: 700;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
 `;
 
 const StatLabel = styled.div`
   font-size: 12px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   margin-top: 4px;
 `;
 
 // Top Issues Section
 const TopIssuesSection = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
@@ -520,13 +784,13 @@ const TopIssuesSection = styled.div`
 const TopIssuesTitle = styled.h3`
   font-size: 16px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   margin-bottom: 16px;
 `;
 
 const IssueItem = styled.div`
   padding: 16px;
-  background: ${({ theme }) => theme.colors.background};
+  background: var(--bg-color);
   border-radius: 12px;
   margin-bottom: 12px;
 
@@ -563,20 +827,20 @@ const CategoryBadge = styled.span`
   font-weight: 500;
   padding: 3px 8px;
   border-radius: 4px;
-  background: ${({ theme }) => theme.colors.border};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  background: var(--border-color);
+  color: var(--text-secondary);
 `;
 
 const IssueText = styled.p`
   font-size: 14px;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   margin-bottom: 8px;
   font-weight: 500;
 `;
 
 const IssueSuggestion = styled.p`
   font-size: 13px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   display: flex;
   align-items: flex-start;
   gap: 6px;
@@ -614,7 +878,7 @@ const QuickWinsList = styled.ul`
 
 const QuickWinItem = styled.li`
   font-size: 14px;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   padding: 10px 0;
   border-bottom: 1px solid rgba(16, 185, 129, 0.1);
   display: flex;
@@ -665,24 +929,41 @@ const SEOSection = styled.section`
 `;
 
 const SEOTitle = styled.h2`
-  font-size: 32px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--text-color);
   margin-bottom: 16px;
   text-align: center;
+  letter-spacing: -0.02em;
 
   @media (max-width: 768px) {
-    font-size: 24px;
+    font-size: 32px;
   }
 `;
 
 const SEOSubtitle = styled.p`
-  font-size: 16px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 20px;
+  color: var(--text-secondary);
   text-align: center;
-  max-width: 600px;
-  margin: 0 auto 40px;
+  max-width: 640px;
+  margin: 0 auto 48px;
   line-height: 1.6;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
+const SectionDivider = styled.div`
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-color),
+    transparent
+  );
+  margin: 0 auto;
+  max-width: 100%;
 `;
 
 const FAQList = styled.div`
@@ -691,100 +972,561 @@ const FAQList = styled.div`
   gap: 16px;
 `;
 
-const FAQItem = styled.details`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+const FAQItem = styled.div<{ $isOpen: boolean }>`
+  background: var(--bg-alt);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   overflow: hidden;
+  transition: all 0.3s ease;
 
-  &[open] summary::after {
-    transform: rotate(180deg);
-  }
+  ${({ $isOpen }) =>
+    $isOpen &&
+    `
+    border-color: var(--primary-200);
+    box-shadow: 0 4px 12px rgba(var(--primary-500-rgb), 0.1);
+  `}
 `;
 
-const FAQQuestion = styled.summary`
+const FAQQuestion = styled.button`
+  width: 100%;
+  background: none;
+  border: none;
   padding: 20px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  cursor: pointer;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  list-style: none;
-
-  &::-webkit-details-marker {
-    display: none;
-  }
-
-  &::after {
-    content: "";
-    width: 10px;
-    height: 10px;
-    border-right: 2px solid ${({ theme }) => theme.colors.textSecondary};
-    border-bottom: 2px solid ${({ theme }) => theme.colors.textSecondary};
-    transform: rotate(45deg);
-    transition: transform 0.2s ease;
-    flex-shrink: 0;
-    margin-left: 16px;
-  }
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease;
 
   &:hover {
-    color: #6366f1;
+    background: rgba(var(--primary-500-rgb), 0.05);
   }
-`;
-
-const FAQAnswer = styled.div`
-  padding: 0 24px 20px;
-  font-size: 15px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.7;
-`;
-
-const FeatureGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-top: 48px;
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    padding: 16px 20px;
   }
 `;
 
-const FeatureCard = styled.div`
-  text-align: center;
-  padding: 32px 24px;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 16px;
+const FAQQuestionText = styled.span`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  flex: 1;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 `;
 
-const FeatureIcon = styled.div`
-  width: 48px;
-  height: 48px;
-  margin: 0 auto 16px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+const FAQQuestionIcon = styled.span<{ $isOpen: boolean }>`
+  font-size: 24px;
+  color: var(--primary-500);
+  transition: transform 0.3s ease;
+  transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
+  flex-shrink: 0;
+`;
+
+const FAQAnswer = styled.div<{ $isOpen: boolean }>`
+  max-height: ${({ $isOpen }) => ($isOpen ? "500px" : "0")};
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: ${({ $isOpen }) => ($isOpen ? "0 24px 20px 24px" : "0 24px")};
+
+  @media (max-width: 768px) {
+    padding: ${({ $isOpen }) => ($isOpen ? "0 20px 16px 20px" : "0 20px")};
+  }
+`;
+
+const FAQAnswerText = styled.p`
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+
+  strong {
+    color: var(--text-color);
+    font-weight: 600;
+  }
+`;
+
+// Bento Grid styled components for Features
+const BentoGrid = styled.div`
+  display: grid;
+  gap: 16px;
+  max-width: 1000px;
+  margin: 48px auto 0;
+
+  @media (min-width: 768px) {
+    grid-auto-rows: 20rem;
+    grid-template-columns: repeat(3, 1fr);
+  }
+`;
+
+const BentoCard = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--bg-color);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  min-height: 280px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: 1px solid rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 767px) {
+    min-height: 320px;
+    padding: 20px;
+  }
+`;
+
+const BentoHeader = styled.div`
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6366f1;
+  margin-bottom: 16px;
 `;
 
-const FeatureTitle = styled.h3`
-  font-size: 16px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 8px;
+const BentoContent = styled.div`
+  transition: transform 0.3s ease;
+  padding-top: 8px;
+
+  ${BentoCard}:hover & {
+    transform: translateY(-2px);
+  }
 `;
 
-const FeatureText = styled.p`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.5;
+const BentoTitle = styled.h4`
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-color);
+  line-height: 1.4;
+  margin: 0 0 6px 0;
 `;
+
+const BentoDescription = styled.span`
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  display: block;
+`;
+
+const DotBackground = styled.div`
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    var(--text-secondary) 1px,
+    transparent 1px
+  );
+  background-size: 16px 16px;
+  opacity: 0.1;
+`;
+
+// Animation 1: Upload Resume Animation
+const UploadAnimation = () => {
+  const [phase, setPhase] = useState<"idle" | "uploading" | "done">("idle");
+
+  useEffect(() => {
+    const runAnimation = () => {
+      setPhase("uploading");
+      setTimeout(() => setPhase("done"), 1200);
+      setTimeout(() => setPhase("idle"), 2500);
+    };
+
+    runAnimation();
+    const interval = setInterval(runAnimation, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flex: 1,
+        width: "100%",
+        height: "100%",
+        minHeight: "6rem",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        gap: "12px",
+      }}
+    >
+      <DotBackground />
+
+      {/* Upload Box */}
+      <motion.div
+        animate={{
+          borderColor: phase === "uploading" ? "var(--primary-500)" : "var(--border-color)",
+          scale: phase === "done" ? [1, 1.02, 1] : 1,
+        }}
+        style={{
+          position: "relative",
+          zIndex: 2,
+          width: "80px",
+          height: "80px",
+          background: "var(--bg-alt)",
+          borderRadius: "16px",
+          border: "2px dashed var(--border-color)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "4px",
+        }}
+      >
+        {/* File icon moving up */}
+        <motion.div
+          animate={{
+            y: phase === "uploading" ? [-20, 0] : 0,
+            opacity: phase === "idle" ? 0.5 : 1,
+          }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{
+            width: "32px",
+            height: "40px",
+            background: "var(--surface-color)",
+            borderRadius: "4px",
+            border: "1px solid var(--border-color)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "4px",
+          }}
+        >
+          <div style={{ width: "100%", height: "3px", background: "var(--border-color)", borderRadius: "2px", marginBottom: "2px" }} />
+          <div style={{ width: "80%", height: "2px", background: "var(--border-color)", borderRadius: "2px", marginBottom: "2px" }} />
+          <div style={{ width: "60%", height: "2px", background: "var(--border-color)", borderRadius: "2px" }} />
+        </motion.div>
+
+        {/* Checkmark */}
+        <motion.div
+          animate={{
+            opacity: phase === "done" ? 1 : 0,
+            scale: phase === "done" ? [0, 1.2, 1] : 0,
+          }}
+          transition={{ duration: 0.3 }}
+          style={{
+            position: "absolute",
+            top: "-8px",
+            right: "-8px",
+            width: "24px",
+            height: "24px",
+            background: "#22c55e",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            fontSize: "14px",
+            fontWeight: "bold",
+          }}
+        >
+          ✓
+        </motion.div>
+      </motion.div>
+
+      {/* Progress bar */}
+      <div style={{ width: "80px", height: "4px", background: "var(--bg-alt)", borderRadius: "2px", overflow: "hidden", position: "relative", zIndex: 1 }}>
+        <motion.div
+          animate={{
+            width: phase === "uploading" ? "100%" : phase === "done" ? "100%" : "0%",
+          }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+          style={{
+            height: "100%",
+            background: phase === "done" ? "#22c55e" : "var(--primary-500)",
+            borderRadius: "2px",
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+// Animation 2: Score Meter Animation
+const ScoreAnimation = () => {
+  const [score, setScore] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    const runAnimation = () => {
+      setAnimating(true);
+      setScore(0);
+
+      let current = 0;
+      const targetScore = 85;
+      const interval = setInterval(() => {
+        current += 2;
+        if (current >= targetScore) {
+          setScore(targetScore);
+          clearInterval(interval);
+          setTimeout(() => setAnimating(false), 1000);
+        } else {
+          setScore(current);
+        }
+      }, 30);
+    };
+
+    runAnimation();
+    const mainInterval = setInterval(runAnimation, 4000);
+    return () => clearInterval(mainInterval);
+  }, []);
+
+  const getScoreColor = (s: number) => {
+    if (s >= 80) return "#22c55e";
+    if (s >= 60) return "#f59e0b";
+    return "#ef4444";
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flex: 1,
+        width: "100%",
+        height: "100%",
+        minHeight: "6rem",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        gap: "12px",
+      }}
+    >
+      <DotBackground />
+
+      {/* Circular Score */}
+      <div style={{ position: "relative", zIndex: 2 }}>
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          {/* Background circle */}
+          <circle
+            cx="50"
+            cy="50"
+            r="40"
+            fill="none"
+            stroke="var(--bg-alt)"
+            strokeWidth="8"
+          />
+          {/* Progress circle */}
+          <motion.circle
+            cx="50"
+            cy="50"
+            r="40"
+            fill="none"
+            stroke={getScoreColor(score)}
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={251.2}
+            strokeDashoffset={251.2 - (251.2 * score) / 100}
+            transform="rotate(-90 50 50)"
+            style={{ transition: "stroke-dashoffset 0.1s ease" }}
+          />
+        </svg>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            textAlign: "center",
+          }}
+        >
+          <motion.span
+            style={{
+              fontSize: "28px",
+              fontWeight: 700,
+              color: getScoreColor(score),
+            }}
+          >
+            {score}
+          </motion.span>
+          <span style={{ fontSize: "12px", color: "var(--text-secondary)", display: "block" }}>/100</span>
+        </div>
+      </div>
+
+      {/* Score label */}
+      <motion.span
+        animate={{ opacity: score >= 80 ? 1 : 0.5 }}
+        style={{
+          fontSize: "11px",
+          fontWeight: 600,
+          color: getScoreColor(score),
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {score >= 80 ? "✓ ATS Optimized" : "Analyzing..."}
+      </motion.span>
+    </div>
+  );
+};
+
+// Animation 3: Fix & Optimize Animation
+const OptimizeAnimation = () => {
+  const [step, setStep] = useState(0);
+
+  const fixes = [
+    { label: "Format", icon: "📄" },
+    { label: "Keywords", icon: "🔑" },
+    { label: "ATS Ready", icon: "✅" },
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStep((prev) => (prev + 1) % (fixes.length + 2));
+    }, 800);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flex: 1,
+        width: "100%",
+        height: "100%",
+        minHeight: "6rem",
+        flexDirection: "column",
+        position: "relative",
+        gap: "4px",
+        justifyContent: "center",
+        padding: "0",
+      }}
+    >
+      <DotBackground />
+
+      {fixes.map((fix, i) => (
+        <motion.div
+          key={fix.label}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{
+            opacity: step > i ? 1 : 0.3,
+            x: step > i ? 0 : -10,
+          }}
+          transition={{ duration: 0.3 }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "5px 10px",
+            background: step > i ? "rgba(34, 197, 94, 0.1)" : "var(--bg-alt)",
+            borderRadius: "6px",
+            border: `1px solid ${step > i ? "rgba(34, 197, 94, 0.3)" : "var(--border-color)"}`,
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          <span style={{ fontSize: "12px" }}>{fix.icon}</span>
+          <span style={{ fontSize: "11px", color: "var(--text-color)", fontWeight: 500, flex: 1 }}>
+            {fix.label}
+          </span>
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: step > i ? 1 : 0 }}
+            transition={{ duration: 0.2, delay: 0.1 }}
+            style={{
+              fontSize: "11px",
+              fontWeight: 700,
+              color: "#22c55e",
+            }}
+          >
+            ✓
+          </motion.span>
+        </motion.div>
+      ))}
+
+      {/* Final message */}
+      <motion.div
+        animate={{
+          opacity: step > fixes.length ? 1 : 0,
+          scale: step > fixes.length ? 1 : 0.9,
+        }}
+        transition={{ duration: 0.3 }}
+        style={{
+          marginTop: "2px",
+          padding: "4px 10px",
+          background: "rgba(34, 197, 94, 0.15)",
+          borderRadius: "6px",
+          border: "1px solid rgba(34, 197, 94, 0.3)",
+          textAlign: "center",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <span style={{ fontSize: "10px", color: "#22c55e", fontWeight: 700 }}>
+          Ready! 🎉
+        </span>
+      </motion.div>
+    </div>
+  );
+};
+
+// Icons for file upload
+const UploadSvgIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="17 8 12 3 7 8" />
+    <line x1="12" y1="3" x2="12" y2="15" />
+  </svg>
+);
+
+const RefreshIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 2v6h-6" />
+    <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+    <path d="M3 22v-6h6" />
+    <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+  </svg>
+);
+
+const XIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
+// Grid Pattern Component
+function GridPattern() {
+  const columns = 41;
+  const rows = 11;
+  return (
+    <GridPatternInner>
+      {Array.from({ length: rows }).map((_, row) =>
+        Array.from({ length: columns }).map((_, col) => {
+          const index = row * columns + col;
+          return (
+            <GridCell
+              key={`${col}-${row}`}
+              $isEven={index % 2 === 0}
+            />
+          );
+        })
+      )}
+    </GridPatternInner>
+  );
+}
 
 interface ATSResult {
   overallScore: number;
@@ -837,19 +1579,48 @@ export default function ATSCheckPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ATSResult | null>(null);
+  const [openFAQs, setOpenFAQs] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
+  const toggleFAQ = (id: string) => {
+    setOpenFAQs((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
 
-    setFile(file);
+  const handleFileChange = (newFile: File) => {
+    setFile(newFile);
     setError(null);
+    analyzeFile(newFile);
+  };
+
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFile(null);
+    setResult(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleChangeFile = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    fileInputRef.current?.click();
+  };
+
+  const handleClick = () => {
+    if (!file) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const analyzeFile = async (fileToAnalyze: File) => {
     setIsAnalyzing(true);
 
     try {
       // Step 1: Parse the file
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", fileToAnalyze);
 
       const parseResponse = await fetch("/api/ats/parse", {
         method: "POST",
@@ -882,10 +1653,17 @@ export default function ATSCheckPage() {
     } finally {
       setIsAnalyzing(false);
     }
-  }, []);
+  };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
+  const { getRootProps, isDragActive } = useDropzone({
+    multiple: false,
+    noClick: true,
+    onDrop: (acceptedFiles: File[]) => {
+      const droppedFile = acceptedFiles[0];
+      if (droppedFile) {
+        handleFileChange(droppedFile);
+      }
+    },
     accept: {
       "application/pdf": [".pdf"],
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
@@ -921,12 +1699,7 @@ export default function ATSCheckPage() {
   return (
     <PageContainer>
       <HeroSection>
-        <Badge>
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Free Resume Score Check
-        </Badge>
+        
         <Title>Free ATS Resume Score Checker</Title>
         <Subtitle>
           Check your resume score instantly. Our ATS score checker analyzes your resume
@@ -1116,16 +1889,34 @@ export default function ATSCheckPage() {
             )}
 
             <CTASection>
-              <CTATitle>Ready to Fix These Issues?</CTATitle>
+              <CTAGradientCircle viewBox="0 0 600 600" aria-hidden="true">
+                <circle
+                  r={300}
+                  cx={300}
+                  cy={300}
+                  fill="url(#gradient-cta-ats)"
+                  fillOpacity="0.7"
+                />
+                <defs>
+                  <radialGradient id="gradient-cta-ats">
+                    <stop stopColor="#35A29F" />
+                    <stop offset={1} stopColor="#0B666A" />
+                  </radialGradient>
+                </defs>
+              </CTAGradientCircle>
+              <CTATitle>Ready to fix these issues?</CTATitle>
               <CTAText>
-                Sign up to get AI-powered suggestions and optimize your resume for maximum ATS compatibility.
+                Get AI-powered suggestions and optimize your resume for maximum ATS compatibility. Join 500+ professionals who landed more interviews.
               </CTAText>
-              <CTAButton href={ROUTES.AUTH.SIGNUP}>
-                Fix My Resume
-                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </CTAButton>
+              <CTAButtonGroup>
+                <CTAButton href={ROUTES.AUTH.SIGNUP}>
+                  Fix My Resume
+                </CTAButton>
+                <CTASecondaryButton href={ROUTES.PUBLIC.HOW_IT_WORKS}>
+                  Learn more
+                  <span aria-hidden="true">→</span>
+                </CTASecondaryButton>
+              </CTAButtonGroup>
             </CTASection>
 
             <TryAgainButton onClick={handleTryAgain}>
@@ -1137,149 +1928,291 @@ export default function ATSCheckPage() {
           </ResultsSection>
         ) : (
           <UploadSection>
-            <DropzoneArea {...getRootProps()} $isDragActive={isDragActive} $hasFile={!!file}>
-              <input {...getInputProps()} />
-              <UploadIcon>
-                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-              </UploadIcon>
-              <DropzoneText>
-                {isDragActive ? "Drop your resume here" : "Drag & drop your resume"}
-              </DropzoneText>
-              <DropzoneSubtext>PDF or DOCX (max 5MB) - Analysis starts automatically</DropzoneSubtext>
-            </DropzoneArea>
+            <UploadWrapper {...getRootProps()}>
+              <UploadContainer
+                onClick={handleClick}
+                whileHover="animate"
+              >
+                <HiddenInput
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.docx,.doc"
+                  onChange={(e) => {
+                    const selectedFile = e.target.files?.[0];
+                    if (selectedFile) {
+                      handleFileChange(selectedFile);
+                    }
+                  }}
+                />
+                <GridPatternContainer>
+                  <GridPattern />
+                </GridPatternContainer>
+                <ContentContainer>
+                  <UploadTitle>Upload your resume</UploadTitle>
+                  <UploadDescription>
+                    Drag or drop your resume here or click to upload (PDF or DOCX, max 5MB)
+                  </UploadDescription>
+                  <FilePreviewContainer>
+                    {file ? (
+                      <FileCard layoutId="file-upload">
+                        <FileHeader>
+                          <FileName
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            layout
+                          >
+                            {file.name}
+                          </FileName>
+                          <FileSize
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            layout
+                          >
+                            {(file.size / (1024 * 1024)).toFixed(2)} MB
+                          </FileSize>
+                        </FileHeader>
+                        <FileMeta>
+                          <FileType
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            layout
+                          >
+                            {file.type || "document"}
+                          </FileType>
+                          <FileDate
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            layout
+                          >
+                            modified {new Date(file.lastModified).toLocaleDateString()}
+                          </FileDate>
+                        </FileMeta>
+                        <FileActions
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                        >
+                          <FileActionButton onClick={handleChangeFile}>
+                            <RefreshIcon />
+                            Change File
+                          </FileActionButton>
+                          <FileActionButton $variant="danger" onClick={handleRemove}>
+                            <XIcon />
+                            Remove
+                          </FileActionButton>
+                        </FileActions>
+                      </FileCard>
+                    ) : (
+                      <>
+                        <UploadIconBox
+                          layoutId="file-upload"
+                          variants={mainVariant}
+                          transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 20,
+                          }}
+                          $isDragActive={isDragActive}
+                        >
+                          {isDragActive ? (
+                            <DropText
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                            >
+                              Drop it
+                              <UploadSvgIcon />
+                            </DropText>
+                          ) : (
+                            <UploadSvgIcon />
+                          )}
+                        </UploadIconBox>
+                        <DashedBorder variants={secondaryVariant} />
+                      </>
+                    )}
+                  </FilePreviewContainer>
+                </ContentContainer>
+              </UploadContainer>
+            </UploadWrapper>
 
             {error && <ErrorMessage>{error}</ErrorMessage>}
           </UploadSection>
         )}
       </MainContent>
 
+      <SectionDivider />
+
       {/* SEO Content Section */}
       <SEOSection>
-        <SEOTitle>How Our Resume Score Checker Works</SEOTitle>
+        <SEOTitle>How our resume score checker works</SEOTitle>
         <SEOSubtitle>
           Our ATS resume checker analyzes your resume against the same criteria used by
           Fortune 500 companies to filter candidates automatically.
         </SEOSubtitle>
 
-        <FeatureGrid>
-          <FeatureCard>
-            <FeatureIcon>
-              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </FeatureIcon>
-            <FeatureTitle>Upload Your Resume</FeatureTitle>
-            <FeatureText>
-              Simply drag and drop your resume (PDF or DOCX). Our ATS score checker
-              instantly parses your document.
-            </FeatureText>
-          </FeatureCard>
+        <BentoGrid>
+          <BentoCard>
+            <BentoHeader>
+              <UploadAnimation />
+            </BentoHeader>
+            <BentoContent>
+              <BentoTitle>Upload Your Resume</BentoTitle>
+              <BentoDescription>
+                Simply drag and drop your resume (PDF or DOCX). Our ATS score checker
+                instantly parses your document.
+              </BentoDescription>
+            </BentoContent>
+          </BentoCard>
 
-          <FeatureCard>
-            <FeatureIcon>
-              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </FeatureIcon>
-            <FeatureTitle>Get Your Resume Score</FeatureTitle>
-            <FeatureText>
-              Receive an instant ATS score out of 100, with detailed breakdown across
-              format, structure, keywords, and readability.
-            </FeatureText>
-          </FeatureCard>
+          <BentoCard>
+            <BentoHeader>
+              <ScoreAnimation />
+            </BentoHeader>
+            <BentoContent>
+              <BentoTitle>Get Your Resume Score</BentoTitle>
+              <BentoDescription>
+                Receive an instant ATS score out of 100, with detailed breakdown across
+                format, structure, keywords, and readability.
+              </BentoDescription>
+            </BentoContent>
+          </BentoCard>
 
-          <FeatureCard>
-            <FeatureIcon>
-              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </FeatureIcon>
-            <FeatureTitle>Fix & Optimize</FeatureTitle>
-            <FeatureText>
-              Get actionable suggestions to improve your resume score and pass
-              ATS filters at companies like Google, Amazon, and Microsoft.
-            </FeatureText>
-          </FeatureCard>
-        </FeatureGrid>
+          <BentoCard>
+            <BentoHeader>
+              <OptimizeAnimation />
+            </BentoHeader>
+            <BentoContent>
+              <BentoTitle>Fix & Optimize</BentoTitle>
+              <BentoDescription>
+                Get actionable suggestions to improve your resume score and pass
+                ATS filters at companies like Google, Amazon, and Microsoft.
+              </BentoDescription>
+            </BentoContent>
+          </BentoCard>
+        </BentoGrid>
 
-        <div style={{ marginTop: "64px" }}>
-          <SEOTitle>Frequently Asked Questions</SEOTitle>
+        <SectionDivider style={{ marginTop: "80px", marginBottom: "80px" }} />
+
+        <div>
+          <SEOTitle>Frequently asked questions</SEOTitle>
           <SEOSubtitle>
             Everything you need to know about ATS resume scoring and optimization.
           </SEOSubtitle>
 
           <FAQList>
-            <FAQItem>
-              <FAQQuestion>What is an ATS resume score?</FAQQuestion>
-              <FAQAnswer>
-                An ATS (Applicant Tracking System) resume score measures how well your resume
-                will perform when parsed by automated hiring software. Companies like Workday,
-                Greenhouse, Taleo, and Lever use ATS to filter resumes before human review.
-                A score of 80+ typically means your resume will pass initial screening, while
-                scores below 60 often result in automatic rejection — regardless of your qualifications.
+            <FAQItem $isOpen={openFAQs.includes("faq-0")}>
+              <FAQQuestion onClick={() => toggleFAQ("faq-0")}>
+                <FAQQuestionText>What is an ATS resume score?</FAQQuestionText>
+                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-0")}>
+                  {openFAQs.includes("faq-0") ? "−" : "+"}
+                </FAQQuestionIcon>
+              </FAQQuestion>
+              <FAQAnswer $isOpen={openFAQs.includes("faq-0")}>
+                <FAQAnswerText>
+                  An ATS (Applicant Tracking System) resume score measures how well your resume
+                  will perform when parsed by automated hiring software. Companies like Workday,
+                  Greenhouse, Taleo, and Lever use ATS to filter resumes before human review.
+                  A score of 80+ typically means your resume will pass initial screening, while
+                  scores below 60 often result in automatic rejection — regardless of your qualifications.
+                </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>
 
-            <FAQItem>
-              <FAQQuestion>How do I check my resume score for free?</FAQQuestion>
-              <FAQAnswer>
-                Simply upload your resume (PDF or DOCX) to our free ATS resume checker above.
-                Within seconds, you&apos;ll receive a comprehensive resume score breakdown including
-                format analysis, keyword optimization, and compatibility ratings for major ATS
-                systems. No signup required for the basic score check.
+            <FAQItem $isOpen={openFAQs.includes("faq-1")}>
+              <FAQQuestion onClick={() => toggleFAQ("faq-1")}>
+                <FAQQuestionText>How do I check my resume score for free?</FAQQuestionText>
+                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-1")}>
+                  {openFAQs.includes("faq-1") ? "−" : "+"}
+                </FAQQuestionIcon>
+              </FAQQuestion>
+              <FAQAnswer $isOpen={openFAQs.includes("faq-1")}>
+                <FAQAnswerText>
+                  Simply upload your resume (PDF or DOCX) to our free ATS resume checker above.
+                  Within seconds, you&apos;ll receive a comprehensive resume score breakdown including
+                  format analysis, keyword optimization, and compatibility ratings for major ATS
+                  systems. No signup required for the basic score check.
+                </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>
 
-            <FAQItem>
-              <FAQQuestion>What is a good ATS resume score?</FAQQuestion>
-              <FAQAnswer>
-                A good ATS resume score is 80 or above out of 100. Here&apos;s how to interpret your score:
-                <br /><br />
-                <strong>80-100 (Excellent):</strong> Your resume is well-optimized and should pass most ATS filters.<br />
-                <strong>60-79 (Good):</strong> Acceptable but has room for improvement.<br />
-                <strong>40-59 (Fair):</strong> Significant issues that may cause rejection.<br />
-                <strong>Below 40 (Poor):</strong> Critical problems — most ATS systems will reject this resume.
+            <FAQItem $isOpen={openFAQs.includes("faq-2")}>
+              <FAQQuestion onClick={() => toggleFAQ("faq-2")}>
+                <FAQQuestionText>What is a good ATS resume score?</FAQQuestionText>
+                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-2")}>
+                  {openFAQs.includes("faq-2") ? "−" : "+"}
+                </FAQQuestionIcon>
+              </FAQQuestion>
+              <FAQAnswer $isOpen={openFAQs.includes("faq-2")}>
+                <FAQAnswerText>
+                  A good ATS resume score is 80 or above out of 100. Here&apos;s how to interpret your score:
+                  <br /><br />
+                  <strong>80-100 (Excellent):</strong> Your resume is well-optimized and should pass most ATS filters.<br />
+                  <strong>60-79 (Good):</strong> Acceptable but has room for improvement.<br />
+                  <strong>40-59 (Fair):</strong> Significant issues that may cause rejection.<br />
+                  <strong>Below 40 (Poor):</strong> Critical problems — most ATS systems will reject this resume.
+                </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>
 
-            <FAQItem>
-              <FAQQuestion>Why do 85% of resumes get rejected by ATS?</FAQQuestion>
-              <FAQAnswer>
-                Most resumes get rejected due to formatting issues (tables, graphics, text boxes,
-                headers/footers), missing keywords, non-standard section headings, and poor structure.
-                ATS systems struggle to parse creative layouts, causing qualified candidates to be
-                filtered out before human review. Our resume score checker identifies these exact
-                issues so you can fix them.
+            <FAQItem $isOpen={openFAQs.includes("faq-3")}>
+              <FAQQuestion onClick={() => toggleFAQ("faq-3")}>
+                <FAQQuestionText>Why do 85% of resumes get rejected by ATS?</FAQQuestionText>
+                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-3")}>
+                  {openFAQs.includes("faq-3") ? "−" : "+"}
+                </FAQQuestionIcon>
+              </FAQQuestion>
+              <FAQAnswer $isOpen={openFAQs.includes("faq-3")}>
+                <FAQAnswerText>
+                  Most resumes get rejected due to formatting issues (tables, graphics, text boxes,
+                  headers/footers), missing keywords, non-standard section headings, and poor structure.
+                  ATS systems struggle to parse creative layouts, causing qualified candidates to be
+                  filtered out before human review. Our resume score checker identifies these exact
+                  issues so you can fix them.
+                </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>
 
-            <FAQItem>
-              <FAQQuestion>Which ATS systems does this checker support?</FAQQuestion>
-              <FAQAnswer>
-                Our ATS resume checker analyzes your resume against the parsing behavior of the
-                most popular ATS platforms: Workday (used by 50% of Fortune 500), Greenhouse
-                (10,000+ companies), Taleo/Oracle (large enterprises), and Lever (fast-growing
-                startups). Each system has different parsing quirks, and we show you compatibility
-                ratings for all four.
+            <FAQItem $isOpen={openFAQs.includes("faq-4")}>
+              <FAQQuestion onClick={() => toggleFAQ("faq-4")}>
+                <FAQQuestionText>Which ATS systems does this checker support?</FAQQuestionText>
+                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-4")}>
+                  {openFAQs.includes("faq-4") ? "−" : "+"}
+                </FAQQuestionIcon>
+              </FAQQuestion>
+              <FAQAnswer $isOpen={openFAQs.includes("faq-4")}>
+                <FAQAnswerText>
+                  Our ATS resume checker analyzes your resume against the parsing behavior of the
+                  most popular ATS platforms: Workday (used by 50% of Fortune 500), Greenhouse
+                  (10,000+ companies), Taleo/Oracle (large enterprises), and Lever (fast-growing
+                  startups). Each system has different parsing quirks, and we show you compatibility
+                  ratings for all four.
+                </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>
 
-            <FAQItem>
-              <FAQQuestion>How can I improve my resume score quickly?</FAQQuestion>
-              <FAQAnswer>
-                The fastest ways to improve your ATS resume score:<br /><br />
-                1. <strong>Use a simple, single-column layout</strong> — avoid tables, graphics, and text boxes<br />
-                2. <strong>Use standard section headers</strong> — &quot;Experience&quot; not &quot;My Journey&quot;<br />
-                3. <strong>Add quantified achievements</strong> — numbers and percentages stand out<br />
-                4. <strong>Include relevant keywords</strong> — match the job description language<br />
-                5. <strong>Save as .docx or simple PDF</strong> — avoid scanned images
+            <FAQItem $isOpen={openFAQs.includes("faq-5")}>
+              <FAQQuestion onClick={() => toggleFAQ("faq-5")}>
+                <FAQQuestionText>How can I improve my resume score quickly?</FAQQuestionText>
+                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-5")}>
+                  {openFAQs.includes("faq-5") ? "−" : "+"}
+                </FAQQuestionIcon>
+              </FAQQuestion>
+              <FAQAnswer $isOpen={openFAQs.includes("faq-5")}>
+                <FAQAnswerText>
+                  The fastest ways to improve your ATS resume score:<br /><br />
+                  1. <strong>Use a simple, single-column layout</strong> — avoid tables, graphics, and text boxes<br />
+                  2. <strong>Use standard section headers</strong> — &quot;Experience&quot; not &quot;My Journey&quot;<br />
+                  3. <strong>Add quantified achievements</strong> — numbers and percentages stand out<br />
+                  4. <strong>Include relevant keywords</strong> — match the job description language<br />
+                  5. <strong>Save as .docx or simple PDF</strong> — avoid scanned images
+                </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>
           </FAQList>
         </div>
       </SEOSection>
+      <SectionDivider />
+      <SecondaryCTA />
+      <Footer />
     </PageContainer>
   );
 }

@@ -468,6 +468,7 @@ export function Navbar() {
             <MenuItemText href={ROUTES.PUBLIC.HOW_IT_WORKS}>How it Works</MenuItemText>
             <MenuItemText href={ROUTES.PUBLIC.PRICING}>Pricing</MenuItemText>
             <MenuItemText href={ROUTES.PUBLIC.FAQ}>FAQ</MenuItemText>
+            <MenuItemText href={ROUTES.PUBLIC.BLOG}>Blog</MenuItemText>
           </DesktopMenu>
 
           <RightSection>
@@ -498,6 +499,9 @@ export function Navbar() {
         </MobileMenuItem>
         <MobileMenuItem href={ROUTES.PUBLIC.FAQ} onClick={closeMobileMenu}>
           FAQ
+        </MobileMenuItem>
+        <MobileMenuItem href={ROUTES.PUBLIC.BLOG} onClick={closeMobileMenu}>
+          Blog
         </MobileMenuItem>
         <MobileDivider />
         <MobileThemeWrapper>

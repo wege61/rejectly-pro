@@ -12,6 +12,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { CVListSkeleton } from "@/components/skeletons/CVListSkeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 // Icons
 const UploadIcon = () => (
@@ -77,7 +78,83 @@ interface CVDocument {
   lang: string;
   created_at: string;
   updated_at: string;
+  // ATS fields
+  ats_score?: number | null;
+  ats_breakdown?: any;
+  ats_checked_at?: string | null;
+  ats_unlocked?: boolean;
 }
+
+// ATS Score Icon
+const ATSIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9 11l3 3L22 4" />
+    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+  </svg>
+);
+
+// ATS Score Badge Component
+const ATSScoreBadge = styled.div<{ $score: number }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background: ${({ $score }) => {
+    if ($score >= 80) return 'rgba(16, 185, 129, 0.15)';
+    if ($score >= 60) return 'rgba(245, 158, 11, 0.15)';
+    if ($score >= 40) return 'rgba(249, 115, 22, 0.15)';
+    return 'rgba(239, 68, 68, 0.15)';
+  }};
+  color: ${({ $score }) => {
+    if ($score >= 80) return '#10b981';
+    if ($score >= 60) return '#f59e0b';
+    if ($score >= 40) return '#f97316';
+    return '#ef4444';
+  }};
+  border: 1px solid ${({ $score }) => {
+    if ($score >= 80) return 'rgba(16, 185, 129, 0.3)';
+    if ($score >= 60) return 'rgba(245, 158, 11, 0.3)';
+    if ($score >= 40) return 'rgba(249, 115, 22, 0.3)';
+    return 'rgba(239, 68, 68, 0.3)';
+  }};
+`;
+
+const CheckATSButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
 
 interface OptimizedCV {
   id: string;
@@ -882,8 +959,48 @@ export default function CVPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [cvToDelete, setCvToDelete] = useState<CVItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [checkingATSId, setCheckingATSId] = useState<string | null>(null);
   const toast = useToast();
   const { user } = useAuth();
+  const router = useRouter();
+
+  // Handle ATS check
+  const handleATSCheck = async (cv: CVDocument, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+
+    setCheckingATSId(cv.id);
+    try {
+      const response = await fetch("/api/ats/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ documentId: cv.id }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "ATS check failed");
+      }
+
+      // Update the CV in state with new ATS score
+      setAllCVs((prev) =>
+        prev.map((item) =>
+          item.id === cv.id
+            ? { ...item, ats_score: result.result.overallScore }
+            : item
+        )
+      );
+
+      // Navigate to ATS result page
+      router.push(`/ats-check/${cv.id}`);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "ATS check failed";
+      toast.error(errorMessage);
+    } finally {
+      setCheckingATSId(null);
+    }
+  };
 
   // Scroll active CV into view in sidebar
   useEffect(() => {
@@ -1339,6 +1456,33 @@ export default function CVPage() {
                               <Badge size="sm" variant="info">
                                 {cv.lang === "tr" ? "TR" : "EN"}
                               </Badge>
+                              {/* ATS Score Badge or Check Button */}
+                              {(cv as CVDocument).ats_score ? (
+                                <ATSScoreBadge
+                                  $score={(cv as CVDocument).ats_score!}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    router.push(`/ats-check/${cv.id}`);
+                                  }}
+                                  style={{ cursor: 'pointer' }}
+                                  title="View ATS Report"
+                                >
+                                  <ATSIcon />
+                                  ATS {(cv as CVDocument).ats_score}%
+                                </ATSScoreBadge>
+                              ) : (
+                                <CheckATSButton
+                                  onClick={(e) => handleATSCheck(cv as CVDocument, e)}
+                                  disabled={checkingATSId === cv.id}
+                                >
+                                  {checkingATSId === cv.id ? (
+                                    <Spinner size="sm" />
+                                  ) : (
+                                    <ATSIcon />
+                                  )}
+                                  {checkingATSId === cv.id ? "Checking..." : "Check ATS"}
+                                </CheckATSButton>
+                              )}
                             </CVCardMeta>
                           </CVCardContentInner>
                           <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>

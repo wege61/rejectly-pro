@@ -464,9 +464,9 @@ export function Navbar() {
             </MenuItemWrapper>
 
             {/* Simple Links */}
+            <MenuItemText href={ROUTES.PUBLIC.ATS_CHECK}>ATS Check</MenuItemText>
             <MenuItemText href={ROUTES.PUBLIC.HOW_IT_WORKS}>How it Works</MenuItemText>
             <MenuItemText href={ROUTES.PUBLIC.PRICING}>Pricing</MenuItemText>
-            <MenuItemText href={ROUTES.PUBLIC.BLOG}>Blog</MenuItemText>
             <MenuItemText href={ROUTES.PUBLIC.FAQ}>FAQ</MenuItemText>
           </DesktopMenu>
 
@@ -487,14 +487,14 @@ export function Navbar() {
       {/* Mobile Menu */}
       <MobileMenuOverlay $isOpen={isMobileMenuOpen} onClick={closeMobileMenu} />
       <MobileMenu $isOpen={isMobileMenuOpen}>
+        <MobileMenuItem href={ROUTES.PUBLIC.ATS_CHECK} onClick={closeMobileMenu}>
+          ATS Check
+        </MobileMenuItem>
         <MobileMenuItem href={ROUTES.PUBLIC.HOW_IT_WORKS} onClick={closeMobileMenu}>
           How it Works
         </MobileMenuItem>
         <MobileMenuItem href={ROUTES.PUBLIC.PRICING} onClick={closeMobileMenu}>
           Pricing
-        </MobileMenuItem>
-        <MobileMenuItem href={ROUTES.PUBLIC.BLOG} onClick={closeMobileMenu}>
-          Blog
         </MobileMenuItem>
         <MobileMenuItem href={ROUTES.PUBLIC.FAQ} onClick={closeMobileMenu}>
           FAQ

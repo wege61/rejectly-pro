@@ -113,6 +113,7 @@ export const ROUTES = {
     CONTACT: "/contact",
     BLOG: "/blog",
     BLOG_POST: (slug: string) => `/blog/${slug}`,
+    ATS_CHECK: "/ats-check",
   },
   AUTH: {
     LOGIN: "/login",
@@ -126,7 +127,7 @@ export const ROUTES = {
     REPORT_DETAIL: (id: string) => `/reports/${id}`,
     CV: "/cv",
     JOBS: "/jobs",
-    ANALYZE: "/analyze", // ← YENİ EKLENEN
+    ANALYZE: "/analyze",
     COVER_LETTERS: "/cover-letters",
     BILLING: "/billing",
     SETTINGS: "/settings",

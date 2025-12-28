@@ -1693,3 +1693,303 @@ earnedPoints can NEVER be greater than maxPoints!
 
 Respond with ONLY the JSON object. No markdown, no explanations.`;
 }
+
+export function generateATSCheckPrompt(cvText: string): string {
+  const currentDate = new Date().toISOString();
+
+  // Count words for analysis
+  const wordCount = cvText.split(/\s+/).filter(word => word.length > 0).length;
+
+  return `You are a senior ATS (Applicant Tracking System) engineer who has built and maintained parsing algorithms for Workday, Greenhouse, Lever, and Taleo. You understand EXACTLY how these systems fail to parse resumes.
+
+Your task: Analyze this CV as if you're running it through multiple ATS parsing engines and scoring it for compatibility.
+
+=============================================================================
+CV TO ANALYZE (${wordCount} words detected)
+=============================================================================
+"""
+${cvText}
+"""
+
+=============================================================================
+🔬 TECHNICAL ATS PARSING ANALYSIS
+=============================================================================
+You must analyze HOW an ATS would parse this document. Consider:
+
+1. WORKDAY parsing behavior:
+   - Strict section header matching ("Experience" not "My Journey")
+   - Date extraction requires consistent format
+   - Fails on creative section names
+
+2. GREENHOUSE parsing behavior:
+   - NLP-based keyword extraction
+   - Penalizes keyword stuffing
+   - Needs contextual skill mentions
+
+3. TALEO parsing behavior:
+   - Oldest and most rigid system
+   - Requires exact field mapping
+   - Breaks on any non-standard formatting
+
+4. LEVER parsing behavior:
+   - More modern, handles some variation
+   - Still needs clear section breaks
+   - Extracts contact info aggressively
+
+=============================================================================
+CATEGORY 1: FORMAT & PARSING (25 points max)
+=============================================================================
+Check for these SPECIFIC parsing problems:
+
+CRITICAL FAILURES (each = -5 to -8 points):
+□ Two-column layout indicators (text appearing side-by-side, | characters)
+□ Table structure remnants (grid-like text patterns)
+□ Image placeholders ([Photo], [Logo], "Profile Picture")
+□ Header/footer content that confuses parsers (page numbers, repeated name)
+□ Text boxes or sidebar indicators
+
+MAJOR ISSUES (each = -3 to -5 points):
+□ Creative dividers (═══, ★★★, •••, >>>)
+□ Unusual bullet characters (➤, ◆, ▪)
+□ Emojis or unicode symbols
+□ All-caps section headers (harder to parse)
+□ Inconsistent spacing patterns
+
+MINOR ISSUES (each = -1 to -2 points):
+□ Smart quotes instead of straight quotes
+□ En-dashes instead of hyphens in dates
+□ Non-standard characters in names/titles
+
+POSITIVE SIGNALS (+points):
+✓ Clean single-column flow
+✓ Standard bullet points (• or -)
+✓ Consistent indentation
+✓ Clear paragraph breaks
+
+=============================================================================
+CATEGORY 2: STRUCTURE & SECTIONS (25 points max)
+=============================================================================
+ATS systems look for EXACT section headers. Check:
+
+REQUIRED SECTIONS (missing any = -5 points each):
+□ Contact Information (at top, not in header)
+□ Work Experience / Professional Experience / Employment History
+□ Education
+□ Skills / Technical Skills / Core Competencies
+
+STRONGLY RECOMMENDED (-3 points if missing):
+□ Professional Summary / Summary / Profile (at top)
+□ Clear job titles for each role
+□ Company names clearly stated
+□ Location for each position
+
+STRUCTURAL CHECKS:
+□ Reverse chronological order (most recent first) - CRITICAL for ATS
+□ Consistent date format (MM/YYYY, Month YYYY, or YYYY)
+□ Job title BEFORE company name (standard order)
+□ Dates aligned or clearly associated with each role
+□ No orphaned bullet points (bullets without a parent job)
+
+CONTACT INFO PARSING:
+□ Email present and valid format (name@domain.com)
+□ Phone number present (any standard format)
+□ LinkedIn URL present (highly valued by modern ATS)
+□ Location present (City, State/Country)
+□ NO physical address (privacy concern, wastes space)
+
+=============================================================================
+CATEGORY 3: KEYWORDS & CONTENT OPTIMIZATION (30 points max)
+=============================================================================
+This is where most CVs fail. Analyze:
+
+KEYWORD DENSITY ANALYSIS:
+□ Technical skills mentioned (programming languages, tools, platforms)
+□ Industry-specific terminology present
+□ Job title keywords (matching common job posting language)
+□ Certifications spelled out correctly
+
+KEYWORD PLACEMENT (location matters!):
+□ Top 1/3 of CV contains most important keywords (ATS weight: 2x)
+□ Skills section has clear, parseable list
+□ Keywords appear in CONTEXT (not just listed)
+□ Acronyms expanded at least once: "AWS (Amazon Web Services)"
+
+CONTENT QUALITY SIGNALS:
+□ Action verbs start each bullet (Led, Developed, Managed, Implemented)
+□ Quantified achievements present (%, $, numbers)
+□ Results-oriented language (achieved, increased, reduced, delivered)
+□ Industry keywords used naturally in sentences
+
+KEYWORD DISTRIBUTION SCORE:
+- Count hard skills mentioned: ___
+- Count soft skills mentioned: ___
+- Ideal ratio: 70% hard / 30% soft
+- Actual ratio penalty if >50% soft skills
+
+ANTI-PATTERNS TO DETECT:
+□ Keyword stuffing (same word repeated 5+ times)
+□ Skills listed without context
+□ Generic phrases without specifics ("team player", "hard worker")
+□ Buzzwords without substance ("synergy", "leverage", "paradigm")
+
+=============================================================================
+CATEGORY 4: LENGTH & READABILITY (20 points max)
+=============================================================================
+Word count detected: ${wordCount} words
+
+LENGTH SCORING (based on ATS and recruiter preferences):
+- 400-650 words: OPTIMAL (20 points) - 1 page, focused
+- 300-399 OR 651-800 words: GOOD (15-18 points) - acceptable range
+- 200-299 OR 801-1000 words: FAIR (10-14 points) - too short/long
+- <200 OR >1000 words: POOR (5-9 points) - major issue
+
+READABILITY FACTORS:
+□ Bullet points used (not wall of text) - +3 points
+□ Each bullet is 1-2 lines max - +2 points
+□ Clear white space between sections - +2 points
+□ No paragraphs longer than 3 lines - +1 point
+
+SCANABILITY (6-second test):
+□ Can identify: Name, Current Title, Top Skills in 6 seconds?
+□ Are key achievements immediately visible?
+□ Is the structure obvious at a glance?
+
+=============================================================================
+SCORING RULES (STRICT)
+=============================================================================
+1. Start with max points per category
+2. Subtract for each issue found
+3. Add back for positive signals (up to max)
+4. Final score = sum of all categories
+
+SCORE INTERPRETATION:
+- 85-100: EXCELLENT - Will pass 95% of ATS systems
+- 70-84: GOOD - Will pass most ATS systems, minor optimizations needed
+- 55-69: FAIR - May be filtered out, significant improvements needed
+- 40-54: POOR - Likely rejected, major restructuring required
+- 0-39: CRITICAL - Almost certainly rejected, rebuild recommended
+
+=============================================================================
+RESPONSE FORMAT (STRICT JSON)
+=============================================================================
+{
+  "version": "2.0",
+  "checkedAt": "${currentDate}",
+  "overallScore": <0-100>,
+  "categories": {
+    "format": {
+      "name": "Format & Parsing",
+      "maxPoints": 25,
+      "earnedPoints": <0-25>,
+      "percentage": <0-100>,
+      "issues": [
+        {
+          "issue": "<specific technical issue>",
+          "impact": "<how this breaks ATS parsing>",
+          "severity": "<critical|major|minor>",
+          "fix": "<exact steps to fix>"
+        }
+      ],
+      "passes": ["<what's done well>"]
+    },
+    "structure": {
+      "name": "Structure & Sections",
+      "maxPoints": 25,
+      "earnedPoints": <0-25>,
+      "percentage": <0-100>,
+      "issues": [...],
+      "passes": [...]
+    },
+    "keywords": {
+      "name": "Keywords & Content",
+      "maxPoints": 30,
+      "earnedPoints": <0-30>,
+      "percentage": <0-100>,
+      "issues": [...],
+      "passes": [...]
+    },
+    "readability": {
+      "name": "Length & Readability",
+      "maxPoints": 20,
+      "earnedPoints": <0-20>,
+      "percentage": <0-100>,
+      "issues": [...],
+      "passes": [...]
+    }
+  },
+  "summary": "<2-3 sentences: What ATS systems will see, main strengths, biggest risk>",
+  "topIssues": [
+    {
+      "severity": "<critical|major|minor>",
+      "issue": "<problem statement>",
+      "suggestion": "<how to fix>",
+      "category": "<format|structure|keywords|readability>"
+    }
+  ],
+  "quickWins": [
+    "<5-minute fix that will improve score>",
+    "<another quick improvement>",
+    "<third easy optimization>",
+    "<fourth simple change>",
+    "<fifth fast fix>"
+  ],
+  "metadata": {
+    "wordCount": ${wordCount},
+    "estimatedPages": <1 or 2>,
+    "detectedSections": ["<sections found>"],
+    "hasContactInfo": {
+      "email": <true|false>,
+      "phone": <true|false>,
+      "linkedin": <true|false>,
+      "location": <true|false>
+    },
+    "keywordStats": {
+      "hardSkillsCount": <number>,
+      "softSkillsCount": <number>,
+      "actionVerbsCount": <number>,
+      "quantifiedAchievements": <number>
+    }
+  },
+  "atsCompatibility": {
+    "workday": "<high|medium|low>",
+    "greenhouse": "<high|medium|low>",
+    "taleo": "<high|medium|low>",
+    "lever": "<high|medium|low>"
+  }
+}
+
+=============================================================================
+EXAMPLES OF GOOD ISSUE DESCRIPTIONS
+=============================================================================
+GOOD (specific, technical, actionable):
+✓ Issue: "Two-column layout detected - left column contains contact info"
+  Impact: "Taleo and older ATS parse left-to-right, will mix content incorrectly"
+  Fix: "Convert to single-column layout, move contact info to top"
+
+✓ Issue: "Skills section uses comma-separated list without categories"
+  Impact: "ATS cannot distinguish skill types, reduces keyword matching accuracy"
+  Fix: "Group skills into Technical Skills, Tools, Languages with bullet points"
+
+✓ Issue: "No LinkedIn URL in contact section"
+  Impact: "Modern ATS (Greenhouse, Lever) use LinkedIn for candidate enrichment"
+  Fix: "Add LinkedIn profile URL: linkedin.com/in/yourname"
+
+BAD (vague, unhelpful):
+✗ "Format could be improved"
+✗ "Add more keywords"
+✗ "Structure is weak"
+
+=============================================================================
+FINAL VALIDATION CHECKLIST
+=============================================================================
+Before responding, verify:
+□ overallScore = sum of all earnedPoints (must equal exactly)
+□ Each earnedPoints <= maxPoints
+□ At least 2-3 issues per category OR explicit "passes" if category is strong
+□ topIssues sorted by severity (critical → major → minor)
+□ quickWins are genuinely quick (5 minutes or less)
+□ atsCompatibility ratings are justified by specific issues
+□ All issues have actionable fixes
+
+Respond with ONLY the JSON object. No markdown, no explanations.`;
+}

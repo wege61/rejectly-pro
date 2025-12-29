@@ -3,6 +3,13 @@
 import styled, { keyframes } from "styled-components";
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import {
+  analyzeScore,
+  getCategoryImpact,
+  getCategoryImpactEmoji,
+  generateQuickFixes,
+  type CategoryScore,
+} from "@/lib/ats/scoring";
 
 type Step = "upload" | "analyzing" | "result" | "optimizing" | "optimized";
 
@@ -110,36 +117,37 @@ const pulse = keyframes`
 
 const PageContainer = styled.div`
   min-height: calc(100vh - 64px);
-  padding: 32px;
-  max-width: 900px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing["2xl"]};
 
   @media (max-width: 768px) {
-    padding: 16px;
+    padding: ${({ theme }) => theme.spacing.lg};
   }
 `;
 
 const PageHeader = styled.div`
-  margin-bottom: 32px;
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
   text-align: center;
 `;
 
 const PageTitle = styled.h1`
-  font-size: 32px;
-  font-weight: 700;
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 8px;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
 const PageSubtitle = styled.p`
-  font-size: 16px;
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const ContentCard = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 16px;
-  padding: 32px;
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const DropzoneArea = styled.div<{ $isDragActive: boolean; $hasFile: boolean }>`
@@ -314,6 +322,88 @@ const ScoreSummary = styled.p`
   margin: 0 auto;
 `;
 
+// Percentile Badge (Faz 1)
+const PercentileBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6366f1;
+`;
+
+const PercentileMessage = styled.p`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-top: 8px;
+  font-weight: 500;
+`;
+
+// Improvement Potential Section (Faz 1)
+const ImprovementPotentialSection = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+`;
+
+const ImprovementHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+`;
+
+const ImprovementTitle = styled.h3`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const ImprovementScores = styled.span`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const ImprovementBar = styled.div`
+  height: 12px;
+  background: ${({ theme }) => theme.colors.border};
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+`;
+
+const ImprovementCurrent = styled.div<{ $score: number }>`
+  position: absolute;
+  height: 100%;
+  width: ${({ $score }) => $score}%;
+  background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+`;
+
+const ImprovementPotential = styled.div<{ $max: number }>`
+  position: absolute;
+  height: 100%;
+  width: ${({ $max }) => $max}%;
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.3) 0%, rgba(16, 185, 129, 0.5) 100%);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+`;
+
+const ImprovementText = styled.p`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-top: 8px;
+`;
+
 // Contact Info Checklist
 const ContactChecklist = styled.div`
   display: flex;
@@ -458,6 +548,14 @@ const MetricTitle = styled.h3`
   font-size: 14px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.textPrimary};
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+const CategoryImpactEmoji = styled.span`
+  font-size: 16px;
+  line-height: 1;
 `;
 
 const MetricScore = styled.span<{ $score: number; $max: number }>`
@@ -596,8 +694,8 @@ const IssueSuggestion = styled.p`
   }
 `;
 
-// Quick Wins Section
-const QuickWinsSection = styled.div`
+// Quick Fixes Section (Faz 2)
+const QuickFixesSection = styled.div`
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(34, 197, 94, 0.05) 100%);
   border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 16px;
@@ -605,7 +703,7 @@ const QuickWinsSection = styled.div`
   margin-bottom: 32px;
 `;
 
-const QuickWinsTitle = styled.h3`
+const QuickFixesTitle = styled.h3`
   font-size: 16px;
   font-weight: 600;
   color: #10b981;
@@ -615,29 +713,103 @@ const QuickWinsTitle = styled.h3`
   gap: 8px;
 `;
 
-const QuickWinsList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
+const QuickFixesList = styled.div`
+  display: grid;
+  gap: 12px;
 `;
 
-const QuickWinItem = styled.li`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+const QuickFixItem = styled.div`
+  background: white;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+  padding: 16px;
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
+  transition: all 0.2s ease;
 
-  &:last-child {
-    border-bottom: none;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
   }
+`;
+
+const QuickFixIcon = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 
   svg {
-    flex-shrink: 0;
-    color: #10b981;
-    margin-top: 2px;
+    width: 18px;
+    height: 18px;
+    color: white;
+  }
+`;
+
+const QuickFixContent = styled.div`
+  flex: 1;
+`;
+
+const QuickFixHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  gap: 12px;
+`;
+
+const QuickFixText = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const QuickFixCategory = styled.span`
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+`;
+
+const QuickFixMeta = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+`;
+
+const QuickFixImpact = styled.span`
+  font-size: 12px;
+  font-weight: 600;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+`;
+
+const QuickFixTime = styled.span`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  svg {
+    width: 12px;
+    height: 12px;
   }
 `;
 
@@ -1072,7 +1244,28 @@ export default function DashboardATSOptimizerPage() {
       )}
 
       {/* Result Step */}
-      {step === "result" && atsResult && (
+      {step === "result" && atsResult && (() => {
+        // Faz 1: Calculate score analysis
+        const categoriesForAnalysis: Record<string, CategoryScore> = Object.entries(atsResult.categories).reduce((acc, [key, cat]) => {
+          acc[key] = {
+            earnedPoints: cat.earnedPoints,
+            maxPoints: cat.maxPoints,
+            percentage: (cat.earnedPoints / cat.maxPoints) * 100
+          };
+          return acc;
+        }, {} as Record<string, CategoryScore>);
+
+        const scoreAnalysis = analyzeScore(atsResult.overallScore, categoriesForAnalysis);
+
+        // Faz 2: Generate quick fixes - convert topIssues to expected format
+        const issuesForQuickFixes = atsResult.topIssues.map(issue => ({
+          issue: issue.issue,
+          category: issue.category || 'General',
+          fix: issue.suggestion
+        }));
+        const quickFixes = generateQuickFixes(categoriesForAnalysis, issuesForQuickFixes);
+
+        return (
         <ResultsSection>
           <ScoreCard>
             <ScoreCircle $score={atsResult.overallScore}>
@@ -1080,12 +1273,18 @@ export default function DashboardATSOptimizerPage() {
               <ScoreLabel>out of 100</ScoreLabel>
             </ScoreCircle>
             <ScoreTitle $score={atsResult.overallScore}>
-              {atsResult.overallScore >= 85 ? "Excellent" :
-               atsResult.overallScore >= 70 ? "Good" :
-               atsResult.overallScore >= 55 ? "Fair" :
-               atsResult.overallScore >= 40 ? "Poor" : "Critical"}
+              {scoreAnalysis.label}
             </ScoreTitle>
             <ScoreSummary>{atsResult.summary}</ScoreSummary>
+
+            {/* Faz 1: Percentile Badge */}
+            <PercentileBadge>
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+              {scoreAnalysis.percentile}
+            </PercentileBadge>
+            <PercentileMessage>{scoreAnalysis.percentileMessage}</PercentileMessage>
 
             {/* Contact Info Checklist */}
             {atsResult.metadata?.hasContactInfo && (
@@ -1105,6 +1304,24 @@ export default function DashboardATSOptimizerPage() {
               </ContactChecklist>
             )}
           </ScoreCard>
+
+          {/* Faz 1: Improvement Potential */}
+          <ImprovementPotentialSection>
+            <ImprovementHeader>
+              <ImprovementTitle>Your Improvement Potential</ImprovementTitle>
+              <ImprovementScores>
+                {atsResult.overallScore} → {scoreAnalysis.maxPotential}
+              </ImprovementScores>
+            </ImprovementHeader>
+            <ImprovementBar>
+              <ImprovementPotential $max={scoreAnalysis.maxPotential} />
+              <ImprovementCurrent $score={atsResult.overallScore} />
+            </ImprovementBar>
+            <ImprovementText>
+              With quick fixes, you can realistically reach {scoreAnalysis.maxPotential} points
+              (+{scoreAnalysis.easyWinsPoints} points from easy improvements)
+            </ImprovementText>
+          </ImprovementPotentialSection>
 
           {/* ATS System Compatibility */}
           {atsResult.atsCompatibility && (
@@ -1168,10 +1385,18 @@ export default function DashboardATSOptimizerPage() {
 
           {/* Category Breakdown */}
           <MetricsGrid>
-            {Object.entries(atsResult.categories).map(([key, category]) => (
+            {Object.entries(atsResult.categories).map(([key, category]) => {
+              // Faz 1: Add category impact
+              const impact = getCategoryImpact(category.earnedPoints, category.maxPoints);
+              const impactEmoji = getCategoryImpactEmoji(impact);
+
+              return (
               <MetricCard key={key}>
                 <MetricHeader>
-                  <MetricTitle>{category.name || getCategoryLabel(key)}</MetricTitle>
+                  <MetricTitle>
+                    <CategoryImpactEmoji>{impactEmoji}</CategoryImpactEmoji>
+                    {category.name || getCategoryLabel(key)}
+                  </MetricTitle>
                   <MetricScore $score={category.earnedPoints} $max={category.maxPoints}>
                     {category.earnedPoints}/{category.maxPoints}
                   </MetricScore>
@@ -1198,7 +1423,8 @@ export default function DashboardATSOptimizerPage() {
                   ))}
                 </MetricIssues>
               </MetricCard>
-            ))}
+              );
+            })}
           </MetricsGrid>
 
           {/* Top Issues */}
@@ -1223,26 +1449,47 @@ export default function DashboardATSOptimizerPage() {
             </TopIssuesSection>
           )}
 
-          {/* Quick Wins */}
-          {atsResult.quickWins && atsResult.quickWins.length > 0 && (
-            <QuickWinsSection>
-              <QuickWinsTitle>
+          {/* Faz 2: Quick Fixes with Impact & Time */}
+          {quickFixes.length > 0 && (
+            <QuickFixesSection>
+              <QuickFixesTitle>
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                Quick Wins (5-minute fixes)
-              </QuickWinsTitle>
-              <QuickWinsList>
-                {atsResult.quickWins.map((win, idx) => (
-                  <QuickWinItem key={idx}>
-                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M5 13l4 4L19 7" />
-                    </svg>
-                    {win}
-                  </QuickWinItem>
+                Quick Fixes (Prioritized by Impact)
+              </QuickFixesTitle>
+              <QuickFixesList>
+                {quickFixes.map((fix, idx) => (
+                  <QuickFixItem key={idx}>
+                    <QuickFixIcon>
+                      <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path d="M5 13l4 4L19 7" />
+                      </svg>
+                    </QuickFixIcon>
+                    <QuickFixContent>
+                      <QuickFixHeader>
+                        <QuickFixText>{fix.fix}</QuickFixText>
+                        <QuickFixCategory>{fix.category}</QuickFixCategory>
+                      </QuickFixHeader>
+                      <QuickFixMeta>
+                        <QuickFixImpact>
+                          <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                          </svg>
+                          {fix.impact}
+                        </QuickFixImpact>
+                        <QuickFixTime>
+                          <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {fix.time}
+                        </QuickFixTime>
+                      </QuickFixMeta>
+                    </QuickFixContent>
+                  </QuickFixItem>
                 ))}
-              </QuickWinsList>
-            </QuickWinsSection>
+              </QuickFixesList>
+            </QuickFixesSection>
           )}
 
           {/* Optimize CTA */}
@@ -1271,7 +1518,8 @@ export default function DashboardATSOptimizerPage() {
             </TryAgainButton>
           </div>
         </ResultsSection>
-      )}
+        );
+      })()}
 
       {/* Optimizing Step */}
       {step === "optimizing" && (

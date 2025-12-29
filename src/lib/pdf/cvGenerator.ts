@@ -71,7 +71,7 @@ export async function generateCVPDF(
   doc.text(cv.contact.name, margin, yPosition);
   yPosition += 8;
 
-  // Contact details
+  // Contact details - Use bullet points instead of pipes for ATS compatibility
   doc.setFontSize(FONTS.small);
   doc.setTextColor(COLORS.textLight);
   const contactDetails = [
@@ -82,7 +82,7 @@ export async function generateCVPDF(
     cv.contact.portfolio,
   ]
     .filter(Boolean)
-    .join(" | ");
+    .join(" • ");
 
   const contactLines = wrapText(contactDetails, contentWidth);
   contactLines.forEach((line) => {
@@ -104,7 +104,7 @@ export async function generateCVPDF(
   const summaryStartY = yPosition;
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
-  doc.text("PROFESSIONAL SUMMARY", margin, yPosition);
+  doc.text("Professional Summary", margin, yPosition);
   yPosition += 6;
 
   doc.setFontSize(FONTS.body);
@@ -124,23 +124,23 @@ export async function generateCVPDF(
   const experienceStartY = yPosition;
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
-  doc.text("PROFESSIONAL EXPERIENCE", margin, yPosition);
+  doc.text("Professional Experience", margin, yPosition);
   yPosition += 6;
 
   cv.experience.forEach((exp, index) => {
     checkPageBreak(20);
 
-    // Job title and company
+    // Job title and company - ATS-friendly format without pipes
     doc.setFontSize(FONTS.body + 1);
     doc.setTextColor(COLORS.text);
     doc.setFont("Roboto", "bold");
-    doc.text(exp.title, margin, yPosition);
+    doc.text(`${exp.title} at ${exp.company}`, margin, yPosition);
     yPosition += 5;
 
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
     doc.text(
-      `${exp.company} | ${exp.location} | ${exp.startDate} - ${exp.endDate}`,
+      `${exp.location} • ${exp.startDate} - ${exp.endDate}`,
       margin,
       yPosition
     );
@@ -179,7 +179,7 @@ export async function generateCVPDF(
   const educationStartY = yPosition;
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
-  doc.text("EDUCATION", margin, yPosition);
+  doc.text("Education", margin, yPosition);
   yPosition += 6;
 
   cv.education.forEach((edu) => {
@@ -193,7 +193,7 @@ export async function generateCVPDF(
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
     doc.text(
-      `${edu.institution} | ${edu.location} | ${edu.graduationDate}`,
+      `${edu.institution} • ${edu.location} • ${edu.graduationDate}`,
       margin,
       yPosition
     );
@@ -223,7 +223,7 @@ export async function generateCVPDF(
   const skillsStartY = yPosition;
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
-  doc.text("SKILLS", margin, yPosition);
+  doc.text("Skills", margin, yPosition);
   yPosition += 6;
 
   // Technical Skills
@@ -270,7 +270,7 @@ export async function generateCVPDF(
     const certificationsStartY = yPosition;
     doc.setFontSize(FONTS.subheading);
     doc.setTextColor(COLORS.primary);
-    doc.text("CERTIFICATIONS", margin, yPosition);
+    doc.text("Certifications", margin, yPosition);
     yPosition += 6;
 
     cv.certifications.forEach((cert) => {
@@ -283,7 +283,7 @@ export async function generateCVPDF(
 
       doc.setFont("Roboto", "normal");
       doc.setFontSize(FONTS.small);
-      doc.text(`${cert.issuer} | ${cert.date}`, margin, yPosition);
+      doc.text(`${cert.issuer} • ${cert.date}`, margin, yPosition);
       yPosition += 5;
     });
     if (highlightSection === "certifications") {
@@ -298,7 +298,7 @@ export async function generateCVPDF(
     const languagesStartY = yPosition;
     doc.setFontSize(FONTS.subheading);
     doc.setTextColor(COLORS.primary);
-    doc.text("LANGUAGES", margin, yPosition);
+    doc.text("Languages", margin, yPosition);
     yPosition += 6;
 
     doc.setFontSize(FONTS.body);

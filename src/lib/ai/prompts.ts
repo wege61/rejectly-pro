@@ -750,25 +750,33 @@ PROFESSIONAL SUMMARY GUIDE (3-4 powerful sentences)
 ⚠️ DO NOT copy bullets from the original CV as-is!
 EVERY bullet must be rewritten to be more impactful.
 
+🚨 CRITICAL: BULLET LENGTH LIMIT 🚨
+- MAXIMUM 120 characters per bullet (STRICTLY ENFORCED!)
+- Should render as 1-2 lines maximum when displayed
+- If a bullet exceeds 120 chars → SPLIT into TWO separate bullets!
+- Count characters BEFORE submitting your response!
+
 TRANSFORMATION FORMULA:
 [Strong Action Verb] + [Specific Action] + [Quantified Result/Impact]
 
 WEAK → STRONG EXAMPLES:
 
-"Responsible for customer support"
-→ "Resolved 50+ customer inquiries daily, maintaining 98% satisfaction rating and reducing average response time by 30%"
+❌ "Responsible for customer support"
+✅ "Resolved 50+ customer inquiries daily, achieving 98% satisfaction rating" (72 chars ✓)
 
-"Worked on web development projects"
-→ "Developed and deployed 5 responsive web applications using React and Node.js, serving 10,000+ monthly active users"
+❌ "Worked on web development projects"
+✅ "Developed 5 web applications using React, serving 10,000+ monthly users" (75 chars ✓)
 
-"Managed social media accounts"
-→ "Grew social media following by 150% across 3 platforms, generating 2M+ impressions and driving 25% increase in website traffic"
+❌ "Managed social media accounts"
+✅ "Grew social media following by 150% across 3 platforms" (58 chars ✓)
+✅ "Generated 2M+ impressions, driving 25% increase in website traffic" (68 chars ✓)
+[Note: Split into 2 bullets to keep both under 120 chars]
 
-"Helped with data analysis"
-→ "Analyzed datasets of 100K+ records using Python and SQL, delivering insights that informed $500K in cost-saving decisions"
+❌ "Helped with data analysis"
+✅ "Analyzed 100K+ records using Python and SQL for cost-saving insights" (71 chars ✓)
 
-"Optimized service processes"
-→ "Streamlined service workflows reducing customer wait times by 35%, directly contributing to 97.3% CSAT achievement"
+❌ "Optimized service processes"
+✅ "Streamlined service workflows, reducing wait times by 35%" (59 chars ✓)
 
 🎯 METRIC ESTIMATION RULES:
 If exact numbers aren't in the CV, use reasonable estimates:
@@ -785,13 +793,36 @@ Spearheaded, Orchestrated, Transformed, Accelerated, Pioneered, Championed, Arch
 ATS OPTIMIZATION CHECKLIST
 =============================================================================
 Your optimized CV must:
-□ Use standard section headings (Experience, Education, Skills)
+□ Use standard section headings (Professional Experience, Education, Skills)
 □ Avoid tables, graphics, or complex formatting
 □ Include relevant keywords from job posting naturally
-□ Use standard date formats (Month Year)
+□ Use standard date formats (Month YYYY) with 4-digit year
 □ Spell out acronyms at least once
 □ Use standard fonts and simple formatting
-□ Keep bullet points concise (1-2 lines each)
+□ Keep bullet points concise (max 120 characters, 1-2 lines each)
+
+🚨 CRITICAL: HARD SKILLS VS SOFT SKILLS REQUIREMENT 🚨
+================================================================================
+ATS systems heavily weight hard/technical skills over soft skills!
+
+MANDATORY REQUIREMENTS:
+✅ Technical skills array: MINIMUM 10-12 items (STRICTLY ENFORCED!)
+✅ Soft skills array: MAXIMUM 4-5 items (cut down if more!)
+✅ Hard to soft ratio: 70/30 or better
+
+If the original CV has fewer than 10 hard skills, you MUST add relevant ones based on:
+- Their industry and job role
+- Technologies mentioned in their experience
+- Common tools for their profession
+- Skills implied by their achievements
+
+Examples:
+- Software developer → Add: Git, REST APIs, SQL, Testing frameworks, CI/CD
+- Marketing professional → Add: Google Analytics, SEO, Email Marketing, CRM tools
+- Sales professional → Add: CRM Systems, Pipeline Management, Lead Generation tools
+
+DO NOT just copy the original skills - actively expand hard skills to meet the 10-12 minimum!
+================================================================================
 
 🚨 FINAL REMINDER BEFORE YOU WRITE JSON 🚨
 ================================================================================
@@ -816,8 +847,8 @@ Respond in JSON format:
       "title": "Job Title",
       "company": "Company Name",
       "location": "City, Country",
-      "startDate": "Month Year",
-      "endDate": "Month Year", // or "Present"
+      "startDate": "Month YYYY",
+      "endDate": "Month YYYY", // or "Present"
       "bullets": [
         "Achievement-focused bullet point with quantifiable results...",
         "Another bullet incorporating keywords and STAR format...",
@@ -831,19 +862,19 @@ Respond in JSON format:
       "degree": "Degree Name",
       "institution": "University Name",
       "location": "City, Country",
-      "graduationDate": "Month Year",
+      "graduationDate": "Month YYYY",
       "details": "GPA: 3.8/4.0, Honors, relevant coursework" // optional
     }
   ],
   "skills": {
-    "technical": ["Skill 1", "Skill 2", "Skill 3", "..."],
-    "soft": ["Leadership", "Communication", "Problem Solving", "..."]
+    "technical": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8", "Skill 9", "Skill 10", "..."], // MINIMUM 10-12 items!
+    "soft": ["Leadership", "Communication", "Problem Solving", "Team Collaboration"] // MAXIMUM 4-5 items!
   },
   "certifications": [ // optional, only if present in original CV
     {
       "name": "Certification Name",
       "issuer": "Issuing Organization",
-      "date": "Month Year"
+      "date": "Month YYYY"
     }
   ],
   "languages": [ // optional, only if present in original CV
@@ -876,7 +907,7 @@ ${fakeItMode ? `
 - Enhance wording and presentation, not fabricate facts
 - Ensure every experience bullet demonstrates impact
 - Professional summary should be compelling
-- All dates should be in "Month Year" format
+- All dates MUST be in "Month YYYY" format (e.g., "January 2020", "June 2023")
 - Keep professional tone throughout
 - Use standard ASCII characters only (avoid special Unicode symbols, emojis, or fancy characters)
 - Use simple quotes (""), not smart quotes or other variants
@@ -908,6 +939,9 @@ Before responding, verify:
 ${additionalTools.length > 0 ? `□ CRITICAL: ALL ${additionalTools.length} user-confirmed tools (${additionalTools.join(', ')}) are in skills.technical array
 □ CRITICAL: Each user-confirmed tool appears in at least ONE experience bullet point` : ''}
 ${fakeItMode ? '□ All missing keywords aggressively added per Fake It Mode' : '□ Bullets enhanced with quantified metrics'}
+□ Skills.technical array has 10-12+ items (COUNT THEM!)
+□ Skills.soft array has 4-5 items MAX (COUNT THEM!)
+□ Hard to soft skills ratio is 70/30 or better
 □ Summary does NOT start with "I am" or "I have"
 □ Summary does NOT contain "eager to apply" or similar clichés
 □ ALL original achievements preserved and integrated
@@ -917,6 +951,7 @@ ${fakeItMode ? '□ All missing keywords aggressively added per Fake It Mode' : 
 ⚠️ CRITICAL CHECK: Compare your output to the original CV.
 If the summary and bullets look almost identical → YOU FAILED. Rewrite them!
 If ANY achievement from original is missing → YOU FAILED. Add them back!
+If ANY bullet exceeds 120 characters → YOU FAILED. Split it into 2 bullets!
 The optimized CV should be NOTICEABLY BETTER, not a copy of the original.
 
 Respond with ONLY the JSON object. No explanations, no markdown.`;
@@ -2132,20 +2167,32 @@ ${atsResult.quickWins.map((win, i) => `✓ ${i + 1}. ${win}`).join('\n')}
 FORMAT (Target: 25/25 points):
 ✅ Single-column layout ONLY
 ✅ Standard ASCII characters (no emojis, special chars)
-✅ Standard bullet points (• or -)
+✅ Standard bullet points (• or -) ONLY
 ✅ Consistent spacing and indentation
 ✅ No tables, columns, or graphics
 ✅ Clean paragraph breaks between sections
+🚫 NEVER use pipe (|) character - it confuses ATS parsers!
 
 STRUCTURE (Target: 25/25 points):
 ✅ Contact info at TOP (name, email, phone, location, LinkedIn)
 ✅ Professional Summary immediately after contact
-✅ "Professional Experience" section header (exact wording)
-✅ "Education" section header (exact wording)
-✅ "Skills" section header (exact wording)
+
+🚨 CRITICAL: SECTION HEADERS MUST BE EXACTLY AS FOLLOWS (Title Case, NOT All-Caps):
+   1. "Professional Summary" (or just "Summary")
+   2. "Professional Experience" (NOT "Work Experience", NOT "Experience", NOT all-caps)
+   3. "Education" (exact wording, title case)
+   4. "Skills" (NOT "Technical Skills", NOT "Core Competencies", NOT all-caps)
+   5. "Certifications" (if applicable, title case)
+   6. "Languages" (if applicable, title case)
+
+⚠️ NEVER use ALL-CAPS for section headers - ATS parsers penalize this!
+
 ✅ REVERSE CHRONOLOGICAL order (newest job first)
-✅ Job Title | Company | Location | Dates format
+✅ Job Title format: "[Title] at [Company]" on first line
+✅ Location and dates: "[Location] • [Month YYYY] - [Month YYYY]" on second line
+✅ Date format MUST be "Month YYYY" (e.g., "January 2020", NOT "Jan 2020" or "January 20")
 ✅ 3-5 bullets per job
+🚫 NEVER use "Job Title | Company | Location" format - use the format above!
 
 KEYWORDS & CONTENT (Target: 30/30 points):
 ✅ EVERY bullet starts with STRONG action verb
@@ -2153,11 +2200,23 @@ KEYWORDS & CONTENT (Target: 30/30 points):
 ✅ Technical skills listed with full names + acronyms: "Amazon Web Services (AWS)"
 ✅ Industry keywords appear in CONTEXT (not just listed)
 ✅ Skills grouped: Technical | Soft | Tools
-✅ Hard skills > Soft skills ratio (70/30)
+
+🚨 CRITICAL: HARD SKILLS MUST DOMINATE!
+- Minimum 10-15 hard/technical skills
+- Maximum 4-5 soft skills
+- Hard to soft ratio: 70/30 or better
+- If original CV has < 10 hard skills, ADD relevant ones for their industry
 
 READABILITY (Target: 20/20 points):
 ✅ 400-650 words total (OPTIMAL for 1 page)
-✅ Bullets 1-2 lines max
+
+🚨 BULLET LENGTH RULE (STRICTLY ENFORCED):
+- Maximum 120 characters per bullet (count them!)
+- Maximum 2 lines when rendered
+- ONE metric per bullet (don't cram multiple achievements)
+- If a bullet is > 120 chars, SPLIT IT into 2 bullets!
+
+✅ Each bullet is ONE concise sentence - no run-on sentences!
 ✅ Clear white space between sections
 ✅ Scannable in 6 seconds
 
@@ -2166,26 +2225,59 @@ READABILITY (Target: 20/20 points):
 =============================================================================
 FORMULA: [Power Verb] + [Specific Action] + [Metric/Result]
 
-TRANSFORM EXAMPLES:
+TRANSFORM EXAMPLES (Keep bullets concise - max 120 characters!):
 ❌ "Responsible for customer service"
-✅ "Resolved 50+ customer inquiries daily, achieving 98% satisfaction rating and reducing escalations by 40%"
+✅ "Resolved 50+ customer inquiries daily, achieving 98% satisfaction rating"
 
 ❌ "Worked on sales"
-✅ "Generated $250K+ in annual revenue by closing 30+ enterprise deals and expanding key accounts by 45%"
+✅ "Generated $250K+ revenue by closing 30+ enterprise deals"
 
 ❌ "Managed team"
-✅ "Led cross-functional team of 8 professionals, delivering 15 projects on-time and under budget"
+✅ "Led cross-functional team of 8, delivering 15 projects on-time"
 
 ❌ "Did marketing"
-✅ "Executed 20+ marketing campaigns across 5 channels, driving 150% increase in qualified leads"
+✅ "Executed 20+ campaigns across 5 channels, driving 150% lead increase"
 
 ❌ "Helped with projects"
-✅ "Spearheaded 12 strategic initiatives, resulting in $500K cost savings and 25% efficiency improvement"
+✅ "Spearheaded 12 initiatives, resulting in $500K savings and 25% efficiency gain"
+
+CRITICAL: Keep bullets SHORT and PUNCHY. One metric per bullet is enough!
 
 POWER VERBS TO USE:
 Spearheaded, Orchestrated, Pioneered, Accelerated, Transformed, Championed,
 Architected, Delivered, Generated, Achieved, Drove, Optimized, Streamlined,
 Launched, Established, Cultivated, Maximized, Revolutionized
+
+=============================================================================
+🎯 SKILLS SECTION REQUIREMENTS (STRICTLY ENFORCED)
+=============================================================================
+
+MINIMUM REQUIREMENTS:
+- 10-15 Technical/Hard Skills (MINIMUM!)
+- 4-5 Soft Skills (MAXIMUM!)
+- If original CV lacks skills, ADD relevant ones for their industry
+
+HARD SKILLS EXAMPLES BY ROLE:
+- Software: Python, JavaScript, React, Node.js, AWS, Docker, MongoDB, PostgreSQL, Git, CI/CD, Kubernetes, REST APIs
+- Marketing: Google Analytics, SEO, SEM, Facebook Ads, HubSpot, Salesforce, Content Marketing, Email Marketing, A/B Testing
+- Sales: Salesforce, CRM Systems, Lead Generation, Pipeline Management, Contract Negotiation, Account Management
+- Customer Service: Zendesk, Intercom, CRM Tools, Ticketing Systems, Live Chat, Help Desk Software
+- Finance: Excel, QuickBooks, Financial Modeling, Budgeting, Forecasting, SAP, Bloomberg Terminal
+
+SOFT SKILLS (Keep to 4-5 ONLY):
+Leadership, Communication, Problem Solving, Team Collaboration, Adaptability
+
+FORMAT IN JSON:
+"skills": {
+  "technical": [
+    "Skill 1", "Skill 2", "Skill 3", "Tool 1", "Technology 1",
+    "Skill 4", "Skill 5", "Skill 6", "Tool 2", "Technology 2",
+    "Skill 7", "Skill 8"  // At least 10-12 items!
+  ],
+  "soft": [
+    "Leadership", "Communication", "Problem Solving", "Team Collaboration"  // MAX 4-5!
+  ]
+}
 
 =============================================================================
 📊 METRIC ESTIMATION RULES (ADD METRICS EVERYWHERE!)
@@ -2236,7 +2328,7 @@ RESPONSE FORMAT (STRICT JSON)
       "title": "Job Title",
       "company": "Company Name",
       "location": "City, Country",
-      "startDate": "Month Year",
+      "startDate": "Month YYYY",
       "endDate": "Present",
       "bullets": [
         "Power verb + specific action + quantified result (metric)",
@@ -2251,7 +2343,7 @@ RESPONSE FORMAT (STRICT JSON)
       "degree": "Degree Name",
       "institution": "University Name",
       "location": "City, Country",
-      "graduationDate": "Month Year",
+      "graduationDate": "Month YYYY",
       "details": "GPA, honors, relevant coursework"
     }
   ],
@@ -2263,7 +2355,7 @@ RESPONSE FORMAT (STRICT JSON)
     {
       "name": "Certification Name",
       "issuer": "Issuing Organization",
-      "date": "Month Year"
+      "date": "Month YYYY"
     }
   ],
   "languages": [
@@ -2296,19 +2388,35 @@ Include 10-15 changes minimum!
 =============================================================================
 ✅ FINAL QUALITY CHECKLIST (ALL MUST BE TRUE)
 =============================================================================
-□ Contact info at top with LinkedIn URL
+□ Contact info at top with LinkedIn URL (NO pipe | characters!)
 □ Professional Summary has NO clichés, HAS metrics
-□ Section headers: "Professional Experience", "Education", "Skills"
+□ Section headers in TITLE CASE (NOT all-caps): "Professional Summary", "Professional Experience", "Education", "Skills"
 □ Experience in REVERSE chronological order
+□ Job titles in format: "[Title] at [Company]" (NOT "Title | Company")
+□ ALL dates in "Month YYYY" format (e.g., "January 2020", NOT "Jan 2020" or "January 20")
 □ EVERY bullet starts with power verb
 □ EVERY bullet has a metric/number
+□ EVERY bullet is SHORT (max 120 characters, 1-2 lines) - COUNT THE CHARACTERS!
 □ 3-5 bullets per job
-□ Skills split into technical/soft
+□ 10-15 HARD/Technical skills listed (MINIMUM 10!)
+□ 4-5 SOFT skills ONLY (MAXIMUM 5!)
+□ Skills properly split: technical array has 10+ items, soft array has 4-5 items
 □ Total word count: 400-650
+□ NO pipe (|) characters ANYWHERE in the CV
 □ ALL identified issues are fixed
-□ Target: 95-100% ATS score
+□ Target: 90-95% ATS score (be realistic!)
 
-🎯 REMEMBER: The optimized CV must score 95-100%. Every issue must be fixed. Every bullet must have metrics. No exceptions!
+🎯 CRITICAL RULES (READ THESE 3 TIMES BEFORE GENERATING):
+1. NEVER use pipe (|) character - it makes ATS think you have columns!
+2. Job title format: "[Title] at [Company]" then "[Location] • [Dates]" on next line
+3. ALL dates MUST be "Month YYYY" format (e.g., "January 2020", NOT "Jan 2020")
+4. Section headers in TITLE CASE: "Professional Experience" (NOT "PROFESSIONAL EXPERIENCE" or "Work Experience")
+5. NEVER use all-caps for section headers - ATS systems penalize this!
+6. Bullets must be SHORT and PUNCHY (max 120 chars) - if longer, SPLIT into 2 bullets!
+7. Every bullet needs ONE clear metric (not 3 metrics in one bullet!)
+8. MINIMUM 10 hard skills - if original CV lacks them, ADD relevant ones!
+9. MAXIMUM 5 soft skills - cut them down if too many!
+10. The optimized CV should score 90-95%. Aim for excellence, not perfection!
 
 Respond with ONLY the JSON object. No markdown, no explanations.`;
 }

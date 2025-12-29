@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
-import { generateATSOptimizationPrompt, generateATSCheckPrompt } from "@/lib/ai/prompts";
+import {
+  generateATSOptimizationPrompt,
+  generateATSCheckPrompt
+} from "@/lib/ai/prompts";
 import { getUserAccessStatus, consumeCredit } from "@/lib/credits";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { GeneratedCV } from "@/types/cv";
@@ -144,38 +147,30 @@ export async function POST(request: NextRequest) {
     const pdfUrl = urlData.publicUrl;
     console.log("✅ PDF uploaded:", pdfUrl);
 
-    // 7. Validate optimized CV to get new score
-    console.log("🔍 Validating optimized CV...");
+    // 7. Re-check optimized CV with REAL ATS check (for consistency)
+    console.log("🔍 Re-checking optimized CV with ATS system...");
     const optimizedCVText = generateCVTextFromJSON(optimizedCV);
 
-    // Collect all original issues for validation
-    const originalIssues = [
-      ...atsResult.categories.format.issues.map(i => ({ issue: i.issue, category: 'format' })),
-      ...atsResult.categories.structure.issues.map(i => ({ issue: i.issue, category: 'structure' })),
-      ...atsResult.categories.keywords.issues.map(i => ({ issue: i.issue, category: 'keywords' })),
-      ...atsResult.categories.readability.issues.map(i => ({ issue: i.issue, category: 'readability' })),
-    ];
+    // Run REAL ATS check on optimized CV (same scoring system as original)
+    const recheckPrompt = generateATSCheckPrompt(optimizedCVText);
 
-    const validationPrompt = generateOptimizedCVValidationPrompt(
-      optimizedCVText,
-      originalIssues,
-      beforeScore
-    );
-
-    const validationCompletion = await openai.chat.completions.create({
+    const recheckCompletion = await openai.chat.completions.create({
       model: AI_MODEL,
-      messages: [{ role: "user", content: validationPrompt }],
-      temperature: 0.2,
-      max_tokens: 3000,
+      messages: [{ role: "user", content: recheckPrompt }],
+      temperature: 0.1,
+      max_tokens: 4000,
       response_format: { type: "json_object" },
     });
 
-    const validationResult = JSON.parse(
-      validationCompletion.choices[0].message.content || "{}"
+    const recheckResult = JSON.parse(
+      recheckCompletion.choices[0].message.content || "{}"
     );
-    const afterScore = Math.min(100, validationResult.overallScore || 95);
 
-    console.log(`📊 Score improved: ${beforeScore} → ${afterScore} (+${afterScore - beforeScore})`);
+    const afterScore = recheckResult.overallScore || 95;
+    const optimizedAtsResult = recheckResult;
+
+    console.log(`📊 Real ATS score: ${beforeScore} → ${afterScore} (+${afterScore - beforeScore})`);
+    console.log(`📋 Optimized issues remaining: ${optimizedAtsResult.topIssues?.length || 0}`);
 
     // 8. Save optimized CV to database
     const { data: savedCV, error: saveError } = await supabase
@@ -195,53 +190,7 @@ export async function POST(request: NextRequest) {
       // Don't fail - PDF is already generated
     }
 
-    // 9. Compute stats from optimized CV
-    const wordCount = optimizedCVText.split(/\s+/).filter(w => w.length > 0).length;
-    const actionVerbs = countActionVerbs(optimizedCVText);
-    const quantifiedAchievements = countMetrics(optimizedCVText);
-    const hardSkillsCount = optimizedCV.skills?.technical?.length || 0;
-
-    // Compute ATS compatibility based on score
-    const getCompatibilityLevel = (score: number): string => {
-      if (score >= 90) return "high";
-      if (score >= 75) return "medium";
-      return "low";
-    };
-
-    // Compute category scores (proportional to after score)
-    const categoryBaseScore = afterScore / 100;
-    const categories = {
-      format: {
-        name: "Format & Parsing",
-        earnedPoints: Math.round(25 * categoryBaseScore),
-        maxPoints: 25,
-        issues: [],
-        passes: ["ATS-friendly single-column layout", "Standard characters used", "No tables or graphics"]
-      },
-      structure: {
-        name: "Structure & Layout",
-        earnedPoints: Math.round(25 * categoryBaseScore),
-        maxPoints: 25,
-        issues: [],
-        passes: ["Standard section headers", "Reverse chronological order", "Contact info at top"]
-      },
-      keywords: {
-        name: "Keywords & Content",
-        earnedPoints: Math.round(30 * categoryBaseScore),
-        maxPoints: 30,
-        issues: [],
-        passes: ["Action verbs in every bullet", "Quantified achievements", "Industry keywords present"]
-      },
-      readability: {
-        name: "Readability & Length",
-        earnedPoints: Math.round(20 * categoryBaseScore),
-        maxPoints: 20,
-        issues: [],
-        passes: ["Optimal word count", "Clear bullet structure", "Scannable format"]
-      }
-    };
-
-    // 10. Return result with full data
+    // 9. Return result with REAL ATS check data (no fake scores!)
     const result = {
       success: true,
       pdfUrl,
@@ -255,34 +204,8 @@ export async function POST(request: NextRequest) {
         impact: c.impact as "high" | "medium" | "low",
       })),
       optimizedCVId: savedCV?.id || "",
-      // New: Full ATS result data for consistent display
-      optimizedAtsResult: {
-        overallScore: afterScore,
-        summary: `Your optimized CV achieved a ${afterScore}/100 ATS score. All identified issues have been fixed, including formatting improvements, action verbs added to all bullets, and quantified achievements throughout.`,
-        categories,
-        metadata: {
-          wordCount,
-          keywordStats: {
-            hardSkillsCount,
-            softSkillsCount: optimizedCV.skills?.soft?.length || 0,
-            actionVerbsCount: actionVerbs,
-            quantifiedAchievements
-          },
-          hasContactInfo: {
-            email: !!optimizedCV.contact?.email,
-            phone: !!optimizedCV.contact?.phone,
-            linkedin: !!optimizedCV.contact?.linkedin,
-            location: !!optimizedCV.contact?.location
-          }
-        },
-        atsCompatibility: {
-          workday: getCompatibilityLevel(afterScore),
-          greenhouse: getCompatibilityLevel(afterScore),
-          taleo: getCompatibilityLevel(afterScore - 2), // Taleo is slightly stricter
-          lever: getCompatibilityLevel(afterScore)
-        },
-        quickWins: [] // All fixed already
-      }
+      // REAL ATS result from actual check (consistent scoring)
+      optimizedAtsResult: optimizedAtsResult
     };
 
     return NextResponse.json({
@@ -303,43 +226,47 @@ export async function POST(request: NextRequest) {
 }
 
 // Helper: Convert GeneratedCV JSON to plain text for ATS re-check
+// IMPORTANT: Use bullet points (•) instead of pipes (|) to avoid ATS column detection
 function generateCVTextFromJSON(cv: GeneratedCV): string {
   const lines: string[] = [];
 
-  // Contact
+  // Contact - NO PIPES! Use bullet points
   lines.push(cv.contact?.name || "");
-  lines.push(`${cv.contact?.email || ""} | ${cv.contact?.phone || ""} | ${cv.contact?.location || ""}`);
+  const contactParts = [cv.contact?.email, cv.contact?.phone, cv.contact?.location].filter(Boolean);
+  if (contactParts.length > 0) {
+    lines.push(contactParts.join(" • "));
+  }
   if (cv.contact?.linkedin) lines.push(cv.contact.linkedin);
   if (cv.contact?.portfolio) lines.push(cv.contact.portfolio);
   lines.push("");
 
   // Summary
-  lines.push("PROFESSIONAL SUMMARY");
+  lines.push("Professional Summary");
   lines.push(cv.summary || "");
   lines.push("");
 
-  // Experience
-  lines.push("PROFESSIONAL EXPERIENCE");
+  // Experience - NO PIPES! Use "at" format
+  lines.push("Professional Experience");
   for (const exp of cv.experience || []) {
-    lines.push(`${exp.title} | ${exp.company}`);
-    lines.push(`${exp.location} | ${exp.startDate} - ${exp.endDate}`);
+    lines.push(`${exp.title} at ${exp.company}`);
+    lines.push(`${exp.location} • ${exp.startDate} - ${exp.endDate}`);
     for (const bullet of exp.bullets || []) {
       lines.push(`• ${bullet}`);
     }
     lines.push("");
   }
 
-  // Education
-  lines.push("EDUCATION");
+  // Education - NO PIPES!
+  lines.push("Education");
   for (const edu of cv.education || []) {
-    lines.push(`${edu.degree} | ${edu.institution}`);
-    lines.push(`${edu.location} | ${edu.graduationDate}`);
+    lines.push(`${edu.degree}`);
+    lines.push(`${edu.institution} • ${edu.location} • ${edu.graduationDate}`);
     if (edu.details) lines.push(edu.details);
     lines.push("");
   }
 
   // Skills
-  lines.push("SKILLS");
+  lines.push("Skills");
   if (cv.skills?.technical?.length > 0) {
     lines.push(`Technical: ${cv.skills.technical.join(", ")}`);
   }
@@ -350,7 +277,7 @@ function generateCVTextFromJSON(cv: GeneratedCV): string {
 
   // Certifications
   if (cv.certifications && cv.certifications.length > 0) {
-    lines.push("CERTIFICATIONS");
+    lines.push("Certifications");
     for (const cert of cv.certifications) {
       lines.push(`${cert.name} - ${cert.issuer} (${cert.date})`);
     }
@@ -359,7 +286,7 @@ function generateCVTextFromJSON(cv: GeneratedCV): string {
 
   // Languages
   if (cv.languages && cv.languages.length > 0) {
-    lines.push("LANGUAGES");
+    lines.push("Languages");
     for (const lang of cv.languages) {
       lines.push(`${lang.language}: ${lang.proficiency}`);
     }

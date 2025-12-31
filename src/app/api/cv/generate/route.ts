@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateOptimizedCVPrompt, generateFakeSkillsRecommendationsPrompt } from "@/lib/ai/prompts";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
+import { postProcessCVForATS, GeneratedCVData } from "@/lib/ats/utils";
 
 export async function POST(request: NextRequest) {
   console.log('\n\n🔴🔴🔴 CV GENERATE ENDPOINT CALLED 🔴🔴🔴\n\n');
@@ -188,9 +189,12 @@ export async function POST(request: NextRequest) {
       response_format: { type: "json_object" },
     });
 
-    const generatedCV = JSON.parse(
+    const rawGeneratedCV = JSON.parse(
       completion.choices[0].message.content || "{}"
     );
+
+    // Post-process CV for ATS compliance (expand abbreviations, normalize dates, clean special chars)
+    const generatedCV = postProcessCVForATS(rawGeneratedCV as GeneratedCVData);
 
     // Log generated CV for debugging
     console.log('📄 Generated CV Experience:', JSON.stringify(generatedCV.experience?.map((e: { title: string; bullets: string[] }) => ({

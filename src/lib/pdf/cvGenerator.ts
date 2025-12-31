@@ -71,7 +71,12 @@ export async function generateCVPDF(
   doc.text(cv.contact.name, margin, yPosition);
   yPosition += 8;
 
+<<<<<<< Updated upstream
   // Contact details - Use bullet points instead of pipes for ATS compatibility
+=======
+  // Contact details - Use comma separator for maximum ATS compatibility
+  // IMPORTANT: Avoid special characters like • | — that confuse ATS parsers
+>>>>>>> Stashed changes
   doc.setFontSize(FONTS.small);
   doc.setTextColor(COLORS.textLight);
   const contactDetails = [
@@ -82,7 +87,11 @@ export async function generateCVPDF(
     cv.contact.portfolio,
   ]
     .filter(Boolean)
+<<<<<<< Updated upstream
     .join(" • ");
+=======
+    .join(", ");
+>>>>>>> Stashed changes
 
   const contactLines = wrapText(contactDetails, contentWidth);
   contactLines.forEach((line) => {
@@ -140,7 +149,11 @@ export async function generateCVPDF(
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
     doc.text(
+<<<<<<< Updated upstream
       `${exp.location} • ${exp.startDate} - ${exp.endDate}`,
+=======
+      `${exp.location}, ${exp.startDate} - ${exp.endDate}`,
+>>>>>>> Stashed changes
       margin,
       yPosition
     );
@@ -192,11 +205,19 @@ export async function generateCVPDF(
 
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
+<<<<<<< Updated upstream
     doc.text(
       `${edu.institution} • ${edu.location} • ${edu.graduationDate}`,
       margin,
       yPosition
     );
+=======
+    // Build education details - only include values that exist
+    const eduDetails = [edu.institution, edu.location, edu.graduationDate]
+      .filter(Boolean)
+      .join(", ");
+    doc.text(eduDetails, margin, yPosition);
+>>>>>>> Stashed changes
     yPosition += 5;
 
     if (edu.details) {
@@ -229,11 +250,11 @@ export async function generateCVPDF(
   // Technical Skills
   doc.setFontSize(FONTS.body);
   doc.setTextColor(COLORS.text);
-  doc.setFont("helvetica", "bold");
+  doc.setFont("Roboto", "bold");
   doc.text("Technical Skills:", margin, yPosition);
   yPosition += 5;
 
-  doc.setFont("helvetica", "normal");
+  doc.setFont("Roboto", "normal");
   const techSkillsText = cv.skills.technical.join(", ");
   const techSkillsLines = wrapText(techSkillsText, contentWidth - 5);
   techSkillsLines.forEach((line) => {
@@ -245,11 +266,11 @@ export async function generateCVPDF(
   yPosition += 2;
 
   // Soft Skills
-  doc.setFont("helvetica", "bold");
+  doc.setFont("Roboto", "bold");
   doc.text("Soft Skills:", margin, yPosition);
   yPosition += 5;
 
-  doc.setFont("helvetica", "normal");
+  doc.setFont("Roboto", "normal");
   const softSkillsText = cv.skills.soft.join(", ");
   const softSkillsLines = wrapText(softSkillsText, contentWidth - 5);
   softSkillsLines.forEach((line) => {
@@ -283,7 +304,13 @@ export async function generateCVPDF(
 
       doc.setFont("Roboto", "normal");
       doc.setFontSize(FONTS.small);
+<<<<<<< Updated upstream
       doc.text(`${cert.issuer} • ${cert.date}`, margin, yPosition);
+=======
+      // Build certification details - only include values that exist
+      const certDetails = [cert.issuer, cert.date].filter(Boolean).join(", ");
+      doc.text(certDetails, margin, yPosition);
+>>>>>>> Stashed changes
       yPosition += 5;
     });
     if (highlightSection === "certifications") {

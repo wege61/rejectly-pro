@@ -1,10 +1,17 @@
 // ATS (Applicant Tracking System) Compatibility Check Types
+// Updated for 2025 ATS standards: Workday, Greenhouse, Lever, Taleo
 
 // Severity levels for ATS issues
 export type ATSSeverity = "critical" | "major" | "minor";
 
 // Category types
 export type ATSCategory = "format" | "structure" | "keywords" | "readability";
+
+// ATS Platform types
+export type ATSPlatform = "workday" | "greenhouse" | "taleo" | "lever";
+
+// ATS Compatibility rating
+export type ATSRating = "high" | "medium" | "low";
 
 // Individual ATS Issue
 export interface ATSIssue {
@@ -14,6 +21,32 @@ export interface ATSIssue {
   issue: string;
   recommendation: string;
   impact: number; // Points deducted (0-10)
+}
+
+// Platform-specific compatibility rating (legacy)
+export interface ATSPlatformRating {
+  rating: ATSRating;
+  reason: string;
+}
+
+// Parsing check result (new - focuses on actual ATS parsing)
+export interface ParsingCheck {
+  ok: boolean;
+  note: string;
+}
+
+// Parsing compatibility checks
+export interface ParsingCompatibility {
+  singleColumn: ParsingCheck;
+  standardSections: ParsingCheck;
+  cleanCharacters: ParsingCheck;
+  abbreviations: ParsingCheck;
+}
+
+// Abbreviation check result
+export interface AbbreviationCheck {
+  expandedCorrectly: string[]; // e.g., "AWS (Amazon Web Services)"
+  needsExpansion: string[]; // Abbreviations without full form - critical for Greenhouse/Lever
 }
 
 // Category Breakdown
@@ -62,8 +95,36 @@ export interface ATSCheckResult {
     estimatedPages: number;
     fileFormat: "pdf" | "docx" | "unknown";
     hasStandardSections: boolean;
-    hasContactInfo: boolean;
+    hasContactInfo: {
+      name?: boolean;
+      email: boolean;
+      phone: boolean;
+      linkedin: boolean;
+      location: boolean;
+      portfolio?: boolean;
+    };
+    detectedSections?: string[];
+    keywordStats?: {
+      hardSkillsCount: number;
+      softSkillsCount: number;
+      actionVerbsCount: number;
+      quantifiedAchievements: number;
+    };
   };
+
+  // ATS Parsing Checks - whether ATS can parse this CV correctly
+  parsingChecks: ParsingCompatibility;
+
+  // Legacy: Platform-specific ATS compatibility (kept for backwards compat)
+  atsCompatibility?: {
+    workday: ATSPlatformRating;
+    greenhouse: ATSPlatformRating;
+    taleo: ATSPlatformRating;
+    lever: ATSPlatformRating;
+  };
+
+  // Abbreviation expansion check (critical for Greenhouse/Lever)
+  abbreviationCheck?: AbbreviationCheck;
 
   // Unlock status
   isPro: boolean;

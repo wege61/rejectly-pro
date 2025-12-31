@@ -10,6 +10,10 @@ import {
   generateQuickFixes,
   type CategoryScore,
 } from "@/lib/ats/scoring";
+<<<<<<< Updated upstream
+=======
+import { ATSFullResult } from "@/components/ats";
+>>>>>>> Stashed changes
 
 type Step = "upload" | "analyzing" | "result" | "optimizing" | "optimized";
 
@@ -47,6 +51,12 @@ interface ATSResult {
     greenhouse: string;
     taleo: string;
     lever: string;
+  };
+  parsingChecks?: {
+    singleColumn: { ok: boolean; note: string };
+    standardSections: { ok: boolean; note: string };
+    cleanCharacters: { ok: boolean; note: string };
+    abbreviations: { ok: boolean; note: string };
   };
 }
 
@@ -101,6 +111,12 @@ interface OptimizationResult {
       greenhouse: string;
       taleo: string;
       lever: string;
+    };
+    parsingChecks?: {
+      singleColumn: { ok: boolean; note: string };
+      standardSections: { ok: boolean; note: string };
+      cleanCharacters: { ok: boolean; note: string };
+      abbreviations: { ok: boolean; note: string };
     };
   };
 }
@@ -1245,7 +1261,11 @@ export default function DashboardATSOptimizerPage() {
 
       {/* Result Step */}
       {step === "result" && atsResult && (() => {
+<<<<<<< Updated upstream
         // Faz 1: Calculate score analysis
+=======
+        // Calculate score analysis for quick fixes
+>>>>>>> Stashed changes
         const categoriesForAnalysis: Record<string, CategoryScore> = Object.entries(atsResult.categories).reduce((acc, [key, cat]) => {
           acc[key] = {
             earnedPoints: cat.earnedPoints,
@@ -1257,7 +1277,11 @@ export default function DashboardATSOptimizerPage() {
 
         const scoreAnalysis = analyzeScore(atsResult.overallScore, categoriesForAnalysis);
 
+<<<<<<< Updated upstream
         // Faz 2: Generate quick fixes - convert topIssues to expected format
+=======
+        // Generate quick fixes
+>>>>>>> Stashed changes
         const issuesForQuickFixes = atsResult.topIssues.map(issue => ({
           issue: issue.issue,
           category: issue.category || 'General',
@@ -1267,6 +1291,7 @@ export default function DashboardATSOptimizerPage() {
 
         return (
         <ResultsSection>
+<<<<<<< Updated upstream
           <ScoreCard>
             <ScoreCircle $score={atsResult.overallScore}>
               <ScoreValue $score={atsResult.overallScore}>{atsResult.overallScore}</ScoreValue>
@@ -1450,6 +1475,43 @@ export default function DashboardATSOptimizerPage() {
           )}
 
           {/* Faz 2: Quick Fixes with Impact & Time */}
+=======
+          <ATSFullResult
+            score={atsResult.overallScore}
+            summary={atsResult.summary}
+            categories={atsResult.categories}
+            hasContactInfo={atsResult.metadata?.hasContactInfo || {
+              email: false,
+              phone: false,
+              linkedin: false,
+              location: false,
+            }}
+            parsingChecks={atsResult.parsingChecks || {
+              singleColumn: { ok: true, note: "Unknown" },
+              standardSections: { ok: true, note: "Unknown" },
+              cleanCharacters: { ok: true, note: "Unknown" },
+              abbreviations: { ok: true, note: "Unknown" },
+            }}
+            keywordStats={atsResult.metadata?.keywordStats || {
+              hardSkillsCount: 0,
+              softSkillsCount: 0,
+              actionVerbsCount: 0,
+              quantifiedAchievements: 0,
+            }}
+            wordCount={atsResult.metadata?.wordCount || 0}
+            topIssues={atsResult.topIssues.map(issue => ({
+              severity: issue.severity,
+              issue: issue.issue,
+              recommendation: issue.suggestion,
+              category: issue.category,
+            }))}
+            potentialScore={scoreAnalysis.maxPotential}
+            easyWinsPoints={scoreAnalysis.easyWinsPoints}
+            onOptimize={handleOptimize}
+          />
+
+          {/* Quick Fixes with Impact & Time */}
+>>>>>>> Stashed changes
           {quickFixes.length > 0 && (
             <QuickFixesSection>
               <QuickFixesTitle>
@@ -1492,24 +1554,9 @@ export default function DashboardATSOptimizerPage() {
             </QuickFixesSection>
           )}
 
-          {/* Optimize CTA */}
-          <OptimizeCTA>
-            <CTATitle>Ready to Fix All Issues Automatically?</CTATitle>
-            <CTAText>
-              Our AI will rewrite your CV to achieve 95%+ ATS compatibility,
-              fix all formatting issues, and add powerful action verbs.
-            </CTAText>
-            <OptimizeButton onClick={handleOptimize}>
-              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-              Fix All Issues & Optimize (1 Credit)
-            </OptimizeButton>
-          </OptimizeCTA>
-
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <div style={{ textAlign: "center" }}>
+          <div style={{ textAlign: "center", marginTop: "24px" }}>
             <TryAgainButton onClick={handleReset}>
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -1533,195 +1580,54 @@ export default function DashboardATSOptimizerPage() {
       )}
 
       {/* Optimized Step */}
-      {step === "optimized" && optimizationResult && (
+      {step === "optimized" && optimizationResult && (() => {
+        const optResult = optimizationResult.optimizedAtsResult;
+
+        return (
         <ResultsSection>
-          {/* Success Header with Score Comparison */}
-          <OptimizedCard>
-            <SuccessIcon>
-              <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M5 13l4 4L19 7" />
-              </svg>
-            </SuccessIcon>
-            <SuccessTitle>Your CV Has Been Optimized!</SuccessTitle>
+          <ATSFullResult
+            score={optimizationResult.afterScore}
+            summary={optResult?.summary || "Your CV has been optimized for ATS compatibility."}
+            categories={optResult?.categories || {
+              format: { earnedPoints: 25, maxPoints: 25, issues: [], passes: ["Format optimized"] },
+              structure: { earnedPoints: 25, maxPoints: 25, issues: [], passes: ["Structure optimized"] },
+              keywords: { earnedPoints: 30, maxPoints: 30, issues: [], passes: ["Keywords optimized"] },
+              readability: { earnedPoints: 20, maxPoints: 20, issues: [], passes: ["Readability optimized"] },
+            }}
+            hasContactInfo={optResult?.metadata?.hasContactInfo || {
+              email: true,
+              phone: true,
+              linkedin: true,
+              location: true,
+            }}
+            parsingChecks={optResult?.parsingChecks || {
+              singleColumn: { ok: true, note: "Linear text flow detected" },
+              standardSections: { ok: true, note: "Standard section headers found" },
+              cleanCharacters: { ok: true, note: "Clean character encoding" },
+              abbreviations: { ok: true, note: "Abbreviations properly expanded" },
+            }}
+            keywordStats={optResult?.metadata?.keywordStats || {
+              hardSkillsCount: 0,
+              softSkillsCount: 0,
+              actionVerbsCount: 0,
+              quantifiedAchievements: 0,
+            }}
+            wordCount={optResult?.metadata?.wordCount || 0}
+            isOptimized={true}
+            beforeScore={optimizationResult.beforeScore}
+            changes={optimizationResult.changes}
+            downloadUrl={optimizationResult.pdfUrl}
+          />
 
-            <ScoreComparison>
-              <ScoreBox>
-                <ScoreBoxLabel>Before</ScoreBoxLabel>
-                <ScoreBoxValue>{optimizationResult.beforeScore}</ScoreBoxValue>
-              </ScoreBox>
-              <ScoreArrow>→</ScoreArrow>
-              <ScoreBox>
-                <ScoreBoxLabel>After</ScoreBoxLabel>
-                <ScoreBoxValue $isAfter>{optimizationResult.afterScore}</ScoreBoxValue>
-              </ScoreBox>
-            </ScoreComparison>
-
-            <ImprovementBadge>
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-              +{optimizationResult.improvement} points improvement
-            </ImprovementBadge>
-          </OptimizedCard>
-
-          {/* New Score Card - Same as Analysis */}
-          {optimizationResult.optimizedAtsResult && (
-            <>
-              <ScoreCard>
-                <ScoreCircle $score={optimizationResult.afterScore}>
-                  <ScoreValue $score={optimizationResult.afterScore}>{optimizationResult.afterScore}</ScoreValue>
-                  <ScoreLabel>out of 100</ScoreLabel>
-                </ScoreCircle>
-                <ScoreTitle $score={optimizationResult.afterScore}>
-                  {optimizationResult.afterScore >= 85 ? "Excellent" :
-                   optimizationResult.afterScore >= 70 ? "Good" :
-                   optimizationResult.afterScore >= 55 ? "Fair" :
-                   optimizationResult.afterScore >= 40 ? "Poor" : "Critical"}
-                </ScoreTitle>
-                <ScoreSummary>{optimizationResult.optimizedAtsResult.summary}</ScoreSummary>
-
-                {/* Contact Info Checklist */}
-                {optimizationResult.optimizedAtsResult.metadata?.hasContactInfo && (
-                  <ContactChecklist>
-                    <ContactItem $present={optimizationResult.optimizedAtsResult.metadata.hasContactInfo.email}>
-                      {optimizationResult.optimizedAtsResult.metadata.hasContactInfo.email ? "✓" : "✗"} Email
-                    </ContactItem>
-                    <ContactItem $present={optimizationResult.optimizedAtsResult.metadata.hasContactInfo.phone}>
-                      {optimizationResult.optimizedAtsResult.metadata.hasContactInfo.phone ? "✓" : "✗"} Phone
-                    </ContactItem>
-                    <ContactItem $present={optimizationResult.optimizedAtsResult.metadata.hasContactInfo.linkedin}>
-                      {optimizationResult.optimizedAtsResult.metadata.hasContactInfo.linkedin ? "✓" : "✗"} LinkedIn
-                    </ContactItem>
-                    <ContactItem $present={optimizationResult.optimizedAtsResult.metadata.hasContactInfo.location}>
-                      {optimizationResult.optimizedAtsResult.metadata.hasContactInfo.location ? "✓" : "✗"} Location
-                    </ContactItem>
-                  </ContactChecklist>
-                )}
-              </ScoreCard>
-
-              {/* ATS System Compatibility */}
-              {optimizationResult.optimizedAtsResult.atsCompatibility && (
-                <ATSCompatibilitySection>
-                  <ATSCompatibilityTitle>
-                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                    </svg>
-                    ATS System Compatibility
-                  </ATSCompatibilityTitle>
-                  <ATSSystemsGrid>
-                    <ATSSystemCard $level={optimizationResult.optimizedAtsResult.atsCompatibility.workday}>
-                      <ATSSystemName>Workday</ATSSystemName>
-                      <ATSSystemLevel $level={optimizationResult.optimizedAtsResult.atsCompatibility.workday}>
-                        {optimizationResult.optimizedAtsResult.atsCompatibility.workday}
-                      </ATSSystemLevel>
-                    </ATSSystemCard>
-                    <ATSSystemCard $level={optimizationResult.optimizedAtsResult.atsCompatibility.greenhouse}>
-                      <ATSSystemName>Greenhouse</ATSSystemName>
-                      <ATSSystemLevel $level={optimizationResult.optimizedAtsResult.atsCompatibility.greenhouse}>
-                        {optimizationResult.optimizedAtsResult.atsCompatibility.greenhouse}
-                      </ATSSystemLevel>
-                    </ATSSystemCard>
-                    <ATSSystemCard $level={optimizationResult.optimizedAtsResult.atsCompatibility.taleo}>
-                      <ATSSystemName>Taleo</ATSSystemName>
-                      <ATSSystemLevel $level={optimizationResult.optimizedAtsResult.atsCompatibility.taleo}>
-                        {optimizationResult.optimizedAtsResult.atsCompatibility.taleo}
-                      </ATSSystemLevel>
-                    </ATSSystemCard>
-                    <ATSSystemCard $level={optimizationResult.optimizedAtsResult.atsCompatibility.lever}>
-                      <ATSSystemName>Lever</ATSSystemName>
-                      <ATSSystemLevel $level={optimizationResult.optimizedAtsResult.atsCompatibility.lever}>
-                        {optimizationResult.optimizedAtsResult.atsCompatibility.lever}
-                      </ATSSystemLevel>
-                    </ATSSystemCard>
-                  </ATSSystemsGrid>
-                </ATSCompatibilitySection>
-              )}
-
-              {/* Keyword Stats */}
-              {optimizationResult.optimizedAtsResult.metadata?.keywordStats && (
-                <StatsSection>
-                  <StatCard>
-                    <StatValue>{optimizationResult.optimizedAtsResult.metadata.keywordStats.hardSkillsCount}</StatValue>
-                    <StatLabel>Hard Skills</StatLabel>
-                  </StatCard>
-                  <StatCard>
-                    <StatValue>{optimizationResult.optimizedAtsResult.metadata.keywordStats.actionVerbsCount}</StatValue>
-                    <StatLabel>Action Verbs</StatLabel>
-                  </StatCard>
-                  <StatCard>
-                    <StatValue>{optimizationResult.optimizedAtsResult.metadata.keywordStats.quantifiedAchievements}</StatValue>
-                    <StatLabel>Metrics Used</StatLabel>
-                  </StatCard>
-                  <StatCard>
-                    <StatValue>{optimizationResult.optimizedAtsResult.metadata.wordCount}</StatValue>
-                    <StatLabel>Word Count</StatLabel>
-                  </StatCard>
-                </StatsSection>
-              )}
-
-              {/* Category Breakdown */}
-              <MetricsGrid>
-                {Object.entries(optimizationResult.optimizedAtsResult.categories).map(([key, category]) => (
-                  <MetricCard key={key}>
-                    <MetricHeader>
-                      <MetricTitle>{category.name || getCategoryLabel(key)}</MetricTitle>
-                      <MetricScore $score={category.earnedPoints} $max={category.maxPoints}>
-                        {category.earnedPoints}/{category.maxPoints}
-                      </MetricScore>
-                    </MetricHeader>
-                    <MetricBar>
-                      <MetricProgress $score={category.earnedPoints} $max={category.maxPoints} />
-                    </MetricBar>
-                    <MetricIssues>
-                      {category.passes.slice(0, 3).map((pass, idx) => (
-                        <MetricIssue key={`pass-${idx}`}>
-                          <svg width="14" height="14" fill="none" stroke="#10b981" strokeWidth="2" viewBox="0 0 24 24">
-                            <path d="M5 13l4 4L19 7" />
-                          </svg>
-                          {pass}
-                        </MetricIssue>
-                      ))}
-                    </MetricIssues>
-                  </MetricCard>
-                ))}
-              </MetricsGrid>
-            </>
-          )}
-
-          {/* Changes Made */}
-          {optimizationResult.changes && optimizationResult.changes.length > 0 && (
-            <ChangesSection>
-              <SectionTitle>Changes Made</SectionTitle>
-              {optimizationResult.changes.slice(0, 8).map((change, index) => (
-                <ChangeItem key={index}>
-                  <ChangeIcon $impact={change.impact}>
-                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M5 13l4 4L19 7" />
-                    </svg>
-                  </ChangeIcon>
-                  <ChangeContent>
-                    <ChangeIssue>{change.issue}</ChangeIssue>
-                    <ChangeFix>{change.fix}</ChangeFix>
-                  </ChangeContent>
-                </ChangeItem>
-              ))}
-            </ChangesSection>
-          )}
-
-          {/* Download Buttons */}
-          <ButtonGroup>
-            <DownloadButton href={optimizationResult.pdfUrl} target="_blank" download>
-              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Download Optimized CV
-            </DownloadButton>
+          {/* Additional action button */}
+          <div style={{ textAlign: "center", marginTop: "24px" }}>
             <SecondaryButton onClick={handleReset}>
               Try Another CV
             </SecondaryButton>
-          </ButtonGroup>
+          </div>
         </ResultsSection>
-      )}
+        );
+      })()}
     </PageContainer>
   );
 }

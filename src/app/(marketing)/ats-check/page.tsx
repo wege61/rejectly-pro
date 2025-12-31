@@ -14,6 +14,10 @@ import {
   generateQuickFixes,
   type CategoryScore,
 } from "@/lib/ats/scoring";
+<<<<<<< Updated upstream
+=======
+import { ATSFullResult } from "@/components/ats";
+>>>>>>> Stashed changes
 
 const pulse = keyframes`
   0%, 100% { transform: scale(1); }
@@ -1734,6 +1738,12 @@ interface ATSResult {
     taleo: string;
     lever: string;
   };
+  parsingChecks?: {
+    singleColumn: { ok: boolean; note: string };
+    standardSections: { ok: boolean; note: string };
+    cleanCharacters: { ok: boolean; note: string };
+    abbreviations: { ok: boolean; note: string };
+  };
 }
 
 interface CategoryResult {
@@ -1909,6 +1919,7 @@ export default function ATSCheckPage() {
 
           return (
           <ResultsSection>
+<<<<<<< Updated upstream
             <ScoreCard>
               <ScoreCircle $score={result.overallScore}>
                 <ScoreValue $score={result.overallScore}>{result.overallScore}</ScoreValue>
@@ -2133,7 +2144,95 @@ export default function ATSCheckPage() {
                 </QuickFixesList>
               </QuickFixesSection>
             )}
+=======
+            {/* New ATSFullResult Component */}
+            <ATSFullResult
+              score={result.overallScore}
+              summary={result.summary || getScoreMessage(result.overallScore)}
+              categories={{
+                format: {
+                  earnedPoints: result.categories.format.earnedPoints,
+                  maxPoints: result.categories.format.maxPoints,
+                  issues: result.categories.format.issues.map(i => ({
+                    issue: i.issue,
+                    recommendation: i.fix,
+                    severity: i.severity
+                  })),
+                  passes: result.categories.format.passes
+                },
+                structure: {
+                  earnedPoints: result.categories.structure.earnedPoints,
+                  maxPoints: result.categories.structure.maxPoints,
+                  issues: result.categories.structure.issues.map(i => ({
+                    issue: i.issue,
+                    recommendation: i.fix,
+                    severity: i.severity
+                  })),
+                  passes: result.categories.structure.passes
+                },
+                keywords: {
+                  earnedPoints: result.categories.keywords.earnedPoints,
+                  maxPoints: result.categories.keywords.maxPoints,
+                  issues: result.categories.keywords.issues.map(i => ({
+                    issue: i.issue,
+                    recommendation: i.fix,
+                    severity: i.severity
+                  })),
+                  passes: result.categories.keywords.passes
+                },
+                readability: {
+                  earnedPoints: result.categories.readability.earnedPoints,
+                  maxPoints: result.categories.readability.maxPoints,
+                  issues: result.categories.readability.issues.map(i => ({
+                    issue: i.issue,
+                    recommendation: i.fix,
+                    severity: i.severity
+                  })),
+                  passes: result.categories.readability.passes
+                }
+              }}
+              hasContactInfo={result.metadata?.hasContactInfo || {
+                email: false,
+                phone: false,
+                linkedin: false,
+                location: false
+              }}
+              parsingChecks={result.parsingChecks || {
+                singleColumn: { ok: true, note: "Unknown" },
+                standardSections: { ok: true, note: "Unknown" },
+                cleanCharacters: { ok: true, note: "Unknown" },
+                abbreviations: { ok: true, note: "Unknown" }
+              }}
+              keywordStats={result.metadata?.keywordStats || {
+                hardSkillsCount: 0,
+                actionVerbsCount: 0,
+                quantifiedAchievements: 0
+              }}
+              wordCount={result.metadata?.wordCount || 0}
+              topIssues={result.topIssues?.map(issue => ({
+                severity: issue.severity,
+                issue: issue.issue,
+                suggestion: issue.suggestion,
+                category: issue.category
+              }))}
+              potentialScore={(() => {
+                const cats: Record<string, CategoryScore> = Object.entries(result.categories).reduce((acc, [key, cat]) => {
+                  acc[key] = { earnedPoints: cat.earnedPoints, maxPoints: cat.maxPoints, percentage: (cat.earnedPoints / cat.maxPoints) * 100 };
+                  return acc;
+                }, {} as Record<string, CategoryScore>);
+                return analyzeScore(result.overallScore, cats).maxPotential;
+              })()}
+              easyWinsPoints={(() => {
+                const cats: Record<string, CategoryScore> = Object.entries(result.categories).reduce((acc, [key, cat]) => {
+                  acc[key] = { earnedPoints: cat.earnedPoints, maxPoints: cat.maxPoints, percentage: (cat.earnedPoints / cat.maxPoints) * 100 };
+                  return acc;
+                }, {} as Record<string, CategoryScore>);
+                return analyzeScore(result.overallScore, cats).easyWinsPoints;
+              })()}
+            />
+>>>>>>> Stashed changes
 
+            {/* CTA Section */}
             <CTASection>
               <CTAGradientCircle viewBox="0 0 600 600" aria-hidden="true">
                 <circle

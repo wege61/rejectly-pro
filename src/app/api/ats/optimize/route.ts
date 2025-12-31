@@ -3,12 +3,21 @@ import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import {
   generateATSOptimizationPrompt,
+<<<<<<< Updated upstream
   generateATSCheckPrompt
+=======
+>>>>>>> Stashed changes
 } from "@/lib/ai/prompts";
 import { getUserAccessStatus, consumeCredit } from "@/lib/credits";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { GeneratedCV } from "@/types/cv";
 import { ATSOptimizationResult } from "@/types/atsCheck";
+import { postProcessCVForATS, GeneratedCVData } from "@/lib/ats/utils";
+import {
+  calculateDeterministicScore,
+  calculateParsingCompatibility,
+  parseCV,
+} from "@/lib/ats/deterministicScoring";
 
 interface OptimizeRequest {
   cvText: string;
@@ -97,7 +106,9 @@ export async function POST(request: NextRequest) {
     const changes = rawOptimizedCV.changes || [];
     delete rawOptimizedCV.changes;
 
-    const optimizedCV: GeneratedCV = rawOptimizedCV;
+    // Post-process CV for ATS compliance (expand abbreviations, normalize dates, clean special chars)
+    const processedCV = postProcessCVForATS(rawOptimizedCV as GeneratedCVData);
+    const optimizedCV: GeneratedCV = processedCV as GeneratedCV;
 
     console.log("✅ Optimized CV generated with", changes.length, "changes");
 
@@ -147,6 +158,7 @@ export async function POST(request: NextRequest) {
     const pdfUrl = urlData.publicUrl;
     console.log("✅ PDF uploaded:", pdfUrl);
 
+<<<<<<< Updated upstream
     // 7. Re-check optimized CV with REAL ATS check (for consistency)
     console.log("🔍 Re-checking optimized CV with ATS system...");
     const optimizedCVText = generateCVTextFromJSON(optimizedCV);
@@ -171,6 +183,36 @@ export async function POST(request: NextRequest) {
 
     console.log(`📊 Real ATS score: ${beforeScore} → ${afterScore} (+${afterScore - beforeScore})`);
     console.log(`📋 Optimized issues remaining: ${optimizedAtsResult.topIssues?.length || 0}`);
+=======
+    // 7. Re-check optimized CV with DETERMINISTIC scoring (same system as check)
+    console.log("🔍 Re-checking optimized CV with deterministic scoring...");
+    const optimizedCVText = generateCVTextFromJSON(optimizedCV);
+
+    // Run deterministic ATS check on optimized CV
+    const deterministicResult = calculateDeterministicScore(optimizedCVText);
+    const parsedOptimizedCV = parseCV(optimizedCVText);
+    const parsingChecks = calculateParsingCompatibility(parsedOptimizedCV);
+
+    const afterScore = deterministicResult.overallScore;
+    const optimizedAtsResult = {
+      overallScore: deterministicResult.overallScore,
+      summary: deterministicResult.summary,
+      categories: deterministicResult.categories,
+      topIssues: deterministicResult.topIssues,
+      quickWins: deterministicResult.quickWins,
+      metadata: {
+        wordCount: deterministicResult.metadata.wordCount,
+        estimatedPages: deterministicResult.metadata.estimatedPages,
+        hasContactInfo: deterministicResult.metadata.hasContactInfo,
+        keywordStats: deterministicResult.metadata.keywordStats,
+      },
+      parsingChecks,
+      abbreviationCheck: deterministicResult.abbreviationCheck,
+    };
+
+    console.log(`📊 Deterministic ATS score: ${beforeScore} → ${afterScore} (+${afterScore - beforeScore})`);
+    console.log(`📋 Optimized issues remaining: ${deterministicResult.topIssues?.length || 0}`);
+>>>>>>> Stashed changes
 
     // 8. Save optimized CV to database
     const { data: savedCV, error: saveError } = await supabase
@@ -226,6 +268,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Helper: Convert GeneratedCV JSON to plain text for ATS re-check
+<<<<<<< Updated upstream
 // IMPORTANT: Use bullet points (•) instead of pipes (|) to avoid ATS column detection
 function generateCVTextFromJSON(cv: GeneratedCV): string {
   const lines: string[] = [];
@@ -235,6 +278,17 @@ function generateCVTextFromJSON(cv: GeneratedCV): string {
   const contactParts = [cv.contact?.email, cv.contact?.phone, cv.contact?.location].filter(Boolean);
   if (contactParts.length > 0) {
     lines.push(contactParts.join(" • "));
+=======
+// IMPORTANT: Use commas instead of special characters for maximum ATS compatibility
+function generateCVTextFromJSON(cv: GeneratedCV): string {
+  const lines: string[] = [];
+
+  // Contact - Use commas for ATS compatibility
+  lines.push(cv.contact?.name || "");
+  const contactParts = [cv.contact?.email, cv.contact?.phone, cv.contact?.location].filter(Boolean);
+  if (contactParts.length > 0) {
+    lines.push(contactParts.join(", "));
+>>>>>>> Stashed changes
   }
   if (cv.contact?.linkedin) lines.push(cv.contact.linkedin);
   if (cv.contact?.portfolio) lines.push(cv.contact.portfolio);
@@ -245,22 +299,38 @@ function generateCVTextFromJSON(cv: GeneratedCV): string {
   lines.push(cv.summary || "");
   lines.push("");
 
+<<<<<<< Updated upstream
   // Experience - NO PIPES! Use "at" format
   lines.push("Professional Experience");
   for (const exp of cv.experience || []) {
     lines.push(`${exp.title} at ${exp.company}`);
     lines.push(`${exp.location} • ${exp.startDate} - ${exp.endDate}`);
+=======
+  // Experience - Use "at" format with comma separators
+  lines.push("Professional Experience");
+  for (const exp of cv.experience || []) {
+    lines.push(`${exp.title} at ${exp.company}`);
+    lines.push(`${exp.location}, ${exp.startDate} - ${exp.endDate}`);
+>>>>>>> Stashed changes
     for (const bullet of exp.bullets || []) {
-      lines.push(`• ${bullet}`);
+      lines.push(`- ${bullet}`);
     }
     lines.push("");
   }
 
+<<<<<<< Updated upstream
   // Education - NO PIPES!
   lines.push("Education");
   for (const edu of cv.education || []) {
     lines.push(`${edu.degree}`);
     lines.push(`${edu.institution} • ${edu.location} • ${edu.graduationDate}`);
+=======
+  // Education - Use comma separators
+  lines.push("Education");
+  for (const edu of cv.education || []) {
+    lines.push(`${edu.degree}`);
+    lines.push(`${edu.institution}, ${edu.location}, ${edu.graduationDate}`);
+>>>>>>> Stashed changes
     if (edu.details) lines.push(edu.details);
     lines.push("");
   }
@@ -279,7 +349,7 @@ function generateCVTextFromJSON(cv: GeneratedCV): string {
   if (cv.certifications && cv.certifications.length > 0) {
     lines.push("Certifications");
     for (const cert of cv.certifications) {
-      lines.push(`${cert.name} - ${cert.issuer} (${cert.date})`);
+      lines.push(`${cert.name} - ${cert.issuer}, ${cert.date}`);
     }
     lines.push("");
   }

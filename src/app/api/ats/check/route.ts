@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { openai, AI_MODEL } from "@/lib/ai/client";
-import { generateATSCheckPrompt } from "@/lib/ai/prompts";
 import { getUserAccessStatus, consumeCredit } from "@/lib/credits";
 import {
   ATSCheckResult,
@@ -10,6 +8,11 @@ import {
   getATSScoreLabel,
   getATSScoreColor,
 } from "@/types/atsCheck";
+import {
+  calculateDeterministicScore,
+  calculateParsingCompatibility,
+  parseCV,
+} from "@/lib/ats/deterministicScoring";
 
 export async function POST(request: NextRequest) {
   console.log("\n\n🔍 ATS CHECK ENDPOINT CALLED 🔍\n\n");
@@ -50,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Get CV text from document
-    let textToAnalyze: string;
+    let textToAnalyze: string = "";
 
     if (documentId) {
       console.log("🔍 Looking for document:", {
@@ -165,32 +168,81 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 5. Generate AI analysis for authenticated users
-    console.log("🤖 Generating AI analysis...");
-    const prompt = generateATSCheckPrompt(textToAnalyze);
+    // 5. Calculate DETERMINISTIC score (rule-based, consistent)
+    console.log("📊 Calculating deterministic ATS score...");
+    const deterministicResult = calculateDeterministicScore(textToAnalyze);
+    const parsedCV = parseCV(textToAnalyze);
+    const parsingChecks = calculateParsingCompatibility(parsedCV);
 
-    const completion = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.3,
-      max_tokens: 3000,
-      response_format: { type: "json_object" },
-    });
-
-    const rawResult = JSON.parse(
-      completion.choices[0].message.content || "{}"
-    );
-
-    // 6. Add computed display properties
+    // 6. Build final result from deterministic scoring
     const result: ATSCheckResult = {
-      ...rawResult,
-      scoreLabel: getATSScoreLabel(rawResult.overallScore),
-      scoreColor: getATSScoreColor(rawResult.overallScore),
+      version: "3.0-deterministic",
+      checkedAt: new Date().toISOString(),
+      overallScore: deterministicResult.overallScore,
+      scoreLabel: getATSScoreLabel(deterministicResult.overallScore),
+      scoreColor: getATSScoreColor(deterministicResult.overallScore),
+      summary: deterministicResult.summary,
       freePreview: {
-        quickWin: rawResult.quickWins?.[0] || "Add more quantified achievements",
-        issueCount: countAllIssues(rawResult),
-        passCount: countAllPasses(rawResult),
+        quickWin: deterministicResult.quickWins[0] || "Add more quantified achievements",
+        issueCount: deterministicResult.topIssues.length,
+        passCount: Object.values(deterministicResult.categories).reduce(
+          (sum, cat) => sum + cat.passes.length, 0
+        ),
       },
+      categories: {
+        format: {
+          name: deterministicResult.categories.format.name,
+          maxPoints: deterministicResult.categories.format.maxPoints,
+          earnedPoints: deterministicResult.categories.format.earnedPoints,
+          percentage: deterministicResult.categories.format.percentage,
+          issues: deterministicResult.categories.format.issues,
+          passes: deterministicResult.categories.format.passes,
+        },
+        structure: {
+          name: deterministicResult.categories.structure.name,
+          maxPoints: deterministicResult.categories.structure.maxPoints,
+          earnedPoints: deterministicResult.categories.structure.earnedPoints,
+          percentage: deterministicResult.categories.structure.percentage,
+          issues: deterministicResult.categories.structure.issues,
+          passes: deterministicResult.categories.structure.passes,
+        },
+        keywords: {
+          name: deterministicResult.categories.keywords.name,
+          maxPoints: deterministicResult.categories.keywords.maxPoints,
+          earnedPoints: deterministicResult.categories.keywords.earnedPoints,
+          percentage: deterministicResult.categories.keywords.percentage,
+          issues: deterministicResult.categories.keywords.issues,
+          passes: deterministicResult.categories.keywords.passes,
+        },
+        readability: {
+          name: deterministicResult.categories.readability.name,
+          maxPoints: deterministicResult.categories.readability.maxPoints,
+          earnedPoints: deterministicResult.categories.readability.earnedPoints,
+          percentage: deterministicResult.categories.readability.percentage,
+          issues: deterministicResult.categories.readability.issues,
+          passes: deterministicResult.categories.readability.passes,
+        },
+      },
+      topIssues: deterministicResult.topIssues,
+      quickWins: deterministicResult.quickWins,
+      metadata: {
+        wordCount: deterministicResult.metadata.wordCount,
+        estimatedPages: deterministicResult.metadata.estimatedPages,
+        fileFormat: "pdf",
+        hasStandardSections: parsedCV.hasProfessionalSummary && parsedCV.hasExperience && parsedCV.hasEducation,
+        hasContactInfo: deterministicResult.metadata.hasContactInfo,
+        detectedSections: [
+          parsedCV.hasProfessionalSummary && "Professional Summary",
+          parsedCV.hasExperience && "Experience",
+          parsedCV.hasEducation && "Education",
+          parsedCV.hasSkills && "Skills",
+          parsedCV.hasCertifications && "Certifications",
+          parsedCV.hasLanguages && "Languages",
+        ].filter(Boolean) as string[],
+        keywordStats: deterministicResult.metadata.keywordStats,
+      },
+      parsingChecks,
+      abbreviationCheck: deterministicResult.abbreviationCheck,
       isPro: unlock,
     };
 
@@ -292,31 +344,82 @@ function countAllPasses(result: ATSCheckResult): number {
 // Handle public ATS check (no auth required, full results for landing page)
 async function handlePublicATSCheck(cvText: string) {
   try {
-    console.log("🤖 Generating public AI analysis...");
-    const prompt = generateATSCheckPrompt(cvText);
+    console.log("📊 Calculating public deterministic ATS score...");
 
-    const completion = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.3,
-      max_tokens: 3000,
-      response_format: { type: "json_object" },
-    });
+    // Use deterministic scoring for consistent results
+    const deterministicResult = calculateDeterministicScore(cvText);
+    const parsedCV = parseCV(cvText);
+    const parsingChecks = calculateParsingCompatibility(parsedCV);
 
-    const rawResult = JSON.parse(
-      completion.choices[0].message.content || "{}"
-    );
-
-    // Add computed display properties - return FULL result for public page
+    // Build result from deterministic scoring
     const result: ATSCheckResult = {
-      ...rawResult,
-      scoreLabel: getATSScoreLabel(rawResult.overallScore),
-      scoreColor: getATSScoreColor(rawResult.overallScore),
+      version: "3.0-deterministic",
+      checkedAt: new Date().toISOString(),
+      overallScore: deterministicResult.overallScore,
+      scoreLabel: getATSScoreLabel(deterministicResult.overallScore),
+      scoreColor: getATSScoreColor(deterministicResult.overallScore),
+      summary: deterministicResult.summary,
       freePreview: {
-        quickWin: rawResult.quickWins?.[0] || "Add more quantified achievements",
-        issueCount: countAllIssues(rawResult),
-        passCount: countAllPasses(rawResult),
+        quickWin: deterministicResult.quickWins[0] || "Add more quantified achievements",
+        issueCount: deterministicResult.topIssues.length,
+        passCount: Object.values(deterministicResult.categories).reduce(
+          (sum, cat) => sum + cat.passes.length, 0
+        ),
       },
+      categories: {
+        format: {
+          name: deterministicResult.categories.format.name,
+          maxPoints: deterministicResult.categories.format.maxPoints,
+          earnedPoints: deterministicResult.categories.format.earnedPoints,
+          percentage: deterministicResult.categories.format.percentage,
+          issues: deterministicResult.categories.format.issues,
+          passes: deterministicResult.categories.format.passes,
+        },
+        structure: {
+          name: deterministicResult.categories.structure.name,
+          maxPoints: deterministicResult.categories.structure.maxPoints,
+          earnedPoints: deterministicResult.categories.structure.earnedPoints,
+          percentage: deterministicResult.categories.structure.percentage,
+          issues: deterministicResult.categories.structure.issues,
+          passes: deterministicResult.categories.structure.passes,
+        },
+        keywords: {
+          name: deterministicResult.categories.keywords.name,
+          maxPoints: deterministicResult.categories.keywords.maxPoints,
+          earnedPoints: deterministicResult.categories.keywords.earnedPoints,
+          percentage: deterministicResult.categories.keywords.percentage,
+          issues: deterministicResult.categories.keywords.issues,
+          passes: deterministicResult.categories.keywords.passes,
+        },
+        readability: {
+          name: deterministicResult.categories.readability.name,
+          maxPoints: deterministicResult.categories.readability.maxPoints,
+          earnedPoints: deterministicResult.categories.readability.earnedPoints,
+          percentage: deterministicResult.categories.readability.percentage,
+          issues: deterministicResult.categories.readability.issues,
+          passes: deterministicResult.categories.readability.passes,
+        },
+      },
+      topIssues: deterministicResult.topIssues,
+      quickWins: deterministicResult.quickWins,
+      metadata: {
+        wordCount: deterministicResult.metadata.wordCount,
+        estimatedPages: deterministicResult.metadata.estimatedPages,
+        fileFormat: "pdf",
+        hasStandardSections: parsedCV.hasProfessionalSummary && parsedCV.hasExperience && parsedCV.hasEducation,
+        hasContactInfo: deterministicResult.metadata.hasContactInfo,
+        detectedSections: [
+          parsedCV.hasProfessionalSummary && "Professional Summary",
+          parsedCV.hasExperience && "Experience",
+          parsedCV.hasEducation && "Education",
+          parsedCV.hasSkills && "Skills",
+          parsedCV.hasCertifications && "Certifications",
+          parsedCV.hasLanguages && "Languages",
+        ].filter(Boolean) as string[],
+        keywordStats: deterministicResult.metadata.keywordStats,
+      },
+      parsingChecks,
+      abbreviationCheck: deterministicResult.abbreviationCheck,
       isPro: false, // Public users see results but can't save
     };
 

@@ -61,19 +61,22 @@ export function cleanText(text: string): string {
     // Normalize Unicode to NFC form
     cleaned = cleaned.normalize('NFC');
 
-    // Clean whitespace
+    // Clean whitespace - preserve newlines for ATS structure detection
     cleaned = cleaned
-      .replace(/\s+/g, " ") // Çoklu boşlukları tek boşluğa indir
-      .replace(/\n{3,}/g, "\n\n") // Çoklu satır atlamalarını azalt
+      .replace(/[^\S\n]+/g, " ") // Collapse multiple spaces/tabs but NOT newlines
+      .replace(/\n{3,}/g, "\n\n") // Reduce excessive newlines to double
+      .replace(/ +\n/g, "\n") // Remove trailing spaces before newlines
+      .replace(/\n +/g, "\n") // Remove leading spaces after newlines
       .trim();
 
     return cleaned;
   } catch (error) {
     console.warn('Text cleaning error:', error);
-    // Fallback: aggressive ASCII-safe cleaning
+    // Fallback: aggressive ASCII-safe cleaning but preserve newlines
     return text
       .replace(/[^\x20-\x7E\u00A0-\u00FF\u0100-\u017F\n\r\t]/g, ' ')
-      .replace(/\s+/g, ' ')
+      .replace(/[^\S\n]+/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
       .trim();
   }
 }

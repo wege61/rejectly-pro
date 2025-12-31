@@ -19,9 +19,9 @@ export interface CVExperience {
 export interface CVEducation {
   degree: string;
   institution: string;
-  location: string;
-  graduationDate: string;
-  details?: string;
+  location?: string;
+  graduationDate?: string | null;
+  details?: string | null;
 }
 
 export interface CVSkills {
@@ -31,8 +31,8 @@ export interface CVSkills {
 
 export interface CVCertification {
   name: string;
-  issuer: string;
-  date: string;
+  issuer?: string;
+  date?: string | null;
 }
 
 export interface CVLanguage {

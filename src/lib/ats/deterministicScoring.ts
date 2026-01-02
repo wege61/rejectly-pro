@@ -510,6 +510,17 @@ function checkAbbreviations(text: string): { expanded: string[]; unexpanded: str
   const expanded: string[] = [];
   const unexpanded: string[] = [];
 
+  // IMPORTANT: Greenhouse and Taleo do NOT recognize abbreviations - even common ones!
+  // Source: https://thetechresume.com/samples/ats-myths-busted.html
+  // "Greenhouse does not recognize abbreviations, even common ones"
+  // "Taleo also does not recognize abbreviations, even common ones"
+  //
+  // Therefore, we should check ALL abbreviations for expansion.
+  // Only skip very basic ones that are part of proper nouns or product names.
+  const skipList = new Set([
+    'iOS', 'macOS', 'PhD',  // Product names / titles that are always written this way
+  ]);
+
   // Common abbreviations to check - sort by length descending to check compound ones first
   const commonAbbreviations = Object.keys(ABBREVIATION_EXPANSIONS)
     .sort((a, b) => b.length - a.length);
@@ -520,6 +531,11 @@ function checkAbbreviations(text: string): { expanded: string[]; unexpanded: str
   for (const abbr of commonAbbreviations) {
     // Skip if this abbreviation is covered by a compound one (e.g., CI covered by CI/CD)
     if (coveredByCompound.has(abbr)) {
+      continue;
+    }
+
+    // Skip product names that should never be expanded
+    if (skipList.has(abbr)) {
       continue;
     }
 
@@ -548,8 +564,10 @@ function checkAbbreviations(text: string): { expanded: string[]; unexpanded: str
 
 // Helper function to check if an abbreviation is properly expanded
 function checkIfExpanded(text: string, abbr: string, expansion: string): boolean {
-  // Method 1: Full expansion exists in text
-  if (text.includes(expansion) || text.toLowerCase().includes(expansion.toLowerCase())) {
+  const lowerText = text.toLowerCase();
+
+  // Method 1: Full expansion exists in text (e.g., "Amazon Web Services (AWS)")
+  if (text.includes(expansion) || lowerText.includes(expansion.toLowerCase())) {
     return true;
   }
 
@@ -572,6 +590,14 @@ function checkIfExpanded(text: string, abbr: string, expansion: string): boolean
     if (compoundPattern.test(text)) {
       return true;
     }
+  }
+
+  // Method 5: Check if expansion WITHOUT parentheses exists
+  // e.g., "Amazon Web Services" without "(AWS)" - still counts as expanded
+  // Extract the base expansion (remove the parenthetical abbreviation)
+  const baseExpansion = expansion.replace(/\s*\([^)]+\)\s*$/, '').trim();
+  if (baseExpansion.length > 4 && lowerText.includes(baseExpansion.toLowerCase())) {
+    return true;
   }
 
   return false;

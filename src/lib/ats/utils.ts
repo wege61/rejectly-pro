@@ -32,6 +32,17 @@ export const ABBREVIATION_EXPANSIONS: Record<string, string> = {
   MVC: "Model-View-Controller (MVC)",
   MVVM: "Model-View-ViewModel (MVVM)",
 
+  // Web Technologies - CRITICAL: Greenhouse/Taleo don't recognize these!
+  HTML: "HyperText Markup Language (HTML)",
+  CSS: "Cascading Style Sheets (CSS)",
+  JSON: "JavaScript Object Notation (JSON)",
+  XML: "Extensible Markup Language (XML)",
+  HTTP: "Hypertext Transfer Protocol (HTTP)",
+  URL: "Uniform Resource Locator (URL)",
+  DOM: "Document Object Model (DOM)",
+  SPA: "Single Page Application (SPA)",
+  PWA: "Progressive Web App (PWA)",
+
   // DevOps & CI/CD
   "CI/CD": "Continuous Integration/Continuous Deployment (CI/CD)",
   CI: "Continuous Integration (CI)",
@@ -108,6 +119,29 @@ export const ABBREVIATION_EXPANSIONS: Record<string, string> = {
   CFA: "Chartered Financial Analyst (CFA)",
   CCNA: "Cisco Certified Network Associate (CCNA)",
   CCNP: "Cisco Certified Network Professional (CCNP)",
+
+  // C-Level & Executive Titles
+  CEO: "Chief Executive Officer (CEO)",
+  CTO: "Chief Technology Officer (CTO)",
+  CFO: "Chief Financial Officer (CFO)",
+  COO: "Chief Operating Officer (COO)",
+  CMO: "Chief Marketing Officer (CMO)",
+  CIO: "Chief Information Officer (CIO)",
+  CPO: "Chief Product Officer (CPO)",
+  VP: "Vice President (VP)",
+  SVP: "Senior Vice President (SVP)",
+  EVP: "Executive Vice President (EVP)",
+
+  // IT & Infrastructure
+  IT: "Information Technology (IT)",
+  SaaS: "Software as a Service (SaaS)",
+  PaaS: "Platform as a Service (PaaS)",
+  IaaS: "Infrastructure as a Service (IaaS)",
+  DNS: "Domain Name System (DNS)",
+  TCP: "Transmission Control Protocol (TCP)",
+  IP: "Internet Protocol (IP)",
+  LAN: "Local Area Network (LAN)",
+  WAN: "Wide Area Network (WAN)",
 
   // Data & Analytics
   ML: "Machine Learning (ML)",

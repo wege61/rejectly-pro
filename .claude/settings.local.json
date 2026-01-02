@@ -15,7 +15,8 @@
       "WebSearch",
       "Bash(chmod:*)",
       "Bash(tree:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []

@@ -10,10 +10,7 @@ import {
   generateQuickFixes,
   type CategoryScore,
 } from "@/lib/ats/scoring";
-<<<<<<< Updated upstream
-=======
 import { ATSFullResult } from "@/components/ats";
->>>>>>> Stashed changes
 
 type Step = "upload" | "analyzing" | "result" | "optimizing" | "optimized";
 
@@ -1261,11 +1258,7 @@ export default function DashboardATSOptimizerPage() {
 
       {/* Result Step */}
       {step === "result" && atsResult && (() => {
-<<<<<<< Updated upstream
-        // Faz 1: Calculate score analysis
-=======
         // Calculate score analysis for quick fixes
->>>>>>> Stashed changes
         const categoriesForAnalysis: Record<string, CategoryScore> = Object.entries(atsResult.categories).reduce((acc, [key, cat]) => {
           acc[key] = {
             earnedPoints: cat.earnedPoints,
@@ -1277,11 +1270,7 @@ export default function DashboardATSOptimizerPage() {
 
         const scoreAnalysis = analyzeScore(atsResult.overallScore, categoriesForAnalysis);
 
-<<<<<<< Updated upstream
-        // Faz 2: Generate quick fixes - convert topIssues to expected format
-=======
         // Generate quick fixes
->>>>>>> Stashed changes
         const issuesForQuickFixes = atsResult.topIssues.map(issue => ({
           issue: issue.issue,
           category: issue.category || 'General',
@@ -1291,191 +1280,6 @@ export default function DashboardATSOptimizerPage() {
 
         return (
         <ResultsSection>
-<<<<<<< Updated upstream
-          <ScoreCard>
-            <ScoreCircle $score={atsResult.overallScore}>
-              <ScoreValue $score={atsResult.overallScore}>{atsResult.overallScore}</ScoreValue>
-              <ScoreLabel>out of 100</ScoreLabel>
-            </ScoreCircle>
-            <ScoreTitle $score={atsResult.overallScore}>
-              {scoreAnalysis.label}
-            </ScoreTitle>
-            <ScoreSummary>{atsResult.summary}</ScoreSummary>
-
-            {/* Faz 1: Percentile Badge */}
-            <PercentileBadge>
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-              {scoreAnalysis.percentile}
-            </PercentileBadge>
-            <PercentileMessage>{scoreAnalysis.percentileMessage}</PercentileMessage>
-
-            {/* Contact Info Checklist */}
-            {atsResult.metadata?.hasContactInfo && (
-              <ContactChecklist>
-                <ContactItem $present={atsResult.metadata.hasContactInfo.email}>
-                  {atsResult.metadata.hasContactInfo.email ? "✓" : "✗"} Email
-                </ContactItem>
-                <ContactItem $present={atsResult.metadata.hasContactInfo.phone}>
-                  {atsResult.metadata.hasContactInfo.phone ? "✓" : "✗"} Phone
-                </ContactItem>
-                <ContactItem $present={atsResult.metadata.hasContactInfo.linkedin}>
-                  {atsResult.metadata.hasContactInfo.linkedin ? "✓" : "✗"} LinkedIn
-                </ContactItem>
-                <ContactItem $present={atsResult.metadata.hasContactInfo.location}>
-                  {atsResult.metadata.hasContactInfo.location ? "✓" : "✗"} Location
-                </ContactItem>
-              </ContactChecklist>
-            )}
-          </ScoreCard>
-
-          {/* Faz 1: Improvement Potential */}
-          <ImprovementPotentialSection>
-            <ImprovementHeader>
-              <ImprovementTitle>Your Improvement Potential</ImprovementTitle>
-              <ImprovementScores>
-                {atsResult.overallScore} → {scoreAnalysis.maxPotential}
-              </ImprovementScores>
-            </ImprovementHeader>
-            <ImprovementBar>
-              <ImprovementPotential $max={scoreAnalysis.maxPotential} />
-              <ImprovementCurrent $score={atsResult.overallScore} />
-            </ImprovementBar>
-            <ImprovementText>
-              With quick fixes, you can realistically reach {scoreAnalysis.maxPotential} points
-              (+{scoreAnalysis.easyWinsPoints} points from easy improvements)
-            </ImprovementText>
-          </ImprovementPotentialSection>
-
-          {/* ATS System Compatibility */}
-          {atsResult.atsCompatibility && (
-            <ATSCompatibilitySection>
-              <ATSCompatibilityTitle>
-                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                </svg>
-                ATS System Compatibility
-              </ATSCompatibilityTitle>
-              <ATSSystemsGrid>
-                <ATSSystemCard $level={atsResult.atsCompatibility.workday}>
-                  <ATSSystemName>Workday</ATSSystemName>
-                  <ATSSystemLevel $level={atsResult.atsCompatibility.workday}>
-                    {atsResult.atsCompatibility.workday}
-                  </ATSSystemLevel>
-                </ATSSystemCard>
-                <ATSSystemCard $level={atsResult.atsCompatibility.greenhouse}>
-                  <ATSSystemName>Greenhouse</ATSSystemName>
-                  <ATSSystemLevel $level={atsResult.atsCompatibility.greenhouse}>
-                    {atsResult.atsCompatibility.greenhouse}
-                  </ATSSystemLevel>
-                </ATSSystemCard>
-                <ATSSystemCard $level={atsResult.atsCompatibility.taleo}>
-                  <ATSSystemName>Taleo</ATSSystemName>
-                  <ATSSystemLevel $level={atsResult.atsCompatibility.taleo}>
-                    {atsResult.atsCompatibility.taleo}
-                  </ATSSystemLevel>
-                </ATSSystemCard>
-                <ATSSystemCard $level={atsResult.atsCompatibility.lever}>
-                  <ATSSystemName>Lever</ATSSystemName>
-                  <ATSSystemLevel $level={atsResult.atsCompatibility.lever}>
-                    {atsResult.atsCompatibility.lever}
-                  </ATSSystemLevel>
-                </ATSSystemCard>
-              </ATSSystemsGrid>
-            </ATSCompatibilitySection>
-          )}
-
-          {/* Keyword Stats */}
-          {atsResult.metadata?.keywordStats && (
-            <StatsSection>
-              <StatCard>
-                <StatValue>{atsResult.metadata.keywordStats.hardSkillsCount}</StatValue>
-                <StatLabel>Hard Skills</StatLabel>
-              </StatCard>
-              <StatCard>
-                <StatValue>{atsResult.metadata.keywordStats.actionVerbsCount}</StatValue>
-                <StatLabel>Action Verbs</StatLabel>
-              </StatCard>
-              <StatCard>
-                <StatValue>{atsResult.metadata.keywordStats.quantifiedAchievements}</StatValue>
-                <StatLabel>Metrics Used</StatLabel>
-              </StatCard>
-              <StatCard>
-                <StatValue>{atsResult.metadata.wordCount}</StatValue>
-                <StatLabel>Word Count</StatLabel>
-              </StatCard>
-            </StatsSection>
-          )}
-
-          {/* Category Breakdown */}
-          <MetricsGrid>
-            {Object.entries(atsResult.categories).map(([key, category]) => {
-              // Faz 1: Add category impact
-              const impact = getCategoryImpact(category.earnedPoints, category.maxPoints);
-              const impactEmoji = getCategoryImpactEmoji(impact);
-
-              return (
-              <MetricCard key={key}>
-                <MetricHeader>
-                  <MetricTitle>
-                    <CategoryImpactEmoji>{impactEmoji}</CategoryImpactEmoji>
-                    {category.name || getCategoryLabel(key)}
-                  </MetricTitle>
-                  <MetricScore $score={category.earnedPoints} $max={category.maxPoints}>
-                    {category.earnedPoints}/{category.maxPoints}
-                  </MetricScore>
-                </MetricHeader>
-                <MetricBar>
-                  <MetricProgress $score={category.earnedPoints} $max={category.maxPoints} />
-                </MetricBar>
-                <MetricIssues>
-                  {category.issues.slice(0, 2).map((issue, idx) => (
-                    <MetricIssue key={idx}>
-                      <svg width="14" height="14" fill="none" stroke="#ef4444" strokeWidth="2" viewBox="0 0 24 24">
-                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
-                      {issue.issue}
-                    </MetricIssue>
-                  ))}
-                  {category.passes.slice(0, 1).map((pass, idx) => (
-                    <MetricIssue key={`pass-${idx}`}>
-                      <svg width="14" height="14" fill="none" stroke="#10b981" strokeWidth="2" viewBox="0 0 24 24">
-                        <path d="M5 13l4 4L19 7" />
-                      </svg>
-                      {pass}
-                    </MetricIssue>
-                  ))}
-                </MetricIssues>
-              </MetricCard>
-              );
-            })}
-          </MetricsGrid>
-
-          {/* Top Issues */}
-          {atsResult.topIssues && atsResult.topIssues.length > 0 && (
-            <TopIssuesSection>
-              <TopIssuesTitle>Top Issues to Fix</TopIssuesTitle>
-              {atsResult.topIssues.slice(0, 5).map((issue, idx) => (
-                <IssueItem key={idx}>
-                  <IssueHeader>
-                    <SeverityBadge $severity={issue.severity}>{issue.severity}</SeverityBadge>
-                    {issue.category && <CategoryBadge>{issue.category}</CategoryBadge>}
-                  </IssueHeader>
-                  <IssueText>{issue.issue}</IssueText>
-                  <IssueSuggestion>
-                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    {issue.suggestion}
-                  </IssueSuggestion>
-                </IssueItem>
-              ))}
-            </TopIssuesSection>
-          )}
-
-          {/* Faz 2: Quick Fixes with Impact & Time */}
-=======
           <ATSFullResult
             score={atsResult.overallScore}
             summary={atsResult.summary}
@@ -1511,7 +1315,6 @@ export default function DashboardATSOptimizerPage() {
           />
 
           {/* Quick Fixes with Impact & Time */}
->>>>>>> Stashed changes
           {quickFixes.length > 0 && (
             <QuickFixesSection>
               <QuickFixesTitle>

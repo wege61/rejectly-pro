@@ -103,11 +103,13 @@ export async function generateCVPDF(
 
   // 2. PROFESSIONAL SUMMARY
   const summaryStartY = yPosition;
+  doc.setFont("Roboto", "bold");
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
   doc.text("Professional Summary", margin, yPosition);
   yPosition += 6;
 
+  doc.setFont("Roboto", "normal");
   doc.setFontSize(FONTS.body);
   doc.setTextColor(COLORS.text);
   const summaryLines = wrapText(cv.summary, contentWidth);
@@ -123,18 +125,23 @@ export async function generateCVPDF(
 
   // 3. EXPERIENCE
   const experienceStartY = yPosition;
+  doc.setFont("Roboto", "bold");
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
   doc.text("Professional Experience", margin, yPosition);
   yPosition += 6;
 
-  cv.experience.forEach((exp, index) => {
+  cv.experience.forEach((exp) => {
     checkPageBreak(20);
 
     // Job title and company - ATS-friendly format without pipes
     doc.setFontSize(FONTS.body + 1);
     doc.setTextColor(COLORS.text);
     doc.setFont("Roboto", "bold");
+    // Reset character spacing to prevent letter spacing issues
+    if (typeof doc.setCharSpace === 'function') {
+      doc.setCharSpace(0);
+    }
     doc.text(`${exp.title} at ${exp.company}`, margin, yPosition);
     yPosition += 5;
 
@@ -150,6 +157,7 @@ export async function generateCVPDF(
     // Bullets
     exp.bullets.forEach((bullet) => {
       checkPageBreak(10);
+      doc.setFont("Roboto", "normal");
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.text);
 

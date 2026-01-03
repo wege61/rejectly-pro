@@ -74,11 +74,19 @@ export async function loadFontsToDocument(doc: jsPDF): Promise<boolean> {
     doc.addFileToVFS("Roboto-Bold.ttf", boldBase64);
 
     // Register fonts with jsPDF
-    doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    doc.addFont("Roboto-Bold.ttf", "Roboto", "bold");
+    // CRITICAL: Use Identity-H encoding for proper Unicode/Turkish character support
+    // Without this, characters like ç, ğ, ı, ö, ş, ü may have spacing issues
+    doc.addFont("Roboto-Regular.ttf", "Roboto", "normal", undefined, "Identity-H");
+    doc.addFont("Roboto-Bold.ttf", "Roboto", "bold", undefined, "Identity-H");
 
     // Set Roboto as default font
     doc.setFont("Roboto", "normal");
+
+    // Reset character spacing to prevent spacing issues
+    // This is critical for consistent text rendering
+    if (typeof doc.setCharSpace === 'function') {
+      doc.setCharSpace(0);
+    }
 
     return true;
   } catch (error) {

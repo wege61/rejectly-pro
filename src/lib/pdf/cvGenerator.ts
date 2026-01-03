@@ -178,6 +178,7 @@ export async function generateCVPDF(
   // 4. EDUCATION
   checkPageBreak(15);
   const educationStartY = yPosition;
+  doc.setFont("Roboto", "bold");
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
   doc.text("Education", margin, yPosition);
@@ -222,6 +223,7 @@ export async function generateCVPDF(
   // 5. SKILLS
   checkPageBreak(15);
   const skillsStartY = yPosition;
+  doc.setFont("Roboto", "bold");
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
   doc.text("Skills", margin, yPosition);
@@ -269,6 +271,7 @@ export async function generateCVPDF(
     yPosition += 2;
     checkPageBreak(15);
     const certificationsStartY = yPosition;
+    doc.setFont("Roboto", "bold");
     doc.setFontSize(FONTS.subheading);
     doc.setTextColor(COLORS.primary);
     doc.text("Certifications", margin, yPosition);
@@ -299,11 +302,13 @@ export async function generateCVPDF(
     yPosition += 2;
     checkPageBreak(15);
     const languagesStartY = yPosition;
+    doc.setFont("Roboto", "bold");
     doc.setFontSize(FONTS.subheading);
     doc.setTextColor(COLORS.primary);
     doc.text("Languages", margin, yPosition);
     yPosition += 6;
 
+    doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
     doc.setTextColor(COLORS.text);
     const languagesText = cv.languages

@@ -424,6 +424,7 @@ export function normalizeBulletLength(bullet: string): string[] {
 /**
  * Cleans special characters from text for ATS compatibility
  * Replaces problematic characters with ATS-safe alternatives
+ * Preserves Turkish characters: ç, ğ, ı, i, ö, ş, ü and their uppercase variants
  */
 export function cleanSpecialCharacters(text: string): string {
   return text
@@ -436,9 +437,66 @@ export function cleanSpecialCharacters(text: string): string {
     .replace(/[\u2022\u2023\u25E6\u2043\u2219]/g, "-")
     // Replace other problematic characters
     .replace(/[\u00A0]/g, " ") // Non-breaking space
-    .replace(/[\u200B\u200C\u200D\uFEFF]/g, "") // Zero-width characters
-    // Remove any remaining non-ASCII except common accented chars
-    .replace(/[^\x00-\x7F\u00C0-\u024F]/g, "");
+    .replace(/[\u200B\u200C\u200D\uFEFF]/g, ""); // Zero-width characters
+    // NOTE: Removed the non-ASCII filter to preserve Turkish and other international characters
+    // Turkish chars (İıĞğŞşÜüÖöÇç) and Latin Extended chars are now preserved
+}
+
+/**
+ * Parses a date string to a comparable Date object
+ * Handles formats like "January 2020", "Jan 2020", "Present", etc.
+ */
+function parseDateForSorting(dateStr: string): Date {
+  if (!dateStr || dateStr.toLowerCase() === "present") {
+    return new Date(); // Present = current date (most recent)
+  }
+
+  const trimmed = dateStr.trim();
+
+  // Try to parse "Month YYYY" format
+  const monthYearMatch = trimmed.match(/^(\w+)\s+(\d{4})$/);
+  if (monthYearMatch) {
+    const monthName = monthYearMatch[1];
+    const year = parseInt(monthYearMatch[2], 10);
+
+    const monthIndex = VALID_MONTHS.findIndex(
+      (m) => m.toLowerCase() === monthName.toLowerCase()
+    );
+    if (monthIndex !== -1) {
+      return new Date(year, monthIndex, 1);
+    }
+
+    // Try abbreviated month
+    const fullMonth = MONTH_ABBREVIATIONS[monthName];
+    if (fullMonth) {
+      const fullMonthIndex = VALID_MONTHS.indexOf(fullMonth);
+      return new Date(year, fullMonthIndex, 1);
+    }
+  }
+
+  // Try to parse just year
+  const yearMatch = trimmed.match(/^(\d{4})$/);
+  if (yearMatch) {
+    return new Date(parseInt(yearMatch[1], 10), 0, 1);
+  }
+
+  // Fallback: try native Date parsing
+  const parsed = new Date(trimmed);
+  return isNaN(parsed.getTime()) ? new Date(0) : parsed;
+}
+
+/**
+ * Sorts experiences in reverse chronological order (newest first)
+ * Uses endDate for sorting, with "Present" treated as most recent
+ */
+function sortExperiencesByDate<
+  T extends { startDate: string; endDate: string }
+>(experiences: T[]): T[] {
+  return [...experiences].sort((a, b) => {
+    const dateA = parseDateForSorting(a.endDate);
+    const dateB = parseDateForSorting(b.endDate);
+    return dateB.getTime() - dateA.getTime(); // Descending order (newest first)
+  });
 }
 
 /**
@@ -496,20 +554,22 @@ export function postProcessCVForATS(cv: GeneratedCVData): GeneratedCVData {
     },
     // Expand abbreviations and clean summary
     summary: cleanSpecialCharacters(expandAbbreviations(cv.summary)),
-    // Process experience
-    experience: cv.experience.map((exp) => ({
-      ...exp,
-      title: cleanSpecialCharacters(exp.title),
-      company: cleanSpecialCharacters(exp.company),
-      location: cleanSpecialCharacters(exp.location),
-      startDate: normalizeDateFormat(exp.startDate),
-      endDate: normalizeDateFormat(exp.endDate),
-      bullets: exp.bullets.flatMap((bullet) =>
-        normalizeBulletLength(
-          cleanSpecialCharacters(expandAbbreviations(bullet))
-        )
-      ),
-    })),
+    // Process experience - CRITICAL: Sort in reverse chronological order (newest first)
+    experience: sortExperiencesByDate(
+      cv.experience.map((exp) => ({
+        ...exp,
+        title: cleanSpecialCharacters(exp.title),
+        company: cleanSpecialCharacters(exp.company),
+        location: cleanSpecialCharacters(exp.location),
+        startDate: normalizeDateFormat(exp.startDate),
+        endDate: normalizeDateFormat(exp.endDate),
+        bullets: exp.bullets.flatMap((bullet) =>
+          normalizeBulletLength(
+            cleanSpecialCharacters(expandAbbreviations(bullet))
+          )
+        ),
+      }))
+    ),
     // Process education - CRITICAL: Don't allow fabricated dates like "Present"
     education: cv.education.map((edu) => {
       let graduationDate = edu.graduationDate;

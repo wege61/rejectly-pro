@@ -80,7 +80,7 @@ const checkLabels: Record<string, string> = {
   singleColumn: "Single Column Layout",
   standardSections: "Standard Section Headers",
   cleanCharacters: "Clean Character Encoding",
-  abbreviations: "Abbreviations Expanded",
+  abbreviations: "Quantified Achievements",
 };
 
 export function ATSParsingChecklist({ checks }: ATSParsingChecklistProps) {

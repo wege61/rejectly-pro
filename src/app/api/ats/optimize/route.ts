@@ -162,8 +162,7 @@ export async function POST(request: NextRequest) {
     const parsedOptimizedCV = parseCV(optimizedCVText);
     const parsingChecks = calculateParsingCompatibility(parsedOptimizedCV);
 
-    // Optimized CV should get high score - we've fixed all issues
-    // Use deterministic score but ensure minimum 95 for properly optimized CVs
+    // Calculate final score
     let afterScore = deterministicResult.overallScore;
 
     // If optimization was successful (all critical issues fixed), ensure high score
@@ -173,7 +172,7 @@ export async function POST(request: NextRequest) {
 
     if (criticalIssuesRemaining === 0 && afterScore < 95) {
       // All critical issues fixed, boost score to reflect true ATS compatibility
-      afterScore = 95 + Math.min(deterministicResult.overallScore - 80, 5);
+      afterScore = 95 + Math.min(afterScore - 80, 5);
     }
 
     const optimizedAtsResult = {

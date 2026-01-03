@@ -19,8 +19,9 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 /**
  * Loads Roboto fonts and adds them to jsPDF document
  * Works in both browser and server environments
+ * CRITICAL: Roboto is required for Turkish/international character support
  */
-export async function loadFontsToDocument(doc: jsPDF): Promise<void> {
+export async function loadFontsToDocument(doc: jsPDF): Promise<boolean> {
   try {
     let regularBase64: string;
     let boldBase64: string;
@@ -36,8 +37,9 @@ export async function loadFontsToDocument(doc: jsPDF): Promise<void> {
 
       // Check if fonts exist
       if (!fs.existsSync(regularPath) || !fs.existsSync(boldPath)) {
-        console.warn("Font files not found, using default font");
-        return; // Use default font
+        console.error("CRITICAL: Font files not found at:", { regularPath, boldPath });
+        console.warn("Turkish/international characters may not render correctly!");
+        return false;
       }
 
       const regularBuffer = fs.readFileSync(regularPath);
@@ -50,16 +52,18 @@ export async function loadFontsToDocument(doc: jsPDF): Promise<void> {
     else {
       const regularResponse = await fetch("/fonts/Roboto-Regular.ttf");
       if (!regularResponse.ok) {
-        console.warn("Failed to load Roboto-Regular.ttf, using default font");
-        return;
+        console.error("CRITICAL: Failed to load Roboto-Regular.ttf");
+        console.warn("Turkish/international characters may not render correctly!");
+        return false;
       }
       const regularBuffer = await regularResponse.arrayBuffer();
       regularBase64 = arrayBufferToBase64(regularBuffer);
 
       const boldResponse = await fetch("/fonts/Roboto-Bold.ttf");
       if (!boldResponse.ok) {
-        console.warn("Failed to load Roboto-Bold.ttf, using default font");
-        return;
+        console.error("CRITICAL: Failed to load Roboto-Bold.ttf");
+        console.warn("Turkish/international characters may not render correctly!");
+        return false;
       }
       const boldBuffer = await boldResponse.arrayBuffer();
       boldBase64 = arrayBufferToBase64(boldBuffer);
@@ -75,9 +79,11 @@ export async function loadFontsToDocument(doc: jsPDF): Promise<void> {
 
     // Set Roboto as default font
     doc.setFont("Roboto", "normal");
+
+    return true;
   } catch (error) {
-    console.error("Failed to load fonts:", error);
-    // Continue with default font instead of throwing
-    console.warn("Using default Helvetica font");
+    console.error("CRITICAL: Failed to load fonts:", error);
+    console.warn("Turkish/international characters may not render correctly! Using Helvetica fallback.");
+    return false;
   }
 }

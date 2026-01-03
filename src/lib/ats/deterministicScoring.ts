@@ -229,14 +229,14 @@ const STRUCTURE_CRITERIA: ScoringCriterion[] = [
 
 const KEYWORDS_CRITERIA: ScoringCriterion[] = [
   {
-    id: "abbreviations_expanded",
-    name: "Abbreviations expanded",
+    id: "quantified_achievements",
+    name: "Quantified achievements",
     points: 10,
-    check: (cv) => cv.abbreviationsExpanded,
-    passMessage: "Abbreviations properly expanded",
-    failMessage: "Unexpanded abbreviations detected",
-    suggestion: "Expand abbreviations at first use: 'Amazon Web Services (AWS)'. Greenhouse/Workday don't recognize abbreviations alone.",
-    severity: "critical",
+    check: (cv) => cv.metricsCount >= 3,
+    passMessage: "Good use of metrics and numbers",
+    failMessage: "Few quantified achievements found",
+    suggestion: "Add numbers to your achievements: percentages, dollar amounts, team sizes, timeframes. E.g., 'Increased sales by 25%' or 'Managed team of 8'.",
+    severity: "major",
   },
   {
     id: "consistent_dates",
@@ -528,6 +528,17 @@ function checkAbbreviations(text: string): { expanded: string[]; unexpanded: str
   // Track which component abbreviations are covered by compound ones
   const coveredByCompound = new Set<string>();
 
+  // Pre-check: Find all abbreviations that appear in parentheses (already expanded)
+  const alreadyExpandedInParens = new Set<string>();
+  for (const abbr of commonAbbreviations) {
+    const escapedAbbr = abbr.replace(/[/\\]/g, '[/\\\\]');
+    const parenPattern = new RegExp(`\\(\\s*${escapedAbbr}\\s*\\)`, 'gi');
+    if (parenPattern.test(text)) {
+      alreadyExpandedInParens.add(abbr);
+    }
+  }
+
+
   for (const abbr of commonAbbreviations) {
     // Skip if this abbreviation is covered by a compound one (e.g., CI covered by CI/CD)
     if (coveredByCompound.has(abbr)) {
@@ -543,6 +554,15 @@ function checkAbbreviations(text: string): { expanded: string[]; unexpanded: str
     const escapedAbbr = abbr.replace(/[/\\]/g, '[/\\\\]');
     const abbrRegex = new RegExp(`\\b${escapedAbbr}\\b`, 'gi');
     if (abbrRegex.test(text)) {
+      // FAST PATH: If abbreviation appears in parentheses anywhere, it's expanded
+      if (alreadyExpandedInParens.has(abbr)) {
+        expanded.push(abbr);
+        if (abbr.includes('/')) {
+          abbr.split('/').forEach(part => coveredByCompound.add(part));
+        }
+        continue;
+      }
+
       // Check if expanded form exists nearby
       const expansion = ABBREVIATION_EXPANSIONS[abbr];
       const isExpanded = checkIfExpanded(text, abbr, expansion);
@@ -565,28 +585,30 @@ function checkAbbreviations(text: string): { expanded: string[]; unexpanded: str
 // Helper function to check if an abbreviation is properly expanded
 function checkIfExpanded(text: string, abbr: string, expansion: string): boolean {
   const lowerText = text.toLowerCase();
+  const lowerAbbr = abbr.toLowerCase();
+  const escapedAbbr = abbr.replace(/[/\\]/g, '[/\\\\]');
 
   // Method 1: Full expansion exists in text (e.g., "Amazon Web Services (AWS)")
   if (text.includes(expansion) || lowerText.includes(expansion.toLowerCase())) {
     return true;
   }
 
-  // Method 2: Pattern like "AWS (Amazon Web Services)"
-  const escapedAbbr = abbr.replace(/[/\\]/g, '[/\\\\]');
+  // Method 2: Check if abbreviation appears in parentheses ANYWHERE in text
+  // Flexible pattern: (AWS) or ( AWS ) or (AWS ) etc.
+  const parenPatternFlexible = new RegExp(`\\(\\s*${escapedAbbr}\\s*\\)`, 'gi');
+  if (parenPatternFlexible.test(text)) {
+    return true;
+  }
+
+  // Method 3: Pattern like "AWS (Amazon Web Services)" - abbreviation followed by explanation
   const expandedPattern1 = new RegExp(`${escapedAbbr}\\s*\\([^)]+\\)`, 'i');
   if (expandedPattern1.test(text)) {
     return true;
   }
 
-  // Method 3: Pattern like "Amazon Web Services (AWS)"
-  const expandedPattern2 = new RegExp(`[^(]+\\(${escapedAbbr}\\)`, 'i');
-  if (expandedPattern2.test(text)) {
-    return true;
-  }
-
-  // Method 4: For compound abbreviations like CI/CD, check if expanded with parentheses
+  // Method 4: For compound abbreviations like CI/CD
   if (abbr.includes('/')) {
-    const compoundPattern = new RegExp(`\\(${escapedAbbr}\\)`, 'i');
+    const compoundPattern = new RegExp(`\\(\\s*${escapedAbbr}\\s*\\)`, 'i');
     if (compoundPattern.test(text)) {
       return true;
     }
@@ -594,10 +616,21 @@ function checkIfExpanded(text: string, abbr: string, expansion: string): boolean
 
   // Method 5: Check if expansion WITHOUT parentheses exists
   // e.g., "Amazon Web Services" without "(AWS)" - still counts as expanded
-  // Extract the base expansion (remove the parenthetical abbreviation)
   const baseExpansion = expansion.replace(/\s*\([^)]+\)\s*$/, '').trim();
   if (baseExpansion.length > 4 && lowerText.includes(baseExpansion.toLowerCase())) {
     return true;
+  }
+
+  // Method 6: Check for common expansion patterns with flexible spacing
+  // "Amazon Web Services(AWS)" or "Amazon Web Services ( AWS )"
+  const baseExpansionWords = baseExpansion.split(/\s+/);
+  if (baseExpansionWords.length >= 2) {
+    // Create flexible pattern: word1.*word2.*word3.*(abbr)
+    const flexPattern = baseExpansionWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+');
+    const fullFlexPattern = new RegExp(`${flexPattern}\\s*\\(?\\s*${escapedAbbr}\\s*\\)?`, 'i');
+    if (fullFlexPattern.test(text)) {
+      return true;
+    }
   }
 
   return false;
@@ -856,10 +889,10 @@ export function calculateParsingCompatibility(cv: ParsedCV): ParsingCompatibilit
         : "Special characters detected that may not parse",
     },
     abbreviations: {
-      ok: cv.abbreviationsExpanded,
-      note: cv.abbreviationsExpanded
-        ? "Abbreviations properly expanded"
-        : `${cv.unexpandedAbbreviations.length} abbreviations need expansion`,
+      ok: cv.metricsCount >= 3,
+      note: cv.metricsCount >= 3
+        ? "Good use of quantified achievements"
+        : "Add more numbers and metrics to your achievements",
     },
   };
 }

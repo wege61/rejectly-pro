@@ -166,7 +166,8 @@ function LoginForm() {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      await signInWithGoogle();
+      // Pass the redirect destination to Google sign in
+      signInWithGoogle(redirectTo);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Google sign in failed. Please try again.";
       toast.error(errorMessage);

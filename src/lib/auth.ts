@@ -20,22 +20,18 @@ export async function signUp(email: string, password: string, name: string) {
   return data;
 }
 
-export async function signInWithGoogle() {
-  const supabase = createClient();
+export async function signInWithGoogle(redirectTo?: string) {
+  // Use our own OAuth flow instead of Supabase's
+  // This way users only see rejectly.pro domain, not Supabase's
+  const params = new URLSearchParams();
+  if (redirectTo) {
+    params.set('redirect', redirectTo);
+  }
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
-      queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
-      },
-    },
-  });
+  const authUrl = `/api/auth/google${params.toString() ? `?${params.toString()}` : ''}`;
 
-  if (error) throw error;
-  return data;
+  // Redirect to our Google OAuth initiation endpoint
+  window.location.href = authUrl;
 }
 
 export async function signIn(email: string, password: string) {

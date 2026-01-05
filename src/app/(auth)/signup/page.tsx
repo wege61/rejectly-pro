@@ -181,10 +181,11 @@ export default function SignupPage() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setIsGoogleLoading(true);
     try {
-      await signInWithGoogle();
+      // Will redirect to Google OAuth flow
+      signInWithGoogle(ROUTES.APP.DASHBOARD);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Google sign in failed. Please try again.';
       toast.error(errorMessage);

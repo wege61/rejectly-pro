@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import styled from "styled-components";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { signIn } from "@/lib/auth";
+import { signIn, signInWithGoogle } from "@/lib/auth";
 import { useToast } from "@/contexts/ToastContext";
 import { ROUTES } from "@/lib/constants";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { FcGoogle } from "react-icons/fc";
 
 const Form = styled.form`
   display: flex;
@@ -85,12 +86,66 @@ const Footer = styled.p`
   }
 `;
 
-export default function LoginPage() {
+const Divider = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+  }
+`;
+
+const DividerText = styled.span`
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-transform: lowercase;
+`;
+
+const GoogleButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--hover-bg);
+    border-color: var(--text-secondary);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  svg {
+    font-size: 20px;
+  }
+`;
+
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const toast = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || ROUTES.APP.DASHBOARD;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,12 +154,23 @@ export default function LoginPage() {
     try {
       await signIn(email, password);
       toast.success("Login successful! Redirecting...");
-      router.push(ROUTES.APP.DASHBOARD);
+      router.push(redirectTo);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Login failed. Please try again.";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Google sign in failed. Please try again.";
+      toast.error(errorMessage);
+      setIsGoogleLoading(false);
     }
   };
 
@@ -116,6 +182,19 @@ export default function LoginPage() {
       </Header>
 
       <FieldGroup>
+        <GoogleButton
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={isGoogleLoading || isLoading}
+        >
+          <FcGoogle />
+          {isGoogleLoading ? "Connecting..." : "Continue with Google"}
+        </GoogleButton>
+
+        <Divider>
+          <DividerText>or</DividerText>
+        </Divider>
+
         <Field>
           <Label htmlFor="email">Email</Label>
           <Input
@@ -159,5 +238,13 @@ export default function LoginPage() {
         <Link href={ROUTES.AUTH.SIGNUP}>Sign up</Link>
       </Footer>
     </Form>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { ROUTES } from "@/lib/constants";
+import { useAuth } from "@/hooks/useAuth";
 import dynamic from "next/dynamic";
 
 // Import ThemeToggle with SSR disabled
@@ -417,6 +418,7 @@ const DropdownGrid = styled.div`
 export function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, loading } = useAuth();
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -475,8 +477,16 @@ export function Navbar() {
             <ThemeToggleWrapper>
               <ThemeToggle />
             </ThemeToggleWrapper>
-            <LoginLink href={ROUTES.AUTH.LOGIN}>Login</LoginLink>
-            <CTAButton href={ROUTES.AUTH.SIGNUP}>Start Free</CTAButton>
+            {!loading && (
+              user ? (
+                <CTAButton href={ROUTES.APP.DASHBOARD}>Dashboard</CTAButton>
+              ) : (
+                <>
+                  <LoginLink href={ROUTES.AUTH.LOGIN}>Login</LoginLink>
+                  <CTAButton href={ROUTES.AUTH.SIGNUP}>Start Free</CTAButton>
+                </>
+              )
+            )}
           </RightSection>
 
           <MobileMenuButton onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
@@ -507,12 +517,22 @@ export function Navbar() {
         <MobileThemeWrapper>
           <ThemeToggle />
         </MobileThemeWrapper>
-        <MobileMenuItem href={ROUTES.AUTH.LOGIN} onClick={closeMobileMenu}>
-          Login
-        </MobileMenuItem>
-        <MobileCTAButton href={ROUTES.AUTH.SIGNUP} onClick={closeMobileMenu}>
-          Start Free
-        </MobileCTAButton>
+        {!loading && (
+          user ? (
+            <MobileCTAButton href={ROUTES.APP.DASHBOARD} onClick={closeMobileMenu}>
+              Go to Dashboard
+            </MobileCTAButton>
+          ) : (
+            <>
+              <MobileMenuItem href={ROUTES.AUTH.LOGIN} onClick={closeMobileMenu}>
+                Login
+              </MobileMenuItem>
+              <MobileCTAButton href={ROUTES.AUTH.SIGNUP} onClick={closeMobileMenu}>
+                Start Free
+              </MobileCTAButton>
+            </>
+          )
+        )}
       </MobileMenu>
     </>
   );

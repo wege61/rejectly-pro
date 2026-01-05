@@ -16,7 +16,8 @@
       "Bash(chmod:*)",
       "Bash(tree:*)",
       "Bash(npx tsx:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { signUp } from '@/lib/auth';
+import { signUp, signInWithGoogle } from '@/lib/auth';
 import { useToast } from '@/contexts/ToastContext';
 import { ROUTES } from '@/lib/constants';
+import { FcGoogle } from 'react-icons/fc';
 
 const Form = styled.form`
   display: flex;
@@ -91,13 +93,66 @@ const TermsText = styled.p`
   }
 `;
 
+const Divider = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+  }
+`;
+
+const DividerText = styled.span`
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-transform: lowercase;
+`;
+
+const GoogleButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--hover-bg);
+    border-color: var(--text-secondary);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  svg {
+    font-size: 20px;
+  }
+`;
+
 export default function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const toast = useToast();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +171,8 @@ export default function SignupPage() {
 
     try {
       await signUp(email, password, name);
-      toast.success('Sign up successful! Please check your email to verify your account.');
+      toast.success('Account created successfully! Redirecting...');
+      router.push(ROUTES.APP.DASHBOARD);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Sign up failed. Please try again.';
       toast.error(errorMessage);
@@ -125,14 +181,38 @@ export default function SignupPage() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Google sign in failed. Please try again.';
+      toast.error(errorMessage);
+      setIsGoogleLoading(false);
+    }
+  };
+
   return (
     <Form onSubmit={handleSubmit}>
       <Header>
         <Title>Create your account</Title>
-        <Subtitle>Fill in the form below to create your account</Subtitle>
+        <Subtitle>Get started with your free account</Subtitle>
       </Header>
 
       <FieldGroup>
+        <GoogleButton
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={isGoogleLoading || isLoading}
+        >
+          <FcGoogle />
+          {isGoogleLoading ? 'Connecting...' : 'Continue with Google'}
+        </GoogleButton>
+
+        <Divider>
+          <DividerText>or</DividerText>
+        </Divider>
+
         <Field>
           <Label htmlFor="name">Full Name</Label>
           <Input
@@ -159,9 +239,6 @@ export default function SignupPage() {
             fullWidth
             autoComplete="email"
           />
-          <FieldDescription>
-            We&apos;ll use this to contact you. We will not share your email with anyone.
-          </FieldDescription>
         </Field>
 
         <Field>

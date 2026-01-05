@@ -1,6 +1,27 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+// Giriş gerektiren sayfalar
+const PROTECTED_ROUTES = [
+  '/dashboard',
+  '/reports',
+  '/cv',
+  '/ats-optimizer',
+  '/jobs',
+  '/analyze',
+  '/cover-letters',
+  '/billing',
+  '/settings',
+];
+
+// Giriş yapmış kullanıcının görmemesi gereken sayfalar
+const AUTH_ROUTES = [
+  '/login',
+  '/signup',
+  '/forgot-password',
+  '/reset-password',
+];
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -54,7 +75,26 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+  const pathname = request.nextUrl.pathname;
+
+  // Korumalı sayfalara giriş yapmamış kullanıcı erişmeye çalışırsa
+  const isProtectedRoute = PROTECTED_ROUTES.some(route =>
+    pathname === route || pathname.startsWith(`${route}/`)
+  );
+
+  if (isProtectedRoute && !user) {
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Auth sayfalarına giriş yapmış kullanıcı erişmeye çalışırsa
+  const isAuthRoute = AUTH_ROUTES.some(route => pathname === route);
+
+  if (isAuthRoute && user) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
 
   return response;
 }

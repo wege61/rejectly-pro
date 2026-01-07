@@ -2,7 +2,6 @@
 
 import styled from "styled-components";
 import { BlogBentoGrid } from "./BlogBentoGrid";
-import { BlogPagination } from "./BlogPagination";
 import { BlogSidebar } from "./BlogSidebar";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
 import { Footer } from "@/components/ui/Footer";
@@ -24,33 +23,58 @@ const Content = styled.div`
   margin: 0 auto;
 `;
 
-const Header = styled.header`
-  text-align: center;
-  margin-bottom: 48px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid var(--border-color);
+// Mobile filter bar - horizontal scrolling chips
+const MobileFilterBar = styled.div`
+  display: none;
+  margin-bottom: 24px;
 
-  @media (max-width: 768px) {
-    margin-bottom: 32px;
-    padding-bottom: 24px;
+  @media (max-width: 1024px) {
+    display: block;
   }
 `;
 
-const Title = styled.h1`
-  font-size: 56px;
-  font-weight: 900;
-  margin-bottom: 16px;
+const FilterChipsContainer = styled.div`
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 
-  @media (max-width: 768px) {
-    font-size: 36px;
+  &::-webkit-scrollbar {
+    display: none;
   }
 `;
 
-const Subtitle = styled.p`
-  font-size: 18px;
-  color: var(--text-secondary);
-  max-width: 600px;
-  margin: 0 auto;
+const FilterChip = styled.a<{ $active?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  ${({ $active }) =>
+    $active
+      ? `
+    background: var(--landing-button);
+    color: white;
+  `
+      : `
+    background: var(--bg-alt);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+
+    &:hover {
+      border-color: var(--landing-button);
+      color: var(--text-color);
+    }
+  `}
 `;
 
 const MainLayout = styled.div`
@@ -68,7 +92,7 @@ const MainContent = styled.main``;
 
 const SidebarWrapper = styled.div`
   @media (max-width: 1024px) {
-    order: -1;
+    display: none;
   }
 `;
 
@@ -128,13 +152,23 @@ export function BlogPageContent({
   return (
     <Container>
       <Content>
-        <Header>
-          <Title>Blog</Title>
-          <Subtitle>
-            Expert tips on resume optimization, ATS systems, career advice, and
-            job search strategies.
-          </Subtitle>
-        </Header>
+        {/* Mobile Filter Bar */}
+        <MobileFilterBar>
+          <FilterChipsContainer>
+            <FilterChip href="/blog" $active={!activeCategory && !activeTag}>
+              All
+            </FilterChip>
+            {categories.map((category) => (
+              <FilterChip
+                key={category.id}
+                href={`/blog?category=${category.slug}`}
+                $active={activeCategory === category.slug}
+              >
+                {category.name}
+              </FilterChip>
+            ))}
+          </FilterChipsContainer>
+        </MobileFilterBar>
 
         <MainLayout>
           <MainContent>
@@ -159,18 +193,6 @@ export function BlogPageContent({
             )}
 
             <BlogBentoGrid posts={posts} />
-
-            <BlogPagination
-              currentPage={page}
-              totalPages={totalPages}
-              baseUrl={
-                activeCategory
-                  ? `/blog?category=${activeCategory}`
-                  : activeTag
-                  ? `/blog?tag=${activeTag}`
-                  : "/blog"
-              }
-            />
           </MainContent>
 
           <SidebarWrapper>

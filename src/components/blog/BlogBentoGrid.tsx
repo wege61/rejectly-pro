@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import styled from "styled-components";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Calendar, Clock, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, Clock, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BlogPostWithRelations } from "@/types/blog";
+
+const POSTS_PER_PAGE = 6;
 
 // BentoGrid styled components
 const BentoGridWrapper = styled.div`
@@ -15,8 +19,9 @@ const BentoGridWrapper = styled.div`
   margin: 0 auto;
 
   @media (min-width: 768px) {
-    grid-auto-rows: minmax(380px, auto);
     grid-template-columns: repeat(3, 1fr);
+    grid-auto-flow: dense;
+    align-items: start;
   }
 `;
 
@@ -85,10 +90,10 @@ const ImageHeader = styled.div`
   }
 `;
 
-const PostImage = styled(motion.img)`
+const PostImageWrapper = styled(motion.div)`
+  position: relative;
   width: 100%;
   height: 100%;
-  object-fit: cover;
 `;
 
 const PlaceholderImage = styled.div`
@@ -252,6 +257,75 @@ const EmptyState = styled.div`
   }
 `;
 
+// Pagination styled components
+const PaginationWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 40px;
+`;
+
+const PageButton = styled.button<{ $active?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ${({ $active }) =>
+    $active
+      ? `
+    background: var(--landing-button);
+    color: white;
+    box-shadow: 0 4px 12px rgba(248, 73, 56, 0.3);
+  `
+      : `
+    background: var(--bg-alt);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+
+    &:hover {
+      background: var(--surface-color);
+      color: var(--text-color);
+      border-color: var(--landing-button);
+    }
+  `}
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    &:hover {
+      background: var(--bg-alt);
+      color: var(--text-secondary);
+      border-color: var(--border-color);
+    }
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const PageInfo = styled.span`
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 8px;
+`;
+
+const GridContainer = styled.div`
+  position: relative;
+  min-height: 400px;
+`;
+
 // Bento Grid Components
 const BentoGrid = ({
   className,
@@ -291,13 +365,20 @@ const BlogBentoItem = ({ post, className, index }: BlogBentoItemProps) => {
     >
       <ImageHeader>
         {post.featured_image ? (
-          <PostImage
-            src={post.featured_image}
-            alt={post.featured_image_alt || post.title}
+          <PostImageWrapper
             initial={{ scale: 1 }}
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
-          />
+          >
+            <Image
+              src={post.featured_image}
+              alt={post.featured_image_alt || post.title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              style={{ objectFit: "cover" }}
+              loading={index < 3 ? "eager" : "lazy"}
+            />
+          </PostImageWrapper>
         ) : (
           <>
             <DotBackground />
@@ -354,16 +435,16 @@ const BlogBentoItem = ({ post, className, index }: BlogBentoItemProps) => {
 
 // Determine layout pattern for posts
 const getLayoutClass = (index: number, totalPosts: number): string => {
-  // Pattern: first post spans 2 cols, then alternating
-  // Row 1: [2-col] [1-col]
-  // Row 2: [1-col] [1-col] [1-col]
-  // Row 3: [1-col] [2-col]
+  // Pattern that fills all 3 columns in each row (7 items per cycle):
+  // Row 1: [2-col] [1-col]     = 3 cols (index 0, 1)
+  // Row 2: [1-col] [1-col] [1-col] = 3 cols (index 2, 3, 4)
+  // Row 3: [1-col] [2-col]     = 3 cols (index 5, 6)
   // Repeat...
 
-  const patternIndex = index % 6;
+  const patternIndex = index % 7;
 
-  if (patternIndex === 0) return "md:col-span-2"; // First item spans 2
-  if (patternIndex === 4) return "md:col-span-2"; // 5th item spans 2
+  // First item and last item in cycle span 2 columns
+  if (patternIndex === 0 || patternIndex === 6) return "md:col-span-2";
   return "md:col-span-1";
 };
 
@@ -372,6 +453,8 @@ interface BlogBentoGridProps {
 }
 
 export function BlogBentoGrid({ posts }: BlogBentoGridProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+
   if (!posts || posts.length === 0) {
     return (
       <BentoGrid>
@@ -383,17 +466,109 @@ export function BlogBentoGrid({ posts }: BlogBentoGridProps) {
     );
   }
 
+  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const endIndex = startIndex + POSTS_PER_PAGE;
+  const currentPosts = posts.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top of grid smoothly
+    const gridElement = document.getElementById('blog-bento-grid');
+    if (gridElement) {
+      gridElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const getPageNumbers = (): (number | 'ellipsis')[] => {
+    const pages: (number | 'ellipsis')[] = [];
+
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+
+      if (currentPage > 3) {
+        pages.push('ellipsis');
+      }
+
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (currentPage < totalPages - 2) {
+        pages.push('ellipsis');
+      }
+
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
   return (
-    <BentoGrid>
-      {posts.map((post, index) => (
-        <BlogBentoItem
-          key={post.id}
-          post={post}
-          index={index}
-          className={getLayoutClass(index, posts.length)}
-        />
-      ))}
-    </BentoGrid>
+    <GridContainer id="blog-bento-grid">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentPage}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          <BentoGrid>
+            {currentPosts.map((post, index) => (
+              <BlogBentoItem
+                key={post.id}
+                post={post}
+                index={index}
+                className={getLayoutClass(index, currentPosts.length)}
+              />
+            ))}
+          </BentoGrid>
+        </motion.div>
+      </AnimatePresence>
+
+      {totalPages > 1 && (
+        <PaginationWrapper>
+          <PageButton
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            aria-label="Previous page"
+          >
+            <ChevronLeft />
+          </PageButton>
+
+          {getPageNumbers().map((page, index) =>
+            page === 'ellipsis' ? (
+              <PageInfo key={`ellipsis-${index}`}>...</PageInfo>
+            ) : (
+              <PageButton
+                key={page}
+                onClick={() => handlePageChange(page)}
+                $active={page === currentPage}
+                aria-label={`Page ${page}`}
+              >
+                {page}
+              </PageButton>
+            )
+          )}
+
+          <PageButton
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            aria-label="Next page"
+          >
+            <ChevronRight />
+          </PageButton>
+        </PaginationWrapper>
+      )}
+    </GridContainer>
   );
 }
 

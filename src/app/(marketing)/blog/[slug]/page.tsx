@@ -40,10 +40,22 @@ export async function generateMetadata({
   const description = post.meta_description || post.excerpt || post.title;
   const image = post.og_image || post.featured_image || "/og-image.png";
 
+  // Generate rich keywords from tags and category
+  const keywords = [
+    ...(post.meta_keywords || []),
+    ...(post.tags?.map(t => t.name) || []),
+    post.category?.name,
+    "resume tips",
+    "career advice",
+  ].filter(Boolean) as string[];
+
   return {
     title: `${title} | Rejectly.pro Blog`,
     description,
-    keywords: post.meta_keywords || [],
+    keywords,
+    authors: [{ name: post.author_name, url: "https://www.rejectly.pro/about" }],
+    creator: post.author_name,
+    publisher: "Rejectly.pro",
     robots: {
       index: true,
       follow: true,
@@ -66,24 +78,37 @@ export async function generateMetadata({
       authors: [post.author_name],
       section: post.category?.name,
       tags: post.tags?.map(t => t.name),
+      locale: "en_US",
       images: [
         {
-          url: image,
+          url: image.startsWith("/") ? `https://www.rejectly.pro${image}` : image,
           width: 1200,
           height: 630,
-          alt: post.title,
+          alt: post.featured_image_alt || post.title,
+          type: "image/png",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
+      site: "@rejectlypro",
+      creator: "@rejectlypro",
       title,
       description,
-      images: [image],
-      creator: "@rejectlypro",
+      images: {
+        url: image.startsWith("/") ? `https://www.rejectly.pro${image}` : image,
+        alt: post.featured_image_alt || post.title,
+      },
     },
     alternates: {
       canonical: post.canonical_url || `https://www.rejectly.pro/blog/${slug}`,
+    },
+    other: {
+      "article:published_time": post.published_at || "",
+      "article:modified_time": post.updated_at,
+      "article:author": post.author_name,
+      "article:section": post.category?.name || "Blog",
+      "article:tag": post.tags?.map(t => t.name).join(", ") || "",
     },
   };
 }

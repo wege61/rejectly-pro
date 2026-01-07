@@ -104,11 +104,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .order("published_at", { ascending: false });
 
     if (posts) {
-      blogPages = posts.map((post) => ({
+      blogPages = posts.map((post, index) => ({
         url: `${BASE_URL}/blog/${post.slug}`,
         lastModified: new Date(post.updated_at || post.published_at),
         changeFrequency: "weekly" as const,
-        priority: 0.7,
+        // Recent posts get higher priority (0.8-0.9), older posts get 0.7
+        priority: index < 5 ? 0.9 : index < 15 ? 0.8 : 0.7,
       }));
     }
 

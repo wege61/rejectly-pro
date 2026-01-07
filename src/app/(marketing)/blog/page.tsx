@@ -19,11 +19,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const params = await searchParams;
 
   const filters: BlogFilters = {
-    page: params.page ? parseInt(params.page, 10) : 1,
+    page: 1,
     category: params.category,
     tag: params.tag,
     search: params.search,
-    pageSize: 12,
+    pageSize: 100, // Fetch all posts for client-side pagination
   };
 
   const [{ posts, total, page, totalPages }, categories, tags] =

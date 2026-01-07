@@ -492,7 +492,13 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
       })
     : "";
 
+  // ISO date for semantic HTML
+  const isoDate = post.published_at
+    ? new Date(post.published_at).toISOString()
+    : "";
+
   const shareUrl = `https://www.rejectly.pro/blog/${post.slug}`;
+  const shareText = `${post.title} - Great article on resume optimization!`;
 
   return (
     <Container>
@@ -512,17 +518,19 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
             <Meta>
               <MetaItem>
                 <User />
-                {post.author_name}
+                <span itemProp="author">{post.author_name}</span>
               </MetaItem>
               {formattedDate && (
                 <MetaItem>
                   <Calendar />
-                  {formattedDate}
+                  <time dateTime={isoDate} itemProp="datePublished">
+                    {formattedDate}
+                  </time>
                 </MetaItem>
               )}
               <MetaItem>
                 <Clock />
-                {post.reading_time_minutes} min read
+                <span>{post.reading_time_minutes} min read</span>
               </MetaItem>
             </Meta>
           </TitleWrapper>
@@ -545,9 +553,11 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
 
       <ArticleSection>
         <ArticleLayout>
-          <ArticleContent>
+          <ArticleContent itemScope itemType="https://schema.org/Article">
             {/* Content is stored as HTML in Supabase */}
             <Content
+              className="article-content"
+              itemProp="articleBody"
               dangerouslySetInnerHTML={{
                 __html: addHeadingIds(post.content, extractHeadings(post.content))
               }}
@@ -578,7 +588,7 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
               Share
             </ShareTitle>
             <ShareButton
-              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}`}
+              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}&via=rejectlypro`}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Share on Twitter"
@@ -610,10 +620,10 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
       </ArticleSection>
 
       {relatedPosts.length > 0 && (
-        <RelatedSection>
+        <RelatedSection aria-labelledby="related-posts-heading">
           <RelatedContent>
-            <RelatedTitle>Related Posts</RelatedTitle>
-            <RelatedGrid>
+            <RelatedTitle id="related-posts-heading">Related Posts</RelatedTitle>
+            <RelatedGrid role="list">
               {relatedPosts.map((relatedPost) => (
                 <BlogCard key={relatedPost.id} post={relatedPost} />
               ))}

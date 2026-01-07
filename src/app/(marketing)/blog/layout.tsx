@@ -28,9 +28,29 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Rejectly.pro Blog",
+        alt: "Rejectly.pro Blog - Resume Tips & Career Advice",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@rejectlypro",
+    creator: "@rejectlypro",
+    title: "Blog - Resume Tips & Career Advice | Rejectly.pro",
+    description:
+      "Expert insights on resume optimization, ATS systems, and career advice to help you land more interviews.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   alternates: {
     canonical: "https://www.rejectly.pro/blog",

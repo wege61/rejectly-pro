@@ -1,23 +1,18 @@
 "use client";
 
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/contexts/ToastContext";
+import { useCredits } from "@/contexts/CreditsContext";
 import { Modal } from "@/components/ui/Modal";
 import { signOut } from "@/lib/auth";
 import { deleteUserAccount, updatePassword, updateProfile } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
-
-interface UserCredits {
-  credits: number;
-  hasSubscription: boolean;
-  canAnalyze: boolean;
-}
 
 const Container = styled.div`
   max-width: 800px;
@@ -123,6 +118,7 @@ export default function SettingsPage() {
   const { user } = useAuth();
   const toast = useToast();
   const router = useRouter();
+  const { credits: userCredits } = useCredits();
   const [name, setName] = useState(user?.user_metadata?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [isLoading, setIsLoading] = useState(false);
@@ -132,27 +128,6 @@ export default function SettingsPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
-  const [userCredits, setUserCredits] = useState<UserCredits>({
-    credits: 0,
-    hasSubscription: false,
-    canAnalyze: false,
-  });
-
-  useEffect(() => {
-    async function fetchCredits() {
-      try {
-        const response = await fetch("/api/user/credits");
-        if (response.ok) {
-          const data = await response.json();
-          setUserCredits(data);
-        }
-      } catch (error) {
-        console.error("Error fetching credits:", error);
-      }
-    }
-
-    fetchCredits();
-  }, []);
 
   const handleUpdateProfile = async () => {
     if (!name || name.trim() === "") {

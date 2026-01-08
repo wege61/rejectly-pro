@@ -5,18 +5,13 @@ import styled, { keyframes } from "styled-components";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { useToast } from "@/contexts/ToastContext";
+import { useCredits } from "@/contexts/CreditsContext";
 import { Modal } from "@/components/ui/Modal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
-
-interface UserCredits {
-  credits: number;
-  hasSubscription: boolean;
-  canAnalyze: boolean;
-}
 
 // Icons
 const ViewIcon = () => (
@@ -1009,24 +1004,8 @@ export default function CoverLettersPage() {
   const [selectedLetterForEdit, setSelectedLetterForEdit] = useState<CoverLetter | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
-  // User credits
-  const [userCredits, setUserCredits] = useState<UserCredits>({
-    credits: 0,
-    hasSubscription: false,
-    canAnalyze: false,
-  });
-
-  const fetchCredits = useCallback(async () => {
-    try {
-      const response = await fetch("/api/user/credits");
-      if (response.ok) {
-        const data = await response.json();
-        setUserCredits(data);
-      }
-    } catch (error) {
-      console.error("Error fetching credits:", error);
-    }
-  }, []);
+  // User credits from context
+  const { credits: userCredits } = useCredits();
 
   const fetchCoverLetters = useCallback(async () => {
     try {
@@ -1065,12 +1044,12 @@ export default function CoverLettersPage() {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-      await Promise.all([fetchCoverLetters(), fetchReports(), fetchCredits()]);
+      await Promise.all([fetchCoverLetters(), fetchReports()]);
       setIsLoading(false);
     };
 
     loadData();
-  }, [fetchCoverLetters, fetchReports, fetchCredits]);
+  }, [fetchCoverLetters, fetchReports]);
 
   const handleReportClick = (reportId: string) => {
     const report = reports.find(r => r.id === reportId);

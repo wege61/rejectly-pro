@@ -11,6 +11,9 @@ import {
   type CategoryScore,
 } from "@/lib/ats/scoring";
 import { ATSFullResult } from "@/components/ats";
+import { useCredits } from "@/contexts/CreditsContext";
+import { useCreditConfirm } from "@/hooks/useCreditConfirm";
+import { CreditConfirmModal } from "@/components/credits";
 
 type Step = "upload" | "analyzing" | "result" | "optimizing" | "optimized";
 
@@ -1098,6 +1101,10 @@ export default function DashboardATSOptimizerPage() {
   const [atsResult, setAtsResult] = useState<ATSResult | null>(null);
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
 
+  // Credits system
+  const { notifyCreditConsumed } = useCredits();
+  const creditConfirm = useCreditConfirm();
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
@@ -1166,12 +1173,7 @@ export default function DashboardATSOptimizerPage() {
     multiple: false,
   });
 
-  const handleOptimize = async () => {
-    if (!cvText || !atsResult) {
-      setError("Missing CV data. Please try uploading again.");
-      return;
-    }
-
+  const performOptimization = async () => {
     setStep("optimizing");
     setError(null);
 
@@ -1182,10 +1184,10 @@ export default function DashboardATSOptimizerPage() {
         body: JSON.stringify({
           cvText,
           atsResult: {
-            overallScore: atsResult.overallScore,
-            categories: atsResult.categories,
-            topIssues: atsResult.topIssues,
-            quickWins: atsResult.quickWins,
+            overallScore: atsResult!.overallScore,
+            categories: atsResult!.categories,
+            topIssues: atsResult!.topIssues,
+            quickWins: atsResult!.quickWins,
           }
         }),
       });
@@ -1202,10 +1204,28 @@ export default function DashboardATSOptimizerPage() {
       setOptimizationResult(data.result);
       setStep("optimized");
 
+      // Notify about credit consumption
+      notifyCreditConsumed("CV Optimizasyonu");
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "Optimization failed");
       setStep("result");
     }
+  };
+
+  const handleOptimize = () => {
+    if (!cvText || !atsResult) {
+      setError("Missing CV data. Please try uploading again.");
+      return;
+    }
+
+    // Request credit confirmation before proceeding
+    creditConfirm.requestCredit({
+      action: "CV Optimizasyonu",
+      creditsRequired: 1,
+      onConfirm: performOptimization,
+      onCancel: () => {},
+    });
   };
 
   const handleReset = () => {
@@ -1431,6 +1451,19 @@ export default function DashboardATSOptimizerPage() {
         </ResultsSection>
         );
       })()}
+
+      {/* Credit Confirmation Modal */}
+      <CreditConfirmModal
+        isOpen={creditConfirm.state.isOpen}
+        action={creditConfirm.state.action}
+        creditsRequired={creditConfirm.state.creditsRequired}
+        currentCredits={creditConfirm.state.currentCredits}
+        hasSubscription={creditConfirm.state.hasSubscription}
+        isProcessing={creditConfirm.isProcessing}
+        canProceed={creditConfirm.canProceed}
+        onConfirm={creditConfirm.confirm}
+        onCancel={creditConfirm.cancel}
+      />
     </PageContainer>
   );
 }

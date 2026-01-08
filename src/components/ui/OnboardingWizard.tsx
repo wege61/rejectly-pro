@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Modal } from "./Modal";
 import { Button } from "./Button";
 import { Spinner } from "./Spinner";
+import { AnalysisProgress } from "./AnalysisProgress";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/contexts/ToastContext";
@@ -817,7 +818,7 @@ export function OnboardingWizard({
   const [selectedJob, setSelectedJob] = useState<string | null>(null);
   const [cvList, setCvList] = useState<DocumentType[]>([]);
   const [jobList, setJobList] = useState<DocumentType[]>([]);
-  const [analysisProgress, setAnalysisProgress] = useState<string>("");
+  const [analysisProgressStep, setAnalysisProgressStep] = useState<number>(0);
 
   // Step 4: Result Summary
   const [analysisResult, setAnalysisResult] = useState<AnalysisResultType | null>(null);
@@ -1139,17 +1140,20 @@ export function OnboardingWizard({
     }
 
     setIsLoading(true);
+    setAnalysisProgressStep(0);
+
     try {
-      // Show progress messages
-      setAnalysisProgress("Preparing your documents...");
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Step 0: Preparing documents
+      await new Promise(resolve => setTimeout(resolve, 600));
 
-      setAnalysisProgress("Analyzing resume content...");
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Step 1: Analyzing resume
+      setAnalysisProgressStep(1);
+      await new Promise(resolve => setTimeout(resolve, 600));
 
-      setAnalysisProgress("Comparing with job requirements...");
+      // Step 2: Comparing with job
+      setAnalysisProgressStep(2);
 
-      // Call the analyze API instead of direct insert
+      // Call the analyze API
       const response = await fetch("/api/analyze/free", {
         method: "POST",
         headers: {
@@ -1167,7 +1171,8 @@ export function OnboardingWizard({
         throw new Error(result.error || "Analysis failed");
       }
 
-      setAnalysisProgress("Calculating match score...");
+      // Step 3: Calculating score
+      setAnalysisProgressStep(3);
       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Save analysis result and move to step 4
@@ -1178,7 +1183,7 @@ export function OnboardingWizard({
         missingKeywords: result.report.missingKeywords || [],
       });
 
-      toast.success("Analysis complete!");
+      toast.success("Analiz tamamlandı!");
       setCurrentStep(4);
     } catch (error) {
       const errorMessage =
@@ -1186,7 +1191,7 @@ export function OnboardingWizard({
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
-      setAnalysisProgress("");
+      setAnalysisProgressStep(0);
     }
   };
 
@@ -1510,15 +1515,11 @@ export function OnboardingWizard({
 
           {isLoading ? (
             <LoadingContainer>
-              <Spinner size="xl" />
-              <LoadingTitle>
-                {analysisProgress || "Processing..."}
-              </LoadingTitle>
-              {analysisProgress && (
-                <LoadingSubtitle>
-                  This may take a few moments
-                </LoadingSubtitle>
-              )}
+              <AnalysisProgress
+                currentStep={analysisProgressStep}
+                title="Analiz Yapılıyor"
+                showTimeEstimate
+              />
             </LoadingContainer>
           ) : (
             <>

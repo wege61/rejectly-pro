@@ -1,17 +1,12 @@
 'use client';
 
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { PRICING } from '@/lib/constants';
-
-interface UserCredits {
-  credits: number;
-  hasSubscription: boolean;
-  canAnalyze: boolean;
-}
+import { useCredits } from '@/contexts/CreditsContext';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -222,29 +217,8 @@ const CheckIcon = () => (
 );
 
 export default function BillingPage() {
-  const [userCredits, setUserCredits] = useState<UserCredits>({
-    credits: 0,
-    hasSubscription: false,
-    canAnalyze: false,
-  });
-
+  const { credits: userCredits, refreshCredits } = useCredits();
   const [isLoading, setIsLoading] = useState<string | null>(null);
-
-  const fetchCredits = async () => {
-    try {
-      const response = await fetch("/api/user/credits");
-      if (response.ok) {
-        const data = await response.json();
-        setUserCredits(data);
-      }
-    } catch (error) {
-      console.error("Error fetching credits:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchCredits();
-  }, []);
 
   // TEST ONLY - Simulates purchase
   const handleBuy = async (planId: string, credits: number, planName: string) => {
@@ -258,7 +232,7 @@ export default function BillingPage() {
 
       if (response.ok) {
         alert(`✅ Success! Added ${credits} credits (${planName})`);
-        fetchCredits(); // Refresh credits
+        refreshCredits(); // Refresh credits
       } else {
         alert("❌ Failed to add credits");
       }

@@ -10,6 +10,8 @@ import { Spinner } from "@/components/ui/Spinner";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { CreditsProvider } from "@/contexts/CreditsContext";
+import { CreditWarningBanner } from "@/components/credits";
 
 const Container = styled.div`
   display: flex;
@@ -578,7 +580,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </UserSection>
       </Sidebar>
 
-      <Main $isAnimating={isAnimating}>{children}</Main>
+      <Main $isAnimating={isAnimating}>
+          <CreditsProvider>
+            <CreditWarningBanner />
+            {children}
+          </CreditsProvider>
+        </Main>
     </Container>
   );
 }

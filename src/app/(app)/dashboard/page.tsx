@@ -12,6 +12,7 @@ import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { CreditsCard } from "@/components/dashboard";
 
 // Icons
 const ReportsIcon = () => (
@@ -963,63 +964,6 @@ const Subtitle = styled.p`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const CreditsCard = styled(Card)`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
-  border: 1px solid var(--primary-200);
-`;
-
-const CreditsContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const CreditsInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.lg};
-`;
-
-const CreditsNumber = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const CreditsValue = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--accent);
-`;
-
-const CreditsLabel = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const SubscriptionBadge = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
-  background: var(--success);
-  color: white;
-  border-radius: ${({ theme }) => theme.radius.full};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-`;
-
-const LowCreditsWarning = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  color: #f59e0b;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-`;
-
 const BentoGridContainer = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 
@@ -1580,11 +1524,6 @@ interface Stats {
   totalCoverLetters: number;
 }
 
-interface UserCredits {
-  credits: number;
-  hasSubscription: boolean;
-  canAnalyze: boolean;
-}
 
 interface Report {
   id: string;
@@ -1626,11 +1565,6 @@ export default function DashboardPage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showFABHint, setShowFABHint] = useState(false);
   const [fabHintCompleted, setFabHintCompleted] = useState(false);
-  const [userCredits, setUserCredits] = useState<UserCredits>({
-    credits: 0,
-    hasSubscription: false,
-    canAnalyze: false,
-  });
 
   // Check if user has seen welcome modal and FAB hint
   useEffect(() => {
@@ -1818,17 +1752,6 @@ export default function DashboardPage() {
         if (coverLettersData.data) {
           setRecentCoverLetters(coverLettersData.data);
         }
-
-        // Fetch user credits
-        try {
-          const creditsResponse = await fetch("/api/user/credits");
-          if (creditsResponse.ok) {
-            const creditsData = await creditsResponse.json();
-            setUserCredits(creditsData);
-          }
-        } catch (creditsError) {
-          console.error("Error fetching credits:", creditsError);
-        }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -1871,35 +1794,7 @@ export default function DashboardPage() {
         </Header>
 
         {/* Credits Card */}
-        <CreditsCard variant="elevated">
-          <CreditsContent>
-            <CreditsInfo>
-              {userCredits.hasSubscription ? (
-                <SubscriptionBadge>
-                  ✓ Pro Subscription Active
-                </SubscriptionBadge>
-              ) : (
-                <CreditsNumber>
-                  <CreditsValue>{userCredits.credits}</CreditsValue>
-                  <CreditsLabel>Credits remaining</CreditsLabel>
-                </CreditsNumber>
-              )}
-              {!userCredits.hasSubscription && userCredits.credits <= 2 && userCredits.credits > 0 && (
-                <LowCreditsWarning>
-                  ⚠ Running low on credits
-                </LowCreditsWarning>
-              )}
-            </CreditsInfo>
-            {!userCredits.hasSubscription && (
-              <Button
-                size="sm"
-                onClick={() => router.push(ROUTES.APP.BILLING)}
-              >
-                {userCredits.credits === 0 ? "Buy Credits" : "Get More Credits"}
-              </Button>
-            )}
-          </CreditsContent>
-        </CreditsCard>
+        <CreditsCard />
 
         {/* Stats Bento Grid */}
         <BentoGridContainer>

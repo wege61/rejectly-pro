@@ -217,7 +217,7 @@ const CheckIcon = () => (
 );
 
 export default function BillingPage() {
-  const { credits: userCredits, refreshCredits } = useCredits();
+  const { credits: userCredits, refreshCredits, isLoading: isCreditsLoading } = useCredits();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
   // TEST ONLY - Simulates purchase
@@ -266,7 +266,12 @@ export default function BillingPage() {
       <CreditsCard variant="elevated">
         <CreditsContent>
           <CreditsInfo>
-            {userCredits.hasSubscription ? (
+            {isCreditsLoading ? (
+              <CreditsNumber>
+                <CreditsValue style={{ opacity: 0.5 }}>...</CreditsValue>
+                <CreditsLabel>Loading credits...</CreditsLabel>
+              </CreditsNumber>
+            ) : userCredits.hasSubscription ? (
               <SubscriptionBadge>
                 ✓ Pro Subscription Active
               </SubscriptionBadge>

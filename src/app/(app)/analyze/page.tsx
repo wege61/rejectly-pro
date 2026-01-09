@@ -40,7 +40,7 @@ export default function AnalyzePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Free rapor için kredi gerekmez, wizard'ı her zaman aç
+    // Free reports don't require credits, always open the wizard
     setIsWizardOpen(true);
     setIsLoading(false);
   }, []);

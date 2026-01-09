@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/contexts/ToastContext';
 import { UserCredits, CreditsContextValue, DEFAULT_CREDITS } from '@/types/credits';
 
 const CreditsContext = createContext<CreditsContextValue | undefined>(undefined);
@@ -12,8 +11,7 @@ interface CreditsProviderProps {
 }
 
 export function CreditsProvider({ children }: CreditsProviderProps) {
-  const { user } = useAuth();
-  const toast = useToast();
+  const { user, loading: authLoading } = useAuth();
   const [credits, setCredits] = useState<UserCredits>(DEFAULT_CREDITS);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +19,11 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
   const refreshCredits = useCallback(async () => {
     if (!user) {
       setCredits(DEFAULT_CREDITS);
-      setIsLoading(false);
+      // Only set isLoading to false if auth has finished loading
+      // This prevents showing 0 credits while auth is still loading
+      if (!authLoading) {
+        setIsLoading(false);
+      }
       return;
     }
 
@@ -48,7 +50,7 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   // Consume a credit locally (optimistic update)
   const consumeCredit = useCallback(async (): Promise<boolean> => {
@@ -71,28 +73,6 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     return true;
   }, [credits]);
 
-  // Notify user about credit consumption with toast
-  const notifyCreditConsumed = useCallback((action: string, creditsUsed: number = 1) => {
-    if (credits.hasSubscription) {
-      toast.success(`${action} tamamlandı`);
-      return;
-    }
-
-    const remaining = credits.credits - creditsUsed;
-    const message = `${action} için ${creditsUsed} kredi kullanıldı. Kalan: ${remaining}`;
-
-    if (remaining <= 2 && remaining > 0) {
-      toast.warning(message);
-    } else if (remaining <= 0) {
-      toast.warning(`${message}. Kredi satın almayı unutmayın!`);
-    } else {
-      toast.success(message);
-    }
-
-    // Refresh to get accurate count from server
-    refreshCredits();
-  }, [credits, toast, refreshCredits]);
-
   // Fetch credits on mount and when user changes
   useEffect(() => {
     refreshCredits();
@@ -104,7 +84,6 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     error,
     refreshCredits,
     consumeCredit,
-    notifyCreditConsumed,
   };
 
   return (

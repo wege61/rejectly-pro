@@ -1183,7 +1183,7 @@ export function OnboardingWizard({
         missingKeywords: result.report.missingKeywords || [],
       });
 
-      toast.success("Analiz tamamlandı!");
+      toast.success("Analysis complete!");
       setCurrentStep(4);
     } catch (error) {
       const errorMessage =
@@ -1517,7 +1517,7 @@ export function OnboardingWizard({
             <LoadingContainer>
               <AnalysisProgress
                 currentStep={analysisProgressStep}
-                title="Analiz Yapılıyor"
+                title="Analyzing"
                 showTimeEstimate
               />
             </LoadingContainer>

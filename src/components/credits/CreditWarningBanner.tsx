@@ -109,17 +109,17 @@ export function CreditWarningBanner({ threshold = 3, className }: CreditWarningB
         <BannerIcon>{isDanger ? '🚫' : '⚠️'}</BannerIcon>
         <BannerText $variant={variant}>
           {isDanger ? (
-            <>Krediniz tükendi! Analiz yapmak için kredi satın alın.</>
+            <>You're out of credits! Buy credits to continue analyzing.</>
           ) : (
             <>
-              Sadece <CreditsCount $variant={variant}>{credits.credits}</CreditsCount> krediniz kaldı.
-              {credits.credits === 1 ? ' Son kredinizi akıllıca kullanın!' : ' Kesintisiz devam etmek için kredi alın.'}
+              Only <CreditsCount $variant={variant}>{credits.credits}</CreditsCount> credit{credits.credits !== 1 ? 's' : ''} left.
+              {credits.credits === 1 ? ' Use your last credit wisely!' : ' Get more credits to continue seamlessly.'}
             </>
           )}
         </BannerText>
       </BannerContent>
       <BannerButton $variant={variant} onClick={() => router.push(ROUTES.APP.BILLING)}>
-        {isDanger ? 'Kredi Satın Al' : 'Kredi Al'}
+        {isDanger ? 'Buy Credits' : 'Get Credits'}
       </BannerButton>
     </Banner>
   );

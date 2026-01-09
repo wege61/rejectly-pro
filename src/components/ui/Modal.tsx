@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 
 interface ModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   title?: string;
   description?: string;
   children: React.ReactNode;
@@ -224,7 +224,7 @@ export const Modal: React.FC<ModalProps> & {
   // ESC tuşu ile kapatma
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen && closeOnEscape) {
+      if (e.key === "Escape" && isOpen && closeOnEscape && onClose) {
         onClose();
       }
     };
@@ -245,7 +245,7 @@ export const Modal: React.FC<ModalProps> & {
 
   // Backdrop'a tıklayınca kapatma
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget && closeOnBackdropClick) {
+    if (e.target === e.currentTarget && closeOnBackdropClick && onClose) {
       onClose();
     }
   };
@@ -261,7 +261,7 @@ export const Modal: React.FC<ModalProps> & {
                 <ModalDescription>{description}</ModalDescription>
               )}
             </ModalHeaderContent>
-            {showCloseButton && (
+            {showCloseButton && onClose && (
               <CloseButton onClick={onClose} aria-label="Close modal">
                 <CloseIcon />
               </CloseButton>

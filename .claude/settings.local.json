@@ -21,7 +21,9 @@
       "Bash(pnpm install)",
       "Bash(lsof:*)",
       "Bash(netstat:*)",
-      "Bash(ss:*)"
+      "Bash(ss:*)",
+      "Bash(xargs:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [],
     "ask": []

@@ -149,10 +149,10 @@ interface AnalysisStep {
 }
 
 const DEFAULT_STEPS: AnalysisStep[] = [
-  { id: 'prepare', label: 'Belgeler hazırlanıyor', description: 'CV ve iş ilanı yükleniyor' },
-  { id: 'analyze', label: 'CV analiz ediliyor', description: 'İçerik ve anahtar kelimeler çıkarılıyor' },
-  { id: 'compare', label: 'Karşılaştırma yapılıyor', description: 'İş gereksinimleri ile eşleştiriliyor' },
-  { id: 'score', label: 'Skor hesaplanıyor', description: 'Uyum puanı belirleniyor' },
+  { id: 'prepare', label: 'Preparing documents', description: 'Loading CV and job posting' },
+  { id: 'analyze', label: 'Analyzing CV', description: 'Extracting content and keywords' },
+  { id: 'compare', label: 'Comparing', description: 'Matching with job requirements' },
+  { id: 'score', label: 'Calculating score', description: 'Determining match score' },
 ];
 
 interface AnalysisProgressProps {
@@ -165,7 +165,7 @@ interface AnalysisProgressProps {
 export function AnalysisProgress({
   currentStep,
   steps = DEFAULT_STEPS,
-  title = 'Analiz Yapılıyor',
+  title = 'Analyzing',
   showTimeEstimate = true,
 }: AnalysisProgressProps) {
   const progress = Math.min(((currentStep + 1) / steps.length) * 100, 100);
@@ -211,7 +211,7 @@ export function AnalysisProgress({
 
       {showTimeEstimate && (
         <TimeEstimate>
-          Tahmini süre: ~{Math.max(1, steps.length - currentStep) * 3} saniye
+          Estimated time: ~{Math.max(1, steps.length - currentStep) * 3} seconds
         </TimeEstimate>
       )}
     </Container>

@@ -11,9 +11,8 @@ import {
   type CategoryScore,
 } from "@/lib/ats/scoring";
 import { ATSFullResult } from "@/components/ats";
-import { useCredits } from "@/contexts/CreditsContext";
 import { useCreditConfirm } from "@/hooks/useCreditConfirm";
-import { CreditConfirmModal } from "@/components/credits";
+import { LoadingModal } from "@/components/ui/LoadingModal";
 
 type Step = "upload" | "analyzing" | "result" | "optimizing" | "optimized";
 
@@ -121,11 +120,6 @@ interface OptimizationResult {
   };
 }
 
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`;
-
 const pulse = keyframes`
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.02); }
@@ -221,34 +215,6 @@ const ErrorMessage = styled.div`
   color: #ef4444;
   font-size: 14px;
   margin-top: 16px;
-`;
-
-// Loading State
-const LoadingContainer = styled.div`
-  text-align: center;
-  padding: 60px 20px;
-`;
-
-const Spinner = styled.div`
-  width: 60px;
-  height: 60px;
-  border: 4px solid ${({ theme }) => theme.colors.border};
-  border-top-color: #6366f1;
-  border-radius: 50%;
-  margin: 0 auto 24px;
-  animation: ${spin} 1s linear infinite;
-`;
-
-const LoadingText = styled.p`
-  font-size: 18px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-weight: 500;
-  margin-bottom: 8px;
-`;
-
-const LoadingSubtext = styled.p`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 // Results Section
@@ -1102,7 +1068,6 @@ export default function DashboardATSOptimizerPage() {
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
 
   // Credits system
-  const { notifyCreditConsumed } = useCredits();
   const creditConfirm = useCreditConfirm();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -1204,8 +1169,7 @@ export default function DashboardATSOptimizerPage() {
       setOptimizationResult(data.result);
       setStep("optimized");
 
-      // Notify about credit consumption
-      notifyCreditConsumed("CV Optimizasyonu");
+      // Credit feedback is now handled automatically by useCreditConfirm
 
     } catch (err) {
       setError(err instanceof Error ? err.message : "Optimization failed");
@@ -1219,12 +1183,11 @@ export default function DashboardATSOptimizerPage() {
       return;
     }
 
-    // Request credit confirmation before proceeding
+    // Check credits and execute optimization directly
     creditConfirm.requestCredit({
-      action: "CV Optimizasyonu",
+      action: "CV Optimization",
       creditsRequired: 1,
       onConfirm: performOptimization,
-      onCancel: () => {},
     });
   };
 
@@ -1265,16 +1228,6 @@ export default function DashboardATSOptimizerPage() {
         </ContentCard>
       )}
 
-      {/* Analyzing Step */}
-      {step === "analyzing" && (
-        <ContentCard>
-          <LoadingContainer>
-            <Spinner />
-            <LoadingText>Analyzing your resume...</LoadingText>
-            <LoadingSubtext>Checking format, structure, keywords, and readability</LoadingSubtext>
-          </LoadingContainer>
-        </ContentCard>
-      )}
 
       {/* Result Step */}
       {step === "result" && atsResult && (() => {
@@ -1391,16 +1344,6 @@ export default function DashboardATSOptimizerPage() {
         );
       })()}
 
-      {/* Optimizing Step */}
-      {step === "optimizing" && (
-        <ContentCard>
-          <LoadingContainer>
-            <Spinner />
-            <LoadingText>Optimizing your CV...</LoadingText>
-            <LoadingSubtext>Fixing formatting, improving bullets, and enhancing ATS compatibility</LoadingSubtext>
-          </LoadingContainer>
-        </ContentCard>
-      )}
 
       {/* Optimized Step */}
       {step === "optimized" && optimizationResult && (() => {
@@ -1452,17 +1395,42 @@ export default function DashboardATSOptimizerPage() {
         );
       })()}
 
-      {/* Credit Confirmation Modal */}
-      <CreditConfirmModal
-        isOpen={creditConfirm.state.isOpen}
-        action={creditConfirm.state.action}
-        creditsRequired={creditConfirm.state.creditsRequired}
-        currentCredits={creditConfirm.state.currentCredits}
-        hasSubscription={creditConfirm.state.hasSubscription}
-        isProcessing={creditConfirm.isProcessing}
-        canProceed={creditConfirm.canProceed}
-        onConfirm={creditConfirm.confirm}
-        onCancel={creditConfirm.cancel}
+      {/* Analyzing Loading Modal */}
+      <LoadingModal
+        isOpen={step === "analyzing"}
+        title="Analyzing Your CV"
+        messages={[
+          "Scanning your resume like a detective...",
+          "Checking through the eyes of ATS robots...",
+          "Hunting for the right keywords...",
+          "Catching formatting issues...",
+          "Evaluating structure and readability...",
+          "Almost there, hang tight...",
+        ]}
+        steps={[
+          { label: "Format", active: true },
+          { label: "Structure", active: true },
+          { label: "Content", active: false },
+        ]}
+      />
+
+      {/* Optimizing Loading Modal */}
+      <LoadingModal
+        isOpen={step === "optimizing"}
+        title="Optimizing Your CV"
+        messages={[
+          "Supercharging your resume...",
+          "Making ATS systems love you...",
+          "Polishing those bullet points...",
+          "Strategically placing keywords...",
+          "Adding the finishing touches...",
+          "Almost perfect, just a moment...",
+        ]}
+        steps={[
+          { label: "Analyze", completed: true },
+          { label: "Optimize", active: true },
+          { label: "Generate", active: false },
+        ]}
       />
     </PageContainer>
   );

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Spinner } from "@/components/ui/Spinner";
 import { Modal } from "@/components/ui/Modal";
+import { LoadingModal } from "@/components/ui/LoadingModal";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/contexts/ToastContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -3007,106 +3008,6 @@ const ActionCardDescription = styled.p`
   margin: 0;
 `;
 
-const LoadingModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  animation: fadeIn 0.3s ease-in-out;
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-`;
-
-const LoadingModalContent = styled.div`
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: ${({ theme }) => theme.spacing["2xl"]};
-  max-width: 600px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.4s ease-out;
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(30px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-`;
-
-const LoadingSpinner = styled.div`
-  width: 80px;
-  height: 80px;
-  margin: 0 auto ${({ theme }) => theme.spacing.xl};
-  border: 4px solid ${({ theme }) => theme.colors.border};
-  border-top: 4px solid ${({ theme }) => theme.colors.primary};
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-`;
-
-const LoadingTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-`;
-
-const LoadingMessage = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.6;
-  min-height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 ${({ theme }) => theme.spacing.lg};
-  animation: messageSlide 0.5s ease-in-out;
-
-  @keyframes messageSlide {
-    0% {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-`;
-
 const LearningRecommendationCard = styled.div`
   padding: ${({ theme }) => theme.spacing.lg};
   background: ${({ theme }) => theme.colors.surface};
@@ -3523,7 +3424,6 @@ export default function ReportDetailPage() {
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
   const [pendingCVGeneration, setPendingCVGeneration] = useState<{ fakeItMode: boolean } | null>(null);
-  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const wasGeneratingRef = useRef(false);
   const [userCredits, setUserCredits] = useState<UserCredits>({
     credits: 0,
@@ -3607,17 +3507,6 @@ export default function ReportDetailPage() {
       }, 500);
     }
   }, [shouldAutoUpgrade, report, userCredits.canAnalyze, isLoading, router, reportId]);
-
-  // Loading messages
-  const loadingMessages = [
-    "Analyzing your experience and skills... 🔍",
-    "Optimizing keywords for ATS systems... 🤖",
-    "Enhancing your achievements... 🌟",
-    "Restructuring for maximum impact... 📊",
-    "Tailoring content to job requirements... 🎯",
-    "Polishing the final details... ✨",
-    "Almost there... 🚀",
-  ];
 
   // Define analyzeOptimizedCV before useEffect that uses it
   const analyzeOptimizedCV = useCallback(async () => {
@@ -3845,20 +3734,6 @@ export default function ReportDetailPage() {
     isAnalyzingOptimized,
     analyzeOptimizedCV,
   ]);
-
-  // Rotate loading messages every 5 seconds
-  useEffect(() => {
-    if (!isGeneratingCV && !isUpgrading) {
-      setLoadingMessageIndex(0);
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setLoadingMessageIndex((prev) => (prev + 1) % loadingMessages.length);
-    }, 2500);
-
-    return () => clearInterval(interval);
-  }, [isGeneratingCV, isUpgrading, loadingMessages.length]);
 
   // Scroll to top when CV generation completes
   useEffect(() => {
@@ -6037,30 +5912,45 @@ export default function ReportDetailPage() {
       </Modal>
 
       {/* CV Generation Loading Modal */}
-      {isGeneratingCV && (
-        <LoadingModalOverlay>
-          <LoadingModalContent>
-            <LoadingSpinner />
-            <LoadingTitle>Generating Your Optimized CV</LoadingTitle>
-            <LoadingMessage key={loadingMessageIndex}>
-              {loadingMessages[loadingMessageIndex]}
-            </LoadingMessage>
-          </LoadingModalContent>
-        </LoadingModalOverlay>
-      )}
+      <LoadingModal
+        isOpen={isGeneratingCV}
+        title="Generating Optimized CV"
+        messages={[
+          "Analyzing your experience and skills...",
+          "Optimizing keywords for ATS systems...",
+          "Highlighting your achievements...",
+          "Restructuring for maximum impact...",
+          "Tailoring content to job requirements...",
+          "Adding the finishing touches...",
+          "Almost ready, just a moment...",
+          "Creating something amazing...",
+        ]}
+        steps={[
+          { label: "Analyze", completed: true },
+          { label: "Optimize", active: true },
+          { label: "Complete", active: false },
+        ]}
+      />
 
       {/* Pro Upgrade Loading Modal */}
-      {isUpgrading && (
-        <LoadingModalOverlay>
-          <LoadingModalContent>
-            <LoadingSpinner />
-            <LoadingTitle>Upgrading to Pro</LoadingTitle>
-            <LoadingMessage key={loadingMessageIndex}>
-              {loadingMessages[loadingMessageIndex]}
-            </LoadingMessage>
-          </LoadingModalContent>
-        </LoadingModalOverlay>
-      )}
+      <LoadingModal
+        isOpen={isUpgrading}
+        title="Upgrading to Pro"
+        messages={[
+          "Activating Pro features...",
+          "Preparing advanced analytics...",
+          "Generating AI recommendations...",
+          "Loading cover letter templates...",
+          "Enabling optimized CV feature...",
+          "You're almost Pro...",
+          "Final checks in progress...",
+        ]}
+        steps={[
+          { label: "Process", active: true },
+          { label: "Analyze", active: false },
+          { label: "Complete", active: false },
+        ]}
+      />
 
       {/* Premium Upgrade Modal for Cover Letters */}
       <Modal
@@ -6312,17 +6202,23 @@ export default function ReportDetailPage() {
       )}
 
       {/* Tool Suggestion Loading Modal */}
-      {isLoadingToolSuggestions && (
-        <LoadingModalOverlay>
-          <LoadingModalContent>
-            <LoadingSpinner />
-            <LoadingTitle>Analyzing Your Experience</LoadingTitle>
-            <LoadingMessage>
-              Identifying tools that could strengthen your CV...
-            </LoadingMessage>
-          </LoadingModalContent>
-        </LoadingModalOverlay>
-      )}
+      <LoadingModal
+        isOpen={isLoadingToolSuggestions}
+        title="Analyzing Your Experience"
+        messages={[
+          "Finding tools to strengthen your CV...",
+          "Reviewing industry trends...",
+          "Matching popular technologies...",
+          "Preparing career-focused suggestions...",
+          "Identifying the best tool combinations...",
+          "Almost ready with great recommendations...",
+        ]}
+        steps={[
+          { label: "Scan", active: true },
+          { label: "Analyze", active: false },
+          { label: "Suggest", active: false },
+        ]}
+      />
 
       {/* Tool Suggestion Modal */}
       <ToolSuggestionModal

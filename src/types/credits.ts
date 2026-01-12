@@ -17,6 +17,9 @@ export interface CreditsContextValue {
   error: string | null;
   refreshCredits: () => Promise<void>;
   consumeCredit: () => Promise<boolean>;
+  showNoCreditsModal: boolean;
+  openNoCreditsModal: () => void;
+  closeNoCreditsModal: () => void;
 }
 
 export const DEFAULT_CREDITS: UserCredits = {

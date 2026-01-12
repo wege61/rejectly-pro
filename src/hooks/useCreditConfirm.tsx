@@ -2,8 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import { useCredits } from '@/contexts/CreditsContext';
-import { useRouter } from 'next/navigation';
-import { ROUTES } from '@/lib/constants';
 
 interface CreditCheckOptions {
   action: string;
@@ -14,8 +12,7 @@ interface CreditCheckOptions {
 }
 
 export function useCreditConfirm() {
-  const router = useRouter();
-  const { credits, refreshCredits } = useCredits();
+  const { credits, refreshCredits, openNoCreditsModal } = useCredits();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const checkAndExecute = useCallback(async (options: CreditCheckOptions) => {
@@ -43,8 +40,8 @@ export function useCreditConfirm() {
       if (onInsufficientCredits) {
         onInsufficientCredits();
       } else {
-        // Default: redirect to billing
-        router.push(ROUTES.APP.BILLING);
+        // Default: show no credits modal
+        openNoCreditsModal();
       }
       return;
     }
@@ -57,7 +54,7 @@ export function useCreditConfirm() {
     } finally {
       setIsProcessing(false);
     }
-  }, [credits, refreshCredits, router]);
+  }, [credits, refreshCredits, openNoCreditsModal]);
 
   return {
     isProcessing,

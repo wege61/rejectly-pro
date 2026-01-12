@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserCredits, CreditsContextValue, DEFAULT_CREDITS } from '@/types/credits';
+import { useToast } from '@/contexts/ToastContext';
+import { NoCreditsModal } from '@/components/ui/NoCreditsModal';
 
 const CreditsContext = createContext<CreditsContextValue | undefined>(undefined);
 
@@ -12,9 +14,19 @@ interface CreditsProviderProps {
 
 export function CreditsProvider({ children }: CreditsProviderProps) {
   const { user, loading: authLoading } = useAuth();
+  const toast = useToast();
   const [credits, setCredits] = useState<UserCredits>(DEFAULT_CREDITS);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showNoCreditsModal, setShowNoCreditsModal] = useState(false);
+
+  const openNoCreditsModal = useCallback(() => {
+    setShowNoCreditsModal(true);
+  }, []);
+
+  const closeNoCreditsModal = useCallback(() => {
+    setShowNoCreditsModal(false);
+  }, []);
 
   const refreshCredits = useCallback(async () => {
     if (!user) {
@@ -63,6 +75,8 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
       return false;
     }
 
+    const remainingCredits = credits.credits - 1;
+
     // Optimistic update
     setCredits(prev => ({
       ...prev,
@@ -70,8 +84,11 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
       canAnalyze: prev.credits - 1 > 0 || prev.hasSubscription,
     }));
 
+    // Show credit usage notification
+    toast.info(`1 credit used, ${remainingCredits} credits remaining`);
+
     return true;
-  }, [credits]);
+  }, [credits, toast]);
 
   // Fetch credits on mount and when user changes
   useEffect(() => {
@@ -84,11 +101,15 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     error,
     refreshCredits,
     consumeCredit,
+    showNoCreditsModal,
+    openNoCreditsModal,
+    closeNoCreditsModal,
   };
 
   return (
     <CreditsContext.Provider value={value}>
       {children}
+      <NoCreditsModal isOpen={showNoCreditsModal} onClose={closeNoCreditsModal} />
     </CreditsContext.Provider>
   );
 }

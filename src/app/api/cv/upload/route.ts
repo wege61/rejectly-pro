@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { parseFile, cleanText, validateText } from "@/lib/parsers/fileParser";
+import { validateCVContent } from "@/lib/ai/cvValidator";
 
 // En üste, import'lardan hemen sonra bu fonksiyonu ekle:
 function sanitizeFileName(fileName: string): string {
@@ -78,6 +79,32 @@ export async function POST(request: NextRequest) {
     if (!validation.isValid) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
+
+    // CV content validation - block irrelevant files
+    const cvValidation = await validateCVContent(cleanedText);
+    if (!cvValidation.isCV) {
+      console.log("❌ CV validation failed:", {
+        userId: user.id,
+        fileName: file.name,
+        detectedType: cvValidation.detectedType,
+        confidence: cvValidation.confidence,
+        reason: cvValidation.reason,
+      });
+      return NextResponse.json(
+        {
+          error: cvValidation.reason,
+          code: "NOT_A_CV",
+          detectedType: cvValidation.detectedType,
+        },
+        { status: 400 }
+      );
+    }
+
+    console.log("✅ CV validation passed:", {
+      userId: user.id,
+      fileName: file.name,
+      confidence: cvValidation.confidence,
+    });
 
     // Upload file using Service Role (bypasses RLS)
     const timestamp = Date.now();

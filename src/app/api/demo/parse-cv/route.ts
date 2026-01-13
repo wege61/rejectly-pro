@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseFile, cleanText, validateText } from "@/lib/parsers/fileParser";
+import { validateCVContent } from "@/lib/ai/cvValidator";
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,6 +42,24 @@ export async function POST(request: NextRequest) {
     const validation = validateText(cleanedText);
     if (!validation.isValid) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+
+    // CV content validation - block irrelevant files
+    const cvValidation = await validateCVContent(cleanedText);
+    if (!cvValidation.isCV) {
+      console.log("❌ CV validation failed (demo):", {
+        fileName: file.name,
+        detectedType: cvValidation.detectedType,
+        confidence: cvValidation.confidence,
+      });
+      return NextResponse.json(
+        {
+          error: cvValidation.reason,
+          code: "NOT_A_CV",
+          detectedType: cvValidation.detectedType,
+        },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({

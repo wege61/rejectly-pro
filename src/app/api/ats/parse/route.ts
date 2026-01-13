@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import mammoth from 'mammoth';
+import { validateCVContent } from '@/lib/ai/cvValidator';
 
 // Sanitize text to remove problematic Unicode escape sequences
 function sanitizeText(text: string): string {
@@ -108,6 +109,24 @@ export async function POST(request: NextRequest) {
     if (!text || text.length < 100) {
       return NextResponse.json(
         { error: `Document appears to be empty or too short. Minimum 100 characters required.` },
+        { status: 400 }
+      );
+    }
+
+    // CV content validation - block irrelevant files
+    const cvValidation = await validateCVContent(text);
+    if (!cvValidation.isCV) {
+      console.log('❌ CV validation failed (ats/parse):', {
+        fileName: file.name,
+        detectedType: cvValidation.detectedType,
+        confidence: cvValidation.confidence,
+      });
+      return NextResponse.json(
+        {
+          error: cvValidation.reason,
+          code: 'NOT_A_CV',
+          detectedType: cvValidation.detectedType,
+        },
         { status: 400 }
       );
     }

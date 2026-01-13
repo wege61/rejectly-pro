@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import mammoth from 'mammoth';
 import PDFParser from 'pdf2json';
+import { validateCVContent } from '@/lib/ai/cvValidator';
 
 // Sanitize text to remove problematic Unicode escape sequences
 function sanitizeText(text: string): string {
@@ -204,8 +205,27 @@ export async function POST(request: NextRequest) {
     if (!text || text.length < 100) {
       console.log('⚠️ Text too short:', text.length);
       return NextResponse.json(
-        { 
+        {
           error: `Document appears to be empty or too short. Extracted ${text?.length || 0} characters (minimum 100 required).`
+        },
+        { status: 400 }
+      );
+    }
+
+    // CV content validation - block irrelevant files
+    const cvValidation = await validateCVContent(text);
+    if (!cvValidation.isCV) {
+      console.log('❌ CV validation failed:', {
+        userId: user.id,
+        fileName: file.name,
+        detectedType: cvValidation.detectedType,
+        confidence: cvValidation.confidence,
+      });
+      return NextResponse.json(
+        {
+          error: cvValidation.reason,
+          code: 'NOT_A_CV',
+          detectedType: cvValidation.detectedType,
         },
         { status: 400 }
       );

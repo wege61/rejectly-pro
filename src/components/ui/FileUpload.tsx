@@ -391,9 +391,9 @@ export function FileUpload({ onChange, onRemove, accept }: FileUploadProps) {
           <GridPattern />
         </GridPatternContainer>
         <ContentContainer>
-          <UploadTitle>Upload file</UploadTitle>
+          <UploadTitle>Upload your resume</UploadTitle>
           <UploadDescription>
-            Drag or drop your files here or click to upload
+            Drag or drop your resume here or click to upload (PDF, DOCX, max 5MB)
           </UploadDescription>
           <FilePreviewContainer>
             {files.length > 0 &&

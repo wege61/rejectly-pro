@@ -111,43 +111,38 @@ const ATSScoreBadge = styled.div<{ $score: number }>`
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
-  background: ${({ $score }) => {
-    if ($score >= 80) return 'rgba(16, 185, 129, 0.15)';
-    if ($score >= 60) return 'rgba(245, 158, 11, 0.15)';
-    if ($score >= 40) return 'rgba(249, 115, 22, 0.15)';
-    return 'rgba(239, 68, 68, 0.15)';
-  }};
+  
   color: ${({ $score }) => {
-    if ($score >= 80) return '#10b981';
-    if ($score >= 60) return '#f59e0b';
-    if ($score >= 40) return '#f97316';
+    if ($score >= 70) return 'var(--primary-500)';
+    if ($score >= 41 && $score < 70) return '#2a57a0ff';
+    if ($score <= 40) return '#f97316';
     return '#ef4444';
   }};
-  border: 1px solid ${({ $score }) => {
-    if ($score >= 80) return 'rgba(16, 185, 129, 0.3)';
-    if ($score >= 60) return 'rgba(245, 158, 11, 0.3)';
-    if ($score >= 40) return 'rgba(249, 115, 22, 0.3)';
-    return 'rgba(239, 68, 68, 0.3)';
-  }};
+  
 `;
 
 const CheckATSButton = styled.button`
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
+  justify-content: center;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 500;
-  background: rgba(99, 102, 241, 0.1);
-  color: #6366f1;
-  border: 1px solid rgba(99, 102, 241, 0.2);
   cursor: pointer;
   transition: all 0.2s ease;
+  background: transparent;
+  color: var(--text-secondary);
 
   &:hover {
-    background: rgba(99, 102, 241, 0.2);
-    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
   }
 
   &:disabled {
@@ -540,20 +535,25 @@ const CTAContainer = styled.div`
   right: 0;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 16px 24px;
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
-  gap: 8px;
 
   @media (max-width: 768px) {
     transform: translateY(0);
     opacity: 1;
     position: relative;
-    padding-top: 12px;
+    padding: 12px 0 0 0;
     background: none;
   }
+`;
+
+const CTAActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const ActionButton = styled.button<{ $variant?: 'danger' }>`
@@ -571,8 +571,13 @@ const ActionButton = styled.button<{ $variant?: 'danger' }>`
   color: var(--text-secondary);
 
   &:hover {
-    background: rgba(var(--accent-rgb), 0.1);
-    color: var(--accent);
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
   }
 
   ${({ $variant }) =>
@@ -584,6 +589,50 @@ const ActionButton = styled.button<{ $variant?: 'danger' }>`
     }
   `}
 `;
+
+const PreviewLink = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover svg {
+    transform: translateX(3px);
+  }
+`;
+
+const ArrowRightIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+    />
+  </svg>
+);
 
 const UploadButton = styled(Button)`
   display: flex;
@@ -1381,9 +1430,9 @@ export default function CVPage() {
                                   Fake It
                                 </Badge>
                               )}
-                              <Badge size="sm" variant="info">
-                                {cv.lang === "tr" ? "TR" : "EN"}
-                              </Badge>
+                              <CVCardDate>
+                                Language: {cv.lang === "tr" ? "TR" : "EN"}
+                              </CVCardDate>
                             </CVCardMeta>
                             {optimizedCV.job_title && (
                               <CVCardJobInfo>
@@ -1392,32 +1441,31 @@ export default function CVPage() {
                             )}
                           </CVCardContentInner>
                           <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
-                            <Button
-                              variant="ghost"
-                              size="sm"
+                            <PreviewLink
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setPreviewCV(cv);
                               }}
                             >
-                              <EyeIcon /> Preview
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDownload(cv);
-                              }}
-                            >
-                              <DownloadIcon />
-                            </Button>
-                            <ActionButton
-                              $variant="danger"
-                              onClick={(e) => handleDeleteClick(cv, e)}
-                            >
-                              <DeleteIcon />
-                            </ActionButton>
+                              Preview
+                              <ArrowRightIcon />
+                            </PreviewLink>
+                            <CTAActions>
+                              <ActionButton
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDownload(cv);
+                                }}
+                              >
+                                <DownloadIcon />
+                              </ActionButton>
+                              <ActionButton
+                                $variant="danger"
+                                onClick={(e) => handleDeleteClick(cv, e)}
+                              >
+                                <DeleteIcon />
+                              </ActionButton>
+                            </CTAActions>
                           </CTAContainer>
                         </CVCardInner>
                         <CVCardOverlay className="cv-overlay" />
@@ -1453,10 +1501,23 @@ export default function CVPage() {
                               Uploaded {formatDate(cv.created_at)}
                             </CVCardDate>
                             <CVCardMeta>
-                              <Badge size="sm" variant="info">
-                                {cv.lang === "tr" ? "TR" : "EN"}
-                              </Badge>
-                              {/* ATS Score Badge or Check Button */}
+                              <CVCardDate>
+                                Language: {cv.lang === "tr" ? "TR" : "EN"}
+                              </CVCardDate>
+                            </CVCardMeta>
+                          </CVCardContentInner>
+                          <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
+                            <PreviewLink
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPreviewCV(cv);
+                              }}
+                            >
+                              Preview
+                              <ArrowRightIcon />
+                            </PreviewLink>
+                            <CTAActions>
+                              {/* ATS Score Badge or Check ATS Button */}
                               {(cv as CVDocument).ats_score ? (
                                 <ATSScoreBadge
                                   $score={(cv as CVDocument).ats_score!}
@@ -1467,7 +1528,6 @@ export default function CVPage() {
                                   style={{ cursor: 'pointer' }}
                                   title="View ATS Report"
                                 >
-                                  <ATSIcon />
                                   ATS {(cv as CVDocument).ats_score}%
                                 </ATSScoreBadge>
                               ) : (
@@ -1475,43 +1535,24 @@ export default function CVPage() {
                                   onClick={(e) => handleATSCheck(cv as CVDocument, e)}
                                   disabled={checkingATSId === cv.id}
                                 >
-                                  {checkingATSId === cv.id ? (
-                                    <Spinner size="sm" />
-                                  ) : (
-                                    <ATSIcon />
-                                  )}
-                                  {checkingATSId === cv.id ? "Checking..." : "Check ATS"}
+                                  {checkingATSId === cv.id ? <Spinner size="sm" /> : "Check ATS"}
                                 </CheckATSButton>
                               )}
-                            </CVCardMeta>
-                          </CVCardContentInner>
-                          <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewCV(cv);
-                              }}
-                            >
-                              <EyeIcon /> Preview
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDownload(cv);
-                              }}
-                            >
-                              <DownloadIcon />
-                            </Button>
-                            <ActionButton
-                              $variant="danger"
-                              onClick={(e) => handleDeleteClick(cv, e)}
-                            >
-                              <DeleteIcon />
-                            </ActionButton>
+                              <ActionButton
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDownload(cv);
+                                }}
+                              >
+                                <DownloadIcon />
+                              </ActionButton>
+                              <ActionButton
+                                $variant="danger"
+                                onClick={(e) => handleDeleteClick(cv, e)}
+                              >
+                                <DeleteIcon />
+                              </ActionButton>
+                            </CTAActions>
                           </CTAContainer>
                         </CVCardInner>
                         <CVCardOverlay className="cv-overlay" />

@@ -2,7 +2,6 @@
 
 import styled, { keyframes } from "styled-components";
 import { useState, useCallback, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
 import {
   analyzeScore,
   getCategoryImpact,
@@ -13,6 +12,7 @@ import {
 import { ATSFullResult } from "@/components/ats";
 import { useCreditConfirm } from "@/hooks/useCreditConfirm";
 import { LoadingModal } from "@/components/ui/LoadingModal";
+import { FileUpload } from "@/components/ui/FileUpload";
 
 type Step = "upload" | "analyzing" | "result" | "optimizing" | "optimized";
 
@@ -172,52 +172,6 @@ const ContentCard = styled.div`
   padding: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
-const DropzoneArea = styled.div<{ $isDragActive: boolean; $hasFile: boolean }>`
-  border: 2px dashed ${({ $isDragActive, $hasFile, theme }) =>
-    $isDragActive ? "#6366f1" : $hasFile ? "#10b981" : theme.colors.border};
-  border-radius: 16px;
-  padding: 48px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: ${({ $isDragActive, $hasFile }) =>
-    $isDragActive ? "rgba(99, 102, 241, 0.05)" :
-    $hasFile ? "rgba(16, 185, 129, 0.05)" : "transparent"};
-
-  &:hover {
-    border-color: #6366f1;
-    background: rgba(99, 102, 241, 0.03);
-  }
-`;
-
-const UploadIcon = styled.div`
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 20px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    width: 32px;
-    height: 32px;
-    color: white;
-  }
-`;
-
-const DropzoneText = styled.p`
-  font-size: 16px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 8px;
-  font-weight: 500;
-`;
-
-const DropzoneSubtext = styled.p`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
 
 const ErrorMessage = styled.div`
   padding: 12px 16px;
@@ -879,163 +833,249 @@ const TryAgainButton = styled.button`
 `;
 
 // CV Selection Components
-const UploadOptions = styled.div`
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-
-  @media (max-width: 640px) {
-    flex-direction: column;
-  }
+const ExistingCVSection = styled.div`
+  margin-top: 24px;
 `;
 
-const UploadOptionCard = styled.button<{ $active?: boolean }>`
-  flex: 1;
-  padding: 20px;
-  background: ${({ $active, theme }) =>
-    $active ? "rgba(99, 102, 241, 0.1)" : theme.colors.surface};
-  border: 2px solid ${({ $active, theme }) =>
-    $active ? "#6366f1" : theme.colors.border};
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-
-  &:hover {
-    border-color: #6366f1;
-    background: rgba(99, 102, 241, 0.05);
-  }
-`;
-
-const OptionIcon = styled.div<{ $active?: boolean }>`
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: ${({ $active }) =>
-    $active
-      ? "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)"
-      : "rgba(99, 102, 241, 0.1)"};
+const ExistingCVHeader = styled.button`
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-
-  svg {
-    width: 24px;
-    height: 24px;
-    color: ${({ $active }) => ($active ? "white" : "#6366f1")};
-  }
-`;
-
-const OptionTitle = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 4px;
-`;
-
-const OptionDescription = styled.div`
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const CVListContainer = styled.div`
-  margin-top: 16px;
-  max-height: 300px;
-  overflow-y: auto;
+  justify-content: space-between;
+  padding: 16px;
+  background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
-`;
-
-const CVListItem = styled.button`
-  width: 100%;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   cursor: pointer;
   transition: all 0.2s ease;
-  text-align: left;
-
-  &:last-child {
-    border-bottom: none;
-  }
 
   &:hover {
     background: ${({ theme }) => theme.colors.background};
+    border-color: ${({ theme }) => theme.colors.textSecondary};
   }
 `;
 
-const CVIcon = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+const ExistingCVHeaderContent = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textPrimary};
+
+  svg {
+    color: ${({ theme }) => theme.colors.textSecondary};
+  }
+`;
+
+const CVListContainer = styled.div`
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 4px;
+
+  /* Custom scrollbar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.border};
+    border-radius: 3px;
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const CVMiniCard = styled.button`
+  position: relative;
+  width: 100%;
+  padding: 16px;
+  background: var(--bg-alt);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  overflow: hidden;
+
+  /* Subtle depth through shadows - matching cv/page.tsx */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  &:hover .cv-mini-content {
+    transform: translateY(-8px);
+  }
+
+  &:hover .cv-mini-icon {
+    transform: scale(0.85);
+  }
+
+  &:hover .cv-mini-arrow {
+    transform: translateY(-50%) translateX(4px);
+    opacity: 1;
+  }
+
+  &:hover .cv-mini-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .cv-mini-overlay {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &:hover .cv-mini-content {
+      transform: none;
+    }
+  }
+`;
+
+const CVMiniContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
+  }
+`;
+
+const CVMiniCardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+`;
+
+const CVMiniIcon = styled.div`
+  transform-origin: left;
+  transition: all 0.3s ease;
+  color: var(--accent);
   flex-shrink: 0;
 
   svg {
-    width: 20px;
-    height: 20px;
-    color: white;
+    width: 28px;
+    height: 28px;
+  }
+
+  @media (max-width: 640px) {
+    svg {
+      width: 24px;
+      height: 24px;
+    }
   }
 `;
 
-const CVInfo = styled.div`
+const CVMiniInfo = styled.div`
   flex: 1;
   min-width: 0;
 `;
 
-const CVTitle = styled.div`
+const CVMiniTitle = styled.div`
   font-size: 14px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  font-weight: 600;
+  color: var(--text-color);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 2px;
 `;
 
-const CVMeta = styled.div`
+const CVMiniDate = styled.div`
   font-size: 12px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
+`;
+
+const CVMiniMeta = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 2px;
+  margin-top: 4px;
 `;
 
-const CVScoreBadge = styled.span<{ $score: number }>`
-  font-size: 11px;
+const CVMiniScoreBadge = styled.span<{ $score: number }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: ${({ $score }) =>
-    $score >= 80
-      ? "rgba(16, 185, 129, 0.1)"
-      : $score >= 60
-      ? "rgba(245, 158, 11, 0.1)"
-      : "rgba(239, 68, 68, 0.1)"};
-  color: ${({ $score }) =>
-    $score >= 80 ? "#10b981" : $score >= 60 ? "#f59e0b" : "#ef4444"};
+
+  color: ${({ $score }) => {
+    if ($score >= 70) return 'var(--primary-500)';
+    if ($score >= 41 && $score < 70) return '#2a57a0ff';
+    if ($score <= 40) return '#f97316';
+    return '#ef4444';
+  }};
+`;
+
+const CVMiniArrow = styled.div`
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  color: var(--accent);
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const CVMiniOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  transition: all 0.3s ease;
 `;
 
 const EmptyCVList = styled.div`
-  padding: 32px;
+  grid-column: 1 / -1;
+  padding: 40px 24px;
   text-align: center;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   font-size: 14px;
+  background: var(--bg-alt);
+  border-radius: 12px;
+  border: 1px dashed var(--border-color);
 `;
 
 const LoadingSpinner = styled.div`
-  padding: 32px;
+  grid-column: 1 / -1;
+  padding: 40px 24px;
   text-align: center;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   font-size: 14px;
+  background: var(--bg-alt);
+  border-radius: 12px;
 `;
 
 // Optimized Result
@@ -1046,23 +1086,6 @@ const OptimizedCard = styled.div`
   padding: 40px;
   text-align: center;
   margin-bottom: 32px;
-`;
-
-const SuccessIcon = styled.div`
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 24px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    width: 40px;
-    height: 40px;
-    color: white;
-  }
 `;
 
 const SuccessTitle = styled.h2`
@@ -1220,39 +1243,28 @@ const SecondaryButton = styled.button`
   }
 `;
 
-// Helper functions
-const getCategoryLabel = (key: string): string => {
-  const labels: Record<string, string> = {
-    format: "Format & Parsing",
-    structure: "Structure & Layout",
-    keywords: "Keywords & Content",
-    readability: "Readability & Length",
-  };
-  return labels[key] || key;
-};
-
 export default function DashboardATSOptimizerPage() {
   const [step, setStep] = useState<Step>("upload");
-  const [file, setFile] = useState<File | null>(null);
+  const [_file, setFile] = useState<File | null>(null);
   const [cvText, setCvText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [atsResult, setAtsResult] = useState<ATSResult | null>(null);
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
 
   // CV Selection states
-  const [uploadMode, setUploadMode] = useState<"new" | "existing">("new");
   const [existingCVs, setExistingCVs] = useState<CVDocument[]>([]);
   const [loadingCVs, setLoadingCVs] = useState(false);
+  const [showExistingCVs, setShowExistingCVs] = useState(false);
 
   // Credits system
   const creditConfirm = useCreditConfirm();
 
-  // Fetch existing CVs when switching to existing mode
+  // Fetch existing CVs when showing the list
   useEffect(() => {
-    if (uploadMode === "existing" && existingCVs.length === 0) {
+    if (showExistingCVs && existingCVs.length === 0) {
       fetchExistingCVs();
     }
-  }, [uploadMode]);
+  }, [showExistingCVs]);
 
   const fetchExistingCVs = async () => {
     setLoadingCVs(true);
@@ -1271,7 +1283,7 @@ export default function DashboardATSOptimizerPage() {
 
   const handleSelectExistingCV = async (cv: CVDocument) => {
     if (!cv.text) {
-      setError("This CV doesn't have extractable text. Please upload a new one.");
+      setError("This resume doesn't have extractable text. Please upload a new one.");
       return;
     }
 
@@ -1303,7 +1315,7 @@ export default function DashboardATSOptimizerPage() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("tr-TR", {
+    return date.toLocaleDateString("en-US", {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -1330,7 +1342,7 @@ export default function DashboardATSOptimizerPage() {
 
       if (!parseResponse.ok) {
         const parseData = await parseResponse.json();
-        throw new Error(parseData.error || "Failed to parse CV");
+        throw new Error(parseData.error || "Failed to parse resume");
       }
 
       const parseData = await parseResponse.json();
@@ -1355,7 +1367,7 @@ export default function DashboardATSOptimizerPage() {
 
       if (!analyzeResponse.ok) {
         const analyzeData = await analyzeResponse.json();
-        throw new Error(analyzeData.error || "Failed to analyze CV");
+        throw new Error(analyzeData.error || "Failed to analyze resume");
       }
 
       const analyzeData = await analyzeResponse.json();
@@ -1368,15 +1380,6 @@ export default function DashboardATSOptimizerPage() {
     }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "application/pdf": [".pdf"],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
-    },
-    maxSize: 5 * 1024 * 1024,
-    multiple: false,
-  });
 
   const performOptimization = async () => {
     setStep("optimizing");
@@ -1401,7 +1404,7 @@ export default function DashboardATSOptimizerPage() {
 
       if (!response.ok) {
         if (response.status === 402) {
-          throw new Error("Insufficient credits. Please purchase more credits to optimize your CV.");
+          throw new Error("Insufficient credits. Please purchase more credits to optimize your resume.");
         }
         throw new Error(data.error || "Optimization failed");
       }
@@ -1419,7 +1422,7 @@ export default function DashboardATSOptimizerPage() {
 
   const handleOptimize = () => {
     if (!cvText || !atsResult) {
-      setError("Missing CV data. Please try uploading again.");
+      setError("Missing resume data. Please try uploading again.");
       return;
     }
 
@@ -1438,7 +1441,7 @@ export default function DashboardATSOptimizerPage() {
     setError(null);
     setAtsResult(null);
     setOptimizationResult(null);
-    setUploadMode("new");
+    setShowExistingCVs(false);
   };
 
   return (
@@ -1446,99 +1449,91 @@ export default function DashboardATSOptimizerPage() {
       <PageHeader>
         <PageTitle>ATS Optimizer</PageTitle>
         <PageSubtitle>
-          Upload your CV to check ATS compatibility and get an optimized version
+          Upload your resume to check ATS compatibility and get an optimized version
         </PageSubtitle>
       </PageHeader>
 
       {/* Upload Step */}
       {step === "upload" && (
         <ContentCard>
-          <UploadOptions>
-            <UploadOptionCard
-              $active={uploadMode === "new"}
-              onClick={() => setUploadMode("new")}
-            >
-              <OptionIcon $active={uploadMode === "new"}>
-                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-              </OptionIcon>
-              <OptionTitle>Yeni CV Yükle</OptionTitle>
-              <OptionDescription>Bilgisayarınızdan yeni bir CV dosyası yükleyin</OptionDescription>
-            </UploadOptionCard>
+          <FileUpload
+            accept=".pdf,.docx"
+            onChange={(files) => {
+              if (files.length > 0) {
+                onDrop(files);
+              }
+            }}
+            onRemove={() => {
+              setFile(null);
+              setCvText(null);
+            }}
+          />
 
-            <UploadOptionCard
-              $active={uploadMode === "existing"}
-              onClick={() => setUploadMode("existing")}
-            >
-              <OptionIcon $active={uploadMode === "existing"}>
-                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <ExistingCVSection>
+            <ExistingCVHeader onClick={() => setShowExistingCVs(!showExistingCVs)}>
+              <ExistingCVHeaderContent>
+                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" width="20" height="20">
                   <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-              </OptionIcon>
-              <OptionTitle>Mevcut CV Seç</OptionTitle>
-              <OptionDescription>Daha önce yüklediğiniz CV'lerden birini seçin</OptionDescription>
-            </UploadOptionCard>
-          </UploadOptions>
+                <span>Or select from your existing resumes</span>
+              </ExistingCVHeaderContent>
+              <svg
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                style={{ transform: showExistingCVs ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
+              >
+                <path d="M19 9l-7 7-7-7" />
+              </svg>
+            </ExistingCVHeader>
 
-          {uploadMode === "new" && (
-            <DropzoneArea {...getRootProps()} $isDragActive={isDragActive} $hasFile={!!file}>
-              <input {...getInputProps()} />
-              <UploadIcon>
-                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-              </UploadIcon>
-              <DropzoneText>
-                {isDragActive ? "CV'nizi buraya bırakın" : "CV'nizi sürükleyip bırakın"}
-              </DropzoneText>
-              <DropzoneSubtext>PDF veya DOCX (max 5MB) - Analiz otomatik başlar</DropzoneSubtext>
-            </DropzoneArea>
-          )}
-
-          {uploadMode === "existing" && (
-            <CVListContainer>
-              {loadingCVs ? (
-                <LoadingSpinner>CV'ler yükleniyor...</LoadingSpinner>
-              ) : existingCVs.length === 0 ? (
-                <EmptyCVList>
-                  Henüz yüklenmiş CV'niz yok. Yeni bir CV yükleyerek başlayın.
-                </EmptyCVList>
-              ) : (
-                existingCVs.map((cv) => (
-                  <CVListItem key={cv.id} onClick={() => handleSelectExistingCV(cv)}>
-                    <CVIcon>
-                      <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </CVIcon>
-                    <CVInfo>
-                      <CVTitle>{cv.title || "İsimsiz CV"}</CVTitle>
-                      <CVMeta>
-                        <span>{formatDate(cv.created_at)}</span>
-                        {cv.ats_score !== null && cv.ats_score !== undefined && (
-                          <CVScoreBadge $score={cv.ats_score}>
-                            ATS: {cv.ats_score}
-                          </CVScoreBadge>
-                        )}
-                      </CVMeta>
-                    </CVInfo>
-                    <svg
-                      width="20"
-                      height="20"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                      style={{ color: "#6366f1" }}
-                    >
-                      <path d="M9 5l7 7-7 7" />
-                    </svg>
-                  </CVListItem>
-                ))
-              )}
-            </CVListContainer>
-          )}
+            {showExistingCVs && (
+              <CVListContainer>
+                {loadingCVs ? (
+                  <LoadingSpinner>Loading resumes...</LoadingSpinner>
+                ) : existingCVs.length === 0 ? (
+                  <EmptyCVList>
+                    No resumes uploaded yet. Upload a new one to get started.
+                  </EmptyCVList>
+                ) : (
+                  existingCVs.map((cv) => (
+                    <CVMiniCard key={cv.id} onClick={() => handleSelectExistingCV(cv)}>
+                      <CVMiniContent className="cv-mini-content">
+                        <CVMiniCardHeader>
+                          <CVMiniIcon className="cv-mini-icon">
+                            <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </CVMiniIcon>
+                          <CVMiniInfo>
+                            <CVMiniTitle>{cv.title || "Untitled Resume"}</CVMiniTitle>
+                            <CVMiniDate>{formatDate(cv.created_at)}</CVMiniDate>
+                          </CVMiniInfo>
+                        </CVMiniCardHeader>
+                        <CVMiniMeta>
+                          {cv.ats_score !== null && cv.ats_score !== undefined && (
+                            <CVMiniScoreBadge $score={cv.ats_score}>
+                              
+                              ATS {cv.ats_score}%
+                            </CVMiniScoreBadge>
+                          )}
+                        </CVMiniMeta>
+                      </CVMiniContent>
+                      <CVMiniArrow className="cv-mini-arrow">
+                        <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M9 5l7 7-7 7" />
+                        </svg>
+                      </CVMiniArrow>
+                      <CVMiniOverlay className="cv-mini-overlay" />
+                    </CVMiniCard>
+                  ))
+                )}
+              </CVListContainer>
+            )}
+          </ExistingCVSection>
 
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </ContentCard>

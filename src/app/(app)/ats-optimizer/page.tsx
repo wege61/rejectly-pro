@@ -1,7 +1,7 @@
 "use client";
 
 import styled, { keyframes } from "styled-components";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   analyzeScore,
@@ -15,6 +15,18 @@ import { useCreditConfirm } from "@/hooks/useCreditConfirm";
 import { LoadingModal } from "@/components/ui/LoadingModal";
 
 type Step = "upload" | "analyzing" | "result" | "optimizing" | "optimized";
+
+interface CVDocument {
+  id: string;
+  user_id: string;
+  type: string;
+  title: string;
+  text: string;
+  file_url: string;
+  lang: string;
+  created_at: string;
+  ats_score?: number | null;
+}
 
 interface ATSResult {
   overallScore: number;
@@ -866,6 +878,166 @@ const TryAgainButton = styled.button`
   }
 `;
 
+// CV Selection Components
+const UploadOptions = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+`;
+
+const UploadOptionCard = styled.button<{ $active?: boolean }>`
+  flex: 1;
+  padding: 20px;
+  background: ${({ $active, theme }) =>
+    $active ? "rgba(99, 102, 241, 0.1)" : theme.colors.surface};
+  border: 2px solid ${({ $active, theme }) =>
+    $active ? "#6366f1" : theme.colors.border};
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+
+  &:hover {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+  }
+`;
+
+const OptionIcon = styled.div<{ $active?: boolean }>`
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: ${({ $active }) =>
+    $active
+      ? "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)"
+      : "rgba(99, 102, 241, 0.1)"};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: ${({ $active }) => ($active ? "white" : "#6366f1")};
+  }
+`;
+
+const OptionTitle = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: 4px;
+`;
+
+const OptionDescription = styled.div`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const CVListContainer = styled.div`
+  margin-top: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 12px;
+`;
+
+const CVListItem = styled.button`
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.background};
+  }
+`;
+
+const CVIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+  }
+`;
+
+const CVInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const CVTitle = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const CVMeta = styled.div`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+`;
+
+const CVScoreBadge = styled.span<{ $score: number }>`
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: ${({ $score }) =>
+    $score >= 80
+      ? "rgba(16, 185, 129, 0.1)"
+      : $score >= 60
+      ? "rgba(245, 158, 11, 0.1)"
+      : "rgba(239, 68, 68, 0.1)"};
+  color: ${({ $score }) =>
+    $score >= 80 ? "#10b981" : $score >= 60 ? "#f59e0b" : "#ef4444"};
+`;
+
+const EmptyCVList = styled.div`
+  padding: 32px;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 14px;
+`;
+
+const LoadingSpinner = styled.div`
+  padding: 32px;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 14px;
+`;
+
 // Optimized Result
 const OptimizedCard = styled.div`
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%);
@@ -1067,8 +1239,76 @@ export default function DashboardATSOptimizerPage() {
   const [atsResult, setAtsResult] = useState<ATSResult | null>(null);
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
 
+  // CV Selection states
+  const [uploadMode, setUploadMode] = useState<"new" | "existing">("new");
+  const [existingCVs, setExistingCVs] = useState<CVDocument[]>([]);
+  const [loadingCVs, setLoadingCVs] = useState(false);
+
   // Credits system
   const creditConfirm = useCreditConfirm();
+
+  // Fetch existing CVs when switching to existing mode
+  useEffect(() => {
+    if (uploadMode === "existing" && existingCVs.length === 0) {
+      fetchExistingCVs();
+    }
+  }, [uploadMode]);
+
+  const fetchExistingCVs = async () => {
+    setLoadingCVs(true);
+    try {
+      const response = await fetch("/api/documents?type=cv");
+      if (response.ok) {
+        const data = await response.json();
+        setExistingCVs(data.documents || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch CVs:", err);
+    } finally {
+      setLoadingCVs(false);
+    }
+  };
+
+  const handleSelectExistingCV = async (cv: CVDocument) => {
+    if (!cv.text) {
+      setError("This CV doesn't have extractable text. Please upload a new one.");
+      return;
+    }
+
+    setError(null);
+    setCvText(cv.text);
+    setStep("analyzing");
+
+    try {
+      // Run ATS analysis with existing CV text
+      const analyzeResponse = await fetch("/api/ats/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cvText: cv.text }),
+      });
+
+      if (!analyzeResponse.ok) {
+        const analyzeData = await analyzeResponse.json();
+        throw new Error(analyzeData.error || "Failed to analyze CV");
+      }
+
+      const analyzeData = await analyzeResponse.json();
+      setAtsResult(analyzeData.result);
+      setStep("result");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Analysis failed");
+      setStep("upload");
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("tr-TR", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -1198,6 +1438,7 @@ export default function DashboardATSOptimizerPage() {
     setError(null);
     setAtsResult(null);
     setOptimizationResult(null);
+    setUploadMode("new");
   };
 
   return (
@@ -1212,18 +1453,93 @@ export default function DashboardATSOptimizerPage() {
       {/* Upload Step */}
       {step === "upload" && (
         <ContentCard>
-          <DropzoneArea {...getRootProps()} $isDragActive={isDragActive} $hasFile={!!file}>
-            <input {...getInputProps()} />
-            <UploadIcon>
-              <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-              </svg>
-            </UploadIcon>
-            <DropzoneText>
-              {isDragActive ? "Drop your resume here" : "Drag & drop your resume"}
-            </DropzoneText>
-            <DropzoneSubtext>PDF or DOCX (max 5MB) - Analysis starts automatically</DropzoneSubtext>
-          </DropzoneArea>
+          <UploadOptions>
+            <UploadOptionCard
+              $active={uploadMode === "new"}
+              onClick={() => setUploadMode("new")}
+            >
+              <OptionIcon $active={uploadMode === "new"}>
+                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+              </OptionIcon>
+              <OptionTitle>Yeni CV Yükle</OptionTitle>
+              <OptionDescription>Bilgisayarınızdan yeni bir CV dosyası yükleyin</OptionDescription>
+            </UploadOptionCard>
+
+            <UploadOptionCard
+              $active={uploadMode === "existing"}
+              onClick={() => setUploadMode("existing")}
+            >
+              <OptionIcon $active={uploadMode === "existing"}>
+                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </OptionIcon>
+              <OptionTitle>Mevcut CV Seç</OptionTitle>
+              <OptionDescription>Daha önce yüklediğiniz CV'lerden birini seçin</OptionDescription>
+            </UploadOptionCard>
+          </UploadOptions>
+
+          {uploadMode === "new" && (
+            <DropzoneArea {...getRootProps()} $isDragActive={isDragActive} $hasFile={!!file}>
+              <input {...getInputProps()} />
+              <UploadIcon>
+                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+              </UploadIcon>
+              <DropzoneText>
+                {isDragActive ? "CV'nizi buraya bırakın" : "CV'nizi sürükleyip bırakın"}
+              </DropzoneText>
+              <DropzoneSubtext>PDF veya DOCX (max 5MB) - Analiz otomatik başlar</DropzoneSubtext>
+            </DropzoneArea>
+          )}
+
+          {uploadMode === "existing" && (
+            <CVListContainer>
+              {loadingCVs ? (
+                <LoadingSpinner>CV'ler yükleniyor...</LoadingSpinner>
+              ) : existingCVs.length === 0 ? (
+                <EmptyCVList>
+                  Henüz yüklenmiş CV'niz yok. Yeni bir CV yükleyerek başlayın.
+                </EmptyCVList>
+              ) : (
+                existingCVs.map((cv) => (
+                  <CVListItem key={cv.id} onClick={() => handleSelectExistingCV(cv)}>
+                    <CVIcon>
+                      <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </CVIcon>
+                    <CVInfo>
+                      <CVTitle>{cv.title || "İsimsiz CV"}</CVTitle>
+                      <CVMeta>
+                        <span>{formatDate(cv.created_at)}</span>
+                        {cv.ats_score !== null && cv.ats_score !== undefined && (
+                          <CVScoreBadge $score={cv.ats_score}>
+                            ATS: {cv.ats_score}
+                          </CVScoreBadge>
+                        )}
+                      </CVMeta>
+                    </CVInfo>
+                    <svg
+                      width="20"
+                      height="20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      style={{ color: "#6366f1" }}
+                    >
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  </CVListItem>
+                ))
+              )}
+            </CVListContainer>
+          )}
+
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </ContentCard>
       )}

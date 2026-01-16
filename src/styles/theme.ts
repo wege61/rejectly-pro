@@ -67,7 +67,7 @@ const lightColors = {
   textTertiary: "#6B7280", // Lighter grey for hints
 
   // Borders - LIGHT MODE
-  border: "#97FEED", // primary-200
+  border: "rgba(15, 23, 42, 0.08)", // primary-200
   borderHover: "#35A29F", // primary-500
 
   // Status - Adapted for light backgrounds

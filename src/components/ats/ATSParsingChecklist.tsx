@@ -41,7 +41,7 @@ const CheckItem = styled.div<{ $ok: boolean }>`
   gap: 12px;
   padding: 14px 16px;
   background: var(--bg-color, #ffffff);
-  border: 1px solid var(--border-color, #e5e7eb);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-left: 3px solid ${({ $ok }) => $ok ? "#059669" : "#dc2626"};
   border-radius: 8px;
 `;

@@ -5386,12 +5386,12 @@ export default function ReportDetailPage() {
               <Card.Header>
                 <Card.Title>
                   {report.generated_cv
-                    ? "Professional Bullet Points Applied ✓"
-                    : "Rewritten Bullet Points"}
+                    ? "Professional bullet points applied"
+                    : "Rewritten bullet points"}
                 </Card.Title>
                 <Card.Description>
                   {report.generated_cv
-                    ? "These achievement-focused bullets are now integrated in your optimized CV"
+                    ? "These achievement-focused bullets are now integrated in your optimized resume"
                     : "Improved versions of your experience bullets"}
                 </Card.Description>
               </Card.Header>
@@ -5408,7 +5408,7 @@ export default function ReportDetailPage() {
           <Section>
             <Card variant="bordered">
               <Card.Header>
-                <Card.Title>Role Recommendations</Card.Title>
+                <Card.Title>Role recommendations</Card.Title>
                 <Card.Description>
                   Alternative roles that match your profile
                 </Card.Description>
@@ -5450,12 +5450,12 @@ export default function ReportDetailPage() {
               <Card.Header>
                 <Card.Title>
                   {report.generated_cv
-                    ? "ATS Optimizations Applied ✓"
-                    : "ATS Optimization Tips"}
+                    ? "ATS optimizations applied "
+                    : "ATS optimization tips"}
                 </Card.Title>
                 <Card.Description>
                   {report.generated_cv
-                    ? "Your optimized CV has been enhanced with these ATS-friendly improvements"
+                    ? "Your optimized resume has been enhanced with these ATS-friendly improvements"
                     : "Improve your chances with applicant tracking systems"}
                 </Card.Description>
               </Card.Header>
@@ -5532,7 +5532,7 @@ export default function ReportDetailPage() {
             <Card variant="bordered">
               <Card.Header>
                 <Card.Title>
-                  <TargetIcon /> Generate Optimized CV
+                 Generate optimized resume
                 </Card.Title>
                 <Card.Description>
                   Get a fully optimized, ATS-friendly CV with all improvements
@@ -5563,7 +5563,7 @@ export default function ReportDetailPage() {
                       color: '#f1f5f9',
                       marginBottom: '8px'
                     }}>
-                      Generate Your Optimized CV
+                      Generate your optimized resume
                     </h3>
                     <p style={{
                       color: '#9ca3af',
@@ -5572,7 +5572,7 @@ export default function ReportDetailPage() {
                       maxWidth: '400px',
                       margin: '0 auto 24px'
                     }}>
-                      Create an ATS-optimized CV tailored for this job position with all improvements applied.
+                      Create an ATS-optimized resume tailored for this job position with all improvements applied.
                     </p>
                     <Button
                       onClick={async () => {
@@ -5687,9 +5687,9 @@ export default function ReportDetailPage() {
                       <SuccessIcon>
                         <CheckCircleIcon />
                       </SuccessIcon>
-                      <SuccessTitle>Your Optimized CV is Ready!</SuccessTitle>
+                      <SuccessTitle>Your optimized resume is ready!</SuccessTitle>
                       <SuccessSubtext>
-                        Your professionally crafted CV is ready to download. Choose
+                        Your professionally crafted resume is ready to download. Choose
                         your next action below.
                       </SuccessSubtext>
                       {report?.fake_it_mode && (
@@ -5744,7 +5744,7 @@ export default function ReportDetailPage() {
                               lineHeight: '1.5',
                               opacity: 0.9,
                             }}>
-                              This CV includes learning paths for missing skills to help you transition into your target role
+                              This resume includes learning paths for missing skills to help you transition into your target role
                             </div>
                           </div>
                         </div>
@@ -5779,7 +5779,7 @@ export default function ReportDetailPage() {
                         <ActionCardDescription>
                           {isGeneratingCV
                             ? "Creating a new report with Fake It Mode enabled. This will include missing skills and learning paths..."
-                            : "Create a new report with missing skills added to your CV. Get learning paths and project ideas to acquire these skills. Perfect for career transitions!"
+                            : "Create a new report with missing skills added to your resume. Get learning paths and project ideas to acquire these skills. Perfect for career transitions!"
                           }
                         </ActionCardDescription>
                       </ActionCard>
@@ -5797,7 +5797,7 @@ export default function ReportDetailPage() {
                           <ActionCardTitle>Preview & Download</ActionCardTitle>
                         </ActionCardHeader>
                         <ActionCardDescription>
-                          Review your optimized CV and download it as a PDF to start
+                          Review your optimized resume and download it as a PDF to start
                           applying immediately.
                         </ActionCardDescription>
                       </ActionCard>
@@ -5816,11 +5816,11 @@ export default function ReportDetailPage() {
                           <ActionCardIcon $variant="secondary">
                             <EnvelopeIcon size="24" />
                           </ActionCardIcon>
-                          <ActionCardTitle>Generate Cover Letter</ActionCardTitle>
+                          <ActionCardTitle>Generate cover letter</ActionCardTitle>
                         </ActionCardHeader>
                         <ActionCardDescription>
                           Create a tailored cover letter that perfectly complements
-                          your optimized CV.
+                          your optimized resume.
                         </ActionCardDescription>
                       </ActionCard>
 
@@ -5836,10 +5836,10 @@ export default function ReportDetailPage() {
                           <ActionCardIcon $variant="secondary">
                             {isGeneratingCV ? <Spinner size="sm" /> : <RefreshIcon />}
                           </ActionCardIcon>
-                          <ActionCardTitle>Regenerate CV</ActionCardTitle>
+                          <ActionCardTitle>Regenerate resume</ActionCardTitle>
                         </ActionCardHeader>
                         <ActionCardDescription>
-                          Not satisfied? Regenerate your CV with improved optimization.
+                          Not satisfied? Regenerate your resume with improved optimization.
                         </ActionCardDescription>
                       </ActionCard>
                     </ActionCardsGrid>
@@ -5856,7 +5856,7 @@ export default function ReportDetailPage() {
         isOpen={isPreviewOpen}
         onClose={handleClosePreview}
         title="CV Preview"
-        description="Review your optimized CV before downloading"
+        description="Review your optimized resume before downloading"
         size="lg"
       >
         <Modal.Body>
@@ -5877,7 +5877,7 @@ export default function ReportDetailPage() {
                 <LightBulbIcon /> This improvement boosted your score by +
                 {Math.round(selectedImprovement.impact * 10) / 10}%
                 {selectedImprovement.section &&
-                  ` - Look for the green highlighted section in the CV below`}
+                  ` - Look for the green highlighted section in the resume below`}
               </HighlightImpact>
             </ImprovementHighlight>
           )}
@@ -5941,7 +5941,7 @@ export default function ReportDetailPage() {
           "Preparing advanced analytics...",
           "Generating AI recommendations...",
           "Loading cover letter templates...",
-          "Enabling optimized CV feature...",
+          "Enabling optimized resume feature...",
           "You're almost Pro...",
           "Final checks in progress...",
         ]}
@@ -6045,7 +6045,7 @@ export default function ReportDetailPage() {
                   <div style={{ color: 'var(--success)', flexShrink: 0 }}>
                     <CheckCircleIcon />
                   </div>
-                  <span>Tailored to your CV and job posting</span>
+                  <span>Tailored to your resume and job posting</span>
                 </li>
               </ul>
             </div>

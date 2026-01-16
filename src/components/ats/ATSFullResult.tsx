@@ -88,8 +88,6 @@ const HeroSection = styled.div`
   gap: 24px;
   padding: 32px;
   background: var(--bg-color, #ffffff);
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 16px;
 `;
 
 const HeroContent = styled.div`
@@ -124,24 +122,13 @@ const Button = styled.button<{ $primary?: boolean }>`
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
+  background: ${({ $primary }) => $primary ? "var(--primary-500)" : "var(--bg-alt, #f9fafb)"};
+  color: ${({ $primary }) => $primary ? "white" : "var(--text-color, #1f2937)"};
+  border: none;
 
-  ${({ $primary }) => $primary ? `
-    background: #059669;
-    color: white;
-    border: none;
-
-    &:hover {
-      background: #047857;
-    }
-  ` : `
-    background: var(--bg-color, #ffffff);
-    color: var(--text-color, #1f2937);
-    border: 1px solid var(--border-color, #e5e7eb);
-
-    &:hover {
-      background: var(--bg-alt, #f9fafb);
-    }
-  `}
+  &:hover {
+    background: ${({ $primary }) => $primary ? "var(--primary-700)" : "var(--bg-color, #e5e7eb)"};
+  }
 `;
 
 // Potential improvement inline
@@ -190,7 +177,7 @@ const TwoColumnGrid = styled.div`
 
 const GridCard = styled.div`
   background: var(--bg-color, #ffffff);
-  border: 1px solid var(--border-color, #e5e7eb);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
   padding: 20px;
 `;
@@ -262,7 +249,7 @@ export function ATSFullResult({
           </SuccessText>
           {downloadUrl && (
             <Button as="a" href={downloadUrl} download $primary style={{ padding: "10px 20px" }}>
-              Download CV
+              Download resume
             </Button>
           )}
         </SuccessBanner>
@@ -298,7 +285,7 @@ export function ATSFullResult({
           <ButtonGroup>
             {onOptimize && (
               <Button $primary onClick={onOptimize}>
-                Optimize CV
+                Optimize resume
               </Button>
             )}
             {onDownload && (
@@ -317,7 +304,7 @@ export function ATSFullResult({
           <ATSContactInfo hasContactInfo={hasContactInfo} />
         </GridCard>
         <GridCard>
-          <GridCardTitle>CV Statistics</GridCardTitle>
+          <GridCardTitle>Resume statistics</GridCardTitle>
           <ATSStatsGrid stats={keywordStats} wordCount={wordCount} />
         </GridCard>
       </TwoColumnGrid>

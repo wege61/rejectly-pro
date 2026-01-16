@@ -271,9 +271,9 @@ const READABILITY_CRITERIA: ScoringCriterion[] = [
     name: "Reasonable length",
     points: 4,
     check: (cv) => cv.wordCount >= 200 && cv.wordCount <= 1200,
-    passMessage: "CV length is reasonable",
-    failMessage: "CV too short or too long",
-    suggestion: "Keep CV between 300-800 words. Very long CVs may hit ATS character limits.",
+    passMessage: "Resume length is reasonable",
+    failMessage: "Resume too short or too long",
+    suggestion: "Keep resume between 300-800 words. Very long resumes may hit ATS character limits.",
     severity: "major",
   },
   {
@@ -830,13 +830,13 @@ function generateSummary(score: number, cv: ParsedCV, issues: ATSIssue[]): strin
   let summary = "";
 
   if (score >= 85) {
-    summary = "Your CV should parse correctly in most ATS systems. Standard format and sections detected. ";
+    summary = "Your resume should parse correctly in most ATS systems. Standard format and sections detected. ";
   } else if (score >= 70) {
     summary = "Good parsing compatibility. Minor formatting adjustments could improve data extraction. ";
   } else if (score >= 50) {
     summary = "Some parsing issues detected. ATS may not extract all information correctly. ";
   } else {
-    summary = "Significant parsing issues found. ATS systems may struggle to read this CV correctly. ";
+    summary = "Significant parsing issues found. ATS systems may struggle to read this resume correctly. ";
   }
 
   // Add specific insights

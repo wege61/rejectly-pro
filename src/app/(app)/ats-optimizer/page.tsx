@@ -149,27 +149,30 @@ const PageContainer = styled.div`
 `;
 
 const PageHeader = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
-  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
 const PageTitle = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
   color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
 const PageSubtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.6;
+  max-width: 600px;
 `;
 
 const ContentCard = styled.div`
   background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.lg};
   padding: ${({ theme }) => theme.spacing["2xl"]};
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
 `;
 
 
@@ -844,14 +847,25 @@ const ExistingCVHeader = styled.button`
   justify-content: space-between;
   padding: 16px;
   background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
 
   &:hover {
     background: ${({ theme }) => theme.colors.background};
-    border-color: ${({ theme }) => theme.colors.textSecondary};
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.08),
+      0 16px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  @media (prefers-color-scheme: dark) {
+
+    &:hover {
+      border-color: ${({ theme }) => theme.colors.textSecondary};
+      box-shadow: none;
+    }
   }
 `;
 
@@ -1230,16 +1244,27 @@ const SecondaryButton = styled.button`
   flex: 1;
   padding: 16px 24px;
   background: transparent;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: none;
   border-radius: 12px;
   color: ${({ theme }) => theme.colors.textPrimary};
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
 
   &:hover {
     background: ${({ theme }) => theme.colors.background};
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: none;
+    border: 1px solid ${({ theme }) => theme.colors.border};
+
+    &:hover {
+      box-shadow: none;
+    }
   }
 `;
 

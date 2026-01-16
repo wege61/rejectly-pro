@@ -1,6 +1,6 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Card } from "@/components/ui/Card";
@@ -226,70 +226,6 @@ const EnvelopeIcon = ({ size = "64" }: { size?: string }) => (
   </svg>
 );
 
-const CheckBadgeIcon = ({ size = "20" }: { size?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: `${size}px`,
-      height: `${size}px`,
-      display: "inline-block",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
-    />
-  </svg>
-);
-
-const SparklesIcon = ({ size = "24" }: { size?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: `${size}px`,
-      height: `${size}px`,
-      display: "inline-block",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
-    />
-  </svg>
-);
-
-const StarIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: "18px",
-      height: "18px",
-      display: "inline-block",
-      verticalAlign: "middle",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
-    />
-  </svg>
-);
-
 const BriefcaseIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -312,49 +248,6 @@ const BriefcaseIcon = () => (
   </svg>
 );
 
-const LightningIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: "18px",
-      height: "18px",
-      display: "inline-block",
-      verticalAlign: "middle",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
-    />
-  </svg>
-);
-
-const ClockIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: "18px",
-      height: "18px",
-      display: "inline-block",
-      verticalAlign: "middle",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
-  </svg>
-);
 
 const XMarkIcon = () => (
   <svg
@@ -378,27 +271,6 @@ const XMarkIcon = () => (
   </svg>
 );
 
-const ShieldCheckIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: "18px",
-      height: "18px",
-      display: "inline-block",
-      verticalAlign: "middle",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
-    />
-  </svg>
-);
 
 // Problem Summary Icons
 const MagnifyingGlassIcon = ({ size = "24" }: { size?: string }) => (
@@ -708,6 +580,252 @@ const Grid = styled.div`
   gap: ${({ theme }) => theme.spacing.lg};
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+`;
+
+// Stats Bento Grid - Dashboard style
+const StatsBentoGrid = styled.div`
+  display: grid;
+  width: 100%;
+  gap: 16px;
+  grid-template-columns: 1fr;
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+`;
+
+const statCardPulse = keyframes`
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+`;
+
+const statCardFloat = keyframes`
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+`;
+
+const StatBentoCard = styled.div<{ $isClickable?: boolean }>`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-alt);
+  cursor: ${({ $isClickable }) => $isClickable ? 'pointer' : 'default'};
+  transition: all 0.3s ease;
+  min-height: 180px;
+
+  /* Light styles */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  /* Dark styles */
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  &:hover .stat-icon {
+    transform: scale(0.85);
+  }
+
+  &:hover .stat-content {
+    transform: translateY(-28px);
+  }
+
+  &:hover .stat-cta {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  &:hover .stat-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .stat-overlay {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  &:hover .stat-bg-element {
+    opacity: 0.8;
+  }
+`;
+
+const StatBentoBackground = styled.div`
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.3) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.3) 100%);
+`;
+
+const StatBentoContent = styled.div`
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
+  }
+`;
+
+const StatBentoIcon = styled.div<{ $color?: string }>`
+  transform-origin: left;
+  transition: all 0.3s ease;
+  color: ${({ $color }) => $color || 'var(--accent)'};
+  margin-bottom: 8px;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+`;
+
+const StatBentoValue = styled.span<{ $color?: string }>`
+  font-size: 48px;
+  font-weight: 700;
+  color: ${({ $color }) => $color || 'var(--accent)'};
+  line-height: 1;
+  margin-bottom: 4px;
+
+  @media (max-width: 1024px) {
+    font-size: 40px;
+  }
+
+  @media (max-width: 640px) {
+    font-size: 36px;
+  }
+`;
+
+const StatBentoTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-top: 4px;
+
+  @media (max-width: 640px) {
+    font-size: 16px;
+  }
+`;
+
+const StatBentoDescription = styled.p`
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+`;
+
+const StatBentoCTA = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  transform: translateY(40px);
+  opacity: 0;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    position: relative;
+    transform: translateY(0);
+    opacity: 1;
+    padding: 0 20px 20px 20px;
+  }
+`;
+
+const StatBentoCTALink = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 14px;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover svg {
+    transform: translateX(3px);
+  }
+`;
+
+const StatBentoOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  transition: all 0.3s ease;
+  border-radius: 16px;
+`;
+
+// Background animation elements
+const ScoreBgCircle = styled.div<{ $score: number; $size: number; $delay: number }>`
+  position: absolute;
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
+  border-radius: 50%;
+  background: ${({ $score }) =>
+    $score >= 80
+      ? 'rgba(16, 185, 129, 0.15)'
+      : $score >= 60
+        ? 'rgba(245, 158, 11, 0.15)'
+        : 'rgba(239, 68, 68, 0.15)'};
+  animation: ${statCardPulse} 3s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay}s;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+`;
+
+const KeywordBgTag = styled.div<{ $top: number; $left: number; $delay: number }>`
+  position: absolute;
+  top: ${({ $top }) => $top}%;
+  left: ${({ $left }) => $left}%;
+  padding: 4px 8px;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--accent);
+  opacity: 0.5;
+  animation: ${statCardFloat} 4s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay}s;
+  transition: opacity 0.3s ease;
+`;
+
+const RoleBgBar = styled.div<{ $width: number; $top: number; $delay: number }>`
+  position: absolute;
+  top: ${({ $top }) => $top}%;
+  right: 20px;
+  width: ${({ $width }) => $width}%;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.4));
+  border-radius: 3px;
+  opacity: 0.5;
+  animation: ${statCardPulse} 2.5s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay}s;
+  transition: opacity 0.3s ease;
 `;
 
 const ScoreCard = styled(Card)`
@@ -1692,6 +1810,113 @@ const ProblemText = styled.div`
 
 const Section = styled.section`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
+`;
+
+// Bento Grid Components
+const BentoGrid = styled.div`
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, auto);
+  }
+`;
+
+const BentoCard = styled.div<{ $rowSpan?: number; $position?: 'left' | 'right' | 'middle' }>`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 16px;
+  background: ${({ theme }) => theme.colors.surface};
+
+  /* Light mode - subtle shadow */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: none;
+    border: 1px solid ${({ theme }) => theme.colors.border};
+  }
+
+  /* Row span for desktop */
+  @media (min-width: 1024px) {
+    ${({ $rowSpan }) => $rowSpan === 2 && `
+      grid-row: span 2;
+    `}
+
+    /* Left card - extra rounded on left */
+    ${({ $position }) => $position === 'left' && `
+      border-radius: 24px;
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+    `}
+
+    /* Right card - extra rounded on right */
+    ${({ $position }) => $position === 'right' && `
+      border-radius: 24px;
+      border-top-left-radius: 16px;
+      border-bottom-left-radius: 16px;
+    `}
+  }
+`;
+
+const BentoCardInner = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+`;
+
+const BentoCardContent = styled.div`
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 640px) {
+    padding: 28px;
+  }
+`;
+
+const BentoCardTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+`;
+
+const BentoCardDescription = styled.p`
+  font-size: 14px;
+  line-height: 1.6;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: 16px;
+`;
+
+const BentoCardBody = styled.div`
+  flex: 1;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 14px;
+  line-height: 1.7;
+`;
+
+const BentoOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  /* Light mode outline */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
 `;
 
 const KeywordList = styled.div`
@@ -2895,23 +3120,6 @@ const SuccessCelebration = styled.div`
   }
 `;
 
-const SuccessIcon = styled.div`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
-  border-radius: ${({ theme }) => theme.radius.full};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
-
-  svg {
-    width: 32px;
-    height: 32px;
-    color: white;
-  }
-`;
 
 const SuccessTitle = styled.h3`
   font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
@@ -4093,7 +4301,7 @@ export default function ReportDetailPage() {
         const toolsMessage = additionalTools.length > 0
           ? ` ${additionalTools.length} additional tools added!`
           : "";
-        toast.success(`Your optimized CV is ready!${toolsMessage}`);
+        toast.success(`Your optimized resume is ready!${toolsMessage}`);
       }
     } catch (cvError) {
       console.error("CV generation error:", cvError);
@@ -4414,113 +4622,129 @@ export default function ReportDetailPage() {
         )}
       </Header>
 
-      <Grid>
-        {visibleSections?.showScoreComparison ? (
-          optimizedScoreBreakdown || report.optimized_score_breakdown ? (
-            <ClickableComparisonScoreCard
-              variant="elevated"
-              onClick={() => setIsOptimizedScoreBreakdownModalOpen(true)}
-              title="Click to see detailed score breakdown"
+      <StatsBentoGrid>
+        {/* Match Score Card */}
+        <StatBentoCard
+          $isClickable={!!report.score_breakdown || visibleSections?.showScoreComparison}
+          onClick={() => {
+            if (visibleSections?.showScoreComparison && (optimizedScoreBreakdown || report.optimized_score_breakdown)) {
+              setIsOptimizedScoreBreakdownModalOpen(true);
+            } else if (report.score_breakdown) {
+              setIsScoreBreakdownModalOpen(true);
+            }
+          }}
+        >
+          <StatBentoBackground>
+            <ScoreBgCircle className="stat-bg-element" $score={report.fit_score} $size={120} $delay={0} style={{ top: '10%', right: '10%' }} />
+            <ScoreBgCircle className="stat-bg-element" $score={report.fit_score} $size={80} $delay={0.5} style={{ top: '30%', right: '30%' }} />
+            <ScoreBgCircle className="stat-bg-element" $score={report.fit_score} $size={60} $delay={1} style={{ top: '15%', right: '50%' }} />
+          </StatBentoBackground>
+          <StatBentoContent className="stat-content">
+            <StatBentoIcon
+              className="stat-icon"
+              $color={report.fit_score >= 80 ? '#10b981' : report.fit_score >= 60 ? '#f59e0b' : '#ef4444'}
             >
-              <ScoreComparison>
-                <ScoreColumn>
-                  <ScoreTitle>ORIGINAL</ScoreTitle>
-                  <ComparisonValue>{report.fit_score}%</ComparisonValue>
-                </ScoreColumn>
-                <ScoreDivider />
-                <ScoreColumn>
-                  <ScoreTitle>OPTIMIZED</ScoreTitle>
-                  <ComparisonValue $isOptimized>
-                    {optimizedScore}%
-                  </ComparisonValue>
-                </ScoreColumn>
-              </ScoreComparison>
-              <ImprovementBadge>
-                ↑ +{optimizedScore! - report.fit_score}% Improvement
-              </ImprovementBadge>
-              {isAnalyzingOptimized && (
-                <LoadingText>Analyzing optimized CV...</LoadingText>
-              )}
-              <ScoreClickHint>
-                <EyeIcon /> Click for breakdown
-              </ScoreClickHint>
-            </ClickableComparisonScoreCard>
-          ) : (
-            <ComparisonScoreCard variant="elevated">
-              <ScoreComparison>
-                <ScoreColumn>
-                  <ScoreTitle>ORIGINAL</ScoreTitle>
-                  <ComparisonValue>{report.fit_score}%</ComparisonValue>
-                </ScoreColumn>
-                <ScoreDivider />
-                <ScoreColumn>
-                  <ScoreTitle>OPTIMIZED</ScoreTitle>
-                  <ComparisonValue $isOptimized>
-                    {optimizedScore}%
-                  </ComparisonValue>
-                </ScoreColumn>
-              </ScoreComparison>
-              <ImprovementBadge>
-                ↑ +{optimizedScore! - report.fit_score}% Improvement
-              </ImprovementBadge>
-              {isAnalyzingOptimized && (
-                <LoadingText>Analyzing optimized CV...</LoadingText>
-              )}
-            </ComparisonScoreCard>
-          )
-        ) : report.score_breakdown ? (
-          <ClickableScoreCard
-            variant="elevated"
-            onClick={() => setIsScoreBreakdownModalOpen(true)}
-            title="Click to see detailed score breakdown"
-          >
-            <ScoreValue $score={report.fit_score}>{report.fit_score}%</ScoreValue>
-            <ScoreLabel>Match Score</ScoreLabel>
-            <ScoreContext $score={report.fit_score}>{getScoreLabel(report.fit_score)}</ScoreContext>
-            {report.generated_cv && isAnalyzingOptimized && (
-              <LoadingText>Analyzing optimized CV...</LoadingText>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </StatBentoIcon>
+            {visibleSections?.showScoreComparison ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+                  <span style={{ fontSize: '24px', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>{report.fit_score}%</span>
+                  <StatBentoValue $color="#10b981">{optimizedScore}%</StatBentoValue>
+                </div>
+                <StatBentoTitle>Match Score</StatBentoTitle>
+                <StatBentoDescription>↑ +{optimizedScore! - report.fit_score}% improvement after optimization</StatBentoDescription>
+              </>
+            ) : (
+              <>
+                <StatBentoValue $color={report.fit_score >= 80 ? '#10b981' : report.fit_score >= 60 ? '#f59e0b' : '#ef4444'}>
+                  {report.fit_score}%
+                </StatBentoValue>
+                <StatBentoTitle>Match Score</StatBentoTitle>
+                <StatBentoDescription>{getScoreLabel(report.fit_score)}</StatBentoDescription>
+              </>
             )}
-            <ScoreClickHint>
-              <EyeIcon /> Click for breakdown
-            </ScoreClickHint>
-          </ClickableScoreCard>
-        ) : (
-          <ScoreCard variant="elevated">
-            <ScoreValue $score={report.fit_score}>{report.fit_score}%</ScoreValue>
-            <ScoreLabel>Match Score</ScoreLabel>
-            <ScoreContext $score={report.fit_score}>{getScoreLabel(report.fit_score)}</ScoreContext>
-            {report.generated_cv && isAnalyzingOptimized && (
-              <LoadingText>Analyzing optimized CV...</LoadingText>
-            )}
-          </ScoreCard>
-        )}
+          </StatBentoContent>
+          {(report.score_breakdown || visibleSections?.showScoreComparison) && (
+            <StatBentoCTA className="stat-cta">
+              <StatBentoCTALink>
+                View breakdown
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </StatBentoCTALink>
+            </StatBentoCTA>
+          )}
+          <StatBentoOverlay className="stat-overlay" />
+        </StatBentoCard>
 
-        {report.pro && report.generated_cv ? (
-          <ClickableKeywordsCard
-            variant="elevated"
-            onClick={() => setIsKeywordsModalOpen(true)}
-            title="Click to see keyword details"
-          >
-            <ScoreValue>{missingKeywords.length}</ScoreValue>
-            <ScoreLabel>Keywords Added</ScoreLabel>
-            <ScoreClickHint>
-              <EyeIcon /> Click for details
-            </ScoreClickHint>
-          </ClickableKeywordsCard>
-        ) : (
-          <ScoreCard variant="elevated">
-            <ScoreValue>{missingKeywords.length}</ScoreValue>
-            <ScoreLabel>Missing Keywords</ScoreLabel>
-          </ScoreCard>
-        )}
+        {/* Keywords Card */}
+        <StatBentoCard
+          $isClickable={!!(report.pro && report.generated_cv)}
+          onClick={() => {
+            if (report.pro && report.generated_cv) {
+              setIsKeywordsModalOpen(true);
+            }
+          }}
+        >
+          <StatBentoBackground>
+            <KeywordBgTag className="stat-bg-element" $top={15} $left={60} $delay={0}>React</KeywordBgTag>
+            <KeywordBgTag className="stat-bg-element" $top={25} $left={75} $delay={0.3}>TypeScript</KeywordBgTag>
+            <KeywordBgTag className="stat-bg-element" $top={35} $left={55} $delay={0.6}>Node.js</KeywordBgTag>
+            <KeywordBgTag className="stat-bg-element" $top={20} $left={85} $delay={0.9}>AWS</KeywordBgTag>
+          </StatBentoBackground>
+          <StatBentoContent className="stat-content">
+            <StatBentoIcon className="stat-icon" $color="var(--accent)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
+              </svg>
+            </StatBentoIcon>
+            <StatBentoValue>{missingKeywords.length}</StatBentoValue>
+            <StatBentoTitle>{report.pro && report.generated_cv ? 'Keywords Added' : 'Missing Keywords'}</StatBentoTitle>
+            <StatBentoDescription>
+              {report.pro && report.generated_cv
+                ? 'Important keywords integrated into your optimized resume'
+                : 'Add these keywords to improve your match score'}
+            </StatBentoDescription>
+          </StatBentoContent>
+          {report.pro && report.generated_cv && (
+            <StatBentoCTA className="stat-cta">
+              <StatBentoCTALink>
+                View details
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </StatBentoCTALink>
+            </StatBentoCTA>
+          )}
+          <StatBentoOverlay className="stat-overlay" />
+        </StatBentoCard>
 
+        {/* Role Recommendations Card */}
         {visibleSections?.showRoleRecommendations && (
-          <ScoreCard variant="elevated">
-            <ScoreValue>{roleRecommendations.length}</ScoreValue>
-            <ScoreLabel>Role Recommendations</ScoreLabel>
-          </ScoreCard>
+          <StatBentoCard>
+            <StatBentoBackground>
+              <RoleBgBar className="stat-bg-element" $width={85} $top={20} $delay={0} />
+              <RoleBgBar className="stat-bg-element" $width={70} $top={35} $delay={0.3} />
+              <RoleBgBar className="stat-bg-element" $width={55} $top={50} $delay={0.6} />
+            </StatBentoBackground>
+            <StatBentoContent className="stat-content">
+              <StatBentoIcon className="stat-icon" $color="#10b981">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+                </svg>
+              </StatBentoIcon>
+              <StatBentoValue $color="#10b981">{roleRecommendations.length}</StatBentoValue>
+              <StatBentoTitle>Role Recommendations</StatBentoTitle>
+              <StatBentoDescription>Alternative positions that match your profile</StatBentoDescription>
+            </StatBentoContent>
+            <StatBentoOverlay className="stat-overlay" />
+          </StatBentoCard>
         )}
-      </Grid>
+      </StatsBentoGrid>
 
       {/* Personalized Alert - Show immediately after scores for free users */}
       {visibleSections?.showUpgradePrompt && (
@@ -4535,9 +4759,8 @@ export default function ReportDetailPage() {
         roleRecommendations.length > 0 && (
           <CareerInsightCard>
             <InsightHeader>
-              <InsightIcon><LightBulbIcon /></InsightIcon>
               <InsightContent>
-                <InsightTitle>We Found Better Matches For You</InsightTitle>
+                <InsightTitle>We found better matches for you</InsightTitle>
                 <InsightSubtitle>
                   Your CV shows a {report.fit_score}% match with this position.
                   Based on your experience and skills, these roles might be a
@@ -4968,21 +5191,248 @@ export default function ReportDetailPage() {
           </>
         )}
 
-      <Section>
-        <Card variant="bordered">
-          <Card.Header>
-            <Card.Title>Summary</Card.Title>
-            <Card.Description>
-              AI-generated analysis of your CV match
-            </Card.Description>
-          </Card.Header>
-          <Card.Content>
-            <p>{report.summary_free}</p>
-          </Card.Content>
-        </Card>
-      </Section>
+      {/* Bento Grid - Summary, Bullet Points, Role Recommendations, ATS Tips */}
+      {visibleSections?.showSampleContent ? (
+        <BentoGrid>
+          {/* Summary - Left Column, Row Span 2 */}
+          <BentoCard $rowSpan={2} $position="left">
+            <BentoCardInner>
+              <BentoCardContent>
+                <BentoCardTitle>Summary</BentoCardTitle>
+                <BentoCardDescription>
+                  AI-generated analysis of your CV match
+                </BentoCardDescription>
+                <BentoCardBody>
+                  <p>{report.summary_free}</p>
+                </BentoCardBody>
+              </BentoCardContent>
+              <BentoOverlay />
+            </BentoCardInner>
+          </BentoCard>
 
-      {/* Missing Keywords - Only show for users without generated CV */}
+          {/* Rewritten Bullet Points - Middle Top */}
+          <BentoCard>
+            <BentoCardInner>
+              <BentoCardContent>
+                <BentoCardTitle>Rewritten Bullet Points</BentoCardTitle>
+                <BentoCardDescription>
+                  Professionally enhanced versions of your experience bullets
+                </BentoCardDescription>
+                <BentoCardBody>
+                  <SampleBadge>✨ Free Sample - See the Difference</SampleBadge>
+                  {report.sample_rewrite ? (
+                    <BeforeAfterCard>
+                      <ComparisonColumn>
+                        <ColumnLabel>❌ Before (Your CV)</ColumnLabel>
+                        <ComparisonText>
+                          {report.sample_rewrite.original}
+                        </ComparisonText>
+                      </ComparisonColumn>
+                      <ComparisonColumn $isAfter>
+                        <ColumnLabel $isAfter>✅ After (Pro)</ColumnLabel>
+                        <ComparisonText>
+                          {report.sample_rewrite.rewritten}
+                        </ComparisonText>
+                      </ComparisonColumn>
+                    </BeforeAfterCard>
+                  ) : (
+                    <div style={{ padding: "16px", textAlign: "center", color: "#9ca3af", fontSize: "14px", border: "1px dashed #334155", borderRadius: "8px" }}>
+                      Sample rewrite is being generated...
+                    </div>
+                  )}
+                  <SeeMoreButton onClick={scrollToUpgrade} style={{ marginTop: "16px" }}>
+                    See all professional rewrites
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </SeeMoreButton>
+                </BentoCardBody>
+              </BentoCardContent>
+              <BentoOverlay />
+            </BentoCardInner>
+          </BentoCard>
+
+          {/* ATS Optimization Tips - Right Column, Row Span 2 */}
+          <BentoCard $rowSpan={2} $position="right">
+            <BentoCardInner>
+              <BentoCardContent>
+                <BentoCardTitle>ATS Optimization Tips</BentoCardTitle>
+                <BentoCardDescription>
+                  Improve your chances with applicant tracking systems
+                </BentoCardDescription>
+                <BentoCardBody>
+                  <SampleBadge>✨ Free Tip - Boost Your ATS Score</SampleBadge>
+                  <ATSTipCard>
+                    <ATSIcon>📄</ATSIcon>
+                    <ATSTipContent>
+                      <ATSTipTitle>Optimize Your CV File Name</ATSTipTitle>
+                      <ATSTipText>
+                        Name your CV file strategically:
+                        &quot;FirstName_LastName_Position_CV.pdf&quot; (e.g.,
+                        &quot;John_Smith_Senior_Developer_CV.pdf&quot;). ATS
+                        systems often index file names, and including the position
+                        helps recruiters find your application quickly.
+                      </ATSTipText>
+                    </ATSTipContent>
+                  </ATSTipCard>
+                  <SeeMoreButton onClick={scrollToUpgrade} style={{ marginTop: "16px" }}>
+                    See all ATS optimization tips
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </SeeMoreButton>
+                </BentoCardBody>
+              </BentoCardContent>
+              <BentoOverlay />
+            </BentoCardInner>
+          </BentoCard>
+
+          {/* Role Recommendations - Middle Bottom */}
+          <BentoCard>
+            <BentoCardInner>
+              <BentoCardContent>
+                <BentoCardTitle>Alternative Role Recommendations</BentoCardTitle>
+                <BentoCardDescription>
+                  Discover roles that match your skills and experience
+                </BentoCardDescription>
+                <BentoCardBody>
+                  <SampleBadge>✨ Top Match for Your Profile</SampleBadge>
+                  {report.sample_role ? (
+                    <RoleCard>
+                      <RoleCardHeader>
+                        <RoleTitle>{report.sample_role.title}</RoleTitle>
+                        <RoleFitBadge>
+                          ✓ {report.sample_role.fit}% Match
+                        </RoleFitBadge>
+                      </RoleCardHeader>
+                      <RoleDescription>
+                        {report.sample_role.description}
+                      </RoleDescription>
+                    </RoleCard>
+                  ) : (
+                    <div style={{ padding: "16px", textAlign: "center", color: "#9ca3af", fontSize: "14px", border: "1px dashed #334155", borderRadius: "8px" }}>
+                      Role recommendation is being generated...
+                    </div>
+                  )}
+                  <SeeMoreButton onClick={scrollToUpgrade} style={{ marginTop: "16px" }}>
+                    See all role recommendations
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </SeeMoreButton>
+                </BentoCardBody>
+              </BentoCardContent>
+              <BentoOverlay />
+            </BentoCardInner>
+          </BentoCard>
+        </BentoGrid>
+      ) : (
+        <BentoGrid>
+          {/* Summary - Left Column, Row Span 2 */}
+          <BentoCard $rowSpan={2} $position="left">
+            <BentoCardInner>
+              <BentoCardContent>
+                <BentoCardTitle>Summary</BentoCardTitle>
+                <BentoCardDescription>
+                  AI-generated analysis of your CV match
+                </BentoCardDescription>
+                <BentoCardBody>
+                  <p>{report.summary_free}</p>
+                </BentoCardBody>
+              </BentoCardContent>
+              <BentoOverlay />
+            </BentoCardInner>
+          </BentoCard>
+
+          {/* Rewritten Bullet Points - Middle Top */}
+          <BentoCard>
+            <BentoCardInner>
+              <BentoCardContent>
+                <BentoCardTitle>
+                  {report.generated_cv
+                    ? "Professional bullet points applied"
+                    : "Rewritten bullet points"}
+                </BentoCardTitle>
+                <BentoCardDescription>
+                  {report.generated_cv
+                    ? "These achievement-focused bullets are now integrated in your optimized resume"
+                    : "Improved versions of your experience bullets"}
+                </BentoCardDescription>
+                <BentoCardBody>
+                  <BulletList>
+                    {rewrittenBullets.map((bullet: string, index: number) => (
+                      <li key={index}>{bullet}</li>
+                    ))}
+                  </BulletList>
+                </BentoCardBody>
+              </BentoCardContent>
+              <BentoOverlay />
+            </BentoCardInner>
+          </BentoCard>
+
+          {/* ATS Optimization Tips - Right Column, Row Span 2 */}
+          <BentoCard $rowSpan={2} $position="right">
+            <BentoCardInner>
+              <BentoCardContent>
+                <BentoCardTitle>
+                  {report.generated_cv
+                    ? "ATS optimizations applied"
+                    : "ATS optimization tips"}
+                </BentoCardTitle>
+                <BentoCardDescription>
+                  {report.generated_cv
+                    ? "Your optimized resume has been enhanced with these ATS-friendly improvements"
+                    : "Improve your chances with applicant tracking systems"}
+                </BentoCardDescription>
+                <BentoCardBody>
+                  <BulletList>
+                    {atsFlags.map((flag: string, index: number) => (
+                      <li key={index}>{flag}</li>
+                    ))}
+                  </BulletList>
+                </BentoCardBody>
+              </BentoCardContent>
+              <BentoOverlay />
+            </BentoCardInner>
+          </BentoCard>
+
+          {/* Role Recommendations - Middle Bottom */}
+          <BentoCard>
+            <BentoCardInner>
+              <BentoCardContent>
+                <BentoCardTitle>Role recommendations</BentoCardTitle>
+                <BentoCardDescription>
+                  Alternative roles that match your profile
+                </BentoCardDescription>
+                <BentoCardBody>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    {roleRecommendations.map((role: RoleRecommendation) => (
+                      <div
+                        key={role.title}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: "12px",
+                          backgroundColor: "var(--color-surface, #1e293b)",
+                          border: "1px solid var(--color-border, #334155)",
+                          borderRadius: "8px",
+                        }}
+                      >
+                        <span style={{ fontWeight: 500 }}>{role.title}</span>
+                        <Badge variant="success">{role.fit}% Match</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </BentoCardBody>
+              </BentoCardContent>
+              <BentoOverlay />
+            </BentoCardInner>
+          </BentoCard>
+        </BentoGrid>
+      )}
+
+      {/* Missing Keywords - Below the Bento Grid */}
       {!(report.pro && report.generated_cv) && (
         <Section>
           <Card variant="bordered">
@@ -5005,262 +5455,8 @@ export default function ReportDetailPage() {
         </Section>
       )}
 
-      {visibleSections?.showSampleContent ? (
+      {visibleSections?.showSampleContent && (
         <>
-          {/* Rewritten Bullets with Before/After Example */}
-          <Section>
-            <Card variant="bordered">
-              <Card.Header>
-                <Card.Title>Rewritten Bullet Points</Card.Title>
-                <Card.Description>
-                  Professionally enhanced versions of your experience bullets
-                </Card.Description>
-              </Card.Header>
-              <Card.Content>
-                <SampleBadge>✨ Free Sample - See the Difference</SampleBadge>
-
-                {report.sample_rewrite ? (
-                  <BeforeAfterCard>
-                    <ComparisonColumn>
-                      <ColumnLabel>❌ Before (Your CV)</ColumnLabel>
-                      <ComparisonText>
-                        {report.sample_rewrite.original}
-                      </ComparisonText>
-                    </ComparisonColumn>
-
-                    <ComparisonColumn $isAfter>
-                      <ColumnLabel $isAfter>✅ After (Pro)</ColumnLabel>
-                      <ComparisonText>
-                        {report.sample_rewrite.rewritten}
-                      </ComparisonText>
-                    </ComparisonColumn>
-                  </BeforeAfterCard>
-                ) : (
-                  <div
-                    style={{
-                      padding: "20px",
-                      textAlign: "center",
-                      color: "#9ca3af",
-                      fontSize: "14px",
-                      border: "1px dashed #334155",
-                      borderRadius: "8px",
-                      marginBottom: "24px",
-                    }}
-                  >
-                    Sample rewrite is being generated from your CV. Please
-                    refresh the page or create a new analysis.
-                  </div>
-                )}
-
-                <BlurredPreviewSection style={{ marginTop: "16px", paddingBottom: "48px" }}>
-                  <BlurredContent>
-                    <BulletList>
-                      <li>
-                        Spearheaded the development of microservices architecture that improved system scalability by 45%, reducing server costs by $15K/month while maintaining 99.9% uptime
-                      </li>
-                      <li>
-                        Led cross-functional teams of 8 developers to deliver high-impact projects, reducing time-to-market by 40% through implementation of agile methodologies
-                      </li>
-                    </BulletList>
-                  </BlurredContent>
-                  <SeeMoreButton onClick={scrollToUpgrade}>
-                    See all professional rewrites
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </SeeMoreButton>
-                </BlurredPreviewSection>
-              </Card.Content>
-            </Card>
-          </Section>
-
-          {/* Role Recommendations with Sample */}
-          <Section>
-            <Card variant="bordered">
-              <Card.Header>
-                <Card.Title>Alternative Role Recommendations</Card.Title>
-                <Card.Description>
-                  Discover roles that match your skills and experience
-                </Card.Description>
-              </Card.Header>
-              <Card.Content>
-                <SampleBadge>✨ Top Match for Your Profile</SampleBadge>
-
-                {report.sample_role ? (
-                  <RoleCard>
-                    <RoleCardHeader>
-                      <RoleTitle>{report.sample_role.title}</RoleTitle>
-                      <RoleFitBadge>
-                        ✓ {report.sample_role.fit}% Match
-                      </RoleFitBadge>
-                    </RoleCardHeader>
-                    <RoleDescription>
-                      {report.sample_role.description}
-                    </RoleDescription>
-                  </RoleCard>
-                ) : (
-                  <div
-                    style={{
-                      padding: "20px",
-                      textAlign: "center",
-                      color: "#9ca3af",
-                      fontSize: "14px",
-                      border: "1px dashed #334155",
-                      borderRadius: "8px",
-                    }}
-                  >
-                    Role recommendation is being generated. Please refresh the
-                    page or create a new analysis.
-                  </div>
-                )}
-
-                <BlurredPreviewSection style={{ marginTop: "16px", paddingBottom: "48px" }}>
-                  <BlurredContent>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "10px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: "14px",
-                          backgroundColor: "#1e293b",
-                          border: "1px solid #334155",
-                          borderRadius: "10px",
-                        }}
-                      >
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                          <span style={{ fontWeight: 600, fontSize: "15px", color: "#f1f5f9" }}>
-                            Technical Lead
-                          </span>
-                          <Badge variant="success">85% Match</Badge>
-                        </div>
-                        <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>
-                          Your leadership experience and technical depth make you an excellent candidate...
-                        </p>
-                      </div>
-                      <div
-                        style={{
-                          padding: "14px",
-                          backgroundColor: "#1e293b",
-                          border: "1px solid #334155",
-                          borderRadius: "10px",
-                        }}
-                      >
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                          <span style={{ fontWeight: 600, fontSize: "15px", color: "#f1f5f9" }}>
-                            Solutions Architect
-                          </span>
-                          <Badge variant="success">82% Match</Badge>
-                        </div>
-                        <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>
-                          Your system design skills position you well for this strategic role...
-                        </p>
-                      </div>
-                    </div>
-                  </BlurredContent>
-                  <SeeMoreButton onClick={scrollToUpgrade}>
-                    See all role recommendations
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </SeeMoreButton>
-                </BlurredPreviewSection>
-              </Card.Content>
-            </Card>
-          </Section>
-
-          {/* ATS Optimization Tips with Sample */}
-          <Section>
-            <Card variant="bordered">
-              <Card.Header>
-                <Card.Title>ATS Optimization Tips</Card.Title>
-                <Card.Description>
-                  Improve your chances with applicant tracking systems
-                </Card.Description>
-              </Card.Header>
-              <Card.Content>
-                <SampleBadge>✨ Free Tip - Boost Your ATS Score</SampleBadge>
-
-                <ATSTipCard>
-                  <ATSIcon>📄</ATSIcon>
-                  <ATSTipContent>
-                    <ATSTipTitle>Optimize Your CV File Name</ATSTipTitle>
-                    <ATSTipText>
-                      Name your CV file strategically:
-                      &quot;FirstName_LastName_Position_CV.pdf&quot; (e.g.,
-                      &quot;John_Smith_Senior_Developer_CV.pdf&quot;). ATS
-                      systems often index file names, and including the position
-                      helps recruiters find your application quickly. Avoid
-                      generic names like &quot;Resume.pdf&quot; or
-                      &ldquo;CV_final_v2.pdf" which appear unprofessional.
-                    </ATSTipText>
-                  </ATSTipContent>
-                </ATSTipCard>
-
-                <BlurredPreviewSection style={{ marginTop: "16px", paddingBottom: "48px" }}>
-                  <BlurredContent>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "10px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "12px",
-                          padding: "14px",
-                          backgroundColor: "#1e293b",
-                          border: "1px solid #334155",
-                          borderRadius: "10px",
-                        }}
-                      >
-                        <div style={{ fontSize: "20px" }}>🎯</div>
-                        <div>
-                          <div style={{ fontWeight: 600, fontSize: "14px", color: "#f1f5f9", marginBottom: "4px" }}>
-                            Add Quantifiable Achievements
-                          </div>
-                          <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>
-                            Include specific metrics and percentages to demonstrate impact...
-                          </p>
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "12px",
-                          padding: "14px",
-                          backgroundColor: "#1e293b",
-                          border: "1px solid #334155",
-                          borderRadius: "10px",
-                        }}
-                      >
-                        <div style={{ fontSize: "20px" }}>🔑</div>
-                        <div>
-                          <div style={{ fontWeight: 600, fontSize: "14px", color: "#f1f5f9", marginBottom: "4px" }}>
-                            Strategic Keyword Placement
-                          </div>
-                          <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>
-                            Place important keywords in your professional summary...
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </BlurredContent>
-                  <SeeMoreButton onClick={scrollToUpgrade}>
-                    See all ATS optimization tips
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
-                  </SeeMoreButton>
-                </BlurredPreviewSection>
-              </Card.Content>
-            </Card>
-          </Section>
 
           {/* Main Upgrade Card */}
           <Section ref={upgradeRef}>
@@ -5379,96 +5575,11 @@ export default function ReportDetailPage() {
             </ProUpgradeCard>
           </Section>
         </>
-      ) : (
+      )}
+
+      {/* PRO-only sections */}
+      {!visibleSections?.showSampleContent && (
         <>
-          <Section>
-            <Card variant="bordered">
-              <Card.Header>
-                <Card.Title>
-                  {report.generated_cv
-                    ? "Professional bullet points applied"
-                    : "Rewritten bullet points"}
-                </Card.Title>
-                <Card.Description>
-                  {report.generated_cv
-                    ? "These achievement-focused bullets are now integrated in your optimized resume"
-                    : "Improved versions of your experience bullets"}
-                </Card.Description>
-              </Card.Header>
-              <Card.Content>
-                <BulletList>
-                  {rewrittenBullets.map((bullet: string, index: number) => (
-                    <li key={index}>{bullet}</li>
-                  ))}
-                </BulletList>
-              </Card.Content>
-            </Card>
-          </Section>
-
-          <Section>
-            <Card variant="bordered">
-              <Card.Header>
-                <Card.Title>Role recommendations</Card.Title>
-                <Card.Description>
-                  Alternative roles that match your profile
-                </Card.Description>
-              </Card.Header>
-              <Card.Content>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "12px",
-                  }}
-                >
-                  {roleRecommendations.map((role: RoleRecommendation) => (
-                    <div
-                      key={role.title}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "12px",
-                        backgroundColor: "#1e293b", // slate-800 (theme.colors.surface)
-                        border: "1px solid #334155", // slate-700 (theme.colors.border)
-                        borderRadius: "8px",
-                      }}
-                    >
-                      <span style={{ fontWeight: 500, color: "#f1f5f9" }}>
-                        {role.title}
-                      </span>
-                      <Badge variant="success">{role.fit}% Match</Badge>
-                    </div>
-                  ))}
-                </div>
-              </Card.Content>
-            </Card>
-          </Section>
-
-          <Section>
-            <Card variant="bordered">
-              <Card.Header>
-                <Card.Title>
-                  {report.generated_cv
-                    ? "ATS optimizations applied "
-                    : "ATS optimization tips"}
-                </Card.Title>
-                <Card.Description>
-                  {report.generated_cv
-                    ? "Your optimized resume has been enhanced with these ATS-friendly improvements"
-                    : "Improve your chances with applicant tracking systems"}
-                </Card.Description>
-              </Card.Header>
-              <Card.Content>
-                <BulletList>
-                  {atsFlags.map((flag: string, index: number) => (
-                    <li key={index}>{flag}</li>
-                  ))}
-                </BulletList>
-              </Card.Content>
-            </Card>
-          </Section>
-
           {report.fake_skills_recommendations &&
             report.fake_skills_recommendations.length > 0 && (
               <Section>
@@ -5664,7 +5775,7 @@ export default function ReportDetailPage() {
                             }
                           }
 
-                          toast.success("Your optimized CV is ready!");
+                          toast.success("Your optimized resume is ready!");
                           window.scrollTo({ top: 0, behavior: 'smooth' });
                         } catch (error) {
                           const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -5684,9 +5795,6 @@ export default function ReportDetailPage() {
                 ) : (
                   <CVSuccessSection>
                     <SuccessCelebration>
-                      <SuccessIcon>
-                        <CheckCircleIcon />
-                      </SuccessIcon>
                       <SuccessTitle>Your optimized resume is ready!</SuccessTitle>
                       <SuccessSubtext>
                         Your professionally crafted resume is ready to download. Choose
@@ -5726,7 +5834,7 @@ export default function ReportDetailPage() {
                             boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
                             color: '#ffffff',
                           }}>
-                            <SparklesIcon />
+                            
                           </div>
                           <div style={{ flex: 1 }}>
                             <div style={{
@@ -5766,7 +5874,7 @@ export default function ReportDetailPage() {
                       >
                         <ActionCardHeader>
                           <ActionCardIcon $variant="accent">
-                            {isGeneratingCV ? <Spinner size="sm" /> : <SparklesIcon />}
+                            {isGeneratingCV && <Spinner size="sm" /> }
                           </ActionCardIcon>
                           <ActionCardTitle style={{
                             background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',

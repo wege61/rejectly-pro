@@ -76,7 +76,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 32px;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
 `;
 
@@ -177,7 +177,6 @@ const TwoColumnGrid = styled.div`
 
 const GridCard = styled.div`
   background: var(--bg-color, #ffffff);
-  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
   padding: 20px;
 `;
@@ -297,24 +296,6 @@ export function ATSFullResult({
         )}
       </HeroSection>
 
-      {/* Contact & Stats - Two columns */}
-      <TwoColumnGrid>
-        <GridCard>
-          <GridCardTitle>Contact Information</GridCardTitle>
-          <ATSContactInfo hasContactInfo={hasContactInfo} />
-        </GridCard>
-        <GridCard>
-          <GridCardTitle>Resume statistics</GridCardTitle>
-          <ATSStatsGrid stats={keywordStats} wordCount={wordCount} />
-        </GridCard>
-      </TwoColumnGrid>
-
-      {/* Parsing Compatibility */}
-      <Section>
-        <SectionTitle>ATS Parsing Checks</SectionTitle>
-        <ATSParsingChecklist checks={parsingChecks} />
-      </Section>
-
       {/* Categories - 2x2 grid */}
       <Section>
         <SectionTitle>Detailed Breakdown</SectionTitle>
@@ -350,6 +331,26 @@ export function ATSFullResult({
         </CategoriesGrid>
       </Section>
 
+
+      {/* Contact & Stats - Two columns */}
+      <TwoColumnGrid>
+        <GridCard>
+          <GridCardTitle>Contact Information</GridCardTitle>
+          <ATSContactInfo hasContactInfo={hasContactInfo} />
+        </GridCard>
+        <GridCard>
+          <GridCardTitle>Resume statistics</GridCardTitle>
+          <ATSStatsGrid stats={keywordStats} wordCount={wordCount} />
+        </GridCard>
+      </TwoColumnGrid>
+
+      {/* Parsing Compatibility */}
+      <Section>
+        <SectionTitle>ATS Parsing Checks</SectionTitle>
+        <ATSParsingChecklist checks={parsingChecks} />
+      </Section>
+
+      
       {/* Top Issues */}
       {topIssues.length > 0 && (
         <Section>

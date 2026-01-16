@@ -37,7 +37,6 @@ const Item = styled.div<{ $present: boolean }>`
   padding: 12px 14px;
   border-radius: 8px;
   background: var(--bg-alt, #f9fafb);
-  border: 1px solid ${({ $present }) => $present ? "#d1fae5" : "#fecaca"};
   transition: all 0.2s;
 `;
 

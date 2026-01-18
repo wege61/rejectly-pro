@@ -50,7 +50,18 @@ const BentoGridWrapper = styled.div`
 
   @media (min-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 14rem);
+  }
+
+  &.lg\\:grid-rows-3 {
+    @media (min-width: 1024px) {
+      grid-template-rows: repeat(3, 14rem);
+    }
+  }
+
+  &.lg\\:grid-rows-2 {
+    @media (min-width: 1024px) {
+      grid-template-rows: repeat(2, 14rem);
+    }
   }
 `;
 
@@ -59,6 +70,10 @@ interface BentoCardWrapperProps {
   $rowSpan?: number;
   $lgColSpan?: number;
   $lgRowSpan?: number;
+  $lgColStart?: number;
+  $lgColEnd?: number;
+  $lgRowStart?: number;
+  $lgRowEnd?: number;
 }
 
 const BentoCardWrapper = styled.div<BentoCardWrapperProps>`
@@ -84,8 +99,18 @@ const BentoCardWrapper = styled.div<BentoCardWrapperProps>`
 
   /* Desktop (lg) */
   @media (min-width: 1024px) {
-    grid-column: span ${({ $lgColSpan }) => $lgColSpan || 1};
-    grid-row: span ${({ $lgRowSpan }) => $lgRowSpan || 1};
+    ${({ $lgColStart, $lgColEnd, $lgColSpan }) => {
+      if ($lgColStart && $lgColEnd) {
+        return `grid-column: ${$lgColStart} / ${$lgColEnd};`;
+      }
+      return `grid-column: span ${$lgColSpan || 1};`;
+    }}
+    ${({ $lgRowStart, $lgRowEnd, $lgRowSpan }) => {
+      if ($lgRowStart && $lgRowEnd) {
+        return `grid-row: ${$lgRowStart} / ${$lgRowEnd};`;
+      }
+      return `grid-row: span ${$lgRowSpan || 1};`;
+    }}
   }
 
   /* Light styles */
@@ -282,16 +307,20 @@ const BentoCard = ({
   value,
   ...props
 }: BentoCardProps) => {
-  // Parse className to extract grid span values
-  const parseSpan = (prefix: string, cls: string = ""): number | undefined => {
+  // Parse className to extract grid values
+  const parseValue = (prefix: string, cls: string = ""): number | undefined => {
     const match = cls.match(new RegExp(`${prefix}-(\\d+)`));
     return match ? parseInt(match[1], 10) : undefined;
   };
 
-  const colSpan = parseSpan("col-span", className);
-  const rowSpan = parseSpan("row-span", className);
-  const lgColSpan = parseSpan("lg:col-span", className);
-  const lgRowSpan = parseSpan("lg:row-span", className);
+  const colSpan = parseValue("col-span", className);
+  const rowSpan = parseValue("row-span", className);
+  const lgColSpan = parseValue("lg:col-span", className);
+  const lgRowSpan = parseValue("lg:row-span", className);
+  const lgColStart = parseValue("lg:col-start", className);
+  const lgColEnd = parseValue("lg:col-end", className);
+  const lgRowStart = parseValue("lg:row-start", className);
+  const lgRowEnd = parseValue("lg:row-end", className);
 
   return (
     <BentoCardWrapper
@@ -299,6 +328,10 @@ const BentoCard = ({
       $rowSpan={rowSpan}
       $lgColSpan={lgColSpan}
       $lgRowSpan={lgRowSpan}
+      $lgColStart={lgColStart}
+      $lgColEnd={lgColEnd}
+      $lgRowStart={lgRowStart}
+      $lgRowEnd={lgRowEnd}
       {...props}
     >
       <BackgroundContainer>{background}</BackgroundContainer>

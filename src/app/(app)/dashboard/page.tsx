@@ -83,6 +83,23 @@ const CoverLettersIcon = () => (
   </svg>
 );
 
+const ATSOptimizerIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{ width: '32px', height: '32px' }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+    />
+  </svg>
+);
+
 const ArrowRightIcon = () => (
   <svg
     width="14"
@@ -609,6 +626,122 @@ const CoverLettersBackground = () => (
       ))}
     </LetterStack>
   </CoverLettersBackgroundWrapper>
+);
+
+// ATS Optimizer Background
+const ATSOptimizerBackgroundWrapper = styled(BentoBackgroundBase)``;
+
+const ATSOptimizedStack = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 180px;
+
+  @media (max-width: 640px) {
+    width: 150px;
+  }
+`;
+
+const ATSOptimizedCardMini = styled.div<{ $delay: number; $scoreImprovement: number }>`
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 12px;
+  padding: 10px 12px;
+  animation: ${fadeInUp} 0.5s ease-out forwards;
+  animation-delay: ${({ $delay }) => $delay}s;
+  opacity: 0;
+  filter: blur(0.5px);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--success);
+  }
+
+  &:hover {
+    filter: blur(0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const ATSOptimizedCardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+`;
+
+const ATSOptimizedCardTitle = styled.div`
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const ATSOptimizedCardMeta = styled.div`
+  font-size: 9px;
+  color: var(--text-secondary);
+`;
+
+const ATSScoreBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const ATSScoreValue = styled.span<{ $isAfter?: boolean }>`
+  font-size: ${({ $isAfter }) => $isAfter ? '14px' : '10px'};
+  font-weight: ${({ $isAfter }) => $isAfter ? '700' : '500'};
+  color: ${({ $isAfter }) => $isAfter ? 'var(--success)' : 'var(--text-secondary)'};
+  ${({ $isAfter }) => !$isAfter && 'text-decoration: line-through;'}
+`;
+
+const ATSScoreArrow = styled.span`
+  font-size: 10px;
+  color: var(--text-secondary);
+`;
+
+const atsOptimizedData = [
+  { name: 'Resume_v3.pdf', before: 62, after: 89, date: 'Today' },
+  { name: 'CV_2024.pdf', before: 54, after: 85, date: 'Yesterday' },
+  { name: 'John_Resume.pdf', before: 71, after: 94, date: 'Dec 15' },
+];
+
+const ATSOptimizerBackground = () => (
+  <ATSOptimizerBackgroundWrapper>
+    <ATSOptimizedStack>
+      {atsOptimizedData.map((item, idx) => (
+        <ATSOptimizedCardMini key={idx} $delay={idx * 0.12} $scoreImprovement={item.after - item.before}>
+          <ATSOptimizedCardHeader>
+            <div>
+              <ATSOptimizedCardTitle>{item.name}</ATSOptimizedCardTitle>
+              <ATSOptimizedCardMeta>{item.date}</ATSOptimizedCardMeta>
+            </div>
+            <ATSScoreBadge>
+              <ATSScoreValue>{item.before}</ATSScoreValue>
+              <ATSScoreArrow>→</ATSScoreArrow>
+              <ATSScoreValue $isAfter>{item.after}%</ATSScoreValue>
+            </ATSScoreBadge>
+          </ATSOptimizedCardHeader>
+        </ATSOptimizedCardMini>
+      ))}
+    </ATSOptimizedStack>
+  </ATSOptimizerBackgroundWrapper>
 );
 
 // Report Card Animations (matching reports page)
@@ -1522,6 +1655,7 @@ interface Stats {
   totalCVs: number;
   totalJobs: number;
   totalCoverLetters: number;
+  totalOptimizedCVs: number;
 }
 
 
@@ -1558,6 +1692,7 @@ export default function DashboardPage() {
     totalCVs: 0,
     totalJobs: 0,
     totalCoverLetters: 0,
+    totalOptimizedCVs: 0,
   });
   const [recentReports, setRecentReports] = useState<Report[]>([]);
   const [recentCoverLetters, setRecentCoverLetters] = useState<CoverLetter[]>([]);
@@ -1673,7 +1808,7 @@ export default function DashboardPage() {
         const supabase = createClient();
 
         // Fetch stats
-        const [reportsRes, cvsRes, jobsRes, coverLettersRes] = await Promise.all([
+        const [reportsRes, cvsRes, jobsRes, coverLettersRes, optimizedCVsRes] = await Promise.all([
           supabase
             .from("reports")
             .select("id", { count: "exact", head: true })
@@ -1692,6 +1827,12 @@ export default function DashboardPage() {
             .from("cover_letters")
             .select("id", { count: "exact", head: true })
             .eq("user_id", user.id),
+          supabase
+            .from("documents")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id)
+            .eq("type", "cv")
+            .eq("source", "ats-optimizer"),
         ]);
 
         setStats({
@@ -1699,6 +1840,7 @@ export default function DashboardPage() {
           totalCVs: cvsRes.count || 0,
           totalJobs: jobsRes.count || 0,
           totalCoverLetters: coverLettersRes.count || 0,
+          totalOptimizedCVs: optimizedCVsRes.count || 0,
         });
 
         // Fetch recent data
@@ -1798,10 +1940,10 @@ export default function DashboardPage() {
 
         {/* Stats Bento Grid */}
         <BentoGridContainer>
-          <BentoGrid className="lg:grid-rows-2">
+          <BentoGrid className="lg:grid-rows-3">
             <BentoCard
               name="Total Reports"
-              className="col-span-1 lg:col-span-1 lg:row-span-2"
+              className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3"
               Icon={ReportsIcon}
               description="View all your resume analysis reports"
               href={ROUTES.APP.REPORTS}
@@ -1812,7 +1954,7 @@ export default function DashboardPage() {
             />
             <BentoCard
               name="Resumes Uploaded"
-              className="col-span-1 lg:col-span-2 lg:row-span-1"
+              className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3"
               Icon={CVIcon}
               description="Manage your uploaded resumes"
               href={ROUTES.APP.CV}
@@ -1823,7 +1965,7 @@ export default function DashboardPage() {
             />
             <BentoCard
               name="Job Postings"
-              className="col-span-1 lg:col-span-1 lg:row-span-1"
+              className="lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4"
               Icon={JobsIcon}
               description="Browse saved job postings"
               href={ROUTES.APP.JOBS}
@@ -1834,7 +1976,7 @@ export default function DashboardPage() {
             />
             <BentoCard
               name="Cover Letters"
-              className="col-span-1 lg:col-span-1 lg:row-span-1"
+              className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2"
               Icon={CoverLettersIcon}
               description="Your generated cover letters"
               href={ROUTES.APP.COVER_LETTERS}
@@ -1842,6 +1984,17 @@ export default function DashboardPage() {
               value={stats.totalCoverLetters}
               background={<CoverLettersBackground />}
               onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
+            />
+            <BentoCard
+              name="ATS Optimized"
+              className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4"
+              Icon={ATSOptimizerIcon}
+              description="AI-optimized resumes for better ATS scores"
+              href={ROUTES.APP.ATS_OPTIMIZER}
+              cta="Optimize Resume"
+              value={stats.totalOptimizedCVs}
+              background={<ATSOptimizerBackground />}
+              onClick={() => router.push(ROUTES.APP.ATS_OPTIMIZER)}
             />
           </BentoGrid>
         </BentoGridContainer>

@@ -605,8 +605,8 @@ export default function ReportsPage() {
     <Container>
       <Header>
         <HeaderContent>
-          <Title>My Reports</Title>
-          <Subtitle>View and manage your CV analysis reports</Subtitle>
+          <Title>Job-Specific Resume Optimizer</Title>
+          <Subtitle>View and manage your resume analysis reports</Subtitle>
         </HeaderContent>
         <Button onClick={() => router.push(ROUTES.APP.ANALYZE)}>
           New Analysis

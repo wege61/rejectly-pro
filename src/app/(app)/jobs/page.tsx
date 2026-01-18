@@ -737,7 +737,7 @@ export default function JobsPage() {
       <Header>
         <HeaderContent>
           <Title>Job Postings</Title>
-          <Subtitle>Manage job postings to compare with your CV</Subtitle>
+          <Subtitle>Manage job postings to compare with your resume</Subtitle>
         </HeaderContent>
         <Button onClick={openAddModal}>Add Job Posting</Button>
       </Header>
@@ -867,7 +867,7 @@ export default function JobsPage() {
           <EmptyState
             icon={<EmptyState.InboxIcon />}
             title="No job postings yet"
-            description="Add job postings to analyze and compare with your CV."
+            description="Add job postings to analyze and compare with your resume."
             action={{
               label: "Add Job Posting",
               onClick: openAddModal,

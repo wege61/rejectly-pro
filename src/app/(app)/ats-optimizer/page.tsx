@@ -93,7 +93,7 @@ interface OptimizationResult {
     category: string;
     issue: string;
     fix: string;
-    impact: string;
+    impact?: string;
   }>;
   optimizedCVId: string;
   optimizedAtsResult?: {
@@ -1762,7 +1762,7 @@ export default function DashboardATSOptimizerPage() {
               </ExistingCVHeaderContent>
               <svg
                 fill="none"
-                stroke="currentColor"
+                stroke="var(--text-secondary)"
                 strokeWidth="2"
                 viewBox="0 0 24 24"
                 width="20"

@@ -149,25 +149,21 @@ const CreditsCardSkeleton = styled.div`
 
 export function CreditsCard() {
   const router = useRouter();
-  const { credits: userCredits, isLoading, lastCreditChange } = useCredits();
+  const { credits: userCredits, isLoading } = useCredits();
   const [isAnimating, setIsAnimating] = useState(false);
   const prevCreditsRef = useRef(userCredits.credits);
 
   // Trigger animation when credits change
   useEffect(() => {
-    if (lastCreditChange && !userCredits.hasSubscription) {
+    if (prevCreditsRef.current !== userCredits.credits && !userCredits.hasSubscription) {
       setIsAnimating(true);
       const timer = setTimeout(() => {
         setIsAnimating(false);
       }, 800);
+      prevCreditsRef.current = userCredits.credits;
       return () => clearTimeout(timer);
     }
-  }, [lastCreditChange, userCredits.hasSubscription]);
-
-  // Update ref when credits change
-  useEffect(() => {
-    prevCreditsRef.current = userCredits.credits;
-  }, [userCredits.credits]);
+  }, [userCredits.credits, userCredits.hasSubscription]);
 
   if (isLoading) {
     return <CreditsCardSkeleton />;

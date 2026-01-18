@@ -4614,7 +4614,7 @@ export default function ReportDetailPage() {
               Job Posting{jobPostingTitles.length > 1 ? "s" : ""}:{" "}
             </span>
             <span
-              style={{ color: "white", fontSize: "14px", fontWeight: "600" }}
+              style={{ color: "var(--text-secondary)", fontSize: "14px", fontWeight: "600" }}
             >
               {jobPostingTitles.join(" • ")}
             </span>
@@ -4762,7 +4762,7 @@ export default function ReportDetailPage() {
               <InsightContent>
                 <InsightTitle>We found better matches for you</InsightTitle>
                 <InsightSubtitle>
-                  Your CV shows a {report.fit_score}% match with this position.
+                  Your resume shows a {report.fit_score}% match with this position.
                   Based on your experience and skills, these roles might be a
                   better fit for your career goals.
                 </InsightSubtitle>
@@ -4797,7 +4797,7 @@ export default function ReportDetailPage() {
             <Card.Content style={{ textAlign: "center", padding: "40px" }}>
               <Spinner size="lg" />
               <p style={{ marginTop: "16px", color: "#9ca3af" }}>
-                Analyzing optimized CV to calculate improvement breakdown...
+                Analyzing optimized resume to calculate improvement breakdown...
               </p>
             </Card.Content>
           </Card>
@@ -4814,10 +4814,10 @@ export default function ReportDetailPage() {
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style={{ width: 28, height: 28 }}>
                     <path fillRule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
                   </svg>
-                  CV Optimized & ATS-Ready
+                  Resume Optimized & ATS-Ready
                 </ATSOptimizedTitle>
                 <ATSOptimizedSubtitle>
-                  Your CV has been professionally optimized with ATS-friendly formatting and enhanced language
+                  Your resume has been professionally optimized with ATS-friendly formatting and enhanced language
                 </ATSOptimizedSubtitle>
               </ATSOptimizedTitleSection>
 
@@ -4848,7 +4848,7 @@ export default function ReportDetailPage() {
 
             <ATSResultMessage>
               <CheckCircleFilledIcon />
-              Your CV is ready to apply! Download it below or generate a cover letter.
+              Your resume is ready to apply! Download it below or generate a cover letter.
             </ATSResultMessage>
           </ATSOptimizedCard>
         </Section>
@@ -4867,7 +4867,7 @@ export default function ReportDetailPage() {
                       {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed in Your CV
                     </ProblemSummaryTitle>
                     <ProblemSummarySubtitle>
-                      Your original CV had these critical issues - we solved all of them
+                      Your original resume had these critical issues - we solved all of them
                     </ProblemSummarySubtitle>
                   </ProblemSummaryTitleSection>
 
@@ -4923,7 +4923,7 @@ export default function ReportDetailPage() {
                     <div className="warning-content">
                       <div className="warning-title">🚀 Fake It Mode Active</div>
                       <div className="warning-text">
-                        This CV was optimized with aggressive keyword addition. ALL missing keywords were added, even without verified experience. Use responsibly and be prepared to discuss these skills in interviews.
+                        This resume was optimized with aggressive keyword addition. ALL missing keywords were added, even without verified experience. Use responsibly and be prepared to discuss these skills in interviews.
                       </div>
                     </div>
                   </FakeItModeWarning>
@@ -4955,7 +4955,7 @@ export default function ReportDetailPage() {
                         <BreakdownItem
                           key={index}
                           onClick={() => handleImprovementClick(improvement)}
-                          title="Click to view this fix in your CV"
+                          title="Click to view this fix in your resume"
                         >
                           <ImpactBadge>
                             {severityInfo.emoji}
@@ -5200,7 +5200,7 @@ export default function ReportDetailPage() {
               <BentoCardContent>
                 <BentoCardTitle>Summary</BentoCardTitle>
                 <BentoCardDescription>
-                  AI-generated analysis of your CV match
+                  AI-generated analysis of your resume match
                 </BentoCardDescription>
                 <BentoCardBody>
                   <p>{report.summary_free}</p>
@@ -5223,7 +5223,7 @@ export default function ReportDetailPage() {
                   {report.sample_rewrite ? (
                     <BeforeAfterCard>
                       <ComparisonColumn>
-                        <ColumnLabel>❌ Before (Your CV)</ColumnLabel>
+                        <ColumnLabel>❌ Before (Your Resume)</ColumnLabel>
                         <ComparisonText>
                           {report.sample_rewrite.original}
                         </ComparisonText>
@@ -5265,11 +5265,11 @@ export default function ReportDetailPage() {
                   <ATSTipCard>
                     <ATSIcon>📄</ATSIcon>
                     <ATSTipContent>
-                      <ATSTipTitle>Optimize Your CV File Name</ATSTipTitle>
+                      <ATSTipTitle>Optimize Your Resume File Name</ATSTipTitle>
                       <ATSTipText>
-                        Name your CV file strategically:
-                        &quot;FirstName_LastName_Position_CV.pdf&quot; (e.g.,
-                        &quot;John_Smith_Senior_Developer_CV.pdf&quot;). ATS
+                        Name your resume file strategically:
+                        &quot;FirstName_LastName_Position_Resume.pdf&quot; (e.g.,
+                        &quot;John_Smith_Senior_Developer_Resume.pdf&quot;). ATS
                         systems often index file names, and including the position
                         helps recruiters find your application quickly.
                       </ATSTipText>
@@ -5334,7 +5334,7 @@ export default function ReportDetailPage() {
               <BentoCardContent>
                 <BentoCardTitle>Summary</BentoCardTitle>
                 <BentoCardDescription>
-                  AI-generated analysis of your CV match
+                  AI-generated analysis of your resume match
                 </BentoCardDescription>
                 <BentoCardBody>
                   <p>{report.summary_free}</p>
@@ -5490,7 +5490,7 @@ export default function ReportDetailPage() {
                     <ComparisonCell>PRO</ComparisonCell>
                   </ComparisonRow>
                   <ComparisonRow>
-                    <ComparisonCell>AI-Optimized CV PDF</ComparisonCell>
+                    <ComparisonCell>AI-Optimized Resume PDF</ComparisonCell>
                     <ComparisonCell>
                       <XMarkIcon />
                     </ComparisonCell>

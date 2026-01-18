@@ -335,7 +335,7 @@ const navItems = [
     ),
   },
   {
-    label: "Reports",
+    label: "Job Match",
     href: ROUTES.APP.REPORTS,
     icon: (
       <svg

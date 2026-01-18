@@ -4931,7 +4931,7 @@ export default function ReportDetailPage() {
 
                 <ResultMessage>
                   <CheckCircleFilledIcon />
-                  All Problems Solved! Your new CV recovered +{Math.round(getProblemStats(improvementBreakdown).totalImpact * 10) / 10}% match score
+                  All Problems Solved! Your new resume recovered +{Math.round(getProblemStats(improvementBreakdown).totalImpact * 10) / 10}% match score
                 </ResultMessage>
               </ProblemSummaryCard>
             </Section>

@@ -10,9 +10,10 @@ interface ATSScoreCircleProps {
 }
 
 const getScoreColor = (score: number): string => {
-  if (score >= 70) return "#059669";
-  if (score >= 50) return "#d97706";
-  return "#dc2626";
+  if (score >= 85) return "var(--primary-500)";
+  if (score >= 70) return "#2a57a0ff";
+  if (score >= 50) return "#EAB308";
+  return "#F97316";
 };
 
 const getScoreData = (score: number): { label: string; description: string } => {

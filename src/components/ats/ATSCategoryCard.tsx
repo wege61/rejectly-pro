@@ -2,7 +2,7 @@
 
 import styled from "styled-components";
 import { useState, useEffect, useRef, useId } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, LayoutGroup } from "motion/react";
 
 interface ATSCategoryCardProps {
   name: string;
@@ -18,9 +18,9 @@ interface ATSCategoryCardProps {
 }
 
 const getScoreColor = (percentage: number): string => {
-  if (percentage >= 70) return "#059669";
-  if (percentage >= 50) return "#d97706";
-  return "#dc2626";
+  if (percentage >= 70) return "var(--primary-500)";
+  if (percentage >= 50) return "#2a57a0";
+  return "#f97316";
 };
 
 const CheckIcon = () => (
@@ -36,100 +36,160 @@ const XIcon = () => (
   </svg>
 );
 
-const CloseIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
+const ArrowRightIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 12h14M12 5l7 7-7 7" />
   </svg>
+);
+
+const CloseIcon = () => (
+  <motion.svg
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0, transition: { duration: 0.05 } }}
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M18 6L6 18" />
+    <path d="M6 6l12 12" />
+  </motion.svg>
 );
 
 // Hook for detecting clicks outside
 function useOutsideClick(ref: React.RefObject<HTMLDivElement | null>, callback: () => void) {
   useEffect(() => {
-    function handleClick(event: MouseEvent) {
+    function handleClick(event: MouseEvent | TouchEvent) {
       if (ref.current && !ref.current.contains(event.target as Node)) {
         callback();
       }
     }
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("touchstart", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("touchstart", handleClick);
+    };
   }, [ref, callback]);
 }
 
-// Overlay for expanded state
+// Overlay
 const Overlay = styled(motion.div)`
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 100;
   backdrop-filter: blur(4px);
+  z-index: 10;
 `;
 
-// Wrapper to maintain card position
-const CardWrapper = styled.div`
-  position: relative;
+// Fixed container for expanded card
+const ExpandedContainer = styled.div`
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 100;
 `;
 
-// Collapsed card
+// Collapsed card - ReportCard style
 const CollapsedCard = styled(motion.div)`
-  background: var(--bg-alt);
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  padding: 16px 20px;
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-alt);
   cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  min-height: 180px;
+  padding: 24px;
 
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-color: var(--primary-500);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 `;
 
-// Expanded card container (centered modal)
-const ExpandedCardContainer = styled(motion.div)`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 110;
-  width: 90%;
-  max-width: 560px;
-  max-height: 85vh;
+// CTA for collapsed card hover
+const CollapsedCTA = styled(motion.div)<{ $isMobile?: boolean }>`
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 2;
+
+  ${({ $isMobile }) => $isMobile ? `
+    position: relative;
+    padding: 16px 0 0 0;
+  ` : `
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 24px;
+  `}
+`;
+
+const CTALink = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 14px;
+`;
+
+// Overlay for collapsed card hover
+const CollapsedOverlay = styled(motion.div)`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 `;
 
 // Expanded card
 const ExpandedCard = styled(motion.div)`
-  background: var(--bg-color, #ffffff);
-  border-radius: 16px;
-  overflow: hidden;
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90%;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  background: var(--bg-color, #ffffff);
+  border-radius: 24px;
+  overflow: hidden;
+
+  @media (max-width: 640px) {
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
 `;
 
 // Header section for expanded card
 const ExpandedHeader = styled.div`
-  padding: 24px;
+  padding: 32px 24px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   border-bottom: 1px solid var(--border-color, #e5e7eb);
-  position: relative;
 `;
 
-const CloseButton = styled.button`
+const CloseButton = styled(motion.button)`
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 12px;
+  right: 12px;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 50%;
   border: none;
   background: var(--bg-alt, #f9fafb);
   color: var(--text-secondary, #6b7280);
@@ -137,76 +197,53 @@ const CloseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  z-index: 10;
+  transition: background 0.2s ease;
 
   &:hover {
     background: var(--border-color, #e5e7eb);
-    color: var(--text-color, #1f2937);
   }
 `;
 
-// Score ring component
-const ScoreRing = styled(motion.div)<{ $percentage: number; $color: string; $size?: "small" | "large" }>`
-  width: ${({ $size }) => $size === "large" ? "80px" : "48px"};
-  height: ${({ $size }) => $size === "large" ? "80px" : "48px"};
-  border-radius: 50%;
-  background: conic-gradient(
-    ${({ $color }) => $color} ${({ $percentage }) => $percentage * 3.6}deg,
-    var(--border-color, #e5e7eb) 0deg
-  );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-
-  &::before {
-    content: "";
-    width: ${({ $size }) => $size === "large" ? "64px" : "38px"};
-    height: ${({ $size }) => $size === "large" ? "64px" : "38px"};
-    border-radius: 50%;
-    background: var(--bg-color, #ffffff);
-  }
-`;
-
+// Score value - reports page style
 const ScoreValue = styled(motion.span)<{ $color: string; $size?: "small" | "large" }>`
-  position: absolute;
-  font-size: ${({ $size }) => $size === "large" ? "20px" : "14px"};
+  font-size: ${({ $size }) => $size === "large" ? "42px" : "42px"};
   font-weight: 700;
   color: ${({ $color }) => $color};
+  line-height: 1;
+
+  &::after {
+    content: '%';
+    font-size: ${({ $size }) => $size === "large" ? "28px" : "28px"};
+    margin-left: 2px;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 640px) {
+    font-size: 42px;
+
+    &::after {
+      font-size: 24px;
+    }
+  }
 `;
 
-const ScoreRingWrapper = styled(motion.div)`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-// Category info
-const CategoryInfo = styled(motion.div)<{ $expanded?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ $expanded }) => $expanded ? "8px" : "4px"};
-  flex: 1;
-  align-items: ${({ $expanded }) => $expanded ? "center" : "flex-start"};
-`;
-
-const CategoryName = styled(motion.span)<{ $expanded?: boolean }>`
+// Category name
+const CategoryName = styled(motion.h3)`
   font-weight: 600;
-  font-size: ${({ $expanded }) => $expanded ? "18px" : "15px"};
+  font-size: 20px;
   color: var(--text-color, #1f2937);
+  margin: 0;
 `;
 
-const CategoryMeta = styled(motion.div)`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const ScoreText = styled.span`
+// Category meta
+const CategoryMeta = styled(motion.p)`
   font-size: 13px;
   color: var(--text-secondary, #6b7280);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const IssueCount = styled.span<{ $hasIssues: boolean }>`
@@ -214,22 +251,40 @@ const IssueCount = styled.span<{ $hasIssues: boolean }>`
   font-weight: 500;
   padding: 2px 8px;
   border-radius: 4px;
-  background: ${({ $hasIssues }) => $hasIssues ? "#fef2f2" : "#f0fdf4"};
-  color: ${({ $hasIssues }) => $hasIssues ? "#dc2626" : "#059669"};
+  color: ${({ $hasIssues }) => $hasIssues ? "#F97316" : "var(--primary-500)"};
 `;
 
 // Scrollable content area
 const ContentArea = styled(motion.div)`
+  position: relative;
+  padding: 16px 24px 24px;
   overflow-y: auto;
   flex: 1;
-  max-height: calc(85vh - 200px);
-`;
-
-const ContentInner = styled.div`
-  padding: 20px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  -webkit-overflow-scrolling: touch;
+
+  /* Thin scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color, #e5e7eb) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color, #e5e7eb);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary, #6b7280);
+  }
 `;
 
 const Section = styled.div`
@@ -260,7 +315,7 @@ const List = styled.ul`
   gap: 8px;
 `;
 
-const IssueItem = styled(motion.li)`
+const IssueItem = styled.li`
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -270,7 +325,7 @@ const IssueItem = styled(motion.li)`
   border-left: 3px solid #dc2626;
 `;
 
-const PassItem = styled(motion.li)`
+const PassItem = styled.li`
   display: flex;
   align-items: center;
   gap: 12px;
@@ -332,18 +387,6 @@ const EmptyState = styled.div`
   font-size: 14px;
 `;
 
-// Click hint
-const ClickHint = styled.span`
-  font-size: 12px;
-  color: var(--text-secondary, #6b7280);
-  opacity: 0;
-  transition: opacity 0.2s;
-
-  ${CollapsedCard}:hover & {
-    opacity: 1;
-  }
-`;
-
 export function ATSCategoryCard({
   name,
   earnedPoints,
@@ -353,181 +396,258 @@ export function ATSCategoryCard({
   expanded = false
 }: ATSCategoryCardProps) {
   const [isExpanded, setIsExpanded] = useState(expanded);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const percentage = Math.round((earnedPoints / maxPoints) * 100);
   const color = getScoreColor(percentage);
   const id = useId();
   const expandedRef = useRef<HTMLDivElement>(null);
 
+  // Check for mobile viewport and dark mode
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDarkMode(darkModeQuery.matches);
+    const darkModeHandler = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+    darkModeQuery.addEventListener('change', darkModeHandler);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      darkModeQuery.removeEventListener('change', darkModeHandler);
+    };
+  }, []);
+
   useOutsideClick(expandedRef, () => setIsExpanded(false));
 
-  // Handle escape key
+  // Handle escape key and body scroll
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsExpanded(false);
-    };
-    if (isExpanded) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsExpanded(false);
+      }
     }
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "";
-    };
+
+    if (isExpanded) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [isExpanded]);
 
   return (
-    <CardWrapper>
+    <LayoutGroup id={`ats-card-${id}`}>
+      {/* Overlay */}
       <AnimatePresence>
         {isExpanded && (
           <Overlay
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
           />
         )}
       </AnimatePresence>
 
+      {/* Expanded Card */}
       <AnimatePresence>
-        {!isExpanded ? (
-          <CollapsedCard
-            key={`collapsed-${id}`}
-            layoutId={`card-${id}`}
-            onClick={() => setIsExpanded(true)}
-          >
-            <ScoreRingWrapper layoutId={`score-wrapper-${id}`}>
-              <ScoreRing
-                layoutId={`score-ring-${id}`}
-                $percentage={percentage}
-                $color={color}
-                $size="small"
-              />
-              <ScoreValue layoutId={`score-value-${id}`} $color={color} $size="small">
-                {percentage}%
-              </ScoreValue>
-            </ScoreRingWrapper>
+        {isExpanded && (
+          <ExpandedContainer>
+            <ExpandedCard
+              layoutId={`card-${name}-${id}`}
+              ref={expandedRef}
+              transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <CloseButton
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, transition: { duration: 0.05 } }}
+                onClick={() => setIsExpanded(false)}
+              >
+                <CloseIcon />
+              </CloseButton>
 
-            <CategoryInfo layoutId={`info-${id}`}>
-              <CategoryName layoutId={`name-${id}`}>{name}</CategoryName>
-              <CategoryMeta layoutId={`meta-${id}`}>
-                <ScoreText>{earnedPoints}/{maxPoints} pts</ScoreText>
-                {issues.length > 0 && (
-                  <IssueCount $hasIssues={true}>{issues.length} issues</IssueCount>
-                )}
-                {issues.length === 0 && passes.length > 0 && (
-                  <IssueCount $hasIssues={false}>All passed</IssueCount>
-                )}
-              </CategoryMeta>
-            </CategoryInfo>
-
-            <ClickHint>Click to expand</ClickHint>
-          </CollapsedCard>
-        ) : (
-          <ExpandedCardContainer
-            key={`expanded-${id}`}
-            ref={expandedRef}
-          >
-            <ExpandedCard layoutId={`card-${id}`}>
               <ExpandedHeader>
-                <CloseButton onClick={() => setIsExpanded(false)}>
-                  <CloseIcon />
-                </CloseButton>
-
-                <ScoreRingWrapper layoutId={`score-wrapper-${id}`}>
-                  <ScoreRing
-                    layoutId={`score-ring-${id}`}
-                    $percentage={percentage}
-                    $color={color}
-                    $size="large"
-                  />
-                  <ScoreValue layoutId={`score-value-${id}`} $color={color} $size="large">
-                    {percentage}%
+                <motion.div
+                  layoutId={`score-${name}-${id}`}
+                  layout="position"
+                  transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                >
+                  <ScoreValue $color={color} $size="large">
+                    {percentage}
                   </ScoreValue>
-                </ScoreRingWrapper>
+                </motion.div>
 
-                <CategoryInfo layoutId={`info-${id}`} $expanded>
-                  <CategoryName layoutId={`name-${id}`} $expanded>{name}</CategoryName>
-                  <CategoryMeta layoutId={`meta-${id}`}>
-                    <ScoreText>{earnedPoints}/{maxPoints} pts</ScoreText>
-                    {issues.length > 0 && (
-                      <IssueCount $hasIssues={true}>{issues.length} issues</IssueCount>
-                    )}
-                    {issues.length === 0 && passes.length > 0 && (
-                      <IssueCount $hasIssues={false}>All passed</IssueCount>
-                    )}
-                  </CategoryMeta>
-                </CategoryInfo>
+                <CategoryName
+                  layoutId={`title-${name}-${id}`}
+                  layout="position"
+                  transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                >
+                  {name}
+                </CategoryName>
+
+                <CategoryMeta
+                  layoutId={`meta-${name}-${id}`}
+                  layout="position"
+                  transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                >
+                  {earnedPoints}/{maxPoints} pts
+                  {issues.length > 0 && (
+                    <IssueCount $hasIssues={true}>{issues.length} issues</IssueCount>
+                  )}
+                  {issues.length === 0 && passes.length > 0 && (
+                    <IssueCount $hasIssues={false}>All passed</IssueCount>
+                  )}
+                </CategoryMeta>
               </ExpandedHeader>
 
               <ContentArea
+                layout
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ delay: 0.1 }}
               >
-                <ContentInner>
-                  {issues.length > 0 && (
-                    <Section>
-                      <SectionHeader $type="issues">
-                        <XIcon /> Issues to fix
-                      </SectionHeader>
-                      <List>
-                        {issues.map((issue, idx) => (
-                          <IssueItem
-                            key={idx}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 + idx * 0.05 }}
-                          >
-                            <ItemIcon $type="issue">
-                              {issue.severity && <SeverityDot $severity={issue.severity} />}
-                              {!issue.severity && <XIcon />}
-                            </ItemIcon>
-                            <ItemContent>
-                              <ItemText>{issue.issue}</ItemText>
-                              {issue.recommendation && (
-                                <ItemSuggestion>{issue.recommendation}</ItemSuggestion>
-                              )}
-                            </ItemContent>
-                          </IssueItem>
-                        ))}
-                      </List>
-                    </Section>
-                  )}
+                {issues.length > 0 && (
+                  <Section>
+                    <SectionHeader $type="issues">
+                      <XIcon /> Issues to fix
+                    </SectionHeader>
+                    <List>
+                      {issues.map((issue, idx) => (
+                        <IssueItem key={idx}>
+                          <ItemIcon $type="issue">
+                            {issue.severity && <SeverityDot $severity={issue.severity} />}
+                            {!issue.severity && <XIcon />}
+                          </ItemIcon>
+                          <ItemContent>
+                            <ItemText>{issue.issue}</ItemText>
+                            {issue.recommendation && (
+                              <ItemSuggestion>{issue.recommendation}</ItemSuggestion>
+                            )}
+                          </ItemContent>
+                        </IssueItem>
+                      ))}
+                    </List>
+                  </Section>
+                )}
 
-                  {passes.length > 0 && (
-                    <Section>
-                      <SectionHeader $type="passes">
-                        <CheckIcon /> Passed checks
-                      </SectionHeader>
-                      <List>
-                        {passes.map((pass, idx) => (
-                          <PassItem
-                            key={idx}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.15 + idx * 0.05 }}
-                          >
-                            <ItemIcon $type="pass">
-                              <CheckIcon />
-                            </ItemIcon>
-                            <ItemText>{pass}</ItemText>
-                          </PassItem>
-                        ))}
-                      </List>
-                    </Section>
-                  )}
+                {passes.length > 0 && (
+                  <Section>
+                    <SectionHeader $type="passes">
+                      <CheckIcon /> Passed checks
+                    </SectionHeader>
+                    <List>
+                      {passes.map((pass, idx) => (
+                        <PassItem key={idx}>
+                          <ItemIcon $type="pass">
+                            <CheckIcon />
+                          </ItemIcon>
+                          <ItemText>{pass}</ItemText>
+                        </PassItem>
+                      ))}
+                    </List>
+                  </Section>
+                )}
 
-                  {issues.length === 0 && passes.length === 0 && (
-                    <EmptyState>No details available</EmptyState>
-                  )}
-                </ContentInner>
+                {issues.length === 0 && passes.length === 0 && (
+                  <EmptyState>No details available</EmptyState>
+                )}
               </ContentArea>
             </ExpandedCard>
-          </ExpandedCardContainer>
+          </ExpandedContainer>
         )}
       </AnimatePresence>
-    </CardWrapper>
+
+      {/* Collapsed Card - Always rendered */}
+      <CollapsedCard
+        layoutId={`card-${name}-${id}`}
+        onClick={() => {
+          setIsHovered(false);
+          setIsExpanded(true);
+        }}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
+        animate={{
+          y: isHovered ? -4 : 0,
+          boxShadow: isHovered
+            ? (isDarkMode
+              ? "0 20px 40px rgba(0, 0, 0, 0.12), 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset"
+              : "0 20px 40px rgba(0, 0, 0, 0.12)")
+            : (isDarkMode
+              ? "0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset"
+              : "0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05), 0 12px 24px rgba(0, 0, 0, 0.05)")
+        }}
+        transition={{
+          type: "tween",
+          duration: 0.5,
+          ease: [0.4, 0, 0.2, 1],
+          y: { type: "tween", duration: 0.3 },
+          boxShadow: { type: "tween", duration: 0.3 }
+        }}
+      >
+        <CollapsedOverlay
+          animate={{
+            backgroundColor: isHovered
+              ? (isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)")
+              : "rgba(0, 0, 0, 0)"
+          }}
+          transition={{ duration: 0.3 }}
+        />
+
+        <motion.div
+          layoutId={`score-${name}-${id}`}
+          layout="position"
+          style={{ zIndex: 2 }}
+          transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+        >
+          <ScoreValue $color={color} $size="small">
+            {percentage}
+          </ScoreValue>
+        </motion.div>
+
+        <div style={{ marginTop: '8px', zIndex: 2, position: 'relative' }}>
+          <CategoryName
+            layoutId={`title-${name}-${id}`}
+            layout="position"
+            transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+          >
+            {name}
+          </CategoryName>
+          <CategoryMeta
+            layoutId={`meta-${name}-${id}`}
+            layout="position"
+            transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+          >
+            {earnedPoints}/{maxPoints} pts
+            {issues.length > 0 && (
+              <IssueCount $hasIssues={true}>{issues.length} issues</IssueCount>
+            )}
+            {issues.length === 0 && passes.length > 0 && (
+              <IssueCount $hasIssues={false}>All passed</IssueCount>
+            )}
+          </CategoryMeta>
+        </div>
+
+        <CollapsedCTA
+          $isMobile={isMobile}
+          animate={{
+            y: isMobile ? 0 : (isHovered ? 0 : "100%"),
+            opacity: isMobile ? 1 : (isHovered ? 1 : 0)
+          }}
+          transition={{ type: "tween", duration: 0.3 }}
+        >
+          <CTALink>
+            View Details
+            <ArrowRightIcon />
+          </CTALink>
+        </CollapsedCTA>
+      </CollapsedCard>
+    </LayoutGroup>
   );
 }
 

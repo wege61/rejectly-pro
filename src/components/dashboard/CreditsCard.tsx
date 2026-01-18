@@ -5,18 +5,38 @@ import { useRouter } from 'next/navigation';
 import { useCredits } from '@/contexts/CreditsContext';
 import { ROUTES } from '@/lib/constants';
 
-const CardWrapper = styled.div<{ $variant: 'credits' | 'pro' }>`
+type CreditVariant = 'pro' | 'empty' | 'low' | 'medium' | 'high';
+
+const getBackgroundColor = (variant: CreditVariant): string => {
+  switch (variant) {
+    case 'pro':
+      return 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
+    case 'empty':
+      return 'linear-gradient(135deg, #F97316 0%, #FB923C 100%)';
+    case 'low':
+      return 'linear-gradient(135deg, #EAB308 0%, #FACC15 100%)';
+    case 'medium':
+      return 'linear-gradient(135deg, #2A57A0 0%, #3B82F6 100%)';
+    case 'high':
+      return 'linear-gradient(135deg, #35A29F 0%, #5EEAD4 100%)';
+  }
+};
+
+const getCreditVariant = (credits: number): CreditVariant => {
+  if (credits === 0) return 'empty';
+  if (credits <= 3) return 'low';
+  if (credits <= 5) return 'medium';
+  return 'high';
+};
+
+const CardWrapper = styled.div<{ $variant: CreditVariant }>`
   display: flex;
   flex-direction: column;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   min-width: 180px;
-  background: ${({ $variant }) =>
-    $variant === 'pro'
-      ? 'linear-gradient(135deg, #059669 0%, #10b981 100%)'
-      : 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)'
-  };
+  background: ${({ $variant }) => getBackgroundColor($variant)};
 
   @media (max-width: 640px) {
     min-width: 160px;
@@ -173,9 +193,10 @@ export function CreditsCard() {
   }
 
   const isPro = userCredits.hasSubscription;
+  const variant: CreditVariant = isPro ? 'pro' : getCreditVariant(userCredits.credits);
 
   return (
-    <CardWrapper $variant={isPro ? 'pro' : 'credits'}>
+    <CardWrapper $variant={variant}>
       <CardContent>
         <IconWrapper>
           {isPro ? <CheckIcon /> : <CoinIcon />}

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { PRICING } from '@/lib/constants';
 import { useCredits } from '@/contexts/CreditsContext';
+import { CreditsCard } from '@/components/dashboard/CreditsCard';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -21,17 +22,31 @@ const Container = styled.div`
 `;
 
 const Header = styled.div`
+  position: relative;
   margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+  }
 `;
 
 const Title = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
+
+  @media (max-width: 768px) {
+    order: 1;
+  }
 `;
 
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
+
+  @media (max-width: 768px) {
+    order: 3;
+  }
 `;
 
 const Section = styled.section`
@@ -55,52 +70,19 @@ const PricingGrid = styled.div`
   }
 `;
 
-const CreditsCard = styled(Card)`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  background: linear-gradient(135deg, rgba(155, 135, 196, 0.1) 0%, rgba(180, 167, 214, 0.1) 100%);
-  border: 1px solid rgba(155, 135, 196, 0.3);
-`;
+const CreditsCardWrapper = styled.div`
+  position: absolute;
+  width: 400px;
+  top: 0;
+  right: 0;
 
-const CreditsContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const CreditsInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.lg};
-`;
-
-const CreditsNumber = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const CreditsValue = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-const CreditsLabel = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const SubscriptionBadge = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
-  background: var(--success);
-  color: white;
-  border-radius: ${({ theme }) => theme.radius.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  @media (max-width: 768px) {
+    position: relative;
+    top: 0;
+    order: 2;
+    align-self: flex-start;
+    margin-top: 12px;
+  }
 `;
 
 const PriceSubtext = styled.p`
@@ -217,7 +199,7 @@ const CheckIcon = () => (
 );
 
 export default function BillingPage() {
-  const { credits: userCredits, refreshCredits, isLoading: isCreditsLoading } = useCredits();
+  const { refreshCredits } = useCredits();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
   // TEST ONLY - Simulates purchase
@@ -260,30 +242,10 @@ export default function BillingPage() {
       <Header>
         <Title>Billing</Title>
         <Subtitle>Buy credits or subscribe for unlimited access</Subtitle>
+        <CreditsCardWrapper>
+          <CreditsCard />
+        </CreditsCardWrapper>
       </Header>
-
-      {/* Current Credits */}
-      <CreditsCard variant="elevated">
-        <CreditsContent>
-          <CreditsInfo>
-            {isCreditsLoading ? (
-              <CreditsNumber>
-                <CreditsValue style={{ opacity: 0.5 }}>...</CreditsValue>
-                <CreditsLabel>Loading credits...</CreditsLabel>
-              </CreditsNumber>
-            ) : userCredits.hasSubscription ? (
-              <SubscriptionBadge>
-                ✓ Pro Subscription Active
-              </SubscriptionBadge>
-            ) : (
-              <CreditsNumber>
-                <CreditsValue>{userCredits.credits}</CreditsValue>
-                <CreditsLabel>Credits remaining</CreditsLabel>
-              </CreditsNumber>
-            )}
-          </CreditsInfo>
-        </CreditsContent>
-      </CreditsCard>
 
       <Section>
         <SectionTitle>Buy Credits</SectionTitle>

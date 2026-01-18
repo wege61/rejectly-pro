@@ -13,6 +13,7 @@ import { signOut } from "@/lib/auth";
 import { deleteUserAccount, updatePassword, updateProfile } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
+import { CreditsCard } from "@/components/dashboard";
 
 const Container = styled.div`
   max-width: 800px;
@@ -72,53 +73,11 @@ const DangerDescription = styled.p`
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const CreditsCard = styled(Card)`
-  background: linear-gradient(135deg, rgba(155, 135, 196, 0.1) 0%, rgba(180, 167, 214, 0.1) 100%);
-  border: 1px solid rgba(155, 135, 196, 0.3);
-`;
-
-const CreditsContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const CreditsInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
-`;
-
-const CreditsValue = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-const CreditsLabel = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const SubscriptionBadge = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
-  background: var(--success);
-  color: white;
-  border-radius: ${({ theme }) => theme.radius.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-`;
 
 export default function SettingsPage() {
   const { user } = useAuth();
   const toast = useToast();
   const router = useRouter();
-  const { credits: userCredits } = useCredits();
   const [name, setName] = useState(user?.user_metadata?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [isLoading, setIsLoading] = useState(false);
@@ -200,30 +159,7 @@ export default function SettingsPage() {
       {/* Subscription & Credits */}
       <Section>
         <SectionTitle>Subscription & Credits</SectionTitle>
-        <CreditsCard variant="elevated">
-          <Card.Content>
-            <CreditsContent>
-              <CreditsInfo>
-                {userCredits.hasSubscription ? (
-                  <SubscriptionBadge>
-                    ✓ Pro Subscription Active
-                  </SubscriptionBadge>
-                ) : (
-                  <>
-                    <CreditsValue>{userCredits.credits}</CreditsValue>
-                    <CreditsLabel>Credits remaining</CreditsLabel>
-                  </>
-                )}
-              </CreditsInfo>
-              <Button
-                variant="secondary"
-                onClick={() => router.push(ROUTES.APP.BILLING)}
-              >
-                {userCredits.hasSubscription ? "Manage Subscription" : "Buy Credits"}
-              </Button>
-            </CreditsContent>
-          </Card.Content>
-        </CreditsCard>
+        <CreditsCard />
       </Section>
 
       <Section>

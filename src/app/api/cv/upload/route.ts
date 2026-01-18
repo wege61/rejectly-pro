@@ -106,11 +106,17 @@ export async function POST(request: NextRequest) {
       confidence: cvValidation.confidence,
     });
 
-    // Upload file using Service Role (bypasses RLS)
-    const timestamp = Date.now();
-    const sanitizedFileName = sanitizeFileName(file.name); // ← BURASI DEĞİŞTİ
-    const fileName = `${user.id}/${timestamp}-${sanitizedFileName}`; // ← BURASI DEĞİŞTİ
+    // Check if user already has a CV with the same filename
+    const sanitizedTitle = cleanText(file.name);
+    const { data: existingCV } = await supabase
+      .from("documents")
+      .select("id, title, file_url, created_at")
+      .eq("user_id", user.id)
+      .eq("type", "cv")
+      .eq("title", sanitizedTitle)
+      .single();
 
+    // Setup Supabase Admin for storage operations
     const { createClient: createSupabaseClient } = await import(
       "@supabase/supabase-js"
     );
@@ -125,6 +131,11 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    // Upload file using Service Role (bypasses RLS)
+    const timestamp = Date.now();
+    const sanitizedFileName = sanitizeFileName(file.name);
+    const fileName = `${user.id}/${timestamp}-${sanitizedFileName}`;
+
     const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
       .from("cv-files")
       .upload(fileName, file, {
@@ -138,32 +149,74 @@ export async function POST(request: NextRequest) {
 
     const filePath = uploadData.path;
 
-    // Save document metadata to database
-    // Sanitize title to prevent Unicode escape sequence errors
-    const sanitizedTitle = cleanText(file.name);
+    let document;
 
-    const { data: document, error: dbError } = await supabase
-      .from("documents")
-      .insert({
-        user_id: user.id,
-        type: "cv",
-        title: sanitizedTitle,
-        text: cleanedText,
-        file_url: filePath,
-        lang: "tr",
-      })
-      .select()
-      .single();
+    if (existingCV) {
+      // Update existing CV - overwrite with new content
+      console.log("ℹ️ Updating existing CV with same name:", {
+        userId: user.id,
+        fileName: file.name,
+        existingDocId: existingCV.id,
+      });
 
-    if (dbError) {
-      throw new Error(`Database error: ${dbError.message}`);
+      // Delete old file from storage if exists
+      if (existingCV.file_url) {
+        await supabaseAdmin.storage
+          .from("cv-files")
+          .remove([existingCV.file_url]);
+      }
+
+      // Update document in database
+      const { data: updatedDoc, error: updateError } = await supabase
+        .from("documents")
+        .update({
+          text: cleanedText,
+          file_url: filePath,
+          updated_at: new Date().toISOString(),
+          ats_score: null,
+          ats_breakdown: null,
+          ats_checked_at: null,
+        })
+        .eq("id", existingCV.id)
+        .select()
+        .single();
+
+      if (updateError) {
+        throw new Error(`Database error: ${updateError.message}`);
+      }
+
+      document = updatedDoc;
+      console.log("✅ CV updated:", {
+        documentId: document.id,
+        userId: user.id,
+        type: "cv"
+      });
+    } else {
+      // Create new CV
+      const { data: newDoc, error: dbError } = await supabase
+        .from("documents")
+        .insert({
+          user_id: user.id,
+          type: "cv",
+          title: sanitizedTitle,
+          text: cleanedText,
+          file_url: filePath,
+          lang: "tr",
+        })
+        .select()
+        .single();
+
+      if (dbError) {
+        throw new Error(`Database error: ${dbError.message}`);
+      }
+
+      document = newDoc;
+      console.log("✅ CV uploaded:", {
+        documentId: document.id,
+        userId: user.id,
+        type: "cv"
+      });
     }
-
-    console.log("✅ CV uploaded:", {
-      documentId: document.id,
-      userId: user.id,
-      type: "cv"
-    });
 
     return NextResponse.json({
       success: true,

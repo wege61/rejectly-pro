@@ -13,6 +13,9 @@ import { ATSFullResult } from "@/components/ats";
 import { useCreditConfirm } from "@/hooks/useCreditConfirm";
 import { LoadingModal } from "@/components/ui/LoadingModal";
 import { FileUpload } from "@/components/ui/FileUpload";
+import { Modal } from "@/components/ui/Modal";
+import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 
 type Step = "upload" | "analyzing" | "result" | "optimizing" | "optimized";
 
@@ -130,6 +133,23 @@ interface OptimizationResult {
       abbreviations: { ok: boolean; note: string };
     };
   };
+}
+
+interface OptimizedCVHistory {
+  id: string;
+  title: string;
+  contact_name: string;
+  file_url: string;
+  before_score: number;
+  after_score: number;
+  created_at: string;
+  ats_result?: ATSResult;
+  changes?: Array<{
+    category: string;
+    issue: string;
+    fix: string;
+    impact?: string;
+  }>;
 }
 
 const pulse = keyframes`
@@ -1268,6 +1288,150 @@ const SecondaryButton = styled.button`
   }
 `;
 
+// PDF Preview Modal Styled Components
+const PDFPreviewContainer = styled.div`
+  width: 100%;
+  height: 70vh;
+  min-height: 500px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+const PDFViewer = styled.iframe`
+  width: 100%;
+  height: 100%;
+  border: none;
+`;
+
+const DownloadIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+  </svg>
+);
+
+// History Section Styled Components
+const HistorySection = styled.div`
+  margin-top: 32px;
+`;
+
+const HistorySectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+`;
+
+const HistoryTitle = styled.h3`
+  font-size: 16px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const HistoryGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+`;
+
+const HistoryCard = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+`;
+
+const HistoryCardHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+`;
+
+const HistoryCardName = styled.div`
+  font-size: 15px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const HistoryCardDate = styled.div`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const HistoryScoreRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const HistoryScoreBadge = styled.span<{ $type: "before" | "after" }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  background: ${({ $type }) => $type === "before" ? "rgba(239, 68, 68, 0.1)" : "rgba(34, 197, 94, 0.1)"};
+  color: ${({ $type }) => $type === "before" ? "#ef4444" : "#22c55e"};
+`;
+
+const HistoryScoreArrow = styled.span`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 14px;
+`;
+
+const HistoryImprovement = styled.span`
+  font-size: 12px;
+  color: #22c55e;
+  font-weight: 500;
+`;
+
+const HistoryEmptyState = styled.div`
+  text-align: center;
+  padding: 32px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 14px;
+`;
+
+const BackButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.background};
+    border-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.primary};
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
 export default function DashboardATSOptimizerPage() {
   const [step, setStep] = useState<Step>("upload");
   const [_file, setFile] = useState<File | null>(null);
@@ -1281,8 +1445,21 @@ export default function DashboardATSOptimizerPage() {
   const [loadingCVs, setLoadingCVs] = useState(false);
   const [showExistingCVs, setShowExistingCVs] = useState(false);
 
+  // CV Preview Modal states
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+
+  // History states
+  const [optimizedHistory, setOptimizedHistory] = useState<OptimizedCVHistory[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+
   // Credits system
   const creditConfirm = useCreditConfirm();
+
+  // Fetch optimized CV history on mount
+  useEffect(() => {
+    fetchOptimizedHistory();
+  }, []);
 
   // Fetch existing CVs when showing the list
   useEffect(() => {
@@ -1290,6 +1467,40 @@ export default function DashboardATSOptimizerPage() {
       fetchExistingCVs();
     }
   }, [showExistingCVs]);
+
+  const fetchOptimizedHistory = async () => {
+    try {
+      const response = await fetch("/api/ats/history?limit=6");
+      if (response.ok) {
+        const data = await response.json();
+        setOptimizedHistory(data.optimizedCVs || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch history:", err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const handleHistoryCardClick = (cv: OptimizedCVHistory) => {
+    // If we have the full ATS result, show the optimized report
+    if (cv.ats_result) {
+      setOptimizationResult({
+        success: true,
+        pdfUrl: cv.file_url,
+        beforeScore: cv.before_score,
+        afterScore: cv.after_score,
+        improvement: cv.after_score - cv.before_score,
+        changes: cv.changes || [],
+        optimizedCVId: cv.id,
+        optimizedAtsResult: cv.ats_result,
+      });
+      setStep("optimized");
+    } else {
+      // Fallback: just open PDF preview
+      handlePreviewCV();
+    }
+  };
 
   const fetchExistingCVs = async () => {
     setLoadingCVs(true);
@@ -1437,6 +1648,9 @@ export default function DashboardATSOptimizerPage() {
       setOptimizationResult(data.result);
       setStep("optimized");
 
+      // Refresh history to show the new optimized CV
+      fetchOptimizedHistory();
+
       // Credit feedback is now handled automatically by useCreditConfirm
 
     } catch (err) {
@@ -1457,6 +1671,50 @@ export default function DashboardATSOptimizerPage() {
       creditsRequired: 1,
       onConfirm: performOptimization,
     });
+  };
+
+  // Preview modal handlers
+  const handlePreviewCV = async () => {
+    if (!optimizationResult?.pdfUrl) return;
+
+    try {
+      const response = await fetch(optimizationResult.pdfUrl);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      setPdfPreviewUrl(blobUrl);
+      setIsPreviewOpen(true);
+    } catch (err) {
+      console.error("Failed to load PDF preview:", err);
+    }
+  };
+
+  const handleClosePreview = () => {
+    setIsPreviewOpen(false);
+    if (pdfPreviewUrl) {
+      URL.revokeObjectURL(pdfPreviewUrl);
+      setPdfPreviewUrl(null);
+    }
+  };
+
+  const handleDownloadCV = async () => {
+    if (!optimizationResult?.pdfUrl) return;
+
+    try {
+      const response = await fetch(optimizationResult.pdfUrl);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = optimizationResult.pdfUrl.split("/").pop() || "Optimized_CV.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+      handleClosePreview();
+    } catch (err) {
+      console.error("Failed to download PDF:", err);
+    }
   };
 
   const handleReset = () => {
@@ -1560,6 +1818,42 @@ export default function DashboardATSOptimizerPage() {
             )}
           </ExistingCVSection>
 
+          {/* Recent Optimized CVs History */}
+          {!loadingHistory && optimizedHistory.length > 0 && (
+            <HistorySection>
+              <HistorySectionHeader>
+                <HistoryTitle>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12,6 12,12 16,14" />
+                  </svg>
+                  Recent Optimized CVs
+                </HistoryTitle>
+              </HistorySectionHeader>
+              <HistoryGrid>
+                {optimizedHistory.map((cv) => (
+                  <HistoryCard key={cv.id} onClick={() => handleHistoryCardClick(cv)}>
+                    <HistoryCardHeader>
+                      <HistoryCardName>{cv.contact_name || "Optimized CV"}</HistoryCardName>
+                      <HistoryCardDate>
+                        {new Date(cv.created_at).toLocaleDateString("en-US", {
+                          day: "numeric",
+                          month: "short",
+                        })}
+                      </HistoryCardDate>
+                    </HistoryCardHeader>
+                    <HistoryScoreRow>
+                      <HistoryScoreBadge $type="before">{cv.before_score}</HistoryScoreBadge>
+                      <HistoryScoreArrow>→</HistoryScoreArrow>
+                      <HistoryScoreBadge $type="after">{cv.after_score}</HistoryScoreBadge>
+                      <HistoryImprovement>+{cv.after_score - cv.before_score} pts</HistoryImprovement>
+                    </HistoryScoreRow>
+                  </HistoryCard>
+                ))}
+              </HistoryGrid>
+            </HistorySection>
+          )}
+
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </ContentCard>
       )}
@@ -1589,6 +1883,12 @@ export default function DashboardATSOptimizerPage() {
 
         return (
         <ResultsSection>
+          <BackButton onClick={handleReset}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back to Upload
+          </BackButton>
           <ATSFullResult
             score={atsResult.overallScore}
             summary={atsResult.summary}
@@ -1687,6 +1987,12 @@ export default function DashboardATSOptimizerPage() {
 
         return (
         <ResultsSection>
+          <BackButton onClick={handleReset}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back to Upload
+          </BackButton>
           <ATSFullResult
             score={optimizationResult.afterScore}
             summary={optResult?.summary || "Your CV has been optimized for ATS compatibility."}
@@ -1719,6 +2025,7 @@ export default function DashboardATSOptimizerPage() {
             beforeScore={optimizationResult.beforeScore}
             changes={optimizationResult.changes}
             downloadUrl={optimizationResult.pdfUrl}
+            onPreview={handlePreviewCV}
           />
 
           {/* Additional action button */}
@@ -1768,6 +2075,45 @@ export default function DashboardATSOptimizerPage() {
           { label: "Generate", active: false },
         ]}
       />
+
+      {/* CV Preview Modal */}
+      <Modal
+        isOpen={isPreviewOpen}
+        onClose={handleClosePreview}
+        title="CV Preview"
+        description="Review your optimized resume before downloading"
+        size="lg"
+      >
+        <Modal.Body>
+          <PDFPreviewContainer>
+            {pdfPreviewUrl ? (
+              <PDFViewer
+                src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                title="CV Preview"
+              />
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                }}
+              >
+                <Spinner size="lg" />
+              </div>
+            )}
+          </PDFPreviewContainer>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="ghost" onClick={handleClosePreview}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleDownloadCV}>
+            <DownloadIcon /> Download PDF
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </PageContainer>
   );
 }

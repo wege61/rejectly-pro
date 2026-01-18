@@ -69,6 +69,7 @@ interface ATSFullResultProps {
   }>;
   onDownload?: () => void;
   onOptimize?: () => void;
+  onPreview?: () => void;
   downloadUrl?: string;
 }
 
@@ -235,6 +236,7 @@ export function ATSFullResult({
   changes = [],
   onDownload,
   onOptimize,
+  onPreview,
   downloadUrl,
 }: ATSFullResultProps) {
 
@@ -246,9 +248,13 @@ export function ATSFullResult({
           <SuccessText>
             Score improved: {beforeScore} → {score} (+{score - beforeScore} pts)
           </SuccessText>
-          {downloadUrl && (
-            <Button as="a" href={downloadUrl} download $primary style={{ padding: "10px 20px" }}>
-              Download resume
+          {(downloadUrl || onPreview) && (
+            <Button $primary style={{ padding: "10px 20px" }} onClick={onPreview}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Preview & Download
             </Button>
           )}
         </SuccessBanner>

@@ -112,7 +112,22 @@ export async function POST(request: NextRequest) {
     const pdfBuffer = Buffer.from(pdfDoc.output("arraybuffer"));
 
     // 6. Upload PDF to storage using admin client (bypasses RLS)
-    const fileName = `ats-optimized-${Date.now()}.pdf`;
+    // Create ATS-friendly filename: FirstName_LastName_CV.pdf
+    const contactName = optimizedCV.contact?.name || "Resume";
+    const sanitizedName = contactName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[ğĞ]/g, 'g')
+      .replace(/[üÜ]/g, 'u')
+      .replace(/[şŞ]/g, 's')
+      .replace(/[ıİ]/g, 'I')
+      .replace(/[öÖ]/g, 'o')
+      .replace(/[çÇ]/g, 'c')
+      .trim()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-zA-Z0-9_]/g, '');
+
+    const fileName = `${sanitizedName}_CV.pdf`;
     const storagePath = `${user.id}/optimized/${fileName}`;
 
     const { createClient: createSupabaseClient } = await import(
@@ -201,10 +216,15 @@ export async function POST(request: NextRequest) {
       .from("optimized_cvs")
       .insert({
         user_id: user.id,
+        title: `${contactName} - ATS Optimized`,
         text: JSON.stringify(optimizedCV),
         file_url: pdfUrl,
-        job_title: "ATS Optimized",
-        fake_it_mode: false,
+        contact_name: contactName,
+        before_score: beforeScore,
+        after_score: afterScore,
+        source: "ats-optimizer",
+        ats_result: optimizedAtsResult,
+        changes: changes,
       })
       .select("id")
       .single();
@@ -212,6 +232,8 @@ export async function POST(request: NextRequest) {
     if (saveError) {
       console.error("Failed to save optimized CV:", saveError);
       // Don't fail - PDF is already generated
+    } else {
+      console.log("✅ Optimized CV saved to database:", savedCV?.id);
     }
 
     // 9. Return result with ATS check data

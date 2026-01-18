@@ -1079,22 +1079,50 @@ const Container = styled.div`
   
   @media (max-width: 450px) {
     padding: ${({ theme }) => theme.spacing["lg"]};
-    padding-top: 52px;
+    padding-top: 24px;
   }
 `;
 
 const Header = styled.div`
+  position: relative;
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+  }
+`;
+
+const CreditsCardWrapper = styled.div`
+  position: absolute;
+  top: -60px;
+  right: 0;
+
+  @media (max-width: 768px) {
+    position: relative;
+    top: 0;
+    order: 2;
+    align-self: flex-start;
+    margin-top: 12px;
+  }
 `;
 
 const Title = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
+
+  @media (max-width: 768px) {
+    order: 1;
+  }
 `;
 
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
+
+  @media (max-width: 768px) {
+    order: 3;
+  }
 `;
 
 const BentoGridContainer = styled.div`
@@ -1928,15 +1956,15 @@ export default function DashboardPage() {
 
       <Container>
         <Header>
+          <CreditsCardWrapper>
+            <CreditsCard />
+          </CreditsCardWrapper>
           <Title>Dashboard</Title>
           <Subtitle>
             Welcome back, {user?.user_metadata?.name || "User"}! Here&apos;s
             your overview.
           </Subtitle>
         </Header>
-
-        {/* Credits Card */}
-        <CreditsCard />
 
         {/* Stats Bento Grid */}
         <BentoGridContainer>

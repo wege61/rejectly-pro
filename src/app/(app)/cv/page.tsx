@@ -183,7 +183,7 @@ const PageContainer = styled.div`
   
   @media (max-width: 450px) {
     padding: ${({ theme }) => theme.spacing["lg"]};
-    padding-top: 52px;
+    padding-top: 32px;
   }
 `;
 

@@ -1,206 +1,200 @@
 'use client';
 
-import styled, { keyframes, css } from 'styled-components';
+import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
 import { useCredits } from '@/contexts/CreditsContext';
 import { ROUTES } from '@/lib/constants';
 
-const pulseGlow = keyframes`
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
-  }
-  50% {
-    transform: scale(1.02);
-    box-shadow: 0 0 20px 10px rgba(99, 102, 241, 0.2);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
-  }
-`;
-
-const countChange = keyframes`
-  0% {
-    transform: scale(1.3);
-    color: #ef4444;
-  }
-  50% {
-    transform: scale(1.1);
-    color: #f59e0b;
-  }
-  100% {
-    transform: scale(1);
-    color: var(--accent);
-  }
-`;
-
-const coinDrop = keyframes`
-  0% {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-  50% {
-    transform: translateY(5px);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-`;
-
-const StyledCreditsCard = styled(Card)<{ $isAnimating?: boolean }>`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
-  border: 1px solid var(--primary-200);
-  transition: all 0.3s ease;
-
-  ${({ $isAnimating }) => $isAnimating && css`
-    animation: ${pulseGlow} 0.8s ease-out;
-  `}
-`;
-
-const CreditsContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const CreditsInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.lg};
-`;
-
-const CreditsNumber = styled.div`
+const CardWrapper = styled.div<{ $variant: 'credits' | 'pro' }>`
   display: flex;
   flex-direction: column;
-  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 180px;
+  background: ${({ $variant }) =>
+    $variant === 'pro'
+      ? 'linear-gradient(135deg, #059669 0%, #10b981 100%)'
+      : 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)'
+  };
+
+  @media (max-width: 640px) {
+    min-width: 160px;
+  }
 `;
 
-const CoinIcon = styled.span<{ $isAnimating?: boolean }>`
-  display: inline-block;
-  margin-right: 8px;
-  font-size: 24px;
-
-  ${({ $isAnimating }) => $isAnimating && css`
-    animation: ${coinDrop} 0.5s ease-out;
-  `}
-`;
-
-const CreditsValue = styled.span<{ $isAnimating?: boolean }>`
-  font-size: ${({ theme }) => theme.typography.fontSize['3xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--accent);
+const CardContent = styled.div`
+  padding: 12px 16px;
   display: flex;
-  align-items: center;
-  transition: color 0.3s ease;
+  flex-direction: column;
+  gap: 2px;
 
-  ${({ $isAnimating }) => $isAnimating && css`
-    animation: ${countChange} 0.8s ease-out;
-  `}
+  @media (max-width: 640px) {
+    padding: 10px 14px;
+  }
 `;
 
-const CreditsLabel = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+const IconWrapper = styled.div`
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 2px;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  @media (max-width: 640px) {
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
 `;
 
-const SubscriptionBadge = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
-  background: var(--success);
+const ValueText = styled.div`
+  font-size: 26px;
+  font-weight: 700;
   color: white;
-  border-radius: ${({ theme }) => theme.radius.full};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  line-height: 1;
+
+  @media (max-width: 640px) {
+    font-size: 22px;
+  }
 `;
 
-const LowCreditsWarning = styled.div`
+const TitleText = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+
+  @media (max-width: 640px) {
+    font-size: 11px;
+  }
+`;
+
+const BottomBar = styled.button`
+  width: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  color: #f59e0b;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  justify-content: space-between;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.95);
+  }
+
+  &:hover svg {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 640px) {
+    padding: 8px 14px;
+  }
 `;
 
-const CreditsCardSkeleton = styled.div`
-  height: 80px;
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
-  border: 1px solid var(--primary-200);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+const BottomBarText = styled.span`
+  font-size: 13px;
+  font-weight: 500;
+  color: white;
+
+  @media (max-width: 640px) {
+    font-size: 11px;
+  }
+`;
+
+const ArrowIcon = styled.div`
+  color: white;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  @media (max-width: 640px) {
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+`;
+
+const SkeletonWrapper = styled.div`
+  min-width: 180px;
+  height: 100px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
   animation: pulse 1.5s ease-in-out infinite;
 
   @keyframes pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+    50% { opacity: 0.5; }
+  }
+
+  @media (max-width: 640px) {
+    min-width: 160px;
+    height: 90px;
   }
 `;
+
+const CoinIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
+    <path d="M12 18V6" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <polyline points="22 4 12 14.01 9 11.01" />
+  </svg>
+);
+
+const ArrowRightIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 12h14M12 5l7 7-7 7" />
+  </svg>
+);
 
 export function CreditsCard() {
   const router = useRouter();
   const { credits: userCredits, isLoading } = useCredits();
-  const [isAnimating, setIsAnimating] = useState(false);
-  const prevCreditsRef = useRef(userCredits.credits);
-
-  // Trigger animation when credits change
-  useEffect(() => {
-    if (prevCreditsRef.current !== userCredits.credits && !userCredits.hasSubscription) {
-      setIsAnimating(true);
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-      }, 800);
-      prevCreditsRef.current = userCredits.credits;
-      return () => clearTimeout(timer);
-    }
-  }, [userCredits.credits, userCredits.hasSubscription]);
 
   if (isLoading) {
-    return <CreditsCardSkeleton />;
+    return <SkeletonWrapper />;
   }
 
+  const isPro = userCredits.hasSubscription;
+
   return (
-    <StyledCreditsCard variant="elevated" $isAnimating={isAnimating}>
-      <CreditsContent>
-        <CreditsInfo>
-          {userCredits.hasSubscription ? (
-            <SubscriptionBadge>
-              ✓ Pro Subscription Active
-            </SubscriptionBadge>
-          ) : (
-            <CreditsNumber>
-              <CreditsValue $isAnimating={isAnimating}>
-                <CoinIcon $isAnimating={isAnimating}>🪙</CoinIcon>
-                {userCredits.credits}
-              </CreditsValue>
-              <CreditsLabel>Credits remaining</CreditsLabel>
-            </CreditsNumber>
-          )}
-          {!userCredits.hasSubscription && userCredits.credits <= 2 && userCredits.credits > 0 && (
-            <LowCreditsWarning>
-              ⚠ Running low on credits
-            </LowCreditsWarning>
-          )}
-        </CreditsInfo>
-        {!userCredits.hasSubscription && (
-          <Button
-            size="sm"
-            onClick={() => router.push(ROUTES.APP.BILLING)}
-          >
-            {userCredits.credits === 0 ? 'Buy Credits' : 'Get More Credits'}
-          </Button>
-        )}
-      </CreditsContent>
-    </StyledCreditsCard>
+    <CardWrapper $variant={isPro ? 'pro' : 'credits'}>
+      <CardContent>
+        <IconWrapper>
+          {isPro ? <CheckIcon /> : <CoinIcon />}
+        </IconWrapper>
+        <ValueText>
+          {isPro ? 'Pro' : userCredits.credits}
+        </ValueText>
+        <TitleText>
+          {isPro ? 'Unlimited Access' : 'Credits Left'}
+        </TitleText>
+      </CardContent>
+      <BottomBar onClick={() => router.push(ROUTES.APP.BILLING)}>
+        <BottomBarText>
+          {isPro ? 'Manage subscription' : 'Get more credits'}
+        </BottomBarText>
+        <ArrowIcon>
+          <ArrowRightIcon />
+        </ArrowIcon>
+      </BottomBar>
+    </CardWrapper>
   );
 }

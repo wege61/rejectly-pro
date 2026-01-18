@@ -31,10 +31,9 @@ const Banner = styled.div<{ $variant: 'warning' | 'danger' }>`
   animation: ${css`${slideDown}`} 0.3s ease-out;
 
   @media (max-width: 640px) {
-    flex-direction: column;
-    text-align: center;
-    gap: ${({ theme }) => theme.spacing.sm};
-    padding: ${({ theme }) => theme.spacing.md};
+    gap: 8px;
+    padding: 8px 12px;
+    justify-content: space-between;
   }
 `;
 
@@ -42,16 +41,28 @@ const BannerContent = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
+
+  @media (max-width: 640px) {
+    gap: 6px;
+  }
 `;
 
 const BannerIcon = styled.span`
   font-size: 18px;
+
+  @media (max-width: 640px) {
+    font-size: 14px;
+  }
 `;
 
 const BannerText = styled.span<{ $variant: 'warning' | 'danger' }>`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   color: ${({ $variant }) => ($variant === 'danger' ? '#991b1b' : '#92400e')};
+
+  @media (max-width: 640px) {
+    font-size: 12px;
+  }
 `;
 
 const BannerButton = styled.button<{ $variant: 'warning' | 'danger' }>`
@@ -73,6 +84,12 @@ const BannerButton = styled.button<{ $variant: 'warning' | 'danger' }>`
 
   &:active {
     transform: translateY(0);
+  }
+
+  @media (max-width: 640px) {
+    padding: 6px 10px;
+    font-size: 11px;
+    border-radius: 6px;
   }
 `;
 

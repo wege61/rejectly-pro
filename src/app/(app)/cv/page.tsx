@@ -164,6 +164,10 @@ interface OptimizedCV {
   updated_at: string;
   job_title?: string;
   fake_it_mode?: boolean;
+  source?: string;
+  before_score?: number;
+  after_score?: number;
+  contact_name?: string;
 }
 
 type CVItem =
@@ -217,9 +221,9 @@ const Subtitle = styled.p`
 
 const CVGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 16px;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
 
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
@@ -231,44 +235,43 @@ const CVSection = styled.div`
 `;
 
 const CVSectionHeader = styled.div`
-  padding: ${({ theme }) => theme.spacing.md} 0;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.sm} 0;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: ${({ theme }) => theme.spacing.xs};
   color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
 `;
 
 const CVSectionIcon = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
 `;
 
 const CVCard = styled.div<{ $isOptimized?: boolean }>`
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 12px;
   background: var(--bg-alt);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 
   /* Subtle depth through shadows */
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
 
   @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   }
 
   &:hover .cv-content {
-    transform: translateY(-32px);
+    transform: translateY(-24px);
   }
 
   &:hover .cv-cta {
@@ -277,16 +280,16 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
   }
 
   &:hover .cv-overlay {
-    background: rgba(0, 0, 0, 0.03);
+    background: rgba(0, 0, 0, 0.02);
   }
 
   &:hover .cv-icon {
-    transform: scale(0.85);
+    transform: scale(0.9);
   }
 
   @media (prefers-color-scheme: dark) {
     &:hover .cv-overlay {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.03);
     }
   }
 
@@ -442,11 +445,11 @@ const CVCardBackgroundComponent = ({ isOptimized }: CVCardBackgroundProps) => {
 const CVCardInner = styled.div`
   position: relative;
   z-index: 1;
-  padding: 20px;
+  padding: 14px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  min-height: 220px;
+  min-height: 140px;
   justify-content: flex-end;
 `;
 
@@ -464,19 +467,19 @@ const CVCardContentInner = styled.div`
 
 const CVCardIcon = styled.div<{ $isOptimized?: boolean }>`
   transform-origin: left;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   color: ${({ $isOptimized }) => $isOptimized ? 'var(--success)' : 'var(--accent)'};
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 
   svg {
-    width: 32px;
-    height: 32px;
+    width: 22px;
+    height: 22px;
   }
 
   @media (max-width: 640px) {
     svg {
-      width: 28px;
-      height: 28px;
+      width: 20px;
+      height: 20px;
     }
   }
 `;
@@ -489,38 +492,38 @@ const CVCardOverlay = styled.div`
 `;
 
 const CVCardTitle = styled.h3`
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-color);
-  margin-top: 4px;
+  margin-top: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 
   @media (max-width: 640px) {
-    font-size: 16px;
+    font-size: 13px;
   }
 `;
 
 const CVCardMeta = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
+  gap: 4px;
+  margin-top: 4px;
 `;
 
 const CVCardDate = styled.p`
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 11px;
   line-height: 1.4;
   margin-top: 2px;
 `;
 
 const CVCardJobInfo = styled.div`
-  font-size: 13px;
+  font-size: 11px;
   color: var(--text-secondary);
-  margin-top: 6px;
-  line-height: 1.4;
+  margin-top: 4px;
+  line-height: 1.3;
 
   span {
     color: var(--text-secondary);
@@ -536,7 +539,7 @@ const CTAContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  padding: 10px 14px;
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
@@ -545,7 +548,7 @@ const CTAContainer = styled.div`
     transform: translateY(0);
     opacity: 1;
     position: relative;
-    padding: 12px 0 0 0;
+    padding: 8px 0 0 0;
     background: none;
   }
 `;
@@ -1152,6 +1155,7 @@ export default function CVPage() {
             reportId: cv.report_id,
             job_title: jobTitle || undefined,
             fake_it_mode: cv.reports?.fake_it_mode || false,
+            source: cv.source || 'reports',
           };
         }),
       ];
@@ -1397,16 +1401,16 @@ export default function CVPage() {
           </Card>
         ) : (
           <>
-            {/* Optimized CVs Section */}
-            {allCVs.filter((cv) => "isOptimized" in cv && cv.isOptimized).length > 0 && (
+            {/* ATS Optimized CVs Section */}
+            {allCVs.filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source === 'ats-optimizer').length > 0 && (
               <CVSection>
                 <CVSectionHeader>
                   <CVSectionIcon></CVSectionIcon>
-                  <span>Optimized Resumes</span>
+                  <span>ATS Optimized</span>
                 </CVSectionHeader>
                 <CVGrid>
                   {allCVs
-                    .filter((cv) => "isOptimized" in cv && cv.isOptimized)
+                    .filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source === 'ats-optimizer')
                     .map((cv) => {
                       const optimizedCV = cv as OptimizedCV & { isOptimized: true; reportId: string };
                       return (
@@ -1419,20 +1423,86 @@ export default function CVPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
                             </CVCardIcon>
+                            <CVCardTitle>{optimizedCV.contact_name || cv.title}</CVCardTitle>
+                            <CVCardDate>
+                              {formatDate(cv.created_at)}
+                            </CVCardDate>
+                            {optimizedCV.before_score && optimizedCV.after_score && (
+                              <CVCardMeta>
+                                <Badge size="sm" variant="success">
+                                  {optimizedCV.before_score} → {optimizedCV.after_score}
+                                </Badge>
+                              </CVCardMeta>
+                            )}
+                          </CVCardContentInner>
+                          <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
+                            <PreviewLink
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPreviewCV(cv);
+                              }}
+                            >
+                              Preview
+                              <ArrowRightIcon />
+                            </PreviewLink>
+                            <CTAActions>
+                              <ActionButton
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDownload(cv);
+                                }}
+                              >
+                                <DownloadIcon />
+                              </ActionButton>
+                              <ActionButton
+                                $variant="danger"
+                                onClick={(e) => handleDeleteClick(cv, e)}
+                              >
+                                <DeleteIcon />
+                              </ActionButton>
+                            </CTAActions>
+                          </CTAContainer>
+                        </CVCardInner>
+                        <CVCardOverlay className="cv-overlay" />
+                      </CVCard>
+                    );
+                    })}
+                </CVGrid>
+              </CVSection>
+            )}
+
+            {/* Job-Specific CVs Section */}
+            {allCVs.filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source !== 'ats-optimizer').length > 0 && (
+              <CVSection>
+                <CVSectionHeader>
+                  <CVSectionIcon></CVSectionIcon>
+                  <span>Job-Specific</span>
+                </CVSectionHeader>
+                <CVGrid>
+                  {allCVs
+                    .filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source !== 'ats-optimizer')
+                    .map((cv) => {
+                      const optimizedCV = cv as OptimizedCV & { isOptimized: true; reportId: string };
+                      return (
+                      <CVCard key={cv.id} $isOptimized={true} onClick={() => setPreviewCV(cv)}>
+                        <CVCardBackgroundComponent text={cv.text} isOptimized={true} />
+                        <CVCardInner>
+                          <CVCardContentInner className="cv-content">
+                            <CVCardIcon $isOptimized={true} className="cv-icon">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+                              </svg>
+                            </CVCardIcon>
                             <CVCardTitle>{cv.title}</CVCardTitle>
                             <CVCardDate>
-                              Generated {formatDate(cv.created_at)}
+                              {formatDate(cv.created_at)}
                             </CVCardDate>
                             <CVCardMeta>
-                              
                               {optimizedCV.fake_it_mode && (
                                 <Badge size="sm" variant="warning">
                                   Fake It
                                 </Badge>
                               )}
-                              <CVCardDate>
-                                Language: {cv.lang === "tr" ? "TR" : "EN"}
-                              </CVCardDate>
                             </CVCardMeta>
                             {optimizedCV.job_title && (
                               <CVCardJobInfo>
@@ -1481,7 +1551,7 @@ export default function CVPage() {
               <CVSection>
                 <CVSectionHeader>
                   <CVSectionIcon></CVSectionIcon>
-                  <span>Original Resumes</span>
+                  <span>Original</span>
                 </CVSectionHeader>
                 <CVGrid>
                   {allCVs
@@ -1498,13 +1568,8 @@ export default function CVPage() {
                             </CVCardIcon>
                             <CVCardTitle>{cv.title}</CVCardTitle>
                             <CVCardDate>
-                              Uploaded {formatDate(cv.created_at)}
+                              {formatDate(cv.created_at)}
                             </CVCardDate>
-                            <CVCardMeta>
-                              <CVCardDate>
-                                Language: {cv.lang === "tr" ? "TR" : "EN"}
-                              </CVCardDate>
-                            </CVCardMeta>
                           </CVCardContentInner>
                           <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
                             <PreviewLink
@@ -1579,6 +1644,8 @@ export default function CVPage() {
             <CVPreviewSidebarList>
               {allCVs.map((cv) => {
                 const isOptimized = "isOptimized" in cv && cv.isOptimized;
+                const isATSOptimized = isOptimized && (cv as any).source === 'ats-optimizer';
+                const isJobSpecific = isOptimized && (cv as any).source !== 'ats-optimizer';
                 return (
                   <CVPreviewSidebarItem
                     id={`sidebar-cv-${cv.id}`}
@@ -1591,21 +1658,21 @@ export default function CVPage() {
                       {cv.title}
                     </CVPreviewSidebarItemTitle>
                     <CVPreviewSidebarItemMeta>
-                      {isOptimized ? (
+                      {isATSOptimized ? (
+                        <span style={{ color: "var(--success)" }}>ATS Optimized</span>
+                      ) : isJobSpecific ? (
                         <>
-                          <span style={{ color: "var(--primary-500)" }}>Optimized</span>
+                          <span style={{ color: "var(--primary-500)" }}>Job-Specific</span>
                           {(cv as any).fake_it_mode && (
                             <>
                               <span>•</span>
-                              <span style={{ color: "#f59e0b" }}>🎭</span>
+                              <span style={{ color: "#f59e0b" }}>Fake It</span>
                             </>
                           )}
                         </>
                       ) : (
                         <span>Original</span>
                       )}
-                      <span>•</span>
-                      <span>{cv.lang === "tr" ? "TR" : "EN"}</span>
                     </CVPreviewSidebarItemMeta>
                   </CVPreviewSidebarItem>
                 );

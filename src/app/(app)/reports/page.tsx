@@ -320,6 +320,7 @@ const CTAContainer = styled.div`
   transition: all 0.3s ease;
 
   @media (max-width: 768px) {
+    padding: 0;
     transform: translateY(0);
     opacity: 1;
     position: relative;
@@ -427,8 +428,8 @@ const KeywordBadge = styled.span<{ $delay: number }>`
   color: var(--text-secondary);
   border-radius: 4px;
   border: 1px solid rgba(var(--accent-rgb), 0.1);
-  animation: ${fadeInUp} 0.4s ease-out forwards, ${floatAnimation} 3s ease-in-out infinite;
-  animation-delay: ${({ $delay }) => $delay}s, ${({ $delay }) => $delay + 0.4}s;
+  animation: ${fadeInUp} 0.4s ease-out forwards;
+  animation-delay: ${({ $delay }) => $delay}s;
   opacity: 0;
 `;
 
@@ -605,8 +606,8 @@ export default function ReportsPage() {
     <Container>
       <Header>
         <HeaderContent>
-          <Title>Job-Specific Resume Optimizer</Title>
-          <Subtitle>View and manage your resume analysis reports</Subtitle>
+          <Title>Job Match & Optimize</Title>
+          <Subtitle>Analyze how well your resume matches a job posting and generate a targeted version to boost your chances.</Subtitle>
         </HeaderContent>
         <Button onClick={() => router.push(ROUTES.APP.ANALYZE)}>
           New Analysis

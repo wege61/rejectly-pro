@@ -205,6 +205,7 @@ const KeywordCloud = styled.div`
   flex-wrap: wrap;
   gap: 6px;
   z-index: 2;
+  opacity: 0.4
 `;
 
 const KeywordBadge = styled.span<{ $delay: number; $variant?: 'primary' | 'secondary' }>`
@@ -241,6 +242,7 @@ const TextScrollContainer = styled.div`
   bottom: 0;
   overflow: hidden;
   z-index: 1;
+  opacity: 0.3;
 `;
 
 const ScrollingTextTrack = styled.div`
@@ -251,14 +253,11 @@ const ScrollingTextLine = styled.div<{ $delay: number }>`
   font-size: 9px;
   line-height: 1.6;
   color: var(--text-secondary);
-  opacity: 0.4;
   padding: 2px 0;
   animation: ${fadeInUp} 0.4s ease-out forwards;
   animation-delay: ${({ $delay }) => $delay}s;
-  filter: blur(0.4px);
 
   &:nth-child(odd) {
-    opacity: 0.25;
     transform: translateX(8px);
   }
 `;

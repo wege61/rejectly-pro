@@ -23,12 +23,12 @@ const Container = styled.div`
 
 const Header = styled.div`
   position: relative;
-  margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 
-  @media (max-width: 768px) {
-    display: flex;
-    flex-direction: column;
-  }
 `;
 
 const Title = styled.h1`
@@ -39,6 +39,8 @@ const Title = styled.h1`
     order: 1;
   }
 `;
+
+const TitleElements = styled.div``;
 
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
@@ -71,18 +73,7 @@ const PricingGrid = styled.div`
 `;
 
 const CreditsCardWrapper = styled.div`
-  position: absolute;
-  width: 400px;
-  top: 0;
-  right: 0;
-
-  @media (max-width: 768px) {
-    position: relative;
-    top: 0;
-    order: 2;
-    align-self: flex-start;
-    margin-top: 12px;
-  }
+  
 `;
 
 const PriceSubtext = styled.p`
@@ -240,8 +231,10 @@ export default function BillingPage() {
   return (
     <Container>
       <Header>
+        <TitleElements>
         <Title>Billing</Title>
         <Subtitle>Buy credits or subscribe for unlimited access</Subtitle>
+        </TitleElements>
         <CreditsCardWrapper>
           <CreditsCard />
         </CreditsCardWrapper>

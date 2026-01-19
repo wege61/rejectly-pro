@@ -44,6 +44,10 @@ const Section = styled.section`
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
+const CreditsCardWrapper = styled.div`
+  max-width: 400px;
+`;
+
 const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
@@ -159,7 +163,9 @@ export default function SettingsPage() {
       {/* Subscription & Credits */}
       <Section>
         <SectionTitle>Subscription & Credits</SectionTitle>
+        <CreditsCardWrapper>
         <CreditsCard />
+        </CreditsCardWrapper>
       </Section>
 
       <Section>

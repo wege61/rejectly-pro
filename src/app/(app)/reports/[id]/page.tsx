@@ -3720,7 +3720,7 @@ export default function ReportDetailPage() {
   const analyzeOptimizedCV = useCallback(async () => {
     if (!report) return;
 
-    console.log("🔍 Starting CV analysis...", {
+    console.log("🔍 Starting resume analysis...", {
       reportId: report.id,
       hasGeneratedCV: !!report.generated_cv,
       currentOptimizedScore: optimizedScore,
@@ -4540,7 +4540,7 @@ export default function ReportDetailPage() {
       </BackButton>
 
       <Header>
-        <Title>CV Analysis Report</Title>
+        <Title>Resume Analysis Report</Title>
         <HeaderMeta>
           <Badge variant={report.pro ? "info" : "default"}>
             {report.pro ? "Pro Report" : "Free Report"}

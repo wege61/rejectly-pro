@@ -35,12 +35,16 @@ const CardWrapper = styled.div<{ $variant: CreditVariant }>`
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  min-width: 180px;
+  min-width: 300px;
   background: ${({ $variant }) => getBackgroundColor($variant)};
 
-  @media (max-width: 640px) {
-    min-width: 160px;
+  @media (max-width: 1060px) {
+     min-width: 200px;}
+
+    @media (max-width: 560px) {
+    min-width: 140px;
   }
+
 `;
 
 const CardContent = styled.div`
@@ -51,6 +55,10 @@ const CardContent = styled.div`
 
   @media (max-width: 640px) {
     padding: 10px 14px;
+  }
+
+  @media (max-width: 400px) {
+    padding: 8px 10px;
   }
 `;
 

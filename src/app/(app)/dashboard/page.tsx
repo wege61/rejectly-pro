@@ -1085,26 +1085,16 @@ const Container = styled.div`
 
 const Header = styled.div`
   position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 
-  @media (max-width: 768px) {
-    display: flex;
-    flex-direction: column;
-  }
 `;
 
 const CreditsCardWrapper = styled.div`
-  position: absolute;
-  top: -60px;
-  right: 0;
 
-  @media (max-width: 768px) {
-    position: relative;
-    top: 0;
-    order: 2;
-    align-self: flex-start;
-    margin-top: 12px;
-  }
 `;
 
 const Title = styled.h1`
@@ -1115,6 +1105,8 @@ const Title = styled.h1`
     order: 1;
   }
 `;
+
+const TitleElements = styled.div``;
 
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
@@ -1956,14 +1948,17 @@ export default function DashboardPage() {
 
       <Container>
         <Header>
-          <CreditsCardWrapper>
-            <CreditsCard />
-          </CreditsCardWrapper>
+         
+          <TitleElements>
           <Title>Dashboard</Title>
           <Subtitle>
             Welcome back, {user?.user_metadata?.name || "User"}! Here&apos;s
             your overview.
           </Subtitle>
+          </TitleElements>
+           <CreditsCardWrapper>
+            <CreditsCard />
+          </CreditsCardWrapper>
         </Header>
 
         {/* Stats Bento Grid */}

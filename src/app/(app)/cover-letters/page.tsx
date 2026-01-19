@@ -353,8 +353,6 @@ const MiniReportProBadge = styled.div`
   position: absolute;
   top: 8px;
   right: 8px;
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
   color: var(--accent);
   padding: 3px 8px;
   font-size: 9px;
@@ -447,7 +445,7 @@ const MiniReportCTAContainer = styled.div`
     transform: translateY(0);
     opacity: 1;
     position: relative;
-    padding-top: 8px;
+    padding: 10px 0 0 0;
     background: none;
   }
 `;
@@ -502,7 +500,7 @@ const MiniReportKeywordBadge = styled.span<{ $delay: number }>`
   color: var(--text-secondary);
   border-radius: 3px;
   border: 1px solid rgba(var(--accent-rgb), 0.1);
-  animation: ${fadeInUpMini} 0.3s ease-out forwards, ${floatAnimationMini} 3s ease-in-out infinite;
+  animation: ${fadeInUpMini} 0.3s ease-out forwards;
   animation-delay: ${({ $delay }) => $delay}s, ${({ $delay }) => $delay + 0.3}s;
   opacity: 0;
 `;

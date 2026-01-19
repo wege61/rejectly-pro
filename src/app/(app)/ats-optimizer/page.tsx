@@ -1338,25 +1338,74 @@ const HistoryGrid = styled.div`
 `;
 
 const HistoryCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
+  position: relative;
+  background: var(--bg-alt);
+  border: none;
+  border-radius: 14px;
   padding: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  /* Subtle depth through shadows - matching CVMiniCard */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
   }
+
+  &:hover .history-content {
+    transform: translateY(-8px);
+  }
+
+  &:hover .history-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover .history-overlay {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &:hover .history-content {
+      transform: none;
+    }
+  }
+`;
+
+const HistoryContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transform-origin: bottom left;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    transform: none !important;
+  }
+`;
+
+const HistoryOverlay = styled.div`
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  transition: all 0.3s ease;
 `;
 
 const HistoryCardHeader = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 12px;
 `;
 
 const HistoryCardName = styled.div`
@@ -1827,27 +1876,30 @@ export default function DashboardATSOptimizerPage() {
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12,6 12,12 16,14" />
                   </svg>
-                  Recent Optimized CVs
+                  Recent optimized resumes
                 </HistoryTitle>
               </HistorySectionHeader>
               <HistoryGrid>
                 {optimizedHistory.map((cv) => (
                   <HistoryCard key={cv.id} onClick={() => handleHistoryCardClick(cv)}>
-                    <HistoryCardHeader>
-                      <HistoryCardName>{cv.contact_name || "Optimized CV"}</HistoryCardName>
-                      <HistoryCardDate>
-                        {new Date(cv.created_at).toLocaleDateString("en-US", {
-                          day: "numeric",
-                          month: "short",
-                        })}
-                      </HistoryCardDate>
-                    </HistoryCardHeader>
-                    <HistoryScoreRow>
-                      <HistoryScoreBadge $type="before">{cv.before_score}</HistoryScoreBadge>
-                      <HistoryScoreArrow>→</HistoryScoreArrow>
-                      <HistoryScoreBadge $type="after">{cv.after_score}</HistoryScoreBadge>
-                      <HistoryImprovement>+{cv.after_score - cv.before_score} pts</HistoryImprovement>
-                    </HistoryScoreRow>
+                    <HistoryContent className="history-content">
+                      <HistoryCardHeader>
+                        <HistoryCardName>{cv.contact_name || "Optimized CV"}</HistoryCardName>
+                        <HistoryCardDate>
+                          {new Date(cv.created_at).toLocaleDateString("en-US", {
+                            day: "numeric",
+                            month: "short",
+                          })}
+                        </HistoryCardDate>
+                      </HistoryCardHeader>
+                      <HistoryScoreRow>
+                        <HistoryScoreBadge $type="before">{cv.before_score}</HistoryScoreBadge>
+                        <HistoryScoreArrow>→</HistoryScoreArrow>
+                        <HistoryScoreBadge $type="after">{cv.after_score}</HistoryScoreBadge>
+                        <HistoryImprovement>+{cv.after_score - cv.before_score} pts</HistoryImprovement>
+                      </HistoryScoreRow>
+                    </HistoryContent>
+                    <HistoryOverlay className="history-overlay" />
                   </HistoryCard>
                 ))}
               </HistoryGrid>

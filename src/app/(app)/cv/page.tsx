@@ -230,7 +230,6 @@ const Subtitle = styled.p`
 const ContentSection = styled.div`
   background: var(--bg-primary);
   border-radius: 20px;
-  border: 1px solid var(--border-color);
   overflow: hidden;
 `;
 
@@ -239,8 +238,6 @@ const ContentHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-alt);
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -274,13 +271,17 @@ type CVTabType = 'original' | 'ats-optimized' | 'job-matched';
 
 const TabContainer = styled.div`
   display: flex;
-  gap: 4px;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 10px;
+  background: ${({ theme }) => theme.colors.border};
 
   @media (max-width: 768px) {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
 
     &::-webkit-scrollbar {
       display: none;
@@ -288,123 +289,68 @@ const TabContainer = styled.div`
   }
 `;
 
-const TabButton = styled.button<{ $active: boolean; $variant: 'original' | 'ats' | 'job' }>`
-  position: relative;
-  display: flex;
+const TabButton = styled.button<{ $active: boolean }>`
+  display: inline-flex;
+  justify-content: center;
   align-items: center;
+  flex-shrink: 0;
   gap: 8px;
-  padding: 12px 20px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 10px;
+  border-radius: 6px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   white-space: nowrap;
-  background: ${({ $active, $variant }) => {
-    if (!$active) return 'transparent';
-    switch ($variant) {
-      case 'original': return 'rgba(99, 102, 241, 0.1)';
-      case 'ats': return 'rgba(16, 185, 129, 0.1)';
-      case 'job': return 'rgba(139, 92, 246, 0.1)';
-      default: return 'rgba(99, 102, 241, 0.1)';
-    }
-  }};
-  color: ${({ $active, $variant }) => {
-    if (!$active) return 'var(--text-secondary)';
-    switch ($variant) {
-      case 'original': return 'var(--accent)';
-      case 'ats': return '#10b981';
-      case 'job': return '#8b5cf6';
-      default: return 'var(--accent)';
-    }
-  }};
+  background: ${({ $active, theme }) => $active ? theme.colors.surface : 'transparent'};
+  color: ${({ $active, theme }) => $active ? theme.colors.textPrimary : theme.colors.textSecondary};
 
   &:hover {
-    background: ${({ $active, $variant }) => {
-      if ($active) {
-        switch ($variant) {
-          case 'original': return 'rgba(99, 102, 241, 0.15)';
-          case 'ats': return 'rgba(16, 185, 129, 0.15)';
-          case 'job': return 'rgba(139, 92, 246, 0.15)';
-          default: return 'rgba(99, 102, 241, 0.15)';
-        }
-      }
-      return 'rgba(0, 0, 0, 0.04)';
-    }};
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover {
-      background: ${({ $active, $variant }) => {
-        if ($active) {
-          switch ($variant) {
-            case 'original': return 'rgba(99, 102, 241, 0.2)';
-            case 'ats': return 'rgba(16, 185, 129, 0.2)';
-            case 'job': return 'rgba(139, 92, 246, 0.2)';
-            default: return 'rgba(99, 102, 241, 0.2)';
-          }
-        }
-        return 'rgba(255, 255, 255, 0.06)';
-      }};
-    }
+    color: ${({ theme }) => theme.colors.textPrimary};
   }
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     flex-shrink: 0;
+    color: ${({ $active, theme }) => $active ? 'var(--accent)' : theme.colors.textSecondary};
+    transition: color 0.15s ease;
+  }
+
+  &:hover svg {
+    color: var(--accent);
   }
 
   @media (max-width: 600px) {
-    padding: 10px 14px;
+    padding: 6px 10px;
     font-size: 13px;
     gap: 6px;
 
     svg {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
     }
   }
 `;
 
-const TabCount = styled.span<{ $active: boolean; $variant: 'original' | 'ats' | 'job' }>`
+const TabCount = styled.span<{ $active: boolean }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 7px;
-  border-radius: 11px;
-  font-size: 12px;
-  font-weight: 700;
-  background: ${({ $active, $variant }) => {
-    if (!$active) return 'rgba(0, 0, 0, 0.06)';
-    switch ($variant) {
-      case 'original': return 'var(--accent)';
-      case 'ats': return '#10b981';
-      case 'job': return '#8b5cf6';
-      default: return 'var(--accent)';
-    }
-  }};
-  color: ${({ $active }) => $active ? 'white' : 'var(--text-secondary)'};
-
-  @media (prefers-color-scheme: dark) {
-    background: ${({ $active, $variant }) => {
-      if (!$active) return 'rgba(255, 255, 255, 0.1)';
-      switch ($variant) {
-        case 'original': return 'var(--accent)';
-        case 'ats': return '#10b981';
-        case 'job': return '#8b5cf6';
-        default: return 'var(--accent)';
-      }
-    }};
-  }
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: ${({ $active, theme }) => $active ? 'var(--accent)' : theme.colors.border};
+  color: ${({ $active, theme }) => $active ? 'white' : theme.colors.textSecondary};
 
   @media (max-width: 600px) {
-    min-width: 20px;
-    height: 20px;
-    font-size: 11px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
   }
 `;
 
@@ -1653,30 +1599,27 @@ export default function CVPage() {
               <TabContainer>
                 <TabButton
                   $active={activeTab === 'original'}
-                  $variant="original"
                   onClick={() => setActiveTab('original')}
                 >
                   <OriginalIcon />
                   Original
-                  <TabCount $active={activeTab === 'original'} $variant="original">{originalCVs.length}</TabCount>
+                  <TabCount $active={activeTab === 'original'}>{originalCVs.length}</TabCount>
                 </TabButton>
                 <TabButton
                   $active={activeTab === 'ats-optimized'}
-                  $variant="ats"
                   onClick={() => setActiveTab('ats-optimized')}
                 >
                   <ATSIcon2 />
                   ATS Optimized
-                  <TabCount $active={activeTab === 'ats-optimized'} $variant="ats">{atsOptimizedCVs.length}</TabCount>
+                  <TabCount $active={activeTab === 'ats-optimized'}>{atsOptimizedCVs.length}</TabCount>
                 </TabButton>
                 <TabButton
                   $active={activeTab === 'job-matched'}
-                  $variant="job"
                   onClick={() => setActiveTab('job-matched')}
                 >
                   <JobIcon />
                   Job Matched
-                  <TabCount $active={activeTab === 'job-matched'} $variant="job">{jobMatchedCVs.length}</TabCount>
+                  <TabCount $active={activeTab === 'job-matched'}>{jobMatchedCVs.length}</TabCount>
                 </TabButton>
               </TabContainer>
             </ContentHeader>

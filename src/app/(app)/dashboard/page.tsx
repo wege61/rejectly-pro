@@ -745,10 +745,7 @@ const ATSOptimizerBackground = () => (
 );
 
 // Report Card Animations (matching reports page)
-const floatAnimation = keyframes`
-  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
-  50% { transform: translateY(-8px) rotate(2deg); opacity: 0.8; }
-`;
+
 
 const scrollText = keyframes`
   0% { transform: translateY(0); }
@@ -994,7 +991,7 @@ const RecentReportKeywordBadge = styled.span<{ $delay: number }>`
   color: var(--text-secondary);
   border-radius: 4px;
   border: 1px solid rgba(var(--accent-rgb), 0.1);
-  animation: ${fadeInUp} 0.4s ease-out forwards, ${floatAnimation} 3s ease-in-out infinite;
+  animation: ${fadeInUp} 0.4s ease-out forwards;
   animation-delay: ${({ $delay }) => $delay}s, ${({ $delay }) => $delay + 0.4}s;
   opacity: 0;
 `;

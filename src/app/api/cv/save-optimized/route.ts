@@ -107,6 +107,7 @@ export async function POST(request: NextRequest) {
         file_url: uploadData.path,
         text: "", // Will be populated from report.generated_cv if needed
         lang: "en",
+        source: "reports",
       })
       .select()
       .single();

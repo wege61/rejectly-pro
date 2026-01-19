@@ -320,6 +320,7 @@ export async function POST(request: NextRequest) {
             file_url: urlData.publicUrl,
             text: JSON.stringify(generatedCV),
             lang: report.cv?.lang || 'en',
+            source: 'reports',
           });
 
         if (insertError) {

@@ -177,27 +177,29 @@ type CVItem =
 const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing["2xl"]};
-  padding-bottom: 100px; /* Space for FAB */
+  padding: 32px 24px;
+  padding-bottom: 100px;
 
-  
-  @media (max-width: 450px) {
-    padding: ${({ theme }) => theme.spacing["lg"]};
-    padding-top: 32px;
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+    padding-bottom: 100px;
   }
 `;
 
-
 const Header = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  margin-bottom: 32px;
+`;
+
+const HeaderTop = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: 24px;
+  margin-bottom: 24px;
 
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: ${({ theme }) => theme.spacing.md};
+    gap: 16px;
   }
 `;
 
@@ -206,17 +208,54 @@ const HeaderContent = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
 `;
 
 const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 15px;
+  color: var(--text-secondary);
   line-height: 1.6;
-  max-width: 600px;
+  max-width: 500px;
+`;
+
+// Content Section
+const ContentSection = styled.div`
+  background: var(--bg-primary);
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+`;
+
+const ContentHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-alt);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+  }
+`;
+
+const ContentBody = styled.div`
+  padding: 24px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
 `;
 
 const CVGrid = styled.div`
@@ -230,24 +269,222 @@ const CVGrid = styled.div`
   }
 `;
 
-const CVSection = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+// Tab Navigation
+type CVTabType = 'original' | 'ats-optimized' | 'job-matched';
+
+const TabContainer = styled.div`
+  display: flex;
+  gap: 4px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 `;
 
-const CVSectionHeader = styled.div`
-  padding: ${({ theme }) => theme.spacing.sm} 0;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+const TabButton = styled.button<{ $active: boolean; $variant: 'original' | 'ats' | 'job' }>`
+  position: relative;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  background: ${({ $active, $variant }) => {
+    if (!$active) return 'transparent';
+    switch ($variant) {
+      case 'original': return 'rgba(99, 102, 241, 0.1)';
+      case 'ats': return 'rgba(16, 185, 129, 0.1)';
+      case 'job': return 'rgba(139, 92, 246, 0.1)';
+      default: return 'rgba(99, 102, 241, 0.1)';
+    }
+  }};
+  color: ${({ $active, $variant }) => {
+    if (!$active) return 'var(--text-secondary)';
+    switch ($variant) {
+      case 'original': return 'var(--accent)';
+      case 'ats': return '#10b981';
+      case 'job': return '#8b5cf6';
+      default: return 'var(--accent)';
+    }
+  }};
+
+  &:hover {
+    background: ${({ $active, $variant }) => {
+      if ($active) {
+        switch ($variant) {
+          case 'original': return 'rgba(99, 102, 241, 0.15)';
+          case 'ats': return 'rgba(16, 185, 129, 0.15)';
+          case 'job': return 'rgba(139, 92, 246, 0.15)';
+          default: return 'rgba(99, 102, 241, 0.15)';
+        }
+      }
+      return 'rgba(0, 0, 0, 0.04)';
+    }};
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover {
+      background: ${({ $active, $variant }) => {
+        if ($active) {
+          switch ($variant) {
+            case 'original': return 'rgba(99, 102, 241, 0.2)';
+            case 'ats': return 'rgba(16, 185, 129, 0.2)';
+            case 'job': return 'rgba(139, 92, 246, 0.2)';
+            default: return 'rgba(99, 102, 241, 0.2)';
+          }
+        }
+        return 'rgba(255, 255, 255, 0.06)';
+      }};
+    }
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 600px) {
+    padding: 10px 14px;
+    font-size: 13px;
+    gap: 6px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
 `;
 
-const CVSectionIcon = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+const TabCount = styled.span<{ $active: boolean; $variant: 'original' | 'ats' | 'job' }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 700;
+  background: ${({ $active, $variant }) => {
+    if (!$active) return 'rgba(0, 0, 0, 0.06)';
+    switch ($variant) {
+      case 'original': return 'var(--accent)';
+      case 'ats': return '#10b981';
+      case 'job': return '#8b5cf6';
+      default: return 'var(--accent)';
+    }
+  }};
+  color: ${({ $active }) => $active ? 'white' : 'var(--text-secondary)'};
+
+  @media (prefers-color-scheme: dark) {
+    background: ${({ $active, $variant }) => {
+      if (!$active) return 'rgba(255, 255, 255, 0.1)';
+      switch ($variant) {
+        case 'original': return 'var(--accent)';
+        case 'ats': return '#10b981';
+        case 'job': return '#8b5cf6';
+        default: return 'var(--accent)';
+      }
+    }};
+  }
+
+  @media (max-width: 600px) {
+    min-width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
 `;
+
+const TabEmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+
+  svg {
+    width: 56px;
+    height: 56px;
+    color: var(--text-tertiary);
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+`;
+
+const TabEmptyTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 8px;
+`;
+
+const TabEmptyDescription = styled.p`
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 360px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+`;
+
+const TabEmptyAction = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--accent);
+  color: white;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    opacity: 1;
+  }
+`;
+
+// Tab Icons
+const OriginalIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+  </svg>
+);
+
+const ATSIcon2 = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const JobIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+  </svg>
+);
 
 const CVCard = styled.div<{ $isOptimized?: boolean }>`
   position: relative;
@@ -983,22 +1220,6 @@ const CloseIcon = () => (
   </svg>
 );
 
-const EyeIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-);
-
 const HiddenInput = styled.input`
   display: none;
 `;
@@ -1012,9 +1233,31 @@ export default function CVPage() {
   const [cvToDelete, setCvToDelete] = useState<CVItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [checkingATSId, setCheckingATSId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<CVTabType>('original');
   const toast = useToast();
   const { user } = useAuth();
   const router = useRouter();
+
+  // Filter CVs by category
+  const originalCVs = allCVs.filter((cv) => !("isOptimized" in cv) || !cv.isOptimized);
+  const atsOptimizedCVs = allCVs.filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source === 'ats-optimizer');
+  const jobMatchedCVs = allCVs.filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source !== 'ats-optimizer');
+
+  // Get filtered CVs based on active tab
+  const getFilteredCVs = () => {
+    switch (activeTab) {
+      case 'original':
+        return originalCVs;
+      case 'ats-optimized':
+        return atsOptimizedCVs;
+      case 'job-matched':
+        return jobMatchedCVs;
+      default:
+        return [];
+    }
+  };
+
+  const filteredCVs = getFilteredCVs();
 
   // Handle ATS check
   const handleATSCheck = async (cv: CVDocument, e?: React.MouseEvent) => {
@@ -1361,31 +1604,35 @@ export default function CVPage() {
   return (
     <PageContainer>
         <Header>
-          <HeaderContent>
-            <Title>My Resume</Title>
-            <Subtitle>
-              Upload and manage your resumes. Optimized versions are automatically generated from your job analysis reports.
-            </Subtitle>
-          </HeaderContent>
-          <UploadButton onClick={handleUploadClick} disabled={isUploading}>
-            {isUploading ? (
-              <>
-                <Spinner size="sm" /> Uploading...
-              </>
-            ) : (
-              <>
-                <UploadIcon /> Upload New Resume
-              </>
-            )}
-          </UploadButton>
-          <HiddenInput
-            id="cv-upload"
-            type="file"
-            accept=".pdf,.docx"
-            onChange={handleFileSelect}
-            disabled={isUploading}
-          />
+          <HeaderTop>
+            <HeaderContent>
+              <Title>My Resumes</Title>
+              <Subtitle>
+                Manage your resumes and track optimized versions across different job applications.
+              </Subtitle>
+            </HeaderContent>
+            <UploadButton onClick={handleUploadClick} disabled={isUploading}>
+              {isUploading ? (
+                <>
+                  <Spinner size="sm" /> Uploading...
+                </>
+              ) : (
+                <>
+                  <UploadIcon /> Upload Resume
+                </>
+              )}
+            </UploadButton>
+          </HeaderTop>
+
         </Header>
+
+        <HiddenInput
+          id="cv-upload"
+          type="file"
+          accept=".pdf,.docx"
+          onChange={handleFileSelect}
+          disabled={isUploading}
+        />
 
         {allCVs.length === 0 ? (
           <Card variant="bordered">
@@ -1400,233 +1647,190 @@ export default function CVPage() {
             />
           </Card>
         ) : (
-          <>
-            {/* ATS Optimized CVs Section */}
-            {allCVs.filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source === 'ats-optimizer').length > 0 && (
-              <CVSection>
-                <CVSectionHeader>
-                  <CVSectionIcon></CVSectionIcon>
-                  <span>ATS Optimized</span>
-                </CVSectionHeader>
-                <CVGrid>
-                  {allCVs
-                    .filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source === 'ats-optimizer')
-                    .map((cv) => {
-                      const optimizedCV = cv as OptimizedCV & { isOptimized: true; reportId: string };
-                      return (
-                      <CVCard key={cv.id} $isOptimized={true} onClick={() => setPreviewCV(cv)}>
-                        <CVCardBackgroundComponent text={cv.text} isOptimized={true} />
-                        <CVCardInner>
-                          <CVCardContentInner className="cv-content">
-                            <CVCardIcon $isOptimized={true} className="cv-icon">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                            </CVCardIcon>
-                            <CVCardTitle>{optimizedCV.contact_name || cv.title}</CVCardTitle>
-                            <CVCardDate>
-                              {formatDate(cv.created_at)}
-                            </CVCardDate>
-                            {optimizedCV.before_score && optimizedCV.after_score && (
-                              <CVCardMeta>
-                                <Badge size="sm" variant="success">
-                                  {optimizedCV.before_score} → {optimizedCV.after_score}
-                                </Badge>
-                              </CVCardMeta>
-                            )}
-                          </CVCardContentInner>
-                          <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
-                            <PreviewLink
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewCV(cv);
-                              }}
-                            >
-                              Preview
-                              <ArrowRightIcon />
-                            </PreviewLink>
-                            <CTAActions>
-                              <ActionButton
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDownload(cv);
-                                }}
-                              >
-                                <DownloadIcon />
-                              </ActionButton>
-                              <ActionButton
-                                $variant="danger"
-                                onClick={(e) => handleDeleteClick(cv, e)}
-                              >
-                                <DeleteIcon />
-                              </ActionButton>
-                            </CTAActions>
-                          </CTAContainer>
-                        </CVCardInner>
-                        <CVCardOverlay className="cv-overlay" />
-                      </CVCard>
-                    );
-                    })}
-                </CVGrid>
-              </CVSection>
-            )}
+          <ContentSection>
+            <ContentHeader>
+              {/* Tab Navigation */}
+              <TabContainer>
+                <TabButton
+                  $active={activeTab === 'original'}
+                  $variant="original"
+                  onClick={() => setActiveTab('original')}
+                >
+                  <OriginalIcon />
+                  Original
+                  <TabCount $active={activeTab === 'original'} $variant="original">{originalCVs.length}</TabCount>
+                </TabButton>
+                <TabButton
+                  $active={activeTab === 'ats-optimized'}
+                  $variant="ats"
+                  onClick={() => setActiveTab('ats-optimized')}
+                >
+                  <ATSIcon2 />
+                  ATS Optimized
+                  <TabCount $active={activeTab === 'ats-optimized'} $variant="ats">{atsOptimizedCVs.length}</TabCount>
+                </TabButton>
+                <TabButton
+                  $active={activeTab === 'job-matched'}
+                  $variant="job"
+                  onClick={() => setActiveTab('job-matched')}
+                >
+                  <JobIcon />
+                  Job Matched
+                  <TabCount $active={activeTab === 'job-matched'} $variant="job">{jobMatchedCVs.length}</TabCount>
+                </TabButton>
+              </TabContainer>
+            </ContentHeader>
 
-            {/* Job-Specific CVs Section */}
-            {allCVs.filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source !== 'ats-optimizer').length > 0 && (
-              <CVSection>
-                <CVSectionHeader>
-                  <CVSectionIcon></CVSectionIcon>
-                  <span>Job-Specific</span>
-                </CVSectionHeader>
+            <ContentBody>
+              {/* CV Grid based on active tab */}
+              {filteredCVs.length === 0 ? (
+                <TabEmptyState>
+                  {activeTab === 'original' && (
+                    <>
+                      <OriginalIcon />
+                      <TabEmptyTitle>No original CVs yet</TabEmptyTitle>
+                      <TabEmptyDescription>
+                        Upload your resume to get started with job matching and ATS optimization.
+                      </TabEmptyDescription>
+                      <TabEmptyAction onClick={handleUploadClick}>
+                        <UploadIcon /> Upload Resume
+                      </TabEmptyAction>
+                    </>
+                  )}
+                  {activeTab === 'ats-optimized' && (
+                    <>
+                      <ATSIcon2 />
+                      <TabEmptyTitle>No ATS optimized CVs</TabEmptyTitle>
+                      <TabEmptyDescription>
+                        Run an ATS check on your original CV and click "Optimize" to create an ATS-friendly version.
+                      </TabEmptyDescription>
+                      <TabEmptyAction onClick={() => router.push('/ats-check')}>
+                        <ATSIcon2 /> Check ATS Score
+                      </TabEmptyAction>
+                    </>
+                  )}
+                  {activeTab === 'job-matched' && (
+                    <>
+                      <JobIcon />
+                      <TabEmptyTitle>No job matched CVs</TabEmptyTitle>
+                      <TabEmptyDescription>
+                        Generate a tailored CV from your job analysis reports to match specific positions.
+                      </TabEmptyDescription>
+                      <TabEmptyAction onClick={() => router.push('/reports')}>
+                        <JobIcon /> View Reports
+                      </TabEmptyAction>
+                    </>
+                  )}
+                </TabEmptyState>
+              ) : (
                 <CVGrid>
-                  {allCVs
-                    .filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source !== 'ats-optimizer')
-                    .map((cv) => {
-                      const optimizedCV = cv as OptimizedCV & { isOptimized: true; reportId: string };
-                      return (
-                      <CVCard key={cv.id} $isOptimized={true} onClick={() => setPreviewCV(cv)}>
-                        <CVCardBackgroundComponent text={cv.text} isOptimized={true} />
-                        <CVCardInner>
-                          <CVCardContentInner className="cv-content">
-                            <CVCardIcon $isOptimized={true} className="cv-icon">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
-                              </svg>
-                            </CVCardIcon>
-                            <CVCardTitle>{cv.title}</CVCardTitle>
-                            <CVCardDate>
-                              {formatDate(cv.created_at)}
-                            </CVCardDate>
+                {filteredCVs.map((cv) => {
+                  const isOptimized = "isOptimized" in cv && cv.isOptimized;
+                  const optimizedCV = isOptimized ? cv as OptimizedCV & { isOptimized: true; reportId: string } : null;
+                  const isATSOptimized = isOptimized && (cv as any).source === 'ats-optimizer';
+
+                  return (
+                    <CVCard key={cv.id} $isOptimized={isOptimized} onClick={() => setPreviewCV(cv)}>
+                      <CVCardBackgroundComponent text={cv.text} isOptimized={isOptimized} />
+                      <CVCardInner>
+                        <CVCardContentInner className="cv-content">
+                          <CVCardIcon $isOptimized={isOptimized} className="cv-icon">
+                            {activeTab === 'original' && <OriginalIcon />}
+                            {activeTab === 'ats-optimized' && <ATSIcon2 />}
+                            {activeTab === 'job-matched' && <JobIcon />}
+                          </CVCardIcon>
+                          <CVCardTitle>
+                            {isATSOptimized && optimizedCV?.contact_name ? optimizedCV.contact_name : cv.title}
+                          </CVCardTitle>
+                          <CVCardDate>{formatDate(cv.created_at)}</CVCardDate>
+
+                          {/* ATS Optimized specific badges */}
+                          {isATSOptimized && optimizedCV?.before_score && optimizedCV?.after_score && (
                             <CVCardMeta>
-                              {optimizedCV.fake_it_mode && (
-                                <Badge size="sm" variant="warning">
-                                  Fake It
-                                </Badge>
-                              )}
+                              <Badge size="sm" variant="success">
+                                {optimizedCV.before_score} → {optimizedCV.after_score}
+                              </Badge>
                             </CVCardMeta>
-                            {optimizedCV.job_title && (
-                              <CVCardJobInfo>
-                                For: <span>{optimizedCV.job_title}</span>
-                              </CVCardJobInfo>
-                            )}
-                          </CVCardContentInner>
-                          <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
-                            <PreviewLink
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewCV(cv);
-                              }}
-                            >
-                              Preview
-                              <ArrowRightIcon />
-                            </PreviewLink>
-                            <CTAActions>
-                              <ActionButton
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDownload(cv);
-                                }}
-                              >
-                                <DownloadIcon />
-                              </ActionButton>
-                              <ActionButton
-                                $variant="danger"
-                                onClick={(e) => handleDeleteClick(cv, e)}
-                              >
-                                <DeleteIcon />
-                              </ActionButton>
-                            </CTAActions>
-                          </CTAContainer>
-                        </CVCardInner>
-                        <CVCardOverlay className="cv-overlay" />
-                      </CVCard>
-                    );
-                    })}
-                </CVGrid>
-              </CVSection>
-            )}
+                          )}
 
-            {/* Original CVs Section */}
-            {allCVs.filter((cv) => !("isOptimized" in cv) || !cv.isOptimized).length > 0 && (
-              <CVSection>
-                <CVSectionHeader>
-                  <CVSectionIcon></CVSectionIcon>
-                  <span>Original</span>
-                </CVSectionHeader>
-                <CVGrid>
-                  {allCVs
-                    .filter((cv) => !("isOptimized" in cv) || !cv.isOptimized)
-                    .map((cv) => (
-                      <CVCard key={cv.id} onClick={() => setPreviewCV(cv)}>
-                        <CVCardBackgroundComponent text={cv.text} isOptimized={false} />
-                        <CVCardInner>
-                          <CVCardContentInner className="cv-content">
-                            <CVCardIcon className="cv-icon">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                              </svg>
-                            </CVCardIcon>
-                            <CVCardTitle>{cv.title}</CVCardTitle>
-                            <CVCardDate>
-                              {formatDate(cv.created_at)}
-                            </CVCardDate>
-                          </CVCardContentInner>
-                          <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
-                            <PreviewLink
+                          {/* Job Matched specific info */}
+                          {activeTab === 'job-matched' && optimizedCV && (
+                            <>
+                              <CVCardMeta>
+                                {optimizedCV.fake_it_mode && (
+                                  <Badge size="sm" variant="warning">Fake It</Badge>
+                                )}
+                              </CVCardMeta>
+                              {optimizedCV.job_title && (
+                                <CVCardJobInfo>
+                                  For: <span>{optimizedCV.job_title}</span>
+                                </CVCardJobInfo>
+                              )}
+                            </>
+                          )}
+                        </CVCardContentInner>
+
+                        <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
+                          <PreviewLink
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPreviewCV(cv);
+                            }}
+                          >
+                            Preview
+                            <ArrowRightIcon />
+                          </PreviewLink>
+                          <CTAActions>
+                            {/* ATS Score Badge or Check ATS Button - only for original CVs */}
+                            {activeTab === 'original' && (
+                              <>
+                                {(cv as CVDocument).ats_score ? (
+                                  <ATSScoreBadge
+                                    $score={(cv as CVDocument).ats_score!}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      router.push(`/ats-check/${cv.id}`);
+                                    }}
+                                    style={{ cursor: 'pointer' }}
+                                    title="View ATS Report"
+                                  >
+                                    ATS {(cv as CVDocument).ats_score}%
+                                  </ATSScoreBadge>
+                                ) : (
+                                  <CheckATSButton
+                                    onClick={(e) => handleATSCheck(cv as CVDocument, e)}
+                                    disabled={checkingATSId === cv.id}
+                                  >
+                                    {checkingATSId === cv.id ? <Spinner size="sm" /> : "Check ATS"}
+                                  </CheckATSButton>
+                                )}
+                              </>
+                            )}
+                            <ActionButton
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setPreviewCV(cv);
+                                handleDownload(cv);
                               }}
                             >
-                              Preview
-                              <ArrowRightIcon />
-                            </PreviewLink>
-                            <CTAActions>
-                              {/* ATS Score Badge or Check ATS Button */}
-                              {(cv as CVDocument).ats_score ? (
-                                <ATSScoreBadge
-                                  $score={(cv as CVDocument).ats_score!}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    router.push(`/ats-check/${cv.id}`);
-                                  }}
-                                  style={{ cursor: 'pointer' }}
-                                  title="View ATS Report"
-                                >
-                                  ATS {(cv as CVDocument).ats_score}%
-                                </ATSScoreBadge>
-                              ) : (
-                                <CheckATSButton
-                                  onClick={(e) => handleATSCheck(cv as CVDocument, e)}
-                                  disabled={checkingATSId === cv.id}
-                                >
-                                  {checkingATSId === cv.id ? <Spinner size="sm" /> : "Check ATS"}
-                                </CheckATSButton>
-                              )}
-                              <ActionButton
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDownload(cv);
-                                }}
-                              >
-                                <DownloadIcon />
-                              </ActionButton>
-                              <ActionButton
-                                $variant="danger"
-                                onClick={(e) => handleDeleteClick(cv, e)}
-                              >
-                                <DeleteIcon />
-                              </ActionButton>
-                            </CTAActions>
-                          </CTAContainer>
-                        </CVCardInner>
-                        <CVCardOverlay className="cv-overlay" />
-                      </CVCard>
-                    ))}
-                </CVGrid>
-              </CVSection>
-            )}
-          </>
+                              <DownloadIcon />
+                            </ActionButton>
+                            <ActionButton
+                              $variant="danger"
+                              onClick={(e) => handleDeleteClick(cv, e)}
+                            >
+                              <DeleteIcon />
+                            </ActionButton>
+                          </CTAActions>
+                        </CTAContainer>
+                      </CVCardInner>
+                      <CVCardOverlay className="cv-overlay" />
+                    </CVCard>
+                  );
+                })}
+              </CVGrid>
+              )}
+            </ContentBody>
+          </ContentSection>
         )}
 
       {/* PDF Preview Drawer */}

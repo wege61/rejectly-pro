@@ -9,50 +9,12 @@ import { LoadingModal } from "@/components/ui/LoadingModal";
 import { useToast } from "@/contexts/ToastContext";
 
 // Icons
-const DocumentIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" />
-    <line x1="16" y1="17" x2="8" y2="17" />
-    <line x1="10" y1="9" x2="8" y2="9" />
-  </svg>
-);
-
-const BookOpenIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-  </svg>
-);
-
-const CodeIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="16 18 22 12 16 6" />
-    <polyline points="8 6 2 12 8 18" />
-  </svg>
-);
-
-const ChartIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="20" x2="18" y2="10" />
-    <line x1="12" y1="20" x2="12" y2="4" />
-    <line x1="6" y1="20" x2="6" y2="14" />
-  </svg>
-);
-
 const RefreshIcon = ({ size = 24 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21 2v6h-6" />
     <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
     <path d="M3 22v-6h6" />
     <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
-  </svg>
-);
-
-const ZapIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
   </svg>
 );
 
@@ -68,20 +30,6 @@ const DownloadIcon = () => (
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
     <polyline points="7 10 12 15 17 10" />
     <line x1="12" y1="15" x2="12" y2="3" />
-  </svg>
-);
-
-const EditIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-  </svg>
-);
-
-const MailIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-    <polyline points="22,6 12,13 2,6" />
   </svg>
 );
 
@@ -112,12 +60,11 @@ const OptionLabel = styled.div`
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.textPrimary};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
 
 const OptionDescription = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-size: 13px;
   color: ${({ theme }) => theme.colors.textSecondary};
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
@@ -128,14 +75,10 @@ const OptionGrid = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
-const TemplateGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+const TemplateList = styled.div`
+  display: flex;
+  flex-direction: column;
   gap: ${({ theme }) => theme.spacing.sm};
-
-  @media (max-width: 500px) {
-    grid-template-columns: 1fr;
-  }
 `;
 
 const OptionButton = styled.button<{ $selected: boolean }>`
@@ -167,31 +110,127 @@ const OptionButton = styled.button<{ $selected: boolean }>`
   }
 `;
 
-const TemplateButton = styled(OptionButton)`
-  padding: ${({ theme }) => theme.spacing.md};
-  text-align: left;
+const TemplateItem = styled.label<{ $selected: boolean }>`
   display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
-  min-height: 110px;
+  align-items: flex-start;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.md};
+  border-radius: ${({ theme }) => theme.radius.md};
+  border: 1px solid ${({ $selected, theme }) =>
+    $selected ? "var(--accent)" : theme.colors.border};
+  background: ${({ $selected }) =>
+    $selected ? "rgba(255, 255, 255, 0.2)" : "transparent"};
+  cursor: pointer;
+  transition: all 150ms ease;
+
+  &:hover {
+    background: ${({ $selected }) =>
+      $selected ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0.1)"};
+  }
 `;
 
-const TemplateIconWrapper = styled.div<{ $selected: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  transition: all ${({ theme }) => theme.transitions.fast};
+const RadioIndicator = styled.div<{ $selected: boolean }>`
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid ${({ $selected }) =>
+    $selected ? "var(--accent)" : "rgba(255, 255, 255, 0.2)"};
+  background: ${({ $selected }) =>
+    $selected ? "var(--accent)" : "transparent"};
+  transition: all 150ms ease;
+  margin-top: 2px;
 
-  svg {
-    width: 20px;
-    height: 20px;
-    color: ${({ $selected }) =>
-      $selected ? "white" : "var(--accent)"};
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+    opacity: ${({ $selected }) => ($selected ? 1 : 0)};
+    transition: opacity 150ms ease;
   }
+`;
+
+const TemplateContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+const TemplateName = styled.span`
+  font-size: 13px;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const TemplateDescription = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const SimpleOptionList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const SimpleOptionItem = styled.label<{ $selected: boolean }>`
+  display: flex;
+  align-items: flex-start;
+  gap: ${({ theme }) => theme.spacing.sm};
+  cursor: pointer;
+  padding: ${({ theme }) => theme.spacing.xs} 0;
+`;
+
+const SimpleRadioIndicator = styled.div<{ $selected: boolean }>`
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid ${({ $selected }) =>
+    $selected ? "var(--accent)" : "rgba(255, 255, 255, 0.2)"};
+  background: ${({ $selected }) =>
+    $selected ? "var(--accent)" : "transparent"};
+  transition: all 150ms ease;
+  margin-top: 1px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+    opacity: ${({ $selected }) => ($selected ? 1 : 0)};
+    transition: opacity 150ms ease;
+  }
+`;
+
+const SimpleOptionContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+const SimpleOptionLabel = styled.span`
+  font-size: 13px;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const SimpleOptionDescription = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 const OptionTitle = styled.div`
@@ -210,22 +249,39 @@ const CustomizationSection = styled.div`
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const Input = styled.input`
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 2px solid ${({ theme }) => theme.colors.border};
+const StyledTextarea = styled.textarea`
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
   color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-size: 14px;
+  font-family: inherit;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  outline: none;
+  resize: vertical;
+  field-sizing: content;
+  transition: color 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
 
-  &:focus {
-    outline: none;
-    border-color: var(--accent);
+  &:focus-visible {
+    border-color: var(--ring, var(--accent));
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
   }
 
   &::placeholder {
     color: ${({ theme }) => theme.colors.textSecondary};
-    opacity: 0.6;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: rgba(255, 255, 255, 0.05);
   }
 `;
 
@@ -486,37 +542,31 @@ const TEMPLATES = [
   {
     id: 'standard',
     name: 'Standard',
-    icon: DocumentIcon,
     description: 'Classic professional format with clear structure',
   },
   {
     id: 'story_driven',
     name: 'Story Driven',
-    icon: BookOpenIcon,
     description: 'Narrative approach that tells your professional story',
   },
   {
     id: 'technical_focus',
     name: 'Technical Focus',
-    icon: CodeIcon,
     description: 'Emphasize technical skills and achievements',
   },
   {
     id: 'results_oriented',
     name: 'Results Oriented',
-    icon: ChartIcon,
     description: 'Focus on metrics and measurable impact',
   },
   {
     id: 'career_change',
     name: 'Career Change',
-    icon: RefreshIcon,
     description: 'Perfect for transitioning to a new field',
   },
   {
     id: 'short_intro',
     name: 'Short Intro',
-    icon: ZapIcon,
     description: 'Concise and impactful, straight to the point',
   },
 ];
@@ -726,97 +776,110 @@ export function CoverLetterGenerator({
                 <OptionDescription>
                   Choose the approach that best fits your application
                 </OptionDescription>
-                <TemplateGrid>
-                  {TEMPLATES.map(tmpl => {
-                    const IconComponent = tmpl.icon;
-                    return (
-                      <TemplateButton
-                        key={tmpl.id}
-                        $selected={template === tmpl.id}
-                        onClick={() => setTemplate(tmpl.id)}
-                      >
-                        <TemplateIconWrapper $selected={template === tmpl.id}>
-                          <IconComponent />
-                        </TemplateIconWrapper>
-                        <OptionTitle>{tmpl.name}</OptionTitle>
-                        <OptionDesc>{tmpl.description}</OptionDesc>
-                      </TemplateButton>
-                    );
-                  })}
-                </TemplateGrid>
+                <TemplateList>
+                  {TEMPLATES.map(tmpl => (
+                    <TemplateItem
+                      key={tmpl.id}
+                      $selected={template === tmpl.id}
+                      onClick={() => setTemplate(tmpl.id)}
+                    >
+                      <RadioIndicator $selected={template === tmpl.id} />
+                      <TemplateContent>
+                        <TemplateName>{tmpl.name}</TemplateName>
+                        <TemplateDescription>{tmpl.description}</TemplateDescription>
+                      </TemplateContent>
+                    </TemplateItem>
+                  ))}
+                </TemplateList>
               </OptionSection>
 
               <OptionSection>
                 <OptionLabel>Tone</OptionLabel>
-                <OptionGrid>
-                  <OptionButton
+                <SimpleOptionList>
+                  <SimpleOptionItem
                     $selected={tone === 'professional'}
                     onClick={() => setTone('professional')}
                   >
-                    <OptionTitle>Professional</OptionTitle>
-                    <OptionDesc>Confident & direct</OptionDesc>
-                  </OptionButton>
-                  <OptionButton
+                    <SimpleRadioIndicator $selected={tone === 'professional'} />
+                    <SimpleOptionContent>
+                      <SimpleOptionLabel>Professional</SimpleOptionLabel>
+                      <SimpleOptionDescription>Confident & direct</SimpleOptionDescription>
+                    </SimpleOptionContent>
+                  </SimpleOptionItem>
+                  <SimpleOptionItem
                     $selected={tone === 'friendly'}
                     onClick={() => setTone('friendly')}
                   >
-                    <OptionTitle>Friendly</OptionTitle>
-                    <OptionDesc>Warm & approachable</OptionDesc>
-                  </OptionButton>
-                  <OptionButton
+                    <SimpleRadioIndicator $selected={tone === 'friendly'} />
+                    <SimpleOptionContent>
+                      <SimpleOptionLabel>Friendly</SimpleOptionLabel>
+                      <SimpleOptionDescription>Warm & approachable</SimpleOptionDescription>
+                    </SimpleOptionContent>
+                  </SimpleOptionItem>
+                  <SimpleOptionItem
                     $selected={tone === 'formal'}
                     onClick={() => setTone('formal')}
                   >
-                    <OptionTitle>Formal</OptionTitle>
-                    <OptionDesc>Traditional & respectful</OptionDesc>
-                  </OptionButton>
-                </OptionGrid>
+                    <SimpleRadioIndicator $selected={tone === 'formal'} />
+                    <SimpleOptionContent>
+                      <SimpleOptionLabel>Formal</SimpleOptionLabel>
+                      <SimpleOptionDescription>Traditional & respectful</SimpleOptionDescription>
+                    </SimpleOptionContent>
+                  </SimpleOptionItem>
+                </SimpleOptionList>
               </OptionSection>
 
               <OptionSection>
                 <OptionLabel>Length</OptionLabel>
-                <OptionGrid>
-                  <OptionButton
+                <SimpleOptionList>
+                  <SimpleOptionItem
                     $selected={length === 'short'}
                     onClick={() => setLength('short')}
                   >
-                    <OptionTitle>Short</OptionTitle>
-                    <OptionDesc>150-200 words</OptionDesc>
-                  </OptionButton>
-                  <OptionButton
+                    <SimpleRadioIndicator $selected={length === 'short'} />
+                    <SimpleOptionContent>
+                      <SimpleOptionLabel>Short</SimpleOptionLabel>
+                      <SimpleOptionDescription>150-200 words</SimpleOptionDescription>
+                    </SimpleOptionContent>
+                  </SimpleOptionItem>
+                  <SimpleOptionItem
                     $selected={length === 'medium'}
                     onClick={() => setLength('medium')}
                   >
-                    <OptionTitle>Medium</OptionTitle>
-                    <OptionDesc>250-300 words</OptionDesc>
-                  </OptionButton>
-                  <OptionButton
+                    <SimpleRadioIndicator $selected={length === 'medium'} />
+                    <SimpleOptionContent>
+                      <SimpleOptionLabel>Medium</SimpleOptionLabel>
+                      <SimpleOptionDescription>250-300 words</SimpleOptionDescription>
+                    </SimpleOptionContent>
+                  </SimpleOptionItem>
+                  <SimpleOptionItem
                     $selected={length === 'long'}
                     onClick={() => setLength('long')}
                   >
-                    <OptionTitle>Long</OptionTitle>
-                    <OptionDesc>350-400 words</OptionDesc>
-                  </OptionButton>
-                </OptionGrid>
+                    <SimpleRadioIndicator $selected={length === 'long'} />
+                    <SimpleOptionContent>
+                      <SimpleOptionLabel>Long</SimpleOptionLabel>
+                      <SimpleOptionDescription>350-400 words</SimpleOptionDescription>
+                    </SimpleOptionContent>
+                  </SimpleOptionItem>
+                </SimpleOptionList>
               </OptionSection>
 
               {/* Language selection hidden for now - defaulting to English
                  Infrastructure preserved for future multi-language support */}
 
               <OptionSection>
-                <OptionLabel>Customization (Optional)</OptionLabel>
+                <OptionLabel>Customization <i>(Optional)</i></OptionLabel>
                 <OptionDescription>
                   Help AI personalize your letter by specifying key information
                 </OptionDescription>
                 <CustomizationSection>
-                  <Input
-                    type="text"
+                  <StyledTextarea
                     placeholder="Skills to emphasize (comma-separated, e.g., Python, Leadership, Data Analysis)"
                     value={emphasizeSkills}
                     onChange={(e) => setEmphasizeSkills(e.target.value)}
                   />
-                  <Input
-                    type="text"
+                  <StyledTextarea
                     placeholder="Specific projects to highlight (comma-separated, e.g., E-commerce Platform, ML Model)"
                     value={specificProjects}
                     onChange={(e) => setSpecificProjects(e.target.value)}
@@ -824,13 +887,21 @@ export function CoverLetterGenerator({
                 </CustomizationSection>
               </OptionSection>
 
-              <Button
-                size="lg"
-                onClick={handleGenerate}
-                style={{ width: '100%' }}
-              >
-                Generate Cover Letter
-              </Button>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={onClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleGenerate}
+                >
+                  Generate Cover Letter
+                </Button>
+              </div>
             </>
           ) : (
             <>

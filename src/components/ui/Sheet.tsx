@@ -74,7 +74,7 @@ const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: bo
           top: 0;
           right: 0;
           bottom: 0;
-          border-left: 1px solid var(--border-color, rgba(255,255,255,0.1));
+          border-left: 1px solid theme.colors.border; 
           transform: translateX(${$isOpen ? "0" : "100%"});
         `;
     }
@@ -91,7 +91,7 @@ const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: bo
           `;
         case "lg":
           return `
-            width: 480px;
+            width: 420px;
             @media (max-width: 560px) { width: 85%; }
           `;
         case "xl":

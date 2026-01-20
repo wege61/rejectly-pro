@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 
 type SheetSide = "left" | "right" | "top" | "bottom";
@@ -22,6 +22,9 @@ interface SheetProps {
 
 const ANIMATION_DURATION = 300;
 
+// Global counter to track open sheets
+let openSheetsCount = 0;
+
 const Overlay = styled.div<{ $isOpen: boolean }>`
   position: fixed;
   inset: 0;
@@ -35,7 +38,7 @@ const Overlay = styled.div<{ $isOpen: boolean }>`
 const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: boolean }>`
   position: fixed;
   z-index: ${({ theme }) => theme.zIndex.modal};
-  background-color: ${({ theme }) => theme.colors.surface};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
@@ -152,7 +155,7 @@ const SheetHeaderContent = styled.div`
 `;
 
 const SheetTitle = styled.h2`
-  font-size: 1.125rem;
+  font-size: 15px;
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.textPrimary};
   line-height: 1.3;
@@ -160,7 +163,7 @@ const SheetTitle = styled.h2`
 `;
 
 const SheetDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: 14px;
   color: ${({ theme }) => theme.colors.textSecondary};
   line-height: 1.4;
   margin: 0;
@@ -194,7 +197,7 @@ const CloseButton = styled.button`
 `;
 
 const SheetBody = styled.div`
-  padding: 24px;
+  padding: 0;
   overflow-y: auto;
   flex: 1;
 `;
@@ -254,9 +257,16 @@ export const Sheet: React.FC<SheetProps> & {
   const [isMounted, setIsMounted] = useState(false);
   // Track if sheet is visually open (for CSS transition)
   const [isAnimatingOpen, setIsAnimatingOpen] = useState(false);
+  // Track if this sheet instance has incremented the counter
+  const hasIncrementedRef = useRef(false);
 
   useEffect(() => {
     if (isOpen) {
+      // Increment counter only once per open
+      if (!hasIncrementedRef.current) {
+        openSheetsCount++;
+        hasIncrementedRef.current = true;
+      }
       // Mount the component first
       setIsMounted(true);
       // Then trigger the open animation on next frame
@@ -266,13 +276,19 @@ export const Sheet: React.FC<SheetProps> & {
         });
       });
       document.body.style.overflow = "hidden";
-    } else {
+    } else if (hasIncrementedRef.current) {
+      // Only run close logic if this sheet was previously open
+      hasIncrementedRef.current = false;
+      openSheetsCount--;
       // Start close animation
       setIsAnimatingOpen(false);
       // Unmount after animation completes
       const timer = setTimeout(() => {
         setIsMounted(false);
-        document.body.style.overflow = "unset";
+        // Only reset overflow if no other sheets are open
+        if (openSheetsCount === 0) {
+          document.body.style.overflow = "unset";
+        }
       }, ANIMATION_DURATION);
       return () => clearTimeout(timer);
     }
@@ -298,7 +314,15 @@ export const Sheet: React.FC<SheetProps> & {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      document.body.style.overflow = "unset";
+      // If this sheet was open when unmounting, decrement counter
+      if (hasIncrementedRef.current) {
+        openSheetsCount--;
+        hasIncrementedRef.current = false;
+      }
+      // Only reset overflow if no other sheets are open
+      if (openSheetsCount === 0) {
+        document.body.style.overflow = "unset";
+      }
     };
   }, []);
 

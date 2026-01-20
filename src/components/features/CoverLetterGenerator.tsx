@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Sheet } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
-import { Spinner } from "@/components/ui/Spinner";
 import { LoadingModal } from "@/components/ui/LoadingModal";
 import { useToast } from "@/contexts/ToastContext";
 
@@ -49,10 +48,12 @@ const CheckIcon = () => (
 
 const GeneratorContent = styled.div`
   padding: 0;
+  font-size: 13px;
 `;
 
 const OptionSection = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
+  padding: 12px 24px;
 `;
 
 const OptionLabel = styled.div`
@@ -69,45 +70,10 @@ const OptionDescription = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const OptionGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
 const TemplateList = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-const OptionButton = styled.button<{ $selected: boolean }>`
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ $selected, theme }) =>
-    $selected
-      ? "var(--gradient-primary)"
-      : theme.colors.surface};
-  border: 2px solid
-    ${({ $selected, theme }) =>
-      $selected ? "var(--accent)" : theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  color: ${({ $selected, theme }) =>
-    $selected ? "white" : theme.colors.textPrimary};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px
-      ${({ $selected }) =>
-        $selected ? "var(--accent-shadow)" : "rgba(0, 0, 0, 0.1)"};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 `;
 
 const TemplateItem = styled.label<{ $selected: boolean }>`
@@ -136,7 +102,7 @@ const RadioIndicator = styled.div<{ $selected: boolean }>`
   flex-shrink: 0;
   border-radius: 50%;
   border: 2px solid ${({ $selected }) =>
-    $selected ? "var(--accent)" : "rgba(255, 255, 255, 0.2)"};
+    $selected ? "var(--accent)" : "var(--checkbox)"};
   background: ${({ $selected }) =>
     $selected ? "var(--accent)" : "transparent"};
   transition: all 150ms ease;
@@ -195,7 +161,7 @@ const SimpleRadioIndicator = styled.div<{ $selected: boolean }>`
   flex-shrink: 0;
   border-radius: 50%;
   border: 2px solid ${({ $selected }) =>
-    $selected ? "var(--accent)" : "rgba(255, 255, 255, 0.2)"};
+    $selected ? "var(--accent)" : "var(--checkbox)"};
   background: ${({ $selected }) =>
     $selected ? "var(--accent)" : "transparent"};
   transition: all 150ms ease;
@@ -231,16 +197,6 @@ const SimpleOptionLabel = styled.span`
 const SimpleOptionDescription = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
   color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const OptionTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-`;
-
-const OptionDesc = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  opacity: 0.8;
 `;
 
 const CustomizationSection = styled.div`
@@ -285,71 +241,70 @@ const StyledTextarea = styled.textarea`
   }
 `;
 
-const PreviewHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
-
-const PreviewTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const WordCount = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
 const EditorContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+`;
+
+const BottomRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
+  margin-top: ${({ theme }) => theme.spacing.lg};
+  padding: 0 12px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: ${({ theme }) => theme.spacing.lg};
+  }
+`;
+
+const BottomRowItem = styled.div`
+  flex: 1;
+  min-width: 0;
+
+  @media (max-width: 767px) {
+    width: 100%;
+  }
 `;
 
 const ParagraphsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: 0;
   max-height: 400px;
   overflow-y: auto;
   padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
+  background: ${({ theme }) => theme.colors.border}; 
+  @media (max-width: 768px) {
+   max-height: 350px;
+  }
 `;
 
 const ParagraphCard = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
+  padding: ${({ theme }) => theme.spacing.sm};
   transition: all ${({ theme }) => theme.transitions.fast};
 `;
 
 const ParagraphType = styled.div<{ $type: string }>`
   display: inline-block;
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  background: ${({ $type }) => {
+  color: ${({ $type }) => {
     switch ($type) {
       case 'header': return '#64748b';
-      case 'greeting': return '#06b6d4';
-      case 'opening': return '#3b82f6';
-      case 'achievement': return 'var(--success)';
+      case 'greeting': return '#EAB308';
+      case 'opening': return '#2A57A0';
+      case 'achievement': return 'var(--primary-500)';
       case 'motivation': return '#f59e0b';
-      case 'closing': return '#8b5cf6';
+      case 'closing': return '#F97316';
       default: return '#6b7280';
     }
   }};
-  color: white;
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  border-radius: ${({ theme }) => theme.radius.sm};
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  font-size: 12px;
 `;
 
 const SentenceContainer = styled.div`
@@ -360,14 +315,13 @@ const SentenceContainer = styled.div`
 const Sentence = styled.span<{ $isHighlight: boolean; $isSelected: boolean }>`
   cursor: pointer;
   padding: 2px 4px;
-  border-radius: 4px;
+  font-size: 13px;
+  text-decoration: ${({ $isHighlight }) => ($isHighlight ? 'underline' : 'none')};
+  font-style: ${({ $isHighlight }) => ($isHighlight ? 'italic' : 'normal')};
   background: ${({ $isHighlight, $isSelected }) =>
     $isSelected ? '#fef3c7' :
-    $isHighlight ? 'var(--success-light)' : 'transparent'};
-  border-bottom: ${({ $isHighlight }) =>
-    $isHighlight ? '2px solid var(--success)' : 'none'};
+    $isHighlight ? 'transparent' : 'transparent'};
   transition: all 0.2s;
-
   &:hover {
     background: #fef3c7;
   }
@@ -402,21 +356,24 @@ const AlternativeOption = styled.div`
 
 const RationalePanel = styled.div`
   padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
-  max-height: 200px;
-  overflow-y: auto;
+  height: fit-content;
 `;
 
 const RationaleTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: 13px;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: ${({ theme }) => theme.spacing.xs};
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
 `;
 
 const RationaleContent = styled.div`
@@ -430,31 +387,69 @@ const RationaleEmpty = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
   font-style: italic;
   text-align: center;
-  padding: ${({ theme }) => theme.spacing.xl};
+  padding: 12px;
 `;
 
-const HighlightsList = styled.div`
-  margin-top: ${({ theme }) => theme.spacing.lg};
-  padding: ${({ theme }) => theme.spacing.md};
-  background: var(--success-bg);
-  border-left: 4px solid var(--success);
-  border-radius: ${({ theme }) => theme.radius.md};
+// Accordion for Key Highlights
+const AccordionWrapper = styled.div`
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 0 ${({ theme }) => theme.spacing.md};
 `;
 
-const HighlightsTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: var(--success);
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+const AccordionTrigger = styled.button<{ $isOpen: boolean }>`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: ${({ theme }) => theme.spacing.md} 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  gap: 10px;
+  transition: all 150ms ease;
+`;
+
+const AccordionTriggerText = styled.span`
+  font-size: 13px;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const AccordionChevron = styled.div<{ $isOpen: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 200ms ease;
+  transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0deg)")};
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const AccordionContent = styled.div<{ $isOpen: boolean }>`
+  display: grid;
+  grid-template-rows: ${({ $isOpen }) => ($isOpen ? "1fr" : "0fr")};
+  transition: grid-template-rows 200ms ease;
+`;
+
+const AccordionContentInner = styled.div`
+  overflow: hidden;
+`;
+
+const AccordionContentPadding = styled.div`
+  padding-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
 const HighlightItem = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   color: ${({ theme }) => theme.colors.textSecondary};
-  padding: ${({ theme }) => theme.spacing.xs} 0;
+  padding: 6px 0;
   display: flex;
   align-items: flex-start;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: ${({ theme }) => theme.spacing.sm};
 
   svg {
     color: var(--success);
@@ -463,27 +458,32 @@ const HighlightItem = styled.div`
   }
 `;
 
-const ActionButtons = styled.div`
+const ChevronDownIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+  </svg>
+);
+
+const ActionButtonsWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   gap: ${({ theme }) => theme.spacing.sm};
-  margin-top: ${({ theme }) => theme.spacing.xl};
-  padding-top: ${({ theme }) => theme.spacing.lg};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
-  flex-wrap: wrap;
 
   button {
     display: inline-flex;
     align-items: center;
     gap: ${({ theme }) => theme.spacing.xs};
+    white-space: nowrap;
   }
 
-  @media (max-width: 520px) {
-    flex-direction: column;
-
-    button {
-      width: 100%;
-      justify-content: center;
-    }
+  @media (min-width: 768px) {
+    flex-direction: row;
   }
 `;
 
@@ -592,6 +592,9 @@ export function CoverLetterGenerator({
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedLetter, setGeneratedLetter] = useState<GeneratedLetter | null>(null);
 
+  // State for bottom sheet (editor view)
+  const [isEditorSheetOpen, setIsEditorSheetOpen] = useState(false);
+
   // Load existing letter when modal opens in edit mode
   useEffect(() => {
     if (isOpen && existingLetter) {
@@ -605,6 +608,8 @@ export function CoverLetterGenerator({
       setTone(existingLetter.tone as 'professional' | 'friendly' | 'formal');
       setLength(existingLetter.length as 'short' | 'medium' | 'long');
       setLanguage(existingLetter.language as 'en' | 'tr');
+      // Open editor sheet for existing letter
+      setIsEditorSheetOpen(true);
     } else if (isOpen && !existingLetter) {
       // Reset when opening in create mode
       setGeneratedLetter(null);
@@ -614,8 +619,18 @@ export function CoverLetterGenerator({
       setTemplate('standard');
       setEmphasizeSkills('');
       setSpecificProjects('');
+      setIsEditorSheetOpen(false);
     }
   }, [isOpen, existingLetter]);
+
+  // Close editor sheet when main sheet closes
+  useEffect(() => {
+    if (!isOpen) {
+      setTimeout(() => {
+        setIsEditorSheetOpen(false);
+      }, 350);
+    }
+  }, [isOpen]);
 
   // Editor states
   const [selectedSentence, setSelectedSentence] = useState<{
@@ -624,6 +639,7 @@ export function CoverLetterGenerator({
     position: { x: number; y: number };
   } | null>(null);
   const [activeParagraphId, setActiveParagraphId] = useState<string | null>(null);
+  const [isHighlightsOpen, setIsHighlightsOpen] = useState(false);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -661,6 +677,7 @@ export function CoverLetterGenerator({
       }
 
       setGeneratedLetter(result.coverLetter);
+      setIsEditorSheetOpen(true); // Open bottom sheet with result
       toast.success(existingLetter ? "Cover letter updated!" : "Cover letter generated!");
       onSuccess?.(result.coverLetter?.id);
     } catch (error) {
@@ -759,157 +776,167 @@ export function CoverLetterGenerator({
         ]}
       />
 
+      {/* Right Sheet - Generation Form (only for new letters) */}
       <Sheet
-        isOpen={isOpen}
+        isOpen={isOpen && !existingLetter}
         onClose={onClose}
-        title={existingLetter ? "Edit Cover Letter" : "Generate Cover Letter"}
-        description={existingLetter ? "Review and edit your cover letter" : "Create a personalized, customizable cover letter with AI assistance"}
+        title="Generate Cover Letter"
+        description="Create a personalized, customizable cover letter with AI assistance"
         size="lg"
         side="right"
       >
         <Sheet.Body>
-        <GeneratorContent>
-          {!generatedLetter ? (
-            <>
-              <OptionSection>
-                <OptionLabel>Template</OptionLabel>
-                <OptionDescription>
-                  Choose the approach that best fits your application
-                </OptionDescription>
-                <TemplateList>
-                  {TEMPLATES.map(tmpl => (
-                    <TemplateItem
-                      key={tmpl.id}
-                      $selected={template === tmpl.id}
-                      onClick={() => setTemplate(tmpl.id)}
-                    >
-                      <RadioIndicator $selected={template === tmpl.id} />
-                      <TemplateContent>
-                        <TemplateName>{tmpl.name}</TemplateName>
-                        <TemplateDescription>{tmpl.description}</TemplateDescription>
-                      </TemplateContent>
-                    </TemplateItem>
-                  ))}
-                </TemplateList>
-              </OptionSection>
+          <GeneratorContent>
+            <OptionSection>
+              <OptionLabel>Template</OptionLabel>
+              <OptionDescription>
+                Choose the approach that best fits your application
+              </OptionDescription>
+              <TemplateList>
+                {TEMPLATES.map(tmpl => (
+                  <TemplateItem
+                    key={tmpl.id}
+                    $selected={template === tmpl.id}
+                    onClick={() => setTemplate(tmpl.id)}
+                  >
+                    <RadioIndicator $selected={template === tmpl.id} />
+                    <TemplateContent>
+                      <TemplateName>{tmpl.name}</TemplateName>
+                      <TemplateDescription>{tmpl.description}</TemplateDescription>
+                    </TemplateContent>
+                  </TemplateItem>
+                ))}
+              </TemplateList>
+            </OptionSection>
 
-              <OptionSection>
-                <OptionLabel>Tone</OptionLabel>
-                <SimpleOptionList>
-                  <SimpleOptionItem
-                    $selected={tone === 'professional'}
-                    onClick={() => setTone('professional')}
-                  >
-                    <SimpleRadioIndicator $selected={tone === 'professional'} />
-                    <SimpleOptionContent>
-                      <SimpleOptionLabel>Professional</SimpleOptionLabel>
-                      <SimpleOptionDescription>Confident & direct</SimpleOptionDescription>
-                    </SimpleOptionContent>
-                  </SimpleOptionItem>
-                  <SimpleOptionItem
-                    $selected={tone === 'friendly'}
-                    onClick={() => setTone('friendly')}
-                  >
-                    <SimpleRadioIndicator $selected={tone === 'friendly'} />
-                    <SimpleOptionContent>
-                      <SimpleOptionLabel>Friendly</SimpleOptionLabel>
-                      <SimpleOptionDescription>Warm & approachable</SimpleOptionDescription>
-                    </SimpleOptionContent>
-                  </SimpleOptionItem>
-                  <SimpleOptionItem
-                    $selected={tone === 'formal'}
-                    onClick={() => setTone('formal')}
-                  >
-                    <SimpleRadioIndicator $selected={tone === 'formal'} />
-                    <SimpleOptionContent>
-                      <SimpleOptionLabel>Formal</SimpleOptionLabel>
-                      <SimpleOptionDescription>Traditional & respectful</SimpleOptionDescription>
-                    </SimpleOptionContent>
-                  </SimpleOptionItem>
-                </SimpleOptionList>
-              </OptionSection>
-
-              <OptionSection>
-                <OptionLabel>Length</OptionLabel>
-                <SimpleOptionList>
-                  <SimpleOptionItem
-                    $selected={length === 'short'}
-                    onClick={() => setLength('short')}
-                  >
-                    <SimpleRadioIndicator $selected={length === 'short'} />
-                    <SimpleOptionContent>
-                      <SimpleOptionLabel>Short</SimpleOptionLabel>
-                      <SimpleOptionDescription>150-200 words</SimpleOptionDescription>
-                    </SimpleOptionContent>
-                  </SimpleOptionItem>
-                  <SimpleOptionItem
-                    $selected={length === 'medium'}
-                    onClick={() => setLength('medium')}
-                  >
-                    <SimpleRadioIndicator $selected={length === 'medium'} />
-                    <SimpleOptionContent>
-                      <SimpleOptionLabel>Medium</SimpleOptionLabel>
-                      <SimpleOptionDescription>250-300 words</SimpleOptionDescription>
-                    </SimpleOptionContent>
-                  </SimpleOptionItem>
-                  <SimpleOptionItem
-                    $selected={length === 'long'}
-                    onClick={() => setLength('long')}
-                  >
-                    <SimpleRadioIndicator $selected={length === 'long'} />
-                    <SimpleOptionContent>
-                      <SimpleOptionLabel>Long</SimpleOptionLabel>
-                      <SimpleOptionDescription>350-400 words</SimpleOptionDescription>
-                    </SimpleOptionContent>
-                  </SimpleOptionItem>
-                </SimpleOptionList>
-              </OptionSection>
-
-              {/* Language selection hidden for now - defaulting to English
-                 Infrastructure preserved for future multi-language support */}
-
-              <OptionSection>
-                <OptionLabel>Customization <i>(Optional)</i></OptionLabel>
-                <OptionDescription>
-                  Help AI personalize your letter by specifying key information
-                </OptionDescription>
-                <CustomizationSection>
-                  <StyledTextarea
-                    placeholder="Skills to emphasize (comma-separated, e.g., Python, Leadership, Data Analysis)"
-                    value={emphasizeSkills}
-                    onChange={(e) => setEmphasizeSkills(e.target.value)}
-                  />
-                  <StyledTextarea
-                    placeholder="Specific projects to highlight (comma-separated, e.g., E-commerce Platform, ML Model)"
-                    value={specificProjects}
-                    onChange={(e) => setSpecificProjects(e.target.value)}
-                  />
-                </CustomizationSection>
-              </OptionSection>
-
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={onClose}
+            <OptionSection>
+              <OptionLabel>Tone</OptionLabel>
+              <SimpleOptionList>
+                <SimpleOptionItem
+                  $selected={tone === 'professional'}
+                  onClick={() => setTone('professional')}
                 >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleGenerate}
+                  <SimpleRadioIndicator $selected={tone === 'professional'} />
+                  <SimpleOptionContent>
+                    <SimpleOptionLabel>Professional</SimpleOptionLabel>
+                    <SimpleOptionDescription>Confident & direct</SimpleOptionDescription>
+                  </SimpleOptionContent>
+                </SimpleOptionItem>
+                <SimpleOptionItem
+                  $selected={tone === 'friendly'}
+                  onClick={() => setTone('friendly')}
                 >
-                  Generate Cover Letter
-                </Button>
-              </div>
-            </>
-          ) : (
-            <>
-              <PreviewHeader>
-                <PreviewTitle>Your Interactive Cover Letter</PreviewTitle>
-                <WordCount>{generatedLetter.wordCount} words</WordCount>
-              </PreviewHeader>
+                  <SimpleRadioIndicator $selected={tone === 'friendly'} />
+                  <SimpleOptionContent>
+                    <SimpleOptionLabel>Friendly</SimpleOptionLabel>
+                    <SimpleOptionDescription>Warm & approachable</SimpleOptionDescription>
+                  </SimpleOptionContent>
+                </SimpleOptionItem>
+                <SimpleOptionItem
+                  $selected={tone === 'formal'}
+                  onClick={() => setTone('formal')}
+                >
+                  <SimpleRadioIndicator $selected={tone === 'formal'} />
+                  <SimpleOptionContent>
+                    <SimpleOptionLabel>Formal</SimpleOptionLabel>
+                    <SimpleOptionDescription>Traditional & respectful</SimpleOptionDescription>
+                  </SimpleOptionContent>
+                </SimpleOptionItem>
+              </SimpleOptionList>
+            </OptionSection>
 
+            <OptionSection>
+              <OptionLabel>Length</OptionLabel>
+              <SimpleOptionList>
+                <SimpleOptionItem
+                  $selected={length === 'short'}
+                  onClick={() => setLength('short')}
+                >
+                  <SimpleRadioIndicator $selected={length === 'short'} />
+                  <SimpleOptionContent>
+                    <SimpleOptionLabel>Short</SimpleOptionLabel>
+                    <SimpleOptionDescription>150-200 words</SimpleOptionDescription>
+                  </SimpleOptionContent>
+                </SimpleOptionItem>
+                <SimpleOptionItem
+                  $selected={length === 'medium'}
+                  onClick={() => setLength('medium')}
+                >
+                  <SimpleRadioIndicator $selected={length === 'medium'} />
+                  <SimpleOptionContent>
+                    <SimpleOptionLabel>Medium</SimpleOptionLabel>
+                    <SimpleOptionDescription>250-300 words</SimpleOptionDescription>
+                  </SimpleOptionContent>
+                </SimpleOptionItem>
+                <SimpleOptionItem
+                  $selected={length === 'long'}
+                  onClick={() => setLength('long')}
+                >
+                  <SimpleRadioIndicator $selected={length === 'long'} />
+                  <SimpleOptionContent>
+                    <SimpleOptionLabel>Long</SimpleOptionLabel>
+                    <SimpleOptionDescription>350-400 words</SimpleOptionDescription>
+                  </SimpleOptionContent>
+                </SimpleOptionItem>
+              </SimpleOptionList>
+            </OptionSection>
+
+            <OptionSection>
+              <OptionLabel>Customization <i>(Optional)</i></OptionLabel>
+              <OptionDescription>
+                Help AI personalize your letter by specifying key information
+              </OptionDescription>
+              <CustomizationSection>
+                <StyledTextarea
+                  placeholder="Skills to emphasize (comma-separated, e.g., Python, Leadership, Data Analysis)"
+                  value={emphasizeSkills}
+                  onChange={(e) => setEmphasizeSkills(e.target.value)}
+                />
+                <StyledTextarea
+                  placeholder="Specific projects to highlight (comma-separated, e.g., E-commerce Platform, ML Model)"
+                  value={specificProjects}
+                  onChange={(e) => setSpecificProjects(e.target.value)}
+                />
+              </CustomizationSection>
+            </OptionSection>
+
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', margin: '0 8px 12px 0' }}>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={onClose}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleGenerate}
+              >
+                Generate
+              </Button>
+            </div>
+          </GeneratorContent>
+        </Sheet.Body>
+      </Sheet>
+
+      {/* Bottom Sheet - Editor/Viewer */}
+      <Sheet
+        isOpen={isEditorSheetOpen}
+        onClose={() => {
+          setIsEditorSheetOpen(false);
+          // If viewing existing letter, also close main
+          if (existingLetter) {
+            onClose();
+          }
+        }}
+        title="Cover Letter"
+        description={generatedLetter ? `${generatedLetter.wordCount} words` : undefined}
+        size="xl"
+        side="bottom"
+      >
+        <Sheet.Body>
+          {generatedLetter && (
+            <GeneratorContent>
               {generatedLetter.paragraphs && generatedLetter.paragraphs.length > 0 ? (
                 <EditorContainer>
                   <ParagraphsContainer>
@@ -951,63 +978,95 @@ export function CoverLetterGenerator({
                       </ParagraphCard>
                     ))}
                   </ParagraphsContainer>
-
-                  <RationalePanel>
-                    <RationaleTitle>
-                      <LightbulbIcon /> Why This Content?
-                    </RationaleTitle>
-                    {activeParagraph ? (
-                      <RationaleContent>
-                        <strong style={{ display: 'block', marginBottom: '8px' }}>
-                          {activeParagraph.type.replace('_', ' ').toUpperCase()} Paragraph:
-                        </strong>
-                        {activeParagraph.rationale}
-                      </RationaleContent>
-                    ) : (
-                      <RationaleEmpty>
-                        Hover over a paragraph to see why it was included and how it relates to the job posting.
-                      </RationaleEmpty>
-                    )}
-                  </RationalePanel>
                 </EditorContainer>
               ) : (
                 <div style={{
-                  padding: '24px',
-                  background: '#f9fafb',
-                  borderRadius: '8px',
+                  padding: '16px',
+                  background: 'var(--bg-alt)',
+                  borderRadius: '0',
                   whiteSpace: 'pre-wrap',
-                  lineHeight: '1.8'
+                  lineHeight: '1.8',
+                  maxHeight: '300px',
+                  overflowY: 'auto'
                 }}>
                   {generatedLetter.content}
                 </div>
               )}
 
-              {generatedLetter.keyHighlights && generatedLetter.keyHighlights.length > 0 && (
-                <HighlightsList>
-                  <HighlightsTitle>Key Highlights Mentioned:</HighlightsTitle>
-                  {generatedLetter.keyHighlights.map((highlight, index) => (
-                    <HighlightItem key={index}>
-                      <CheckIcon />
-                      <span>{highlight}</span>
-                    </HighlightItem>
-                  ))}
-                </HighlightsList>
-              )}
+              {/* Bottom Row: Why This Content, Key Highlights, Actions */}
+              <BottomRow>
+                {generatedLetter.paragraphs && generatedLetter.paragraphs.length > 0 && (
+                  <BottomRowItem>
+                    <RationalePanel>
+                      <RationaleTitle>
+                        <LightbulbIcon /> Why This Content?
+                      </RationaleTitle>
+                      {activeParagraph ? (
+                        <RationaleContent>
+                          <strong style={{ display: 'block', marginBottom: '4px', fontSize: '12px' }}>
+                            {activeParagraph.type.replace('_', ' ').toUpperCase()}:
+                          </strong>
+                          {activeParagraph.rationale}
+                        </RationaleContent>
+                      ) : (
+                        <RationaleEmpty>
+                          Hover over a paragraph to see why it was included.
+                        </RationaleEmpty>
+                      )}
+                    </RationalePanel>
+                  </BottomRowItem>
+                )}
 
-              <ActionButtons>
-                <Button onClick={handleCopy} variant="primary">
-                  <CopyIcon /> Copy to Clipboard
-                </Button>
-                <Button onClick={handleDownload} variant="ghost">
-                  <DownloadIcon /> Download
-                </Button>
-                <Button
-                  onClick={() => setGeneratedLetter(null)}
-                  variant="ghost"
-                >
-                  <RefreshIcon size={16} /> Generate New
-                </Button>
-              </ActionButtons>
+                {generatedLetter.keyHighlights && generatedLetter.keyHighlights.length > 0 && (
+                  <BottomRowItem>
+                    <AccordionWrapper>
+                      <AccordionTrigger
+                        $isOpen={isHighlightsOpen}
+                        onClick={() => setIsHighlightsOpen(!isHighlightsOpen)}
+                      >
+                        <AccordionTriggerText>
+                          Key Highlights ({generatedLetter.keyHighlights.length})
+                        </AccordionTriggerText>
+                        <AccordionChevron $isOpen={isHighlightsOpen}>
+                          <ChevronDownIcon />
+                        </AccordionChevron>
+                      </AccordionTrigger>
+                      <AccordionContent $isOpen={isHighlightsOpen}>
+                        <AccordionContentInner>
+                          <AccordionContentPadding>
+                            {generatedLetter.keyHighlights.map((highlight, index) => (
+                              <HighlightItem key={index}>
+                                <span>{highlight}</span>
+                              </HighlightItem>
+                            ))}
+                          </AccordionContentPadding>
+                        </AccordionContentInner>
+                      </AccordionContent>
+                    </AccordionWrapper>
+                  </BottomRowItem>
+                )}
+
+                <ActionButtonsWrapper>
+                  <Button onClick={handleCopy} variant="primary" size="sm">
+                    <CopyIcon /> Copy
+                  </Button>
+                  <Button onClick={handleDownload} variant="ghost" size="sm">
+                    <DownloadIcon /> Download
+                  </Button>
+                  {!existingLetter && (
+                    <Button
+                      onClick={() => {
+                        setIsEditorSheetOpen(false);
+                        setGeneratedLetter(null);
+                      }}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      <RefreshIcon size={16} /> New
+                    </Button>
+                  )}
+                </ActionButtonsWrapper>
+              </BottomRow>
 
               {/* Alternatives Popup */}
               {selectedSentence && selectedSentenceData && selectedSentenceData.alternatives && (
@@ -1040,10 +1099,7 @@ export function CoverLetterGenerator({
                       Alternative Phrasings
                     </div>
                     <AlternativeOption
-                      onClick={() => {
-                        // Keep current
-                        setSelectedSentence(null);
-                      }}
+                      onClick={() => setSelectedSentence(null)}
                       style={{ fontWeight: 600, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
                       <CheckIcon /> {selectedSentenceData.text}
@@ -1065,9 +1121,8 @@ export function CoverLetterGenerator({
                   </AlternativesPopup>
                 </>
               )}
-            </>
+            </GeneratorContent>
           )}
-        </GeneratorContent>
         </Sheet.Body>
       </Sheet>
     </>

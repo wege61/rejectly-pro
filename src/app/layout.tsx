@@ -133,6 +133,7 @@ export default function RootLayout({
                 --landing: #f84938;
                 --landing-button: #f84938;
                 --navbar: #03374e;
+                --checkbox: rgba(255, 255, 255, 0.2);
 
                 /* Accent (Warm CTA) */
                 --accent: #FF7A73;
@@ -178,6 +179,7 @@ export default function RootLayout({
                 --landing: #006e81;
                 --landing-button: #ea7a18;
                 --navbar: #fefffd;
+                --checkbox: rgba(0, 0, 0, 0.2);
 
                 /* Light mode color overrides */
                 --primary-100: rgba(11, 102, 106, 0.12);

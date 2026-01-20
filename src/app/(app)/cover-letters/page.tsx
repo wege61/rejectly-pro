@@ -677,7 +677,7 @@ const CoverLetterCTAContainer = styled.div`
     transform: translateY(0);
     opacity: 1;
     position: relative;
-    padding-top: 12px;
+    padding: 10px 0 0 0;
     background: none;
   }
 `;

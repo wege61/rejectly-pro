@@ -936,7 +936,7 @@ const RecentReportCTAContainer = styled.div`
     transform: translateY(0);
     opacity: 1;
     position: relative;
-    padding-top: 16px;
+    padding: 16px 0 0 0;
     background: none;
   }
 `;

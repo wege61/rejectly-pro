@@ -54,7 +54,7 @@ const BentoGridWrapper = styled.div`
 
   &.lg\\:grid-rows-3 {
     @media (min-width: 1024px) {
-      grid-template-rows: repeat(3, 14rem);
+      grid-template-rows: 14rem 7rem 14rem;
     }
   }
 

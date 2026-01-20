@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Modal } from "@/components/ui/Modal";
+import { Sheet } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { LoadingModal } from "@/components/ui/LoadingModal";
@@ -100,7 +100,7 @@ const CheckIcon = () => (
 );
 
 const GeneratorContent = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
+  padding: 0;
 `;
 
 const OptionSection = styled.div`
@@ -130,14 +130,10 @@ const OptionGrid = styled.div`
 
 const TemplateGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: ${({ theme }) => theme.spacing.md};
+  grid-template-columns: repeat(2, 1fr);
+  gap: ${({ theme }) => theme.spacing.sm};
 
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 520px) {
+  @media (max-width: 500px) {
     grid-template-columns: 1fr;
   }
 `;
@@ -172,29 +168,27 @@ const OptionButton = styled.button<{ $selected: boolean }>`
 `;
 
 const TemplateButton = styled(OptionButton)`
-  padding: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.md};
   text-align: left;
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
-  min-height: 140px;
+  min-height: 110px;
 `;
 
 const TemplateIconWrapper = styled.div<{ $selected: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: ${({ theme }) => theme.radius.md};
-  background: ${({ $selected }) =>
-    $selected
-      ? "rgba(255, 255, 255, 0.2)"
-      : "rgba(102, 126, 234, 0.1)"};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
   transition: all ${({ theme }) => theme.transitions.fast};
 
   svg {
+    width: 20px;
+    height: 20px;
     color: ${({ $selected }) =>
       $selected ? "white" : "var(--accent)"};
   }
@@ -254,20 +248,16 @@ const WordCount = styled.div`
 `;
 
 const EditorContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 320px;
+  display: flex;
+  flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
-
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-  }
 `;
 
 const ParagraphsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
-  max-height: 600px;
+  max-height: 400px;
   overflow-y: auto;
   padding: ${({ theme }) => theme.spacing.md};
   background: ${({ theme }) => theme.colors.background};
@@ -355,14 +345,12 @@ const AlternativeOption = styled.div`
 `;
 
 const RationalePanel = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.md};
   background: ${({ theme }) => theme.colors.surface};
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  max-height: 600px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.md};
+  max-height: 200px;
   overflow-y: auto;
-  position: sticky;
-  top: 0;
 `;
 
 const RationaleTitle = styled.div`
@@ -721,14 +709,15 @@ export function CoverLetterGenerator({
         ]}
       />
 
-      <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={existingLetter ? "Edit Cover Letter" : "Generate Cover Letter"}
-      description={existingLetter ? "Review and edit your cover letter" : "Create a personalized, customizable cover letter with AI assistance"}
-      size="xl"
-    >
-      <Modal.Body>
+      <Sheet
+        isOpen={isOpen}
+        onClose={onClose}
+        title={existingLetter ? "Edit Cover Letter" : "Generate Cover Letter"}
+        description={existingLetter ? "Review and edit your cover letter" : "Create a personalized, customizable cover letter with AI assistance"}
+        size="lg"
+        side="right"
+      >
+        <Sheet.Body>
         <GeneratorContent>
           {!generatedLetter ? (
             <>
@@ -1008,8 +997,8 @@ export function CoverLetterGenerator({
             </>
           )}
         </GeneratorContent>
-      </Modal.Body>
-    </Modal>
+        </Sheet.Body>
+      </Sheet>
     </>
   );
 }

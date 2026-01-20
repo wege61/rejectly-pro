@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/Card";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
+import { CreditsCard } from "@/components/dashboard/CreditsCard";
 
 // Icons
 const ViewIcon = () => (
@@ -64,25 +65,6 @@ const DeleteIcon = () => (
   </svg>
 );
 
-const DocumentIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" />
-    <line x1="16" y1="17" x2="8" y2="17" />
-    <line x1="10" y1="9" x2="8" y2="9" />
-  </svg>
-);
-
 const EnvelopeIcon = ({ size = "64" }: { size?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -127,12 +109,15 @@ const CheckCircleIcon = () => (
 );
 
 const Container = styled.div`
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing["2xl"]};
+  padding-bottom: 100px; /* Space for FAB */
 
-  @media (max-width: 768px) {
-    padding: ${({ theme }) => theme.spacing.md};
+  
+  @media (max-width: 450px) {
+    padding: ${({ theme }) => theme.spacing["lg"]};
+    padding-top: 24px;
   }
 `;
 
@@ -176,92 +161,36 @@ const ColumnHeader = styled.div`
 `;
 
 const Header = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
+const TitleElements = styled.div``;
+
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
+ font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
+
+  @media (max-width: 768px) {
+    order: 1;
+  }
 `;
+
+const CreditsCardWrapper = styled.div``;
 
 const Description = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  max-width: 600px;
-`;
-
-const HeaderRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const CreditsIndicator = styled.div<{ $low?: boolean; $subscription?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
-  background: ${({ $subscription, $low }) =>
-    $subscription
-      ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%)'
-      : $low
-        ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%)'
-        : 'linear-gradient(135deg, rgba(155, 135, 196, 0.2) 0%, rgba(180, 167, 214, 0.2) 100%)'
-  };
-  border: 2px solid ${({ $subscription, $low }) =>
-    $subscription
-      ? 'rgba(16, 185, 129, 0.5)'
-      : $low
-        ? 'rgba(245, 158, 11, 0.5)'
-        : 'rgba(155, 135, 196, 0.5)'
-  };
-  border-radius: ${({ theme }) => theme.radius.lg};
   font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ $subscription, $low }) =>
-    $subscription
-      ? 'var(--success)'
-      : $low
-        ? '#f59e0b'
-        : '#e5e7eb'
-  };
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px ${({ $subscription, $low }) =>
-    $subscription
-      ? 'rgba(16, 185, 129, 0.2)'
-      : $low
-        ? 'rgba(245, 158, 11, 0.2)'
-        : 'rgba(155, 135, 196, 0.2)'
-  };
+  color: ${({ theme }) => theme.colors.textSecondary};
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px ${({ $subscription, $low }) =>
-      $subscription
-        ? 'rgba(16, 185, 129, 0.3)'
-        : $low
-          ? 'rgba(245, 158, 11, 0.3)'
-          : 'rgba(155, 135, 196, 0.3)'
-    };
-  }
-
-  .credit-value {
-    font-size: ${({ theme }) => theme.typography.fontSize.xl};
-    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-    color: ${({ $subscription, $low }) =>
-      $subscription
-        ? 'var(--success)'
-        : $low
-          ? '#f59e0b'
-          : '#9b87c4'
-    };
+  @media (max-width: 768px) {
+    order: 3;
   }
 `;
+
 
 const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
@@ -1064,7 +993,10 @@ export default function CoverLettersPage() {
 
   const handleGeneratorClose = () => {
     setIsGeneratorOpen(false);
-    setSelectedReportId(null);
+    // Delay clearing the reportId until after the animation completes
+    setTimeout(() => {
+      setSelectedReportId(null);
+    }, 350); // Slightly longer than ANIMATION_DURATION (300ms) to ensure animation finishes
   };
 
   const handleGeneratorSuccess = async (letterId?: string) => {
@@ -1197,27 +1129,17 @@ export default function CoverLettersPage() {
   return (
     <Container>
       <Header>
-        <HeaderRow>
-          <div>
+        <TitleElements>
+        
             <Title>Cover Letters</Title>
             <Description>
               Generate AI-powered cover letters from your reports and manage your applications.
             </Description>
-          </div>
-          <CreditsIndicator
-            $subscription={userCredits.hasSubscription}
-            $low={!userCredits.hasSubscription && userCredits.credits <= 2}
-            onClick={() => router.push(ROUTES.APP.BILLING)}
-          >
-            {userCredits.hasSubscription ? (
-              <>✓ Pro Active</>
-            ) : (
-              <>
-                <span className="credit-value">{userCredits.credits}</span> credits
-              </>
-            )}
-          </CreditsIndicator>
-        </HeaderRow>
+            </TitleElements>
+          <CreditsCardWrapper>
+          <CreditsCard />
+        </CreditsCardWrapper>
+        
       </Header>
 
       <TwoColumnLayout>
@@ -1437,7 +1359,10 @@ export default function CoverLettersPage() {
           isOpen={isEditorOpen}
           onClose={() => {
             setIsEditorOpen(false);
-            setSelectedLetterForEdit(null);
+            // Delay clearing the letter data until after the animation completes
+            setTimeout(() => {
+              setSelectedLetterForEdit(null);
+            }, 350);
           }}
           reportId={selectedLetterForEdit.report_id}
           existingLetter={{

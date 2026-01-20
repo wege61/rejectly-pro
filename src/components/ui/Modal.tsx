@@ -93,7 +93,7 @@ const ModalContainer = styled.div<{ $size: string }>`
 
   @media (max-width: 640px) {
     max-width: 100%;
-    max-height: 92vh;
+    max-height: 100vh;
     margin: 0;
     border-radius: 16px 16px 0 0;
   }

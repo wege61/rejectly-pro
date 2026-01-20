@@ -128,7 +128,7 @@ const CheckATSButton = styled.button`
   padding: 8px 12px;
   border: none;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -257,11 +257,15 @@ const ContentBody = styled.div`
 
 const CVGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
   margin-bottom: ${({ theme }) => theme.spacing.lg};
 
-  @media (max-width: 480px) {
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 880px) {
     grid-template-columns: 1fr;
   }
 `;
@@ -434,27 +438,33 @@ const JobIcon = () => (
 
 const CVCard = styled.div<{ $isOptimized?: boolean }>`
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--bg-alt);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  height: 200px;
 
-  /* Subtle depth through shadows */
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  /* Light styles */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
 
-  @media (prefers-color-scheme: dark) {
-    box-shadow: none;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
+  /* Dark styles */
+  ${({ theme }) => theme.colors.background === '#151517' && `
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  `}
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
   }
 
   &:hover .cv-content {
-    transform: translateY(-24px);
+    transform: translateY(-32px);
   }
 
   &:hover .cv-cta {
@@ -463,23 +473,28 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
   }
 
   &:hover .cv-overlay {
-    background: rgba(0, 0, 0, 0.02);
+    background: rgba(0, 0, 0, 0.03);
   }
 
   &:hover .cv-icon {
-    transform: scale(0.9);
+    transform: scale(0.85);
   }
 
-  @media (prefers-color-scheme: dark) {
+  ${({ theme }) => theme.colors.background === '#151517' && `
     &:hover .cv-overlay {
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(255, 255, 255, 0.05);
     }
-  }
+  `}
 
   @media (max-width: 1024px) {
+  height: 220px;
     &:hover .cv-content {
       transform: none;
     }
+  }
+
+  @media (max-width: 640px) {
+    height: 220px;
   }
 `;
 
@@ -628,11 +643,10 @@ const CVCardBackgroundComponent = ({ isOptimized }: CVCardBackgroundProps) => {
 const CVCardInner = styled.div`
   position: relative;
   z-index: 1;
-  padding: 14px;
+  padding: 20px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  min-height: 140px;
   justify-content: flex-end;
 `;
 
@@ -650,19 +664,19 @@ const CVCardContentInner = styled.div`
 
 const CVCardIcon = styled.div<{ $isOptimized?: boolean }>`
   transform-origin: left;
-  transition: all 0.2s ease;
-  color: ${({ $isOptimized }) => $isOptimized ? 'var(--success)' : 'var(--accent)'};
-  margin-bottom: 6px;
+  transition: all 0.3s ease;
+  color: ${({ $isOptimized }) => $isOptimized ? 'var(--primary-500)' : 'var(--accent)'};
+  margin-bottom: 8px;
 
   svg {
-    width: 22px;
-    height: 22px;
+    width: 36px;
+    height: 36px;
   }
 
   @media (max-width: 640px) {
     svg {
-      width: 20px;
-      height: 20px;
+      width: 28px;
+      height: 28px;
     }
   }
 `;
@@ -675,16 +689,16 @@ const CVCardOverlay = styled.div`
 `;
 
 const CVCardTitle = styled.h3`
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text-color);
-  margin-top: 2px;
+  margin-top: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 
   @media (max-width: 640px) {
-    font-size: 13px;
+    font-size: 16px;
   }
 `;
 
@@ -692,26 +706,29 @@ const CVCardMeta = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 4px;
 `;
 
 const CVCardDate = styled.p`
   color: var(--text-secondary);
-  font-size: 11px;
-  line-height: 1.4;
-  margin-top: 2px;
+  font-size: 14px;
 `;
 
 const CVCardJobInfo = styled.div`
-  font-size: 11px;
+  font-size: 14px;
   color: var(--text-secondary);
-  margin-top: 4px;
-  line-height: 1.3;
+  line-height: 1.4;
 
   span {
     color: var(--text-secondary);
     font-weight: 500;
   }
+`;
+
+const CVCardTopBadge = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
 `;
 
 const CTAContainer = styled.div`
@@ -722,16 +739,16 @@ const CTAContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
-  transform: translateY(100%);
+  padding: 20px;
+  transform: translateY(40px);
   opacity: 0;
   transition: all 0.3s ease;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     transform: translateY(0);
     opacity: 1;
     position: relative;
-    padding: 8px 0 0 0;
+    padding: 12px 0 0 0;
     background: none;
   }
 `;
@@ -1675,6 +1692,16 @@ export default function CVPage() {
                   return (
                     <CVCard key={cv.id} $isOptimized={isOptimized} onClick={() => setPreviewCV(cv)}>
                       <CVCardBackgroundComponent text={cv.text} isOptimized={isOptimized} />
+
+                      {/* ATS Optimized score badge - top right */}
+                      {isATSOptimized && optimizedCV?.before_score && optimizedCV?.after_score && (
+                        <CVCardTopBadge>
+                          <Badge size="sm" variant="success">
+                            {optimizedCV.before_score} → {optimizedCV.after_score}
+                          </Badge>
+                        </CVCardTopBadge>
+                      )}
+
                       <CVCardInner>
                         <CVCardContentInner className="cv-content">
                           <CVCardIcon $isOptimized={isOptimized} className="cv-icon">
@@ -1685,31 +1712,22 @@ export default function CVPage() {
                           <CVCardTitle>
                             {isATSOptimized && optimizedCV?.contact_name ? optimizedCV.contact_name : cv.title}
                           </CVCardTitle>
-                          <CVCardDate>{formatDate(cv.created_at)}</CVCardDate>
 
-                          {/* ATS Optimized specific badges */}
-                          {isATSOptimized && optimizedCV?.before_score && optimizedCV?.after_score && (
-                            <CVCardMeta>
-                              <Badge size="sm" variant="success">
-                                {optimizedCV.before_score} → {optimizedCV.after_score}
-                              </Badge>
-                            </CVCardMeta>
+                          {/* Job Matched: job info right after title */}
+                          {activeTab === 'job-matched' && optimizedCV && optimizedCV.job_title && (
+                            <CVCardJobInfo>
+                              For: <span>{optimizedCV.job_title}</span>
+                            </CVCardJobInfo>
                           )}
 
-                          {/* Job Matched specific info */}
-                          {activeTab === 'job-matched' && optimizedCV && (
-                            <>
-                              <CVCardMeta>
-                                {optimizedCV.fake_it_mode && (
-                                  <Badge size="sm" variant="warning">Fake It</Badge>
-                                )}
-                              </CVCardMeta>
-                              {optimizedCV.job_title && (
-                                <CVCardJobInfo>
-                                  For: <span>{optimizedCV.job_title}</span>
-                                </CVCardJobInfo>
-                              )}
-                            </>
+                          {/* Date at the bottom for all cards */}
+                          <CVCardDate>{formatDate(cv.created_at)}</CVCardDate>
+
+                          {/* Job Matched: Fake It badge */}
+                          {activeTab === 'job-matched' && optimizedCV && optimizedCV.fake_it_mode && (
+                            <CVCardMeta>
+                              <Badge size="sm" variant="warning">Fake It</Badge>
+                            </CVCardMeta>
                           )}
                         </CVCardContentInner>
 

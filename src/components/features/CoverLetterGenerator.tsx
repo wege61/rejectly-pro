@@ -276,7 +276,7 @@ const ParagraphsContainer = styled.div`
   max-height: 400px;
   overflow-y: auto;
   padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.border}; 
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border}; 
   @media (max-width: 768px) {
    max-height: 350px;
   }

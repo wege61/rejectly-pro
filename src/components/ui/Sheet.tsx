@@ -78,6 +78,7 @@ const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: bo
           right: 0;
           bottom: 0;
           border-left: 1px solid theme.colors.border; 
+          border-radius: 8px;
           transform: translateX(${$isOpen ? "0" : "100%"});
         `;
     }

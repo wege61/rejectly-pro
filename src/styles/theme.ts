@@ -14,6 +14,8 @@ const darkColors = {
   // Neutral - DARK MODE
   background: "#151517", // dark-bg
   backgroundAlt: "#151517", // content area
+  backgroundAlt2: "#151517", // dark-card (modals, sheets)
+  backgroundAlt3: "#000000", // slightly lighter for contrast
   surface: "#000000", // dark-card (sidebar)
   surfaceHover: "#1a1f2e", // slightly lighter
 
@@ -58,6 +60,8 @@ const lightColors = {
   // Neutral - LIGHT MODE
   background: "#F4F7FA", // light-bg
   backgroundAlt: "#F4F7FA", // light-bg
+  backgroundAlt2: "#FFFFFF", // light-card (modals, sheets)
+  backgroundAlt3: "#F3F4F6", // subtle contrast
   surface: "#FFFFFF", // light-card
   surfaceHover: "#F3F4F6", // Subtle hover state
 

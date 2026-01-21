@@ -88,7 +88,7 @@ const ExpandedCardContainer = styled(motion.div)`
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.colors.surface};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt2};
   border-radius: ${({ theme }) => theme.radius.lg};
   box-shadow: ${({ theme }) => theme.shadow.xl};
   overflow: hidden;

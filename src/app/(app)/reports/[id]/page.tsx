@@ -18,6 +18,7 @@ import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
 import { ToolSuggestionModal } from "@/components/features/ToolSuggestionModal";
 import { ScoreBreakdownModal } from "@/components/features/ScoreBreakdownModal";
+import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerBody, DrawerFooter } from "@/components/ui/Drawer";
 import { ToolSuggestionResponse } from "@/types/toolSuggestion";
 import { ScoreBreakdown } from "@/types/scoreBreakdown";
 import { PRICING } from "@/lib/constants";
@@ -1516,117 +1517,37 @@ const ATSResultMessage = styled.div`
   }
 `;
 
-// Keywords Modal Styled Components
-const KeywordsModalOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
+// Keywords Drawer Styled Components
+const KeywordsSummaryRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: ${({ theme }) => theme.spacing.lg};
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
-const KeywordsModalContent = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.radius.xl};
-  max-width: 600px;
-  width: 100%;
-  max-height: 85vh;
-  overflow-y: auto;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadow.xl};
-`;
-
-const KeywordsModalHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: ${({ theme }) => `${theme.spacing.xl} ${theme.spacing.xl} ${theme.spacing.lg}`};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  position: sticky;
-  top: 0;
-  background: ${({ theme }) => theme.colors.surface};
-  z-index: 1;
-`;
-
-const KeywordsModalTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize["xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+const KeywordsSummaryCount = styled.div`
+  font-size: 32px;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.textPrimary};
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-
-  svg {
-    width: 24px;
-    height: 24px;
-    color: ${({ theme }) => theme.colors.success};
-  }
+  line-height: 1;
 `;
 
-const KeywordsModalCloseButton = styled.button`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  padding: ${({ theme }) => theme.spacing.sm};
-  cursor: pointer;
+const KeywordsSummaryText = styled.div`
+  font-size: 14px;
   color: ${({ theme }) => theme.colors.textSecondary};
-  transition: all ${({ theme }) => theme.transitions.fast};
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.border};
-    color: ${({ theme }) => theme.colors.textPrimary};
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-    display: block;
-  }
-`;
-
-const KeywordsModalBody = styled.div`
-  padding: ${({ theme }) => theme.spacing.xl};
-`;
-
-const KeywordsModalSummary = styled.div`
-  background: ${({ theme }) => theme.colors.successLight};
-  border: 1px solid ${({ theme }) => theme.colors.success};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-
-  .count {
-    font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-    color: ${({ theme }) => theme.colors.success};
-    line-height: 1;
-  }
-
-  .text {
-    font-size: ${({ theme }) => theme.typography.fontSize.sm};
-    color: ${({ theme }) => theme.colors.success};
-    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  }
+  line-height: 1.4;
 `;
 
 const KeywordItemCard = styled.div`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  transition: all ${({ theme }) => theme.transitions.fast};
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
+  background: ${({ theme }) => theme.colors.backgroundAlt3};
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
 
   &:last-child {
     margin-bottom: 0;
@@ -1637,82 +1558,75 @@ const KeywordItemHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: 12px;
 `;
 
 const KeywordBadge = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  background: ${({ theme }) => theme.colors.successLight};
-  color: ${({ theme }) => theme.colors.success};
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
-  border-radius: ${({ theme }) => theme.radius.full};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  gap: 6px;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 14px;
+  font-weight: 600;
 
   svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
+    color: var(--primary-500);
   }
 `;
 
 const KeywordImpact = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.primary};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  background: rgba(53, 162, 159, 0.1);
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
-  border-radius: ${({ theme }) => theme.radius.md};
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: 500;
 `;
 
 const KeywordDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: 13px;
   color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  line-height: 1.5;
   margin: 0;
 `;
 
 const KeywordContextList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: 8px;
 `;
 
 const KeywordContext = styled.div`
-  background: ${({ theme }) => theme.colors.background};
-  border-radius: ${({ theme }) => theme.radius.md};
-  padding: ${({ theme }) => theme.spacing.md};
-  border-left: 3px solid ${({ theme }) => theme.colors.primary};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  background: ${({ theme }) => theme.colors.surface};
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
   color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  line-height: 1.5;
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
   .section-label {
-    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+    font-size: 11px;
     color: ${({ theme }) => theme.colors.textTertiary};
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: ${({ theme }) => theme.spacing.xs};
-    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+    margin-bottom: 6px;
+    font-weight: 500;
   }
 
   .highlight {
-    background: rgba(53, 162, 159, 0.2);
-    color: ${({ theme }) => theme.colors.primary};
+    background: rgba(var(--accent-rgb), 0.15);
+    color: var(--accent);
     padding: 1px 4px;
     border-radius: 3px;
-    font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+    font-weight: 600;
   }
 `;
 
 const KeywordNotFound = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: 13px;
   color: ${({ theme }) => theme.colors.textTertiary};
-  font-style: italic;
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.background};
-  border-radius: ${({ theme }) => theme.radius.md};
+  padding: 12px;
+  border-radius: 8px;
   text-align: center;
 `;
 
@@ -3797,7 +3711,7 @@ export default function ReportDetailPage() {
         setImprovementBreakdown([]);
       }
     } catch (error) {
-      console.error("❌ Failed to analyze optimized CV:", error);
+      console.error("❌ Failed to analyze optimized resume:", error);
       // Don't show error toast to user, just log it
     } finally {
       setIsAnalyzingOptimized(false);
@@ -4036,7 +3950,7 @@ export default function ReportDetailPage() {
     try {
       // Report is already pro, generate CV with fake it mode (no credit cost)
       // The API will handle updating both generated_cv and fake_it_mode
-      console.log('🚀 Starting fake it mode CV generation...');
+      console.log('🚀 Starting fake it mode resume generation...');
 
       const cvResponse = await fetch("/api/cv/generate", {
         method: "POST",
@@ -4052,7 +3966,7 @@ export default function ReportDetailPage() {
       const cvResult = await cvResponse.json();
 
       if (!cvResponse.ok) {
-        throw new Error(cvResult.error || "Failed to generate CV");
+        throw new Error(cvResult.error || "Failed to generate resume");
       }
 
       // Refresh the report data
@@ -4098,14 +4012,14 @@ export default function ReportDetailPage() {
               throw new Error(saveResult.error);
             }
 
-            console.log('✅ CV saved to My CVs via API (fake it mode)');
+            console.log('✅ Resume saved to My resume via API (fake it mode)');
           } catch (saveError) {
-            console.error('Error saving to My CVs:', saveError);
+            console.error('Error saving to My resume:', saveError);
           }
         }
 
-        // Analyze the optimized CV to populate cache
-        console.log('📊 Analyzing optimized CV to populate cache...');
+        // Analyze the optimized resume to populate cache
+        console.log('📊 Analyzing optimized resume to populate cache...');
         const analyzeResponse = await fetch("/api/cv/analyze-optimized", {
           method: "POST",
           headers: {
@@ -4139,7 +4053,7 @@ export default function ReportDetailPage() {
 
           if (finalReport) {
             setReport(finalReport);
-            console.log('✅ Report refreshed with cache:', {
+            console.log('Report refreshed with cache:', {
               optimizedScore: finalReport.optimized_score,
               fakeItMode: finalReport.fake_it_mode,
               hasBreakdown: !!finalReport.improvement_breakdown
@@ -4150,7 +4064,7 @@ export default function ReportDetailPage() {
         }
       }
 
-      toast.success("CV generated with Fake It Mode!");
+      toast.success("Resume generated with Fake It Mode!");
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -4269,9 +4183,9 @@ export default function ReportDetailPage() {
                 throw new Error(saveResult.error);
               }
 
-              console.log('✅ CV saved to My CVs via API');
+              console.log('Resume saved to My resume via API');
             } catch (saveError) {
-              console.error('Error saving to My CVs:', saveError);
+              console.error('Error saving to My resume:', saveError);
             }
           }
 
@@ -4304,8 +4218,8 @@ export default function ReportDetailPage() {
         toast.success(`Your optimized resume is ready!${toolsMessage}`);
       }
     } catch (cvError) {
-      console.error("CV generation error:", cvError);
-      toast.error("CV generation failed");
+      console.error("Resume generation error:", cvError);
+      toast.error("Resume generation failed");
     } finally {
       setIsGeneratingCV(false);
       setPendingCVGeneration(null);
@@ -4366,8 +4280,8 @@ export default function ReportDetailPage() {
       // Save PDF to Storage for CV page
       savePDFToStorage(pdfBlob);
     } catch (error) {
-      console.error("CV preview error:", error);
-      toast.error("Failed to preview CV. Please try again.");
+      console.error("Resume preview error:", error);
+      toast.error("Failed to preview resume. Please try again.");
     }
   };
 
@@ -4401,10 +4315,10 @@ export default function ReportDetailPage() {
       const blobUrl = URL.createObjectURL(pdfBlob);
       setPdfPreviewUrl(blobUrl);
 
-      toast.success("CV regenerated successfully!");
+      toast.success("Resume regenerated successfully!");
     } catch (error) {
-      console.error("CV regeneration error:", error);
-      toast.error("Failed to regenerate CV. Please try again.");
+      console.error("Resume regeneration error:", error);
+      toast.error("Failed to regenerate resume. Please try again.");
     } finally {
       setIsGeneratingCV(false);
     }
@@ -4449,11 +4363,11 @@ export default function ReportDetailPage() {
         "_"
       )}.pdf`;
       pdf.save(fileName);
-      toast.success("CV downloaded successfully! Check your downloads folder.");
+      toast.success("Resume downloaded successfully! Check your downloads folder.");
       handleClosePreview(); // Close modal after download
     } catch (error) {
-      console.error("CV download error:", error);
-      toast.error("Failed to download CV. Please try again.");
+      console.error("Resume download error:", error);
+      toast.error("Failed to download resume. Please try again.");
     }
   };
 
@@ -4511,8 +4425,8 @@ export default function ReportDetailPage() {
       setPdfPreviewUrl(blobUrl);
       setIsPreviewOpen(true);
     } catch (error) {
-      console.error("CV preview error:", error);
-      toast.error("Failed to preview CV. Please try again.");
+      console.error("Resume preview error:", error);
+      toast.error("Failed to preview resume. Please try again.");
     }
   };
 
@@ -4581,7 +4495,7 @@ export default function ReportDetailPage() {
                     boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
                   }}
                 >
-                  <EyeIcon /> View Optimized CV
+                  <EyeIcon /> View optimized resume
                 </Button>
               ) : (
                 <Button
@@ -4600,7 +4514,7 @@ export default function ReportDetailPage() {
                     boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
                   }}
                 >
-                  <RocketIcon /> Generate Optimized CV
+                  <RocketIcon /> Generate optimized resume
                 </Button>
               )}
             </CVActionButtonWrapper>
@@ -4864,7 +4778,7 @@ export default function ReportDetailPage() {
                   <ProblemSummaryTitleSection>
                     <ProblemSummaryTitle>
                       <MagnifyingGlassIcon size="28" />
-                      {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed in Your CV
+                      {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed in your resume
                     </ProblemSummaryTitle>
                     <ProblemSummarySubtitle>
                       Your original resume had these critical issues - we solved all of them
@@ -5589,7 +5503,7 @@ export default function ReportDetailPage() {
                       🎯 Learning Path - Turn Fake Skills into Real Ones!
                     </Card.Title>
                     <Card.Description>
-                      You&apos;ve added these skills to your CV. Now let's make
+                      You&apos;ve added these skills to your resume. Now let's make
                       them real! Follow these personalized learning paths to
                       acquire these skills.
                     </Card.Description>
@@ -5646,7 +5560,7 @@ export default function ReportDetailPage() {
                  Generate optimized resume
                 </Card.Title>
                 <Card.Description>
-                  Get a fully optimized, ATS-friendly CV with all improvements
+                  Get a fully optimized, ATS-friendly resume with all improvements
                   applied
                 </Card.Description>
               </Card.Header>
@@ -5702,7 +5616,7 @@ export default function ReportDetailPage() {
                           const cvResult = await response.json();
 
                           if (!response.ok) {
-                            throw new Error(cvResult.error || "Failed to generate CV");
+                            throw new Error(cvResult.error || "Failed to generate resume");
                           }
 
                           // Refresh report data
@@ -5748,9 +5662,9 @@ export default function ReportDetailPage() {
                                   throw new Error(saveResult.error);
                                 }
 
-                                console.log('✅ CV saved to My CVs via API (modal)');
+                                console.log('✅ Resume saved to My Resumes via API (modal)');
                               } catch (saveError) {
-                                console.error('Error saving to My CVs:', saveError);
+                                console.error('Error saving to My Resumes:', saveError);
                               }
                             }
 
@@ -5789,7 +5703,7 @@ export default function ReportDetailPage() {
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                       }}
                     >
-                      {isUpgrading ? "Generating..." : "Generate Optimized CV"}
+                      {isUpgrading ? "Generating..." : "Generate optimized resume"}
                     </Button>
                   </div>
                 ) : (
@@ -5963,7 +5877,7 @@ export default function ReportDetailPage() {
       <Modal
         isOpen={isPreviewOpen}
         onClose={handleClosePreview}
-        title="CV Preview"
+        title="Resume Preview"
         description="Review your optimized resume before downloading"
         size="lg"
       >
@@ -5993,7 +5907,7 @@ export default function ReportDetailPage() {
             {pdfPreviewUrl ? (
               <PDFViewer
                 src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                title="CV Preview"
+                title="Resume Preview"
               />
             ) : (
               <div
@@ -6022,7 +5936,7 @@ export default function ReportDetailPage() {
       {/* CV Generation Loading Modal */}
       <LoadingModal
         isOpen={isGeneratingCV}
-        title="Generating Optimized CV"
+        title="Generating optimized resume"
         messages={[
           "Analyzing your experience and skills...",
           "Optimizing keywords for ATS systems...",
@@ -6292,7 +6206,7 @@ export default function ReportDetailPage() {
             </WelcomeSuccessTitle>
 
             <SuccessMessage>
-              Your investment in yourself will pay off. Every optimized CV brings you closer to your dream job.
+              Your investment in yourself will pay off. Every optimized reseume brings you closer to your dream job.
             </SuccessMessage>
 
             <SuccessQuote>
@@ -6314,7 +6228,7 @@ export default function ReportDetailPage() {
         isOpen={isLoadingToolSuggestions}
         title="Analyzing Your Experience"
         messages={[
-          "Finding tools to strengthen your CV...",
+          "Finding tools to strengthen your resume...",
           "Reviewing industry trends...",
           "Matching popular technologies...",
           "Preparing career-focused suggestions...",
@@ -6363,72 +6277,63 @@ export default function ReportDetailPage() {
         fitScore={optimizedScore || 0}
       />
 
-      {/* Keywords Added Modal */}
-      {isKeywordsModalOpen && createPortal(
-        <KeywordsModalOverlay onClick={() => setIsKeywordsModalOpen(false)}>
-          <KeywordsModalContent onClick={(e) => e.stopPropagation()}>
-            <KeywordsModalHeader>
-              <KeywordsModalTitle>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                  <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
-                </svg>
-                Keywords Added
-              </KeywordsModalTitle>
-              <KeywordsModalCloseButton onClick={() => setIsKeywordsModalOpen(false)}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </KeywordsModalCloseButton>
-            </KeywordsModalHeader>
-            <KeywordsModalBody>
-              <KeywordsModalSummary>
-                <span className="count">{missingKeywords.length}</span>
-                <span className="text">Keywords strategically integrated into your optimized CV</span>
-              </KeywordsModalSummary>
+      {/* Keywords Added Drawer */}
+      <Drawer isOpen={isKeywordsModalOpen} onClose={() => setIsKeywordsModalOpen(false)}>
+        <DrawerHeader>
+          <DrawerTitle>Keywords Added</DrawerTitle>
+          <DrawerDescription>Keywords strategically integrated into your optimized resume</DrawerDescription>
+        </DrawerHeader>
 
-              {missingKeywords.map((keyword: string) => {
-                const matches = report.generated_cv ? findKeywordInCV(keyword, report.generated_cv) : [];
-                return (
-                  <KeywordItemCard key={keyword}>
-                    <KeywordItemHeader>
-                      <KeywordBadge>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                          <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
-                        </svg>
-                        {keyword}
-                      </KeywordBadge>
-                      <KeywordImpact>
-                        {matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}` : 'Added'}
-                      </KeywordImpact>
-                    </KeywordItemHeader>
+        <KeywordsSummaryRow>
+            <KeywordsSummaryCount>{missingKeywords.length}</KeywordsSummaryCount>
+            <KeywordsSummaryText>keywords matched from the job description</KeywordsSummaryText>
+          </KeywordsSummaryRow>
+        <DrawerBody>
+          
 
-                    {matches.length > 0 ? (
-                      <KeywordContextList>
-                        {matches.slice(0, 3).map((match, idx) => (
-                          <KeywordContext key={idx}>
-                            <div className="section-label">{match.section}</div>
-                            <div>{highlightKeyword(match.text, keyword)}</div>
-                          </KeywordContext>
-                        ))}
-                        {matches.length > 3 && (
-                          <KeywordDescription style={{ marginTop: '8px', textAlign: 'center' }}>
-                            +{matches.length - 3} more occurrence{matches.length - 3 > 1 ? 's' : ''} in your CV
-                          </KeywordDescription>
-                        )}
-                      </KeywordContextList>
-                    ) : (
-                      <KeywordNotFound>
-                        This keyword was strategically added to your skills section to improve ATS matching
-                      </KeywordNotFound>
+          {missingKeywords.map((keyword: string) => {
+            const matches = report.generated_cv ? findKeywordInCV(keyword, report.generated_cv) : [];
+            return (
+              <KeywordItemCard key={keyword}>
+                <KeywordItemHeader>
+                  <KeywordBadge>
+                    
+                    {keyword}
+                  </KeywordBadge>
+                  <KeywordImpact>
+                    {matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}` : 'Added'}
+                  </KeywordImpact>
+                </KeywordItemHeader>
+
+                {matches.length > 0 ? (
+                  <KeywordContextList>
+                    {matches.slice(0, 3).map((match, idx) => (
+                      <KeywordContext key={idx}>
+                        <div className="section-label">{match.section}</div>
+                        <div>{highlightKeyword(match.text, keyword)}</div>
+                      </KeywordContext>
+                    ))}
+                    {matches.length > 3 && (
+                      <KeywordDescription style={{ marginTop: '8px', textAlign: 'center' }}>
+                        +{matches.length - 3} more occurrence{matches.length - 3 > 1 ? 's' : ''} in your resume
+                      </KeywordDescription>
                     )}
-                  </KeywordItemCard>
-                );
-              })}
-            </KeywordsModalBody>
-          </KeywordsModalContent>
-        </KeywordsModalOverlay>,
-        document.body
-      )}
+                  </KeywordContextList>
+                ) : (
+                  <KeywordNotFound>
+                    This keyword was added to your skills section
+                  </KeywordNotFound>
+                )}
+              </KeywordItemCard>
+            );
+          })}
+        </DrawerBody>
+        <DrawerFooter>
+          <Button variant="primary" onClick={() => setIsKeywordsModalOpen(false)}>
+            Done
+          </Button>
+        </DrawerFooter>
+      </Drawer>
     </Container>
   );
 }

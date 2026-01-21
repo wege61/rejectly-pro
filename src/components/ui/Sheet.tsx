@@ -38,7 +38,7 @@ const Overlay = styled.div<{ $isOpen: boolean }>`
 const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: boolean }>`
   position: fixed;
   z-index: ${({ theme }) => theme.zIndex.modal};
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt2};
   box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
@@ -261,18 +261,35 @@ export const Sheet: React.FC<SheetProps> & {
   // Track if this sheet instance has incremented the counter
   const hasIncrementedRef = useRef(false);
 
+  // Track animation frame IDs for cleanup
+  const animationFrameRef = useRef<number | null>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
+    // Clean up any pending animation frames or timers
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+
     if (isOpen) {
       // Increment counter only once per open
       if (!hasIncrementedRef.current) {
         openSheetsCount++;
         hasIncrementedRef.current = true;
       }
+      // Always ensure we start from closed visual state for proper animation
+      setIsAnimatingOpen(false);
       // Mount the component first
       setIsMounted(true);
       // Then trigger the open animation on next frame
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
+      // Use nested RAF to ensure browser has painted the closed state
+      animationFrameRef.current = requestAnimationFrame(() => {
+        animationFrameRef.current = requestAnimationFrame(() => {
           setIsAnimatingOpen(true);
         });
       });
@@ -284,15 +301,23 @@ export const Sheet: React.FC<SheetProps> & {
       // Start close animation
       setIsAnimatingOpen(false);
       // Unmount after animation completes
-      const timer = setTimeout(() => {
+      closeTimerRef.current = setTimeout(() => {
         setIsMounted(false);
         // Only reset overflow if no other sheets are open
         if (openSheetsCount === 0) {
           document.body.style.overflow = "unset";
         }
       }, ANIMATION_DURATION);
-      return () => clearTimeout(timer);
     }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    };
   }, [isOpen]);
 
   // ESC key handler
@@ -315,6 +340,13 @@ export const Sheet: React.FC<SheetProps> & {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      // Cancel any pending animations/timers
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
       // If this sheet was open when unmounting, decrement counter
       if (hasIncrementedRef.current) {
         openSheetsCount--;

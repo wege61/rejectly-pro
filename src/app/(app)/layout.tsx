@@ -502,7 +502,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <Container>
+    <Container id="app-layout">
       <MobileHeader>
         <MobileLogo>Rejectly.pro</MobileLogo>
         <HamburgerButton onClick={() => setIsMobileMenuOpen(true)}>

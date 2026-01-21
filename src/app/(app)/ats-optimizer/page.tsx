@@ -858,6 +858,9 @@ const TryAgainButton = styled.button`
 // CV Selection Components
 const ExistingCVSection = styled.div`
   margin-top: 24px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+    border-radius: 12px;
+
 `;
 
 const ExistingCVHeader = styled.button`
@@ -866,16 +869,15 @@ const ExistingCVHeader = styled.button`
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  background: ${({ theme }) => theme.colors.surface};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
+  
 
   &:hover {
-    background: ${({ theme }) => theme.colors.background};
+    background: ${({ theme }) => theme.colors.border};
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.08),
       0 16px 32px rgba(0, 0, 0, 0.08);
   }
@@ -933,14 +935,18 @@ const CVListContainer = styled.div`
 const CVMiniCard = styled.button`
   position: relative;
   width: 100%;
-  padding: 16px;
+  padding: 20px;
   background: var(--bg-alt);
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
   overflow: hidden;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 
   /* Subtle depth through shadows - matching cv/page.tsx */
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
@@ -953,7 +959,7 @@ const CVMiniCard = styled.button`
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+   
   }
 
   &:hover .cv-mini-content {
@@ -964,13 +970,13 @@ const CVMiniCard = styled.button`
     transform: scale(0.85);
   }
 
+  &:hover .cv-mini-overlay {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
   &:hover .cv-mini-arrow {
     transform: translateY(-50%) translateX(4px);
     opacity: 1;
-  }
-
-  &:hover .cv-mini-overlay {
-    background: rgba(0, 0, 0, 0.03);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -989,7 +995,7 @@ const CVMiniCard = styled.button`
 const CVMiniContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   transform-origin: bottom left;
   transition: all 0.3s ease;
 
@@ -998,49 +1004,36 @@ const CVMiniContent = styled.div`
   }
 `;
 
-const CVMiniCardHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-`;
-
 const CVMiniIcon = styled.div`
   transform-origin: left;
   transition: all 0.3s ease;
   color: var(--accent);
-  flex-shrink: 0;
+  margin-bottom: 8px;
 
   svg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
   }
 
   @media (max-width: 640px) {
     svg {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
     }
   }
 `;
 
-const CVMiniInfo = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
-
 const CVMiniTitle = styled.div`
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-color);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 2px;
+  white-space: nowrap;
 `;
 
 const CVMiniDate = styled.div`
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary);
 `;
 
@@ -1052,6 +1045,9 @@ const CVMiniMeta = styled.div`
 `;
 
 const CVMiniScoreBadge = styled.span<{ $score: number }>`
+  position: absolute;
+  right: 16px;
+  top: 16px;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -1087,7 +1083,7 @@ const CVMiniOverlay = styled.div`
   pointer-events: none;
   position: absolute;
   inset: 0;
-  border-radius: 14px;
+  border-radius: 16px;
   transition: all 0.3s ease;
 `;
 
@@ -1323,12 +1319,8 @@ const HistorySectionHeader = styled.div`
 `;
 
 const HistoryTitle = styled.h3`
-  font-size: 16px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
 `;
 
 const HistoryGrid = styled.div`
@@ -1341,13 +1333,17 @@ const HistoryCard = styled.div`
   position: relative;
   background: var(--bg-alt);
   border: none;
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
   overflow: hidden;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 
-  /* Subtle depth through shadows - matching CVMiniCard */
+  /* Subtle depth through shadows - matching CVCard */
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
     0 12px 24px rgba(0, 0, 0, 0.05);
 
@@ -1365,8 +1361,17 @@ const HistoryCard = styled.div`
     transform: translateY(-8px);
   }
 
+  &:hover .history-icon {
+    transform: scale(0.85);
+  }
+
   &:hover .history-overlay {
     background: rgba(0, 0, 0, 0.03);
+  }
+
+  &:hover .history-arrow {
+    transform: translateY(-50%) translateX(4px);
+    opacity: 1;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -1385,7 +1390,7 @@ const HistoryCard = styled.div`
 const HistoryContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
   transform-origin: bottom left;
   transition: all 0.3s ease;
 
@@ -1394,28 +1399,59 @@ const HistoryContent = styled.div`
   }
 `;
 
+const HistoryIcon = styled.div`
+  transform-origin: left;
+  transition: all 0.3s ease;
+  color: var(--success);
+  margin-bottom: 8px;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  @media (max-width: 640px) {
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+  }
+`;
+
 const HistoryOverlay = styled.div`
   pointer-events: none;
   position: absolute;
   inset: 0;
-  border-radius: 14px;
+  border-radius: 16px;
   transition: all 0.3s ease;
 `;
 
-const HistoryCardHeader = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+const HistoryArrow = styled.div`
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  color: var(--success);
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
 `;
 
 const HistoryCardName = styled.div`
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.textPrimary};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const HistoryCardDate = styled.div`
-  font-size: 12px;
+  font-size: 13px;
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
@@ -1423,6 +1459,7 @@ const HistoryScoreRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-top: 8px;
 `;
 
 const HistoryScoreBadge = styled.span<{ $type: "before" | "after" }>`
@@ -1445,13 +1482,6 @@ const HistoryImprovement = styled.span`
   font-size: 12px;
   color: #22c55e;
   font-weight: 500;
-`;
-
-const HistoryEmptyState = styled.div`
-  text-align: center;
-  padding: 32px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 14px;
 `;
 
 const BackButton = styled.button`
@@ -1787,6 +1817,7 @@ export default function DashboardATSOptimizerPage() {
 
       {/* Upload Step */}
       {step === "upload" && (
+        <>
         <ContentCard>
           <FileUpload
             accept=".pdf,.docx"
@@ -1834,26 +1865,19 @@ export default function DashboardATSOptimizerPage() {
                   existingCVs.map((cv) => (
                     <CVMiniCard key={cv.id} onClick={() => handleSelectExistingCV(cv)}>
                       <CVMiniContent className="cv-mini-content">
-                        <CVMiniCardHeader>
-                          <CVMiniIcon className="cv-mini-icon">
-                            <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                          </CVMiniIcon>
-                          <CVMiniInfo>
-                            <CVMiniTitle>{cv.title || "Untitled Resume"}</CVMiniTitle>
-                            <CVMiniDate>{formatDate(cv.created_at)}</CVMiniDate>
-                          </CVMiniInfo>
-                        </CVMiniCardHeader>
-                        <CVMiniMeta>
-                          {cv.ats_score !== null && cv.ats_score !== undefined && (
-                            <CVMiniScoreBadge $score={cv.ats_score}>
-                              
-                              ATS {cv.ats_score}%
-                            </CVMiniScoreBadge>
-                          )}
-                        </CVMiniMeta>
+                        <CVMiniIcon className="cv-mini-icon">
+                          <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </CVMiniIcon>
+                        <CVMiniTitle>{cv.title || "Untitled Resume"}</CVMiniTitle>
+                        <CVMiniDate>{formatDate(cv.created_at)}</CVMiniDate>
                       </CVMiniContent>
+                      {cv.ats_score !== null && cv.ats_score !== undefined && (
+                        <CVMiniScoreBadge $score={cv.ats_score}>
+                          ATS {cv.ats_score}%
+                        </CVMiniScoreBadge>
+                      )}
                       <CVMiniArrow className="cv-mini-arrow">
                         <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                           <path d="M9 5l7 7-7 7" />
@@ -1867,47 +1891,54 @@ export default function DashboardATSOptimizerPage() {
             )}
           </ExistingCVSection>
 
-          {/* Recent Optimized CVs History */}
-          {!loadingHistory && optimizedHistory.length > 0 && (
-            <HistorySection>
-              <HistorySectionHeader>
-                <HistoryTitle>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12,6 12,12 16,14" />
-                  </svg>
-                  Recent optimized resumes
-                </HistoryTitle>
-              </HistorySectionHeader>
-              <HistoryGrid>
-                {optimizedHistory.map((cv) => (
-                  <HistoryCard key={cv.id} onClick={() => handleHistoryCardClick(cv)}>
-                    <HistoryContent className="history-content">
-                      <HistoryCardHeader>
-                        <HistoryCardName>{cv.contact_name || "Optimized CV"}</HistoryCardName>
-                        <HistoryCardDate>
-                          {new Date(cv.created_at).toLocaleDateString("en-US", {
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </HistoryCardDate>
-                      </HistoryCardHeader>
-                      <HistoryScoreRow>
-                        <HistoryScoreBadge $type="before">{cv.before_score}</HistoryScoreBadge>
-                        <HistoryScoreArrow>→</HistoryScoreArrow>
-                        <HistoryScoreBadge $type="after">{cv.after_score}</HistoryScoreBadge>
-                        <HistoryImprovement>+{cv.after_score - cv.before_score} pts</HistoryImprovement>
-                      </HistoryScoreRow>
-                    </HistoryContent>
-                    <HistoryOverlay className="history-overlay" />
-                  </HistoryCard>
-                ))}
-              </HistoryGrid>
-            </HistorySection>
-          )}
-
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </ContentCard>
+
+        {/* Recent Optimized CVs History - Outside ContentCard */}
+        {!loadingHistory && optimizedHistory.length > 0 && (
+          <HistorySection>
+            <HistorySectionHeader>
+              <HistoryTitle>
+                
+                Recent optimized resumes
+              </HistoryTitle>
+            </HistorySectionHeader>
+            <HistoryGrid>
+              {optimizedHistory.map((cv) => (
+                <HistoryCard key={cv.id} onClick={() => handleHistoryCardClick(cv)}>
+                  <HistoryContent className="history-content">
+                    <HistoryIcon className="history-icon">
+                      <svg fill="none" stroke="var(--primary-500)" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </HistoryIcon>
+                    <HistoryCardName>{cv.contact_name || "Optimized CV"}</HistoryCardName>
+                    <HistoryCardDate>
+                      {new Date(cv.created_at).toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </HistoryCardDate>
+                    <HistoryScoreRow>
+                      <HistoryScoreBadge $type="before">{cv.before_score}</HistoryScoreBadge>
+                      <HistoryScoreArrow>→</HistoryScoreArrow>
+                      <HistoryScoreBadge $type="after">{cv.after_score}</HistoryScoreBadge>
+                      <HistoryImprovement>+{cv.after_score - cv.before_score} pts</HistoryImprovement>
+                    </HistoryScoreRow>
+                  </HistoryContent>
+                  <HistoryArrow className="history-arrow">
+                    <svg fill="none" stroke="var(--primary-500)" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  </HistoryArrow>
+                  <HistoryOverlay className="history-overlay" />
+                </HistoryCard>
+              ))}
+            </HistoryGrid>
+          </HistorySection>
+        )}
+        </>
       )}
 
 

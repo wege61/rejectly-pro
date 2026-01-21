@@ -319,17 +319,17 @@ const Sentence = styled.span<{ $isHighlight: boolean; $isSelected: boolean }>`
   text-decoration: ${({ $isHighlight }) => ($isHighlight ? 'underline' : 'none')};
   font-style: ${({ $isHighlight }) => ($isHighlight ? 'italic' : 'normal')};
   background: ${({ $isHighlight, $isSelected }) =>
-    $isSelected ? '#fef3c7' :
+    $isSelected ? 'var(--checkbox)' :
     $isHighlight ? 'transparent' : 'transparent'};
   transition: all 0.2s;
   &:hover {
-    background: #fef3c7;
+    background: var(--checkbox);
   }
 `;
 
 const AlternativesPopup = styled.div`
   position: absolute;
-  background: ${({ theme }) => theme.colors.surface};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border: 2px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import styled from "styled-components";
 import { Sheet } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
@@ -327,31 +328,88 @@ const Sentence = styled.span<{ $isHighlight: boolean; $isSelected: boolean }>`
   }
 `;
 
-const AlternativesPopup = styled.div`
-  position: absolute;
+// Select-style dropdown for alternatives
+const SelectDropdown = styled.div`
+  position: fixed;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 2px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.md};
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  padding: ${({ theme }) => theme.spacing.md};
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  min-width: 300px;
-  max-width: 500px;
+  min-width: 280px;
+  max-width: 450px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 6px;
+  z-index: 3000;
+  animation: selectFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top left;
+
+  @keyframes selectFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
 `;
 
-const AlternativeOption = styled.div`
-  padding: ${({ theme }) => theme.spacing.sm};
+const SelectLabel = styled.div`
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const SelectItem = styled.div<{ $isSelected?: boolean }>`
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 8px 8px 28px;
   cursor: pointer;
-  border-radius: ${({ theme }) => theme.radius.sm};
-  transition: all ${({ theme }) => theme.transitions.fast};
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  transition: background-color 100ms ease;
 
   &:hover {
-    background: rgba(102, 126, 234, 0.1);
+    background-color: var(--checkbox);
   }
 
-  &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  ${({ $isSelected }) =>
+    $isSelected &&
+    `
+    color: var(--accent);
+    font-weight: 500;
+  `}
+`;
+
+const SelectIndicator = styled.span`
+  position: absolute;
+  left: 8px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+
+  svg {
+    width: 14px;
+    height: 14px;
   }
+`;
+
+const SelectOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 2999;
 `;
 
 const RationalePanel = styled.div`
@@ -636,7 +694,7 @@ export function CoverLetterGenerator({
   const [selectedSentence, setSelectedSentence] = useState<{
     paragraphId: string;
     sentenceId: string;
-    position: { x: number; y: number };
+    rect: { top: number; bottom: number; left: number; right: number };
   } | null>(null);
   const [activeParagraphId, setActiveParagraphId] = useState<string | null>(null);
   const [isHighlightsOpen, setIsHighlightsOpen] = useState(false);
@@ -698,8 +756,49 @@ export function CoverLetterGenerator({
     setSelectedSentence({
       paragraphId,
       sentenceId,
-      position: { x: rect.left, y: rect.bottom + 5 },
+      rect: {
+        top: rect.top,
+        bottom: rect.bottom,
+        left: rect.left,
+        right: rect.right,
+      },
     });
+  };
+
+  // Calculate dropdown position to prevent overflow
+  const getDropdownPosition = () => {
+    if (!selectedSentence) return { top: 0, left: 0 };
+
+    const { rect } = selectedSentence;
+    const dropdownWidth = 320;
+    const dropdownHeight = 250; // Estimated max height
+    const padding = 8;
+    const gap = 6;
+
+    let top = rect.bottom + gap;
+    let left = rect.left;
+
+    // Check if dropdown would overflow bottom
+    if (top + dropdownHeight > window.innerHeight - padding) {
+      // Position above the element
+      top = rect.top - dropdownHeight - gap;
+      // If still overflows top, just position at top with padding
+      if (top < padding) {
+        top = padding;
+      }
+    }
+
+    // Check if dropdown would overflow right
+    if (left + dropdownWidth > window.innerWidth - padding) {
+      left = window.innerWidth - dropdownWidth - padding;
+    }
+
+    // Check if dropdown would overflow left
+    if (left < padding) {
+      left = padding;
+    }
+
+    return { top, left };
   };
 
   const handleAlternativeSelect = (paragraphId: string, sentenceId: string, newText: string) => {
@@ -1068,59 +1167,41 @@ export function CoverLetterGenerator({
                 </ActionButtonsWrapper>
               </BottomRow>
 
-              {/* Alternatives Popup */}
-              {selectedSentence && selectedSentenceData && selectedSentenceData.alternatives && (
-                <>
-                  <div
-                    style={{
-                      position: 'fixed',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      zIndex: 999,
-                    }}
-                    onClick={() => setSelectedSentence(null)}
-                  />
-                  <AlternativesPopup
-                    style={{
-                      top: selectedSentence.position.y,
-                      left: selectedSentence.position.x,
-                    }}
-                  >
-                    <div style={{
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      marginBottom: '8px',
-                      color: '#6b7280',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
-                    }}>
-                      Alternative Phrasings
-                    </div>
-                    <AlternativeOption
-                      onClick={() => setSelectedSentence(null)}
-                      style={{ fontWeight: 600, color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '6px' }}
-                    >
-                      <CheckIcon /> {selectedSentenceData.text}
-                    </AlternativeOption>
-                    {selectedSentenceData.alternatives.map((alt, idx) => (
-                      <AlternativeOption
-                        key={idx}
-                        onClick={() =>
-                          handleAlternativeSelect(
-                            selectedSentence.paragraphId,
-                            selectedSentence.sentenceId,
-                            alt
-                          )
-                        }
+              {/* Alternatives Select Dropdown - rendered via portal */}
+              {selectedSentence && selectedSentenceData && selectedSentenceData.alternatives && typeof document !== 'undefined' &&
+                createPortal(
+                  <>
+                    <SelectOverlay onClick={() => setSelectedSentence(null)} />
+                    <SelectDropdown style={getDropdownPosition()}>
+                      <SelectLabel>Alternative Phrasings</SelectLabel>
+                      <SelectItem
+                        $isSelected={true}
+                        onClick={() => setSelectedSentence(null)}
                       >
-                        {alt}
-                      </AlternativeOption>
-                    ))}
-                  </AlternativesPopup>
-                </>
-              )}
+                        <SelectIndicator>
+                          <CheckIcon />
+                        </SelectIndicator>
+                        {selectedSentenceData.text}
+                      </SelectItem>
+                      {selectedSentenceData.alternatives.map((alt, idx) => (
+                        <SelectItem
+                          key={idx}
+                          onClick={() =>
+                            handleAlternativeSelect(
+                              selectedSentence.paragraphId,
+                              selectedSentence.sentenceId,
+                              alt
+                            )
+                          }
+                        >
+                          {alt}
+                        </SelectItem>
+                      ))}
+                    </SelectDropdown>
+                  </>,
+                  document.body
+                )
+              }
             </GeneratorContent>
           )}
         </Sheet.Body>

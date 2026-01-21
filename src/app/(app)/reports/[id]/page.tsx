@@ -1544,21 +1544,21 @@ const KeywordsSummaryText = styled.div`
 `;
 
 const KeywordItemCard = styled.div`
-  background: ${({ theme }) => theme.colors.backgroundAlt3};
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 12px;
+  max-width: 600px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 4px;
 
   &:last-child {
-    margin-bottom: 0;
+    border-bottom: none;
   }
 `;
 
 const KeywordItemHeader = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 24px;
+  margin-bottom: 4px;
+  margin-top: 8px;
 `;
 
 const KeywordBadge = styled.span`
@@ -1580,6 +1580,7 @@ const KeywordImpact = styled.span`
   font-size: 12px;
   color: ${({ theme }) => theme.colors.textSecondary};
   font-weight: 500;
+  font-style: italic;
 `;
 
 const KeywordDescription = styled.p`
@@ -1596,13 +1597,11 @@ const KeywordContextList = styled.div`
 `;
 
 const KeywordContext = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
   border-radius: 8px;
   padding: 12px;
   font-size: 13px;
   color: ${({ theme }) => theme.colors.textPrimary};
   line-height: 1.5;
-  border: 1px solid ${({ theme }) => theme.colors.border};
 
   .section-label {
     font-size: 11px;
@@ -1627,7 +1626,6 @@ const KeywordNotFound = styled.div`
   color: ${({ theme }) => theme.colors.textTertiary};
   padding: 12px;
   border-radius: 8px;
-  text-align: center;
 `;
 
 const ClickableKeywordsCard = styled(Card)`
@@ -6308,13 +6306,13 @@ export default function ReportDetailPage() {
                 {matches.length > 0 ? (
                   <KeywordContextList>
                     {matches.slice(0, 3).map((match, idx) => (
-                      <KeywordContext key={idx}>
-                        <div className="section-label">{match.section}</div>
+                      <KeywordContext key={idx}> 
+                        <div className="section-label"><i style={{textTransform: "none", color: "var(--text-secondary)", fontSize: "12px"}}>Added to:</i> {match.section}</div>
                         <div>{highlightKeyword(match.text, keyword)}</div>
                       </KeywordContext>
                     ))}
                     {matches.length > 3 && (
-                      <KeywordDescription style={{ marginTop: '8px', textAlign: 'center' }}>
+                      <KeywordDescription style={{ textAlign: 'center' }}>
                         +{matches.length - 3} more occurrence{matches.length - 3 > 1 ? 's' : ''} in your resume
                       </KeywordDescription>
                     )}
@@ -6329,7 +6327,7 @@ export default function ReportDetailPage() {
           })}
         </DrawerBody>
         <DrawerFooter>
-          <Button variant="primary" onClick={() => setIsKeywordsModalOpen(false)}>
+          <Button variant="primary" onClick={() => setIsKeywordsModalOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
             Done
           </Button>
         </DrawerFooter>

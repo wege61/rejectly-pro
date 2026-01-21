@@ -52,7 +52,7 @@ const DrawerContainer = styled(motion.div)`
   background: ${({ theme }) => theme.colors.backgroundAlt2};
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  max-height: 96vh;
+  max-height: 90vh;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-bottom: none;
@@ -119,7 +119,10 @@ const Body = styled.div`
   overflow-y: auto;
   margin: 0 auto;
   max-width: 1200px;
+  max-width: 90vw;
   padding: 24px;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.backgroundAlt3};
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {

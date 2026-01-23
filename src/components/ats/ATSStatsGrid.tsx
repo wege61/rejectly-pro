@@ -20,7 +20,7 @@ const Container = styled.div`
 
 const StatCard = styled.div`
   background: var(--bg-alt, #f9fafb);
-  border: 1px solid var(--border-color, #e5e7eb);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   padding: 16px;
   text-align: center;

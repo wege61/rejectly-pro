@@ -16,18 +16,6 @@ interface ATSParsingChecklistProps {
   };
 }
 
-const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-
-const XIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
 
 const Container = styled.div`
   display: flex;
@@ -40,9 +28,8 @@ const CheckItem = styled.div<{ $ok: boolean }>`
   align-items: flex-start;
   gap: 12px;
   padding: 14px 16px;
-  background: var(--bg-color, #ffffff);
+  background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-left: 3px solid ${({ $ok }) => $ok ? "#059669" : "#dc2626"};
   border-radius: 8px;
 `;
 
@@ -50,8 +37,8 @@ const IconWrapper = styled.div<{ $ok: boolean }>`
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: ${({ $ok }) => $ok ? "#f0fdf4" : "#fef2f2"};
-  color: ${({ $ok }) => $ok ? "#059669" : "#dc2626"};
+  background: var(--checkbox);
+  color: ${({ $ok }) => $ok ? "var(--primary-500)" : "#F97316"};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,6 +48,15 @@ const IconWrapper = styled.div<{ $ok: boolean }>`
 
 const Content = styled.div`
   flex: 1;
+`;
+
+
+const SeverityDot = styled.span<{ $type: "issues" | "passes" }>`
+  width: 8px;
+  height: 8px;
+  background: ${({ $type }) => $type === "issues" ? "#F97316" : "var(--primary-500)"};
+  border-radius: 50%;
+  flex-shrink: 0;
 `;
 
 const Label = styled.div`
@@ -93,7 +89,7 @@ export function ATSParsingChecklist({ checks }: ATSParsingChecklistProps) {
         return (
           <CheckItem key={key} $ok={check.ok}>
             <IconWrapper $ok={check.ok}>
-              {check.ok ? <CheckIcon /> : <XIcon />}
+              <SeverityDot $type={check.ok ? "passes" : "issues"} />
             </IconWrapper>
             <Content>
               <Label>{checkLabels[key]}</Label>

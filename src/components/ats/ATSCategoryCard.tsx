@@ -180,7 +180,7 @@ const ExpandedHeader = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  box-shadow: 0 4px 6px 1px rgba(0, 0, 0, 0.1);
 `;
 
 const CloseButton = styled(motion.button)`
@@ -244,6 +244,7 @@ const CategoryMeta = styled(motion.p)`
   display: flex;
   align-items: center;
   gap: 8px;
+  
 `;
 
 const IssueCount = styled.span<{ $hasIssues: boolean }>`
@@ -252,6 +253,7 @@ const IssueCount = styled.span<{ $hasIssues: boolean }>`
   padding: 2px 8px;
   border-radius: 4px;
   color: ${({ $hasIssues }) => $hasIssues ? "#F97316" : "var(--primary-500)"};
+  
 `;
 
 // Scrollable content area
@@ -291,6 +293,7 @@ const Section = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  
 `;
 
 const SectionHeader = styled.div<{ $type: "issues" | "passes" }>`
@@ -298,12 +301,12 @@ const SectionHeader = styled.div<{ $type: "issues" | "passes" }>`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: ${({ $type }) => $type === "issues" ? "#dc2626" : "#059669"};
+  color: ${({ $type }) => $type === "issues" ? "#F97316" : "var(--primary-500)"};
   display: flex;
   align-items: center;
   gap: 6px;
   padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const List = styled.ul`
@@ -319,10 +322,14 @@ const IssueItem = styled.li`
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 12px;
-  background: var(--bg-alt, #f9fafb);
-  border-radius: 8px;
-  border-left: 3px solid #dc2626;
+  padding: 10px 12px;
+  width: 95%;
+  margin: 0 auto;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+
+  &:last-child {
+    border-bottom: none;
+  }
 `;
 
 const PassItem = styled.li`
@@ -330,9 +337,13 @@ const PassItem = styled.li`
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  background: var(--bg-alt, #f9fafb);
-  border-radius: 8px;
-  border-left: 3px solid #059669;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  width: 95%;
+  margin: 0 auto;
+
+  &:last-child {
+    border-bottom: none;
+  }
 `;
 
 const ItemIcon = styled.span<{ $type: "issue" | "pass" }>`
@@ -340,8 +351,8 @@ const ItemIcon = styled.span<{ $type: "issue" | "pass" }>`
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: ${({ $type }) => $type === "issue" ? "#fef2f2" : "#f0fdf4"};
-  color: ${({ $type }) => $type === "issue" ? "#dc2626" : "#059669"};
+  background: var(--checkbox);
+  color: ${({ $type }) => $type === "issue" ? "#F97316" : "var(--primary-500)"};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -351,7 +362,7 @@ const ItemContent = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0;
 `;
 
 const ItemText = styled.span`
@@ -364,19 +375,16 @@ const ItemSuggestion = styled.span`
   font-size: 13px;
   color: var(--text-secondary, #6b7280);
   line-height: 1.5;
-  padding: 8px 12px;
+  padding-top: 4px;
   background: var(--bg-color, #ffffff);
   border-radius: 6px;
-  border-left: 2px solid #059669;
 `;
 
-const SeverityDot = styled.span<{ $severity: string }>`
+const SeverityDot = styled.span<{ $type: "issues" | "passes" }>`
   width: 8px;
   height: 8px;
+  background: ${({ $type }) => $type === "issues" ? "#F97316" : "var(--primary-500)"};
   border-radius: 50%;
-  background: ${({ $severity }) =>
-    $severity === "critical" ? "#dc2626" :
-    $severity === "major" ? "#d97706" : "#6b7280"};
   flex-shrink: 0;
 `;
 
@@ -515,14 +523,13 @@ export function ATSCategoryCard({
                 {issues.length > 0 && (
                   <Section>
                     <SectionHeader $type="issues">
-                      <XIcon /> Issues to fix
+                     Issues to fix
                     </SectionHeader>
                     <List>
                       {issues.map((issue, idx) => (
                         <IssueItem key={idx}>
                           <ItemIcon $type="issue">
-                            {issue.severity && <SeverityDot $severity={issue.severity} />}
-                            {!issue.severity && <XIcon />}
+                           <SeverityDot $type="issues" />
                           </ItemIcon>
                           <ItemContent>
                             <ItemText>{issue.issue}</ItemText>
@@ -539,13 +546,13 @@ export function ATSCategoryCard({
                 {passes.length > 0 && (
                   <Section>
                     <SectionHeader $type="passes">
-                      <CheckIcon /> Passed checks
+                     Passed checks
                     </SectionHeader>
                     <List>
                       {passes.map((pass, idx) => (
                         <PassItem key={idx}>
                           <ItemIcon $type="pass">
-                            <CheckIcon />
+                            <SeverityDot $type="passes" />
                           </ItemIcon>
                           <ItemText>{pass}</ItemText>
                         </PassItem>

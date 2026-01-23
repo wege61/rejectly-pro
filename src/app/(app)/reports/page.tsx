@@ -106,7 +106,7 @@ const CategoryHeader = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
-const CategoryBadge = styled.span<{ $variant: 'excellent' | 'good' | 'needsWork' }>`
+const CategoryBadge = styled.span<{ $variant: 'excellent' | 'good' | 'fair' | 'poor' }>`
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -123,11 +123,15 @@ const CategoryBadge = styled.span<{ $variant: 'excellent' | 'good' | 'needsWork'
         `;
       case 'good':
         return `
-          color: #2a57a0ff;
+          color: #2A57A0;
         `;
-      case 'needsWork':
+      case 'fair':
         return `
-          color: #f97316;
+          color: #EAB308;
+        `;
+      case 'poor':
+        return `
+          color: #F97316;
         `;
     }
   }}
@@ -234,7 +238,7 @@ const ScoreDisplay = styled.div`
   margin-bottom: 8px;
 `;
 
-const ScoreValue = styled.span<{ $category: 'excellent' | 'good' | 'needsWork' }>`
+const ScoreValue = styled.span<{ $category: 'excellent' | 'good' | 'fair' | 'poor' }>`
   font-size: 48px;
   font-weight: 700;
   color: ${({ $category }) => {
@@ -242,9 +246,11 @@ const ScoreValue = styled.span<{ $category: 'excellent' | 'good' | 'needsWork' }
       case 'excellent':
         return 'var(--primary-500)';
       case 'good':
-        return '#2a57a0ff';
-      case 'needsWork':
-        return '#f97316';
+        return '#2A57A0';
+      case 'fair':
+        return '#EAB308';
+      case 'poor':
+        return '#F97316';
     }
   }};
   line-height: 1;
@@ -629,9 +635,10 @@ export default function ReportsPage() {
       ) : (
         <>
           {(() => {
-            const excellent = reports.filter((r) => r.fit_score >= 70);
-            const good = reports.filter((r) => r.fit_score >= 41 && r.fit_score < 70);
-            const needsWork = reports.filter((r) => r.fit_score <= 40);
+            const excellent = reports.filter((r) => r.fit_score >= 85);
+            const good = reports.filter((r) => r.fit_score >= 70 && r.fit_score < 85);
+            const fair = reports.filter((r) => r.fit_score >= 50 && r.fit_score < 70);
+            const poor = reports.filter((r) => r.fit_score < 50);
 
             const renderReportCard = (report: Report) => {
               const jobTitles = report.job_ids
@@ -653,7 +660,7 @@ export default function ReportsPage() {
                   <CardContent>
                     <ContentInner className="report-content">
                       <ScoreDisplay>
-                        <ScoreValue $category={report.fit_score >= 70 ? 'excellent' : report.fit_score >= 41 ? 'good' : 'needsWork'}>{report.fit_score}</ScoreValue>
+                        <ScoreValue $category={report.fit_score >= 85 ? 'excellent' : report.fit_score >= 70 ? 'good' : report.fit_score >= 50 ? 'fair' : 'poor'}>{report.fit_score}</ScoreValue>
                       </ScoreDisplay>
                       <ReportTitle>
                         {jobTitles || "CV Analysis Report"}
@@ -701,7 +708,7 @@ export default function ReportsPage() {
                 {excellent.length > 0 && (
                   <CategorySection>
                     <CategoryHeader>
-                      <CategoryBadge $variant="excellent">Excellent Match</CategoryBadge>
+                      <CategoryBadge $variant="excellent">Excellent</CategoryBadge>
                       <CategoryCount>{excellent.length} report{excellent.length > 1 ? 's' : ''}</CategoryCount>
                     </CategoryHeader>
                     <ReportsGrid>
@@ -713,7 +720,7 @@ export default function ReportsPage() {
                 {good.length > 0 && (
                   <CategorySection>
                     <CategoryHeader>
-                      <CategoryBadge $variant="good">Good Potential</CategoryBadge>
+                      <CategoryBadge $variant="good">Good</CategoryBadge>
                       <CategoryCount>{good.length} report{good.length > 1 ? 's' : ''}</CategoryCount>
                     </CategoryHeader>
                     <ReportsGrid>
@@ -722,14 +729,26 @@ export default function ReportsPage() {
                   </CategorySection>
                 )}
 
-                {needsWork.length > 0 && (
+                {fair.length > 0 && (
                   <CategorySection>
                     <CategoryHeader>
-                      <CategoryBadge $variant="needsWork">Needs Work</CategoryBadge>
-                      <CategoryCount>{needsWork.length} report{needsWork.length > 1 ? 's' : ''}</CategoryCount>
+                      <CategoryBadge $variant="fair">Fair</CategoryBadge>
+                      <CategoryCount>{fair.length} report{fair.length > 1 ? 's' : ''}</CategoryCount>
                     </CategoryHeader>
                     <ReportsGrid>
-                      {needsWork.map(renderReportCard)}
+                      {fair.map(renderReportCard)}
+                    </ReportsGrid>
+                  </CategorySection>
+                )}
+
+                {poor.length > 0 && (
+                  <CategorySection>
+                    <CategoryHeader>
+                      <CategoryBadge $variant="poor">Poor</CategoryBadge>
+                      <CategoryCount>{poor.length} report{poor.length > 1 ? 's' : ''}</CategoryCount>
+                    </CategoryHeader>
+                    <ReportsGrid>
+                      {poor.map(renderReportCard)}
                     </ReportsGrid>
                   </CategorySection>
                 )}

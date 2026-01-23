@@ -19,6 +19,7 @@ import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator
 import { ToolSuggestionModal } from "@/components/features/ToolSuggestionModal";
 import { ScoreBreakdownModal } from "@/components/features/ScoreBreakdownModal";
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerBody, DrawerFooter } from "@/components/ui/Drawer";
+import { CreditsCard } from "@/components/dashboard";
 import { ToolSuggestionResponse } from "@/types/toolSuggestion";
 import { ScoreBreakdown } from "@/types/scoreBreakdown";
 import { PRICING } from "@/lib/constants";
@@ -41,29 +42,6 @@ import {
   hasSignificantImprovements,
 } from "@/components/report";
 
-// Icons
-const TargetIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: "20px",
-      height: "20px",
-      display: "inline-block",
-      verticalAlign: "middle",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
-  </svg>
-);
-
 const RocketIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -82,33 +60,6 @@ const RocketIcon = () => (
       strokeLinecap="round"
       strokeLinejoin="round"
       d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
-    />
-  </svg>
-);
-
-const EyeIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: "20px",
-      height: "20px",
-      display: "inline-block",
-      verticalAlign: "middle",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
     />
   </svg>
 );
@@ -398,27 +349,6 @@ const CheckCircleFilledIcon = () => (
   </svg>
 );
 
-const ChartBarIcon = ({ size = "24" }: { size?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: `${size}px`,
-      height: `${size}px`,
-      display: "inline-block",
-      verticalAlign: "middle",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
-    />
-  </svg>
-);
 
 const TrendingUpIcon = () => (
   <svg
@@ -477,19 +407,34 @@ const BackButton = styled(Button)`
 `;
 
 const Header = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
+const TitleElements = styled.div``;
+
 const Title = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
+
+const Subtitle = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const CreditsCardWrapper = styled.div``;
 
 const HeaderMeta = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.md};
   flex-wrap: wrap;
   align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
 const CreditsIndicator = styled.div<{ $low?: boolean; $subscription?: boolean }>`
@@ -558,13 +503,7 @@ const CreditsIndicator = styled.div<{ $low?: boolean; $subscription?: boolean }>
 const CVActionButtonWrapper = styled.div`
   display: flex;
   width: 100%;
-  margin-top: ${({ theme }) => theme.spacing.sm};
-
-  @media (min-width: 1024px) {
-    width: auto;
-    margin-top: 0;
-    margin-left: auto;
-  }
+  justify-content: center;
 
   button {
     width: 100%;
@@ -574,6 +513,14 @@ const CVActionButtonWrapper = styled.div`
       width: auto;
     }
   }
+`;
+
+const MetaItemProOrFree = styled.span<{ $isPro?: boolean }>`
+  font-size: 13px;
+  color: ${({ $isPro }) => $isPro ? '#FF7A73' : 'var(--text-secondary)'};
+  display: flex;
+  align-items: center;
+  gap: 4px;
 `;
 
 const Grid = styled.div`
@@ -1114,7 +1061,7 @@ const TotalImpactSummary = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: ${({ theme }) => theme.spacing.lg};
-  background: var(--gradient-primary);
+  background: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.radius.lg};
   color: white;
   margin-top: ${({ theme }) => theme.spacing.md};
@@ -4497,87 +4444,74 @@ export default function ReportDetailPage() {
       </BackButton>
 
       <Header>
-        <Title>Resume Analysis Report</Title>
-        <HeaderMeta>
-          <Badge variant={report.pro ? "info" : "default"}>
-            {report.pro ? "Pro Report" : "Free Report"}
-          </Badge>
-          <span style={{ color: "#9ca3af", fontSize: "14px" }}>
-            Created on {new Date(report.created_at).toLocaleDateString("tr-TR")}
-          </span>
-          <CreditsIndicator
-            $subscription={userCredits.hasSubscription}
-            $low={!userCredits.hasSubscription && userCredits.credits <= 2}
-            onClick={() => setIsBuyCreditsModalOpen(true)}
-          >
-            {userCredits.hasSubscription ? (
-              <>✓ Pro Active</>
-            ) : (
-              <>
-                <span className="credit-value">{userCredits.credits}</span> credits
-              </>
-            )}
-          </CreditsIndicator>
-
-          {/* CV Action Button */}
-          {(report.pro && report.generated_cv) || !report.pro ? (
-            <CVActionButtonWrapper>
-              {report.pro && report.generated_cv ? (
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={handlePreviewCV}
-                  style={{
-                    background: 'var(--gradient-primary)',
-                    padding: '12px 24px',
-                    fontSize: '15px',
-                    fontWeight: '600',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-                  }}
-                >
-                  <EyeIcon /> View optimized resume
-                </Button>
-              ) : (
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
-                  isLoading={isUpgrading}
-                  style={{
-                    background: 'var(--gradient-primary)',
-                    padding: '12px 24px',
-                    fontSize: '15px',
-                    fontWeight: '600',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-                  }}
-                >
-                  <RocketIcon /> Generate optimized resume
-                </Button>
-              )}
-            </CVActionButtonWrapper>
-          ) : null}
-        </HeaderMeta>
-        {jobPostingTitles.length > 0 && (
-          <div style={{ marginTop: "12px" }}>
-            <span
-              style={{ color: "#6b7280", fontSize: "14px", fontWeight: "500" }}
-            >
-              Job Posting{jobPostingTitles.length > 1 ? "s" : ""}:{" "}
-            </span>
-            <span
-              style={{ color: "var(--text-secondary)", fontSize: "14px", fontWeight: "600" }}
-            >
-              {jobPostingTitles.join(" • ")}
+        <TitleElements>
+          <Title>Resume Analysis Report</Title>
+          <Subtitle>
+            {jobPostingTitles.length > 0
+              ? `Job: ${jobPostingTitles.join(" • ")}`
+              : `Created on ${new Date(report.created_at).toLocaleDateString("tr-TR")}`}
+          </Subtitle>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
+            <MetaItemProOrFree $isPro={report.pro}>
+              {report.pro ? "Pro" : "Free"}
+            </MetaItemProOrFree>
+            <span style={{ color: "#9ca3af", fontSize: "13px" }}>
+              <i>{new Date(report.created_at).toLocaleDateString("tr-TR")}</i>
             </span>
           </div>
-        )}
+        </TitleElements>
+        <CreditsCardWrapper>
+          <CreditsCard />
+        </CreditsCardWrapper>
       </Header>
+
+      <HeaderMeta>
+        
+
+        {/* CV Action Button */}
+        {(report.pro && report.generated_cv) || !report.pro ? (
+          <CVActionButtonWrapper>
+            {report.pro && report.generated_cv ? (
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={handlePreviewCV}
+                style={{
+                  background: 'var(--accent)',
+                  padding: '12px 24px',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                 
+                }}
+              >
+                 View optimized resume
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
+                isLoading={isUpgrading}
+                style={{
+                  background: 'var(--gradient-primary)',
+                  padding: '12px 24px',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                }}
+              >
+                <RocketIcon /> Generate optimized resume
+              </Button>
+            )}
+          </CVActionButtonWrapper>
+        ) : null}
+      </HeaderMeta>
 
       <StatsBentoGrid>
         {/* Match Score Card */}
@@ -4599,8 +4533,7 @@ export default function ReportDetailPage() {
           <StatBentoContent className="stat-content">
             <StatBentoIcon
               className="stat-icon"
-              $color={report.fit_score >= 80 ? '#10b981' : report.fit_score >= 60 ? '#f59e0b' : '#ef4444'}
-            >
+              $color={(optimizedScore ?? report.fit_score) >= 85 ? 'var(--primary-500)' : (optimizedScore ?? report.fit_score) >= 70 ? '#2a57a0ff' : (optimizedScore ?? report.fit_score) >= 50 ? '#EAB308' : '#F97316'}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -4609,14 +4542,14 @@ export default function ReportDetailPage() {
               <>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
                   <span style={{ fontSize: '24px', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>{report.fit_score}%</span>
-                  <StatBentoValue $color="#10b981">{optimizedScore}%</StatBentoValue>
+                  <StatBentoValue $color={optimizedScore! >= 85 ? 'var(--primary-500)' : optimizedScore! >= 70 ? '#2a57a0ff' : optimizedScore! >= 50 ? '#EAB308' : '#F97316'}>{optimizedScore}%</StatBentoValue>
                 </div>
                 <StatBentoTitle>Match Score</StatBentoTitle>
                 <StatBentoDescription>↑ +{optimizedScore! - report.fit_score}% improvement after optimization</StatBentoDescription>
               </>
             ) : (
               <>
-                <StatBentoValue $color={report.fit_score >= 80 ? '#10b981' : report.fit_score >= 60 ? '#f59e0b' : '#ef4444'}>
+                <StatBentoValue $color={report.fit_score >= 85 ? 'var(--primary-500)' : report.fit_score >= 70 ? '#2a57a0ff' : report.fit_score >= 50 ? '#EAB308' : '#F97316'}>
                   {report.fit_score}%
                 </StatBentoValue>
                 <StatBentoTitle>Match Score</StatBentoTitle>
@@ -4696,12 +4629,12 @@ export default function ReportDetailPage() {
               <RoleBgBar className="stat-bg-element" $width={55} $top={50} $delay={0.6} />
             </StatBentoBackground>
             <StatBentoContent className="stat-content">
-              <StatBentoIcon className="stat-icon" $color="#10b981">
+              <StatBentoIcon className="stat-icon" $color="var(--primary-500)">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
                 </svg>
               </StatBentoIcon>
-              <StatBentoValue $color="#10b981">{roleRecommendations.length}</StatBentoValue>
+              <StatBentoValue $color="var(--primary-500)">{roleRecommendations.length}</StatBentoValue>
               <StatBentoTitle>Role Recommendations</StatBentoTitle>
               <StatBentoDescription>Alternative positions that match your profile</StatBentoDescription>
             </StatBentoContent>
@@ -4915,7 +4848,7 @@ export default function ReportDetailPage() {
               <Card variant="bordered">
                 <Card.Header>
                   <Card.Title>
-                    <TargetIcon /> Problems We Fixed
+                    Problems We Fixed
                   </Card.Title>
                   <Card.Description>
                     See exactly what was wrong and how we fixed it
@@ -5044,7 +4977,6 @@ export default function ReportDetailPage() {
               <ImprovementVisualization>
                 <VisualizationHeader>
                   <VisualizationTitle>
-                    <ChartBarIcon size="28" />
                     Score Improvement Breakdown
                   </VisualizationTitle>
                   <VisualizationSubtitle>
@@ -5388,8 +5320,7 @@ export default function ReportDetailPage() {
                           justifyContent: "space-between",
                           alignItems: "center",
                           padding: "12px",
-                          backgroundColor: "var(--color-surface, #1e293b)",
-                          border: "1px solid var(--color-border, #334155)",
+                          backgroundColor: "var(--checkbox)",
                           borderRadius: "8px",
                         }}
                       >
@@ -5640,7 +5571,7 @@ export default function ReportDetailPage() {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
-                      <TargetIcon />
+                   
                     </div>
                     <h3 style={{
                       fontSize: '18px',
@@ -5874,7 +5805,7 @@ export default function ReportDetailPage() {
                       >
                         <ActionCardHeader>
                           <ActionCardIcon $variant="primary">
-                            <EyeIcon />
+                           
                           </ActionCardIcon>
                           <ActionCardTitle>Preview & Download</ActionCardTitle>
                         </ActionCardHeader>

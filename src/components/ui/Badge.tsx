@@ -55,8 +55,7 @@ const StyledBadge = styled.span<StyledBadgeProps>`
     switch ($variant) {
       case "success":
         return css`
-          background-color: ${theme.colors.successLight};
-          color: ${theme.colors.success};
+          color: ${theme.colors.primary};
 
           &:hover {
             background-color: ${theme.colors.success};

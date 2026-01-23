@@ -1628,6 +1628,50 @@ const KeywordNotFound = styled.div`
   border-radius: 8px;
 `;
 
+// Role Recommendations Drawer Styled Components
+const RoleItemCard = styled.div`
+  max-width: 600px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 16px 12px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const RoleItemHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+`;
+
+const RoleItemTitle = styled.span`
+  font-size: 15px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const RoleItemMatch = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 10px;
+  border-radius: 20px;
+`;
+
+const RoleItemDescription = styled.p`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.5;
+  margin: 0;
+`;
+
 const ClickableKeywordsCard = styled(Card)`
   text-align: center;
   cursor: pointer;
@@ -3540,6 +3584,7 @@ export default function ReportDetailPage() {
   const [isScoreBreakdownModalOpen, setIsScoreBreakdownModalOpen] = useState(false);
   const [isOptimizedScoreBreakdownModalOpen, setIsOptimizedScoreBreakdownModalOpen] = useState(false);
   const [isKeywordsModalOpen, setIsKeywordsModalOpen] = useState(false);
+  const [isRoleRecommendationsDrawerOpen, setIsRoleRecommendationsDrawerOpen] = useState(false);
   const [optimizedScoreBreakdown, setOptimizedScoreBreakdown] = useState<ScoreBreakdown | null>(null);
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
@@ -4637,7 +4682,14 @@ export default function ReportDetailPage() {
 
         {/* Role Recommendations Card */}
         {visibleSections?.showRoleRecommendations && (
-          <StatBentoCard>
+          <StatBentoCard
+            $isClickable={roleRecommendations.length > 0}
+            onClick={() => {
+              if (roleRecommendations.length > 0) {
+                setIsRoleRecommendationsDrawerOpen(true);
+              }
+            }}
+          >
             <StatBentoBackground>
               <RoleBgBar className="stat-bg-element" $width={85} $top={20} $delay={0} />
               <RoleBgBar className="stat-bg-element" $width={70} $top={35} $delay={0.3} />
@@ -4653,6 +4705,16 @@ export default function ReportDetailPage() {
               <StatBentoTitle>Role Recommendations</StatBentoTitle>
               <StatBentoDescription>Alternative positions that match your profile</StatBentoDescription>
             </StatBentoContent>
+            {roleRecommendations.length > 0 && (
+              <StatBentoCTA className="stat-cta">
+                <StatBentoCTALink>
+                  View details
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </StatBentoCTALink>
+              </StatBentoCTA>
+            )}
             <StatBentoOverlay className="stat-overlay" />
           </StatBentoCard>
         )}
@@ -6328,6 +6390,43 @@ export default function ReportDetailPage() {
         </DrawerBody>
         <DrawerFooter>
           <Button variant="primary" onClick={() => setIsKeywordsModalOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
+            Done
+          </Button>
+        </DrawerFooter>
+      </Drawer>
+
+      {/* Role Recommendations Drawer */}
+      <Drawer isOpen={isRoleRecommendationsDrawerOpen} onClose={() => setIsRoleRecommendationsDrawerOpen(false)}>
+        <DrawerHeader>
+          <DrawerTitle>Role Recommendations</DrawerTitle>
+          <DrawerDescription>Alternative positions that match your profile and experience</DrawerDescription>
+        </DrawerHeader>
+
+        <KeywordsSummaryRow>
+          <KeywordsSummaryCount>{roleRecommendations.length}</KeywordsSummaryCount>
+          <KeywordsSummaryText>alternative roles found based on your skills</KeywordsSummaryText>
+        </KeywordsSummaryRow>
+
+        <DrawerBody>
+          {roleRecommendations.map((role, index) => (
+            <RoleItemCard key={index}>
+              <RoleItemHeader>
+                <RoleItemTitle>{role.title}</RoleItemTitle>
+                <RoleItemMatch>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  {role.fit}% Match
+                </RoleItemMatch>
+              </RoleItemHeader>
+              {role.description && (
+                <RoleItemDescription>{role.description}</RoleItemDescription>
+              )}
+            </RoleItemCard>
+          ))}
+        </DrawerBody>
+        <DrawerFooter>
+          <Button variant="primary" onClick={() => setIsRoleRecommendationsDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
             Done
           </Button>
         </DrawerFooter>

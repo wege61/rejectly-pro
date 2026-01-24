@@ -130,6 +130,50 @@ const CheckCircleIcon = () => (
   </svg>
 );
 
+const DocumentIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "18px",
+      height: "18px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+    />
+  </svg>
+);
+
+const SparklesIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    style={{
+      width: "18px",
+      height: "18px",
+      display: "inline-block",
+      verticalAlign: "middle",
+    }}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+    />
+  </svg>
+);
+
 const FireIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -3033,132 +3077,174 @@ const GenerateCTAContainer = styled.div`
   border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
-const CVSuccessSection = styled.div`
+// Resume Actions - Minimal list style
+const ResumeActionsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xl};
 `;
 
-const SuccessCelebration = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing.xl} 0;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
-  border: 2px solid var(--success);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '✨';
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 40px;
-    opacity: 0.3;
-  }
-
-  &::after {
-    content: '🎉';
-    position: absolute;
-    bottom: 10px;
-    left: 20px;
-    font-size: 40px;
-    opacity: 0.3;
-  }
-`;
-
-
-const SuccessTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--success);
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-`;
-
-const SuccessSubtext = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  max-width: 500px;
-  margin: 0 auto;
-`;
-
-const ActionCardsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: ${({ theme }) => theme.spacing.lg};
-`;
-
-const ActionCard = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost' | 'accent' }>`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 2px solid ${({ theme, $variant }) =>
-    $variant === 'primary' ? theme.colors.primary :
-    $variant === 'secondary' ? theme.colors.border :
-    $variant === 'accent' ? '#f59e0b' :
-    theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  transition: all ${({ theme }) => theme.transitions.fast};
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px ${({ theme, $variant }) =>
-      $variant === 'primary' ? `${theme.colors.primary}25` :
-      $variant === 'accent' ? 'rgba(245, 158, 11, 0.25)' :
-      `${theme.colors.border}40`};
-    border-color: ${({ theme, $variant }) =>
-      $variant === 'primary' ? theme.colors.primary :
-      $variant === 'secondary' ? theme.colors.primary :
-      $variant === 'accent' ? '#f59e0b' :
-      theme.colors.textSecondary};
-  }
-`;
-
-const ActionCardHeader = styled.div`
+const ResumeActionItem = styled.div<{ $disabled?: boolean }>`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-color);
+  cursor: ${({ $disabled }) => $disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${({ $disabled }) => $disabled ? 0.5 : 1};
+  transition: all 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    opacity: ${({ $disabled }) => $disabled ? 0.5 : 0.7};
+  }
+`;
+
+const ResumeActionIcon = styled.div<{ $color?: string }>`
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: ${({ $color }) => $color ? `${$color}15` : 'rgba(102, 126, 234, 0.1)'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: ${({ $color }) => $color || '#667eea'};
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const ResumeActionContent = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const ResumeActionTitle = styled.div`
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+`;
+
+const ResumeActionDescription = styled.div`
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+`;
+
+const ResumeActionArrow = styled.div`
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const ResumeStatusBadge = styled.div<{ $ready?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  background: ${({ $ready }) => $ready ? 'rgba(16, 185, 129, 0.1)' : 'rgba(102, 126, 234, 0.1)'};
+  color: ${({ $ready }) => $ready ? 'var(--success)' : '#667eea'};
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const ResumeFooter = styled.div<{ $variant?: 'default' | 'accent' }>`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  background: ${({ $variant }) =>
+    $variant === 'accent' ? 'rgba(245, 158, 11, 0.06)' : 'rgba(102, 126, 234, 0.04)'};
+  border-top: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: ${({ $variant }) =>
+      $variant === 'accent' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(102, 126, 234, 0.08)'};
+  }
+`;
+
+const ResumeFooterIcon = styled.div<{ $color?: string }>`
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: ${({ $color }) => $color ? `${$color}20` : 'rgba(102, 126, 234, 0.15)'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: ${({ $color }) => $color || '#667eea'};
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const ResumeFooterContent = styled.div`
+  flex: 1;
+`;
+
+const ResumeFooterTitle = styled.div<{ $color?: string }>`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ $color }) => $color || 'var(--text-color)'};
+`;
+
+const ResumeFooterDescription = styled.div`
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
 `;
 
 const ActionCardIcon = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost' | 'accent' }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  background: ${({ theme, $variant }) =>
-    $variant === 'primary'
-      ? `linear-gradient(135deg, ${theme.colors.primary} 0%, var(--primary-600) 100%)`
-      : $variant === 'secondary'
-      ? `${theme.colors.primary}15`
-      : $variant === 'accent'
-      ? 'rgba(245, 158, 11, 0.15)'
-      : `${theme.colors.textSecondary}15`};
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: ${({ $variant }) =>
+    $variant === 'primary' ? '#667eea' :
+    $variant === 'accent' ? 'rgba(245, 158, 11, 0.15)' :
+    'rgba(102, 126, 234, 0.1)'};
 
   svg {
-    width: 20px;
-    height: 20px;
-    color: ${({ theme, $variant }) =>
+    width: 18px;
+    height: 18px;
+    color: ${({ $variant }) =>
       $variant === 'primary' ? 'white' :
       $variant === 'accent' ? '#f59e0b' :
-      theme.colors.primary};
+      '#667eea'};
   }
 `;
 
 const ActionCardTitle = styled.h4`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
   margin: 0;
 `;
 
 const ActionCardDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 13px;
+  color: var(--text-secondary);
   line-height: 1.5;
   margin: 0;
 `;
@@ -3381,155 +3467,297 @@ const RoleMatchIcon = styled.div`
   font-size: 12px;
 `;
 
-const ImprovementVisualization = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
+// Score Breakdown Card - FixesCard tarzında
+const ScoreBreakdownCard = styled.div`
+  background: var(--bg-alt);
+  border-radius: 16px;
+  overflow: hidden;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: ${({ theme }) => theme.spacing.md};
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 `;
 
-const VisualizationHeader = styled.div`
-  text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
-
-const VisualizationTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-
-  svg {
-    color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const VisualizationSubtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const ChartContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: ${({ theme }) => theme.spacing["2xl"]};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    flex-direction: column;
-    gap: ${({ theme }) => theme.spacing.lg};
-  }
-`;
-
-const CircularChart = styled.div`
-  position: relative;
-  width: 220px;
-  height: 220px;
-  flex-shrink: 0;
-`;
-
-const ScoreRing = styled.svg`
-  transform: rotate(-90deg);
-  width: 100%;
-  height: 100%;
-`;
-
-const ChartCenter = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-`;
-
-const CenterScore = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize["5xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.success};
-  line-height: 1;
-`;
-
-const CenterLabel = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 4px;
-`;
-
-const CenterFromScore = styled.div`
-  margin-top: ${({ theme }) => theme.spacing.xs};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textTertiary};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-
-  svg {
-    color: ${({ theme }) => theme.colors.success};
-  }
-`;
-
-const ImprovementsList = styled.div`
-  flex: 1;
-  min-width: 0;
-  max-width: 420px;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    width: 100%;
-    max-width: 100%;
-  }
-`;
-
-const ImprovementItem = styled.div<{ $color: string }>`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => theme.spacing.sm} 0;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const ImprovementIcon = styled.div<{ $color: string }>`
-  width: 8px;
-  height: 8px;
-  background: ${({ $color }) => $color};
-  border-radius: 50%;
-  flex-shrink: 0;
-`;
-
-const ImprovementContent = styled.div`
-  flex: 1;
-  min-width: 0;
+const ScoreBreakdownHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.md};
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  gap: 16px;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
-const ImprovementCategory = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
+const ScoreBreakdownHeaderLeft = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;
 
-const ImprovementImpact = styled.div<{ $color: string }>`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ $color }) => $color};
+const ScoreBreakdownTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+`;
+
+const ScoreBreakdownSubtitle = styled.p`
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+`;
+
+const ScoreBreakdownBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 8px;
+`;
+
+const ScoreBadgeValue = styled.span<{ $muted?: boolean }>`
+  font-size: ${({ $muted }) => ($muted ? '16px' : '22px')};
+  font-weight: 700;
+  color: ${({ $muted }) => ($muted ? 'var(--text-tertiary)' : 'var(--success)')};
+  line-height: 1;
+`;
+
+const ScoreBadgeArrow = styled.span`
+  color: var(--text-tertiary);
+  font-size: 14px;
+`;
+
+const ScoreBreakdownBody = styled.div`
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const StackedBarContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+const StackedBarLabel = styled.div<{ $align?: 'left' | 'right' }>`
+  display: flex;
+  flex-direction: column;
+  align-items: ${({ $align }) => $align === 'right' ? 'flex-end' : 'flex-start'};
+  gap: 2px;
+  min-width: 70px;
+`;
+
+const StackedBarLabelTitle = styled.span`
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const StackedBarLabelValue = styled.span<{ $highlight?: boolean }>`
+  font-size: 20px;
+  font-weight: 700;
+  color: ${({ $highlight }) => $highlight ? 'var(--success)' : 'var(--text-secondary)'};
+  line-height: 1;
+`;
+
+const StackedBarWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+const StackedBar = styled.div`
+  height: 28px;
+  background: var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+`;
+
+const StackedBarSegment = styled.div<{ $width: number; $color: string }>`
+  height: 100%;
+  width: ${({ $width }) => $width}%;
+  background: ${({ $color }) => $color};
+  opacity: 0.85;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  cursor: default;
+
+  &:hover {
+    opacity: 1;
+    transform: scaleY(1.08);
+  }
+`;
+
+const BreakdownLegend = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+`;
+
+const LegendItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const LegendDot = styled.div<{ $color: string }>`
+  width: 10px;
+  height: 10px;
+  background: ${({ $color }) => $color};
+  border-radius: 3px;
   flex-shrink: 0;
+`;
+
+const LegendText = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+`;
+
+const LegendCategory = styled.span`
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const LegendValue = styled.span<{ $color: string }>`
+  font-size: 12px;
+  font-weight: 600;
+  color: ${({ $color }) => $color};
+`;
+
+const ScoreBreakdownFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: rgba(16, 185, 129, 0.05);
+  border-top: 1px solid var(--border-color);
+`;
+
+const BreakdownFooterLabel = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+`;
+
+const BreakdownFooterValue = styled.span`
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--success);
+`;
+
+// Generate Resume Card - FixesCard tarzında
+const GenerateResumeCard = styled.div`
+  background: var(--bg-alt);
+  border-radius: 16px;
+  overflow: hidden;
+
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+`;
+
+const GenerateResumeHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
+const GenerateResumeHeaderLeft = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const GenerateResumeTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+`;
+
+const GenerateResumeSubtitle = styled.p`
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+`;
+
+const GenerateResumeBody = styled.div`
+  padding: 32px 24px;
+`;
+
+const GenerateResumeEmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+`;
+
+const EmptyStateIcon = styled.div`
+  width: 56px;
+  height: 56px;
+  margin-bottom: 16px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667eea;
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+`;
+
+const EmptyStateTitle = styled.h4`
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 8px 0;
+`;
+
+const EmptyStateDescription = styled.p`
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 20px 0;
+  line-height: 1.5;
 `;
 
 // Types are now imported from @/components/report
@@ -4887,125 +5115,93 @@ export default function ReportDetailPage() {
             </Section>
 
             <Section>
-              <ImprovementVisualization>
-                <VisualizationHeader>
-                  <VisualizationTitle>
-                    Score Improvement Breakdown
-                  </VisualizationTitle>
-                  <VisualizationSubtitle>
-                    Visual representation of how each optimization contributed
-                    to your final score
-                  </VisualizationSubtitle>
-                </VisualizationHeader>
+              <ScoreBreakdownCard>
+                <ScoreBreakdownHeader>
+                  <ScoreBreakdownHeaderLeft>
+                    <ScoreBreakdownTitle>Score Breakdown</ScoreBreakdownTitle>
+                    <ScoreBreakdownSubtitle>
+                      How each optimization impacts your score
+                    </ScoreBreakdownSubtitle>
+                  </ScoreBreakdownHeaderLeft>
+                  <ScoreBreakdownBadge>
+                    <ScoreBadgeValue $muted>{report.fit_score}%</ScoreBadgeValue>
+                    <ScoreBadgeArrow>→</ScoreBadgeArrow>
+                    <ScoreBadgeValue>{optimizedScore}%</ScoreBadgeValue>
+                  </ScoreBreakdownBadge>
+                </ScoreBreakdownHeader>
 
-                <ChartContainer>
-                  <CircularChart>
-                    <ScoreRing viewBox="0 0 200 200">
-                      {/* Background circle */}
-                      <circle
-                        cx="100"
-                        cy="100"
-                        r="85"
-                        fill="none"
-                        stroke="rgba(255, 255, 255, 0.08)"
-                        strokeWidth="12"
-                      />
-                      {/* Base score (original fit_score) */}
-                      <circle
-                        cx="100"
-                        cy="100"
-                        r="85"
-                        fill="none"
-                        stroke="rgba(255, 255, 255, 0.2)"
-                        strokeWidth="12"
-                        strokeDasharray={`${(report.fit_score / 100) * 534} 534`}
-                        style={{
-                          transition: "stroke-dasharray 1s ease-in-out",
-                        }}
-                      />
-                      {/* Improvement segments */}
-                      {(() => {
-                        const colors = [
-                          "#35A29F",
-                          "#3b82f6",
-                          "#8b5cf6",
-                          "#f59e0b",
-                          "#ec4899",
-                          "#14b8a6",
-                        ];
-                        const circumference = 534; // 2 * PI * 85
-                        const baseOffset = (report.fit_score / 100) * circumference;
+                <ScoreBreakdownBody>
+                  {(() => {
+                    // Softer, pastel colors
+                    const colors = [
+                      "#4ade80", // soft green
+                      "#60a5fa", // soft blue
+                      "#a78bfa", // soft purple
+                      "#fbbf24", // soft amber
+                      "#f472b6", // soft pink
+                      "#2dd4bf", // soft teal
+                    ];
+                    const totalImprovement = improvementBreakdown.reduce((sum, i) => sum + i.impact, 0);
 
-                        let cumulativeLength = 0;
-                        const segments = improvementBreakdown.map((improvement, index) => {
-                          const segmentLength = (improvement.impact / 100) * circumference;
-                          const offset = baseOffset + cumulativeLength;
-                          cumulativeLength += segmentLength;
-                          return {
-                            color: colors[index % colors.length],
-                            length: segmentLength,
-                            offset: offset,
-                            index
-                          };
-                        });
+                    return (
+                      <>
+                        <StackedBarContainer>
+                          <StackedBarLabel>
+                            <StackedBarLabelTitle>Before</StackedBarLabelTitle>
+                            <StackedBarLabelValue>{report.fit_score}%</StackedBarLabelValue>
+                          </StackedBarLabel>
 
-                        return segments.reverse().map((segment) => (
-                          <circle
-                            key={segment.index}
-                            cx="100"
-                            cy="100"
-                            r="85"
-                            fill="none"
-                            stroke={segment.color}
-                            strokeWidth="12"
-                            strokeDasharray={`${segment.offset + segment.length} ${circumference}`}
-                            strokeLinecap="round"
-                            style={{
-                              transition: "stroke-dasharray 0.8s ease-in-out",
-                            }}
-                          />
-                        ));
-                      })()}
-                    </ScoreRing>
-                    <ChartCenter>
-                      <CenterScore>{optimizedScore}%</CenterScore>
-                      <CenterLabel>New Score</CenterLabel>
-                      <CenterFromScore>
-                        <TrendingUpIcon />
-                        from {report.fit_score}%
-                      </CenterFromScore>
-                    </ChartCenter>
-                  </CircularChart>
+                          <StackedBarWrapper>
+                            <StackedBar>
+                              {improvementBreakdown.map((improvement, index) => {
+                                const color = colors[index % colors.length];
+                                const segmentWidth = (improvement.impact / totalImprovement) * 100;
+                                return (
+                                  <StackedBarSegment
+                                    key={index}
+                                    $width={segmentWidth}
+                                    $color={color}
+                                    title={`${improvement.category}: +${Math.round(improvement.impact * 10) / 10}%`}
+                                  />
+                                );
+                              })}
+                            </StackedBar>
+                          </StackedBarWrapper>
 
-                  <ImprovementsList>
-                    {improvementBreakdown.map((improvement, index) => {
-                      const colors = [
-                        "#35A29F",
-                        "#3b82f6",
-                        "#8b5cf6",
-                        "#f59e0b",
-                        "#ec4899",
-                        "#14b8a6",
-                      ];
-                      const color = colors[index % colors.length];
+                          <StackedBarLabel $align="right">
+                            <StackedBarLabelTitle>After</StackedBarLabelTitle>
+                            <StackedBarLabelValue $highlight>{optimizedScore}%</StackedBarLabelValue>
+                          </StackedBarLabel>
+                        </StackedBarContainer>
 
-                      return (
-                        <ImprovementItem key={index} $color={color}>
-                          <ImprovementIcon $color={color} />
-                          <ImprovementContent>
-                            <ImprovementCategory>
-                              {improvement.category}
-                            </ImprovementCategory>
-                            <ImprovementImpact $color={color}>
-                              +{Math.round(improvement.impact * 10) / 10}%
-                            </ImprovementImpact>
-                          </ImprovementContent>
-                        </ImprovementItem>
-                      );
-                    })}
-                  </ImprovementsList>
-                </ChartContainer>
-              </ImprovementVisualization>
+                        <BreakdownLegend>
+                          {improvementBreakdown.map((improvement, index) => {
+                            const color = colors[index % colors.length];
+                            return (
+                              <LegendItem key={index}>
+                                <LegendDot $color={color} />
+                                <LegendText>
+                                  <LegendCategory>{improvement.category}</LegendCategory>
+                                  <LegendValue $color={color}>
+                                    +{Math.round(improvement.impact * 10) / 10}%
+                                  </LegendValue>
+                                </LegendText>
+                              </LegendItem>
+                            );
+                          })}
+                        </BreakdownLegend>
+                      </>
+                    );
+                  })()}
+                </ScoreBreakdownBody>
+
+                <ScoreBreakdownFooter>
+                  <BreakdownFooterLabel>Total Improvement</BreakdownFooterLabel>
+                  <BreakdownFooterValue>
+                    +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}%
+                  </BreakdownFooterValue>
+                </ScoreBreakdownFooter>
+              </ScoreBreakdownCard>
             </Section>
           </>
         )}
@@ -5458,51 +5654,36 @@ export default function ReportDetailPage() {
             )}
 
           <Section>
-            <Card variant="bordered">
-              <Card.Header>
-                <Card.Title>
-                 Generate optimized resume
-                </Card.Title>
-                <Card.Description>
-                  Get a fully optimized, ATS-friendly resume with all improvements
-                  applied
-                </Card.Description>
-              </Card.Header>
-              <Card.Content>
-                {!report.generated_cv ? (
-                  <div style={{
-                    textAlign: 'center',
-                    padding: '48px 24px',
-                  }}>
-                    <div style={{
-                      width: '64px',
-                      height: '64px',
-                      margin: '0 auto 20px',
-                      background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%)',
-                      borderRadius: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                   
-                    </div>
-                    <h3 style={{
-                      fontSize: '18px',
-                      fontWeight: 600,
-                      color: '#f1f5f9',
-                      marginBottom: '8px'
-                    }}>
-                      Generate your optimized resume
-                    </h3>
-                    <p style={{
-                      color: '#9ca3af',
-                      fontSize: '14px',
-                      marginBottom: '24px',
-                      maxWidth: '400px',
-                      margin: '0 auto 24px'
-                    }}>
-                      Create an ATS-optimized resume tailored for this job position with all improvements applied.
-                    </p>
+            <GenerateResumeCard>
+              <GenerateResumeHeader>
+                <GenerateResumeHeaderLeft>
+                  <GenerateResumeTitle>
+                    {report.generated_cv ? 'Optimized Resume' : 'Generate Optimized Resume'}
+                  </GenerateResumeTitle>
+                  <GenerateResumeSubtitle>
+                    {report.generated_cv
+                      ? 'Your ATS-optimized resume is ready'
+                      : 'ATS-friendly resume with all improvements applied'}
+                  </GenerateResumeSubtitle>
+                </GenerateResumeHeaderLeft>
+                {report.generated_cv && (
+                  <ResumeStatusBadge $ready>
+                    <CheckCircleIcon />
+                    Ready
+                  </ResumeStatusBadge>
+                )}
+              </GenerateResumeHeader>
+
+              {!report.generated_cv ? (
+                <GenerateResumeBody>
+                  <GenerateResumeEmptyState>
+                    <EmptyStateIcon>
+                      <RocketIcon />
+                    </EmptyStateIcon>
+                    <EmptyStateTitle>Ready to generate</EmptyStateTitle>
+                    <EmptyStateDescription>
+                      Create an optimized resume tailored for this position with all improvements applied.
+                    </EmptyStateDescription>
                     <Button
                       onClick={async () => {
                         setIsUpgrading(true);
@@ -5604,175 +5785,96 @@ export default function ReportDetailPage() {
                       }}
                       isLoading={isUpgrading}
                       style={{
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        background: '#667eea',
                       }}
                     >
-                      {isUpgrading ? "Generating..." : "Generate optimized resume"}
+                      {isUpgrading ? "Generating..." : "Generate Resume"}
                     </Button>
-                  </div>
-                ) : (
-                  <CVSuccessSection>
-                    <SuccessCelebration>
-                      <SuccessTitle>Your optimized resume is ready!</SuccessTitle>
-                      <SuccessSubtext>
-                        Your professionally crafted resume is ready to download. Choose
-                        your next action below.
-                      </SuccessSubtext>
-                      {report?.fake_it_mode && (
-                        <div style={{
-                          marginTop: '20px',
-                          padding: '16px 20px',
-                          background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.2) 50%, rgba(251, 191, 36, 0.15) 100%)',
-                          border: '2px solid rgba(245, 158, 11, 0.5)',
-                          borderRadius: '12px',
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: '12px',
-                          boxShadow: '0 4px 12px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                          position: 'relative',
-                          overflow: 'hidden',
-                        }}>
-                          <div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            height: '1px',
-                            background: 'linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.6), transparent)',
-                          }} />
-                          <div style={{
-                            flexShrink: 0,
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '8px',
-                            background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
-                            color: '#ffffff',
-                          }}>
-                            
-                          </div>
-                          <div style={{ flex: 1 }}>
-                            <div style={{
-                              fontSize: '15px',
-                              fontWeight: 600,
-                              color: '#fbbf24',
-                              marginBottom: '4px',
-                              letterSpacing: '0.3px',
-                            }}>
-                              Fake It Mode Enabled
-                            </div>
-                            <div style={{
-                              fontSize: '13px',
-                              color: '#fcd34d',
-                              lineHeight: '1.5',
-                              opacity: 0.9,
-                            }}>
-                              This resume includes learning paths for missing skills to help you transition into your target role
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </SuccessCelebration>
+                  </GenerateResumeEmptyState>
+                </GenerateResumeBody>
+              ) : (
+                <>
+                  <GenerateResumeBody>
+                    <ResumeActionsList>
+                      <ResumeActionItem onClick={handlePreviewCV}>
+                        <ResumeActionIcon $color="#667eea">
+                          <DocumentIcon />
+                        </ResumeActionIcon>
+                        <ResumeActionContent>
+                          <ResumeActionTitle>Preview & Download</ResumeActionTitle>
+                          <ResumeActionDescription>View and download as PDF</ResumeActionDescription>
+                        </ResumeActionContent>
+                        <ResumeActionArrow>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                          </svg>
+                        </ResumeActionArrow>
+                      </ResumeActionItem>
 
-                    {/* Fake It Mode Card - only show if premium and not already in fake it mode */}
-                    {report?.pro && !report?.fake_it_mode && (
-                      <ActionCard
-                        $variant="accent"
-                        onClick={handleCreateFakeItReport}
-                        style={{
-                          opacity: isGeneratingCV ? 0.6 : 1,
-                          cursor: isGeneratingCV ? 'not-allowed' : 'pointer',
-                          background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(245, 158, 11, 0.12) 100%)',
-                          border: '2px solid #f59e0b',
-                          marginBottom: '20px',
-                        }}
-                      >
-                        <ActionCardHeader>
-                          <ActionCardIcon $variant="accent">
-                            {isGeneratingCV && <Spinner size="sm" /> }
-                          </ActionCardIcon>
-                          <ActionCardTitle style={{
-                            background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                          }}>
-                            {isGeneratingCV ? "Creating New Report..." : "Try Fake It Mode"}
-                          </ActionCardTitle>
-                        </ActionCardHeader>
-                        <ActionCardDescription>
-                          {isGeneratingCV
-                            ? "Creating a new report with Fake It Mode enabled. This will include missing skills and learning paths..."
-                            : "Create a new report with missing skills added to your resume. Get learning paths and project ideas to acquire these skills. Perfect for career transitions!"
-                          }
-                        </ActionCardDescription>
-                      </ActionCard>
-                    )}
+                      <ResumeActionItem onClick={() => {
+                        if (report?.pro) {
+                          setIsCoverLetterModalOpen(true);
+                        } else {
+                          setIsPremiumModalOpen(true);
+                        }
+                      }}>
+                        <ResumeActionIcon $color="#8b5cf6">
+                          <EnvelopeIcon size="18" />
+                        </ResumeActionIcon>
+                        <ResumeActionContent>
+                          <ResumeActionTitle>Generate Cover Letter</ResumeActionTitle>
+                          <ResumeActionDescription>Tailored letter for this position</ResumeActionDescription>
+                        </ResumeActionContent>
+                        <ResumeActionArrow>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                          </svg>
+                        </ResumeActionArrow>
+                      </ResumeActionItem>
 
-                    <ActionCardsGrid>
-                      <ActionCard
-                        $variant="primary"
-                        onClick={handlePreviewCV}
+                      <ResumeActionItem
+                        $disabled={isGeneratingCV}
+                        onClick={isGeneratingCV ? undefined : handleRegenerateCV}
                       >
-                        <ActionCardHeader>
-                          <ActionCardIcon $variant="primary">
-                           
-                          </ActionCardIcon>
-                          <ActionCardTitle>Preview & Download</ActionCardTitle>
-                        </ActionCardHeader>
-                        <ActionCardDescription>
-                          Review your optimized resume and download it as a PDF to start
-                          applying immediately.
-                        </ActionCardDescription>
-                      </ActionCard>
+                        <ResumeActionIcon $color="#10b981">
+                          {isGeneratingCV ? <Spinner size="sm" /> : <RefreshIcon />}
+                        </ResumeActionIcon>
+                        <ResumeActionContent>
+                          <ResumeActionTitle>Regenerate Resume</ResumeActionTitle>
+                          <ResumeActionDescription>Create a new optimized version</ResumeActionDescription>
+                        </ResumeActionContent>
+                        <ResumeActionArrow>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                          </svg>
+                        </ResumeActionArrow>
+                      </ResumeActionItem>
+                    </ResumeActionsList>
+                  </GenerateResumeBody>
 
-                      <ActionCard
-                        $variant="secondary"
-                        onClick={() => {
-                          if (report?.pro) {
-                            setIsCoverLetterModalOpen(true);
-                          } else {
-                            setIsPremiumModalOpen(true);
-                          }
-                        }}
-                      >
-                        <ActionCardHeader>
-                          <ActionCardIcon $variant="secondary">
-                            <EnvelopeIcon size="24" />
-                          </ActionCardIcon>
-                          <ActionCardTitle>Generate cover letter</ActionCardTitle>
-                        </ActionCardHeader>
-                        <ActionCardDescription>
-                          Create a tailored cover letter that perfectly complements
-                          your optimized resume.
-                        </ActionCardDescription>
-                      </ActionCard>
-
-                      <ActionCard
-                        $variant="secondary"
-                        onClick={handleRegenerateCV}
-                        style={{
-                          opacity: isGeneratingCV ? 0.6 : 1,
-                          cursor: isGeneratingCV ? 'not-allowed' : 'pointer',
-                        }}
-                      >
-                        <ActionCardHeader>
-                          <ActionCardIcon $variant="secondary">
-                            {isGeneratingCV ? <Spinner size="sm" /> : <RefreshIcon />}
-                          </ActionCardIcon>
-                          <ActionCardTitle>Regenerate resume</ActionCardTitle>
-                        </ActionCardHeader>
-                        <ActionCardDescription>
-                          Not satisfied? Regenerate your resume with improved optimization.
-                        </ActionCardDescription>
-                      </ActionCard>
-                    </ActionCardsGrid>
-                  </CVSuccessSection>
-                )}
-              </Card.Content>
-            </Card>
+                  {report?.pro && !report?.fake_it_mode && (
+                    <ResumeFooter
+                      $variant="accent"
+                      onClick={isGeneratingCV ? undefined : handleCreateFakeItReport}
+                      style={{ opacity: isGeneratingCV ? 0.5 : 1, cursor: isGeneratingCV ? 'not-allowed' : 'pointer' }}
+                    >
+                      <ResumeFooterIcon $color="#f59e0b">
+                        {isGeneratingCV ? <Spinner size="sm" /> : <SparklesIcon />}
+                      </ResumeFooterIcon>
+                      <ResumeFooterContent>
+                        <ResumeFooterTitle $color="#f59e0b">Try Fake It Mode</ResumeFooterTitle>
+                        <ResumeFooterDescription>Add missing skills with learning paths</ResumeFooterDescription>
+                      </ResumeFooterContent>
+                      <ResumeActionArrow>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ color: '#f59e0b' }}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                      </ResumeActionArrow>
+                    </ResumeFooter>
+                  )}
+                </>
+              )}
+            </GenerateResumeCard>
           </Section>
         </>
       )}

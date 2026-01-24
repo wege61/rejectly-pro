@@ -221,8 +221,10 @@ export const Modal: React.FC<ModalProps> & {
   closeOnBackdropClick = true,
   closeOnEscape = true,
 }) => {
-  // ESC tuşu ile kapatma
+  // ESC tuşu ile kapatma ve scroll engelleme
   useEffect(() => {
+    let scrollY = 0;
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen && closeOnEscape && onClose) {
         onClose();
@@ -230,14 +232,29 @@ export const Modal: React.FC<ModalProps> & {
     };
 
     if (isOpen) {
+      scrollY = window.scrollY;
       document.addEventListener("keydown", handleEscape);
-      // Body scroll'u engelle
+
+      // Body scroll'u engelle - pozisyonu koru
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
       document.body.style.overflow = "hidden";
     }
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "unset";
+
+      if (document.body.style.position === "fixed") {
+        const savedScrollY = parseInt(document.body.style.top || "0", 10) * -1;
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.overflow = "";
+        window.scrollTo(0, savedScrollY);
+      }
     };
   }, [isOpen, onClose, closeOnEscape]);
 

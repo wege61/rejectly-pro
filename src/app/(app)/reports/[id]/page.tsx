@@ -1092,229 +1092,228 @@ const TotalValue = styled.div`
   }
 `;
 
-// Problem Summary Components - Enhanced Modern Design
-const ProblemSummaryCard = styled.div`
-  position: relative;
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: 40px;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+// Fixes Card - Unified component matching StatBentoCard style
+const FixesCard = styled.div`
+  background: var(--bg-alt);
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  box-shadow: ${({ theme }) => theme.shadow.lg};
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, ${({ theme }) => theme.colors.primary} 0%, #0B666A 100%);
-  }
+  /* Light styles */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: 28px 20px;
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 `;
 
-const ProblemSummaryHeader = styled.div`
+const FixesHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  gap: 16px;
   flex-wrap: wrap;
-  gap: 24px;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+  @media (max-width: 640px) {
     flex-direction: column;
     align-items: flex-start;
   }
 `;
 
-const ProblemSummaryTitleSection = styled.div`
-  flex: 1;
-  min-width: 300px;
+const FixesHeaderLeft = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;
 
-const ProblemSummaryTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  letter-spacing: -0.5px;
-  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
-  color: ${({ theme }) => theme.colors.textPrimary};
+const FixesTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+`;
+
+const FixesSubtitle = styled.p`
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+`;
+
+const FixesScoreBadge = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-
-  svg {
-    color: ${({ theme }) => theme.colors.primary};
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  }
+  gap: 12px;
+  padding: 8px 16px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 8px;
 `;
 
-const ProblemSummarySubtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.normal};
-  line-height: ${({ theme }) => theme.typography.lineHeight.normal};
-`;
-
-const BeforeAfterScore = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.lg}`};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    width: 100%;
-    justify-content: center;
-  }
-`;
-
-const BeforeAfterScoreValue = styled.div<{ $highlight?: boolean }>`
+const FixesScoreItem = styled.div<{ $isAfter?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-
-  .score-number {
-    font-size: ${({ $highlight }) => ($highlight ? '32px' : '24px')};
-    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-    line-height: 1;
-    color: ${({ $highlight, theme }) => ($highlight ? theme.colors.success : theme.colors.textSecondary)};
-  }
-
-  .score-label {
-    font-size: ${({ theme }) => theme.typography.fontSize.xs};
-    color: ${({ theme }) => theme.colors.textTertiary};
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  }
+  gap: 2px;
 `;
 
-const BeforeAfterScoreArrow = styled.div`
-  color: ${({ theme }) => theme.colors.primary};
-  display: flex;
-  align-items: center;
-`;
-
-const ProblemStats = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: ${({ theme }) => theme.spacing.md};
-  margin: ${({ theme }) => theme.spacing.xl} 0;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const StatCard = styled.div<{ $severity: 'critical' | 'important' | 'minor' }>`
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
-  text-align: center;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  transition: all ${({ theme }) => theme.transitions.normal};
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: ${({ $severity, theme }) => {
-      if ($severity === 'critical') return theme.colors.error;
-      if ($severity === 'important') return theme.colors.warning;
-      return theme.colors.success;
-    }};
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: ${({ theme }) => theme.colors.borderHover};
-    box-shadow: ${({ theme }) => theme.shadow.md};
-  }
-`;
-
-const StatIcon = styled.div<{ $severity?: 'critical' | 'important' | 'minor' }>`
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  display: flex;
-  justify-content: center;
-
-  svg {
-    color: ${({ $severity, theme }) => {
-      if ($severity === 'critical') return theme.colors.error;
-      if ($severity === 'important') return theme.colors.warning;
-      return theme.colors.success;
-    }};
-  }
-`;
-
-const StatCount = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+const FixesScoreValue = styled.span<{ $isAfter?: boolean }>`
+  font-size: ${({ $isAfter }) => ($isAfter ? '24px' : '18px')};
+  font-weight: 700;
+  color: ${({ $isAfter }) => ($isAfter ? 'var(--success)' : 'var(--text-secondary)')};
   line-height: 1;
-  letter-spacing: -1px;
-  color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
-const StatLabel = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+const FixesScoreLabel = styled.span`
+  font-size: 11px;
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
 
-const StatImpact = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.success};
-  background: ${({ theme }) => theme.colors.successLight};
-  padding: 4px 10px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  display: inline-block;
-`;
-
-const ResultMessage = styled.div`
-  background: ${({ theme }) => theme.colors.successLight};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
-  text-align: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  border: 1px solid ${({ theme }) => theme.colors.success};
-  color: ${({ theme }) => theme.colors.success};
-  letter-spacing: -0.2px;
-  line-height: ${({ theme }) => theme.typography.lineHeight.normal};
+const FixesScoreArrow = styled.div`
+  color: var(--text-tertiary);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: ${({ theme }) => theme.spacing.sm};
 
   svg {
-    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const FixesList = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const FixItem = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: ${({ theme }) => theme.typography.fontSize.sm};
-    padding: ${({ theme }) => theme.spacing.md};
+  &:hover {
+    background: rgba(0, 0, 0, 0.02);
   }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 12px;
+  }
+`;
+
+const FixSeverityDot = styled.div<{ $severity: 'critical' | 'important' | 'minor' }>`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+  background: ${({ $severity }) => {
+    if ($severity === 'critical') return '#ef4444';
+    if ($severity === 'important') return '#f59e0b';
+    return '#10b981';
+  }};
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+`;
+
+const FixContent = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+const FixCategory = styled.span`
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const FixProblem = styled.p`
+  font-size: 14px;
+  color: var(--text-color);
+  margin: 0;
+  line-height: 1.5;
+`;
+
+const FixReason = styled.p`
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+`;
+
+const FixImpact = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+`;
+
+const FixImpactValue = styled.span`
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--success);
+`;
+
+const FixImpactLabel = styled.span`
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+`;
+
+const FixesFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: rgba(16, 185, 129, 0.05);
+  border-top: 1px solid var(--border-color);
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+`;
+
+const FixesFooterLabel = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+`;
+
+const FixesFooterValue = styled.span`
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--success);
 `;
 
 // ATS Optimized Card - For high-score users showing what was done
@@ -2791,19 +2790,25 @@ const ATSTipText = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
+const PreviewModalBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  overflow: hidden;
+`;
+
 const PDFPreviewContainer = styled.div`
   width: 100%;
-  height: 70vh;
-  min-height: 500px;
-  max-height: 800px;
+  height: 65vh;
+  min-height: 450px;
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-radius: 8px;
   overflow: hidden;
   background-color: ${({ theme }) => theme.colors.surface};
 
   @media (max-width: 640px) {
-    height: 500px;
-    min-height: 400px;
+    height: 55vh;
+    min-height: 350px;
   }
 `;
 
@@ -2820,43 +2825,82 @@ const PreviewActions = styled.div`
   margin-top: ${({ theme }) => theme.spacing.lg};
 `;
 
+// Improvement Highlight in Modal - Compact style
 const ImprovementHighlight = styled.div`
-  background: var(--gradient-primary);
-  color: white;
-  padding: ${({ theme }) => theme.spacing.lg};
-  border-radius: ${({ theme }) => theme.radius.md};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  background: var(--bg-alt);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+
+  @media (prefers-color-scheme: dark) {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+`;
+
+const HighlightHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+`;
+
+const HighlightMeta = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+const HighlightCategory = styled.span`
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+`;
+
+const HighlightSection = styled.span`
+  font-size: 11px;
+  color: var(--text-tertiary);
+  padding: 1px 6px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+
+  @media (prefers-color-scheme: dark) {
+    background: rgba(255, 255, 255, 0.05);
+  }
+`;
+
+const HighlightImpactBadge = styled.span`
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.12);
+  padding: 4px 10px;
+  border-radius: 6px;
 `;
 
 const HighlightTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  opacity: 0.9;
+  display: none;
 `;
 
 const HighlightAction = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-color);
+  line-height: 1.4;
+  margin-bottom: 4px;
 `;
 
 const HighlightReason = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  opacity: 0.95;
-  line-height: 1.5;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
 `;
 
 const HighlightImpact = styled.div`
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.2);
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.radius.sm};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-top: ${({ theme }) => theme.spacing.sm};
+  display: none;
 `;
 
 const FakeItToggleContainer = styled.div`
@@ -4764,213 +4808,82 @@ export default function ReportDetailPage() {
       {visibleSections?.showProblemSummary &&
         !isAnalyzingOptimized && (
           <>
-            {/* Problem Summary Card */}
+            {/* Fixes Card - Unified Component */}
             <Section>
-              <ProblemSummaryCard>
-                <ProblemSummaryHeader>
-                  <ProblemSummaryTitleSection>
-                    <ProblemSummaryTitle>
-                      <MagnifyingGlassIcon size="28" />
-                      {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed in your resume
-                    </ProblemSummaryTitle>
-                    <ProblemSummarySubtitle>
-                      Your original resume had these critical issues - we solved all of them
-                    </ProblemSummarySubtitle>
-                  </ProblemSummaryTitleSection>
+              <FixesCard>
+                <FixesHeader>
+                  <FixesHeaderLeft>
+                    <FixesTitle>
+                      {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed
+                    </FixesTitle>
+                    <FixesSubtitle>
+                      Issues identified and resolved in your resume
+                    </FixesSubtitle>
+                  </FixesHeaderLeft>
 
-                  <BeforeAfterScore>
-                    <BeforeAfterScoreValue>
-                      <div className="score-number">{report.fit_score}%</div>
-                      <div className="score-label">Before</div>
-                    </BeforeAfterScoreValue>
-                    <BeforeAfterScoreArrow><ArrowRightLongIcon /></BeforeAfterScoreArrow>
-                    <BeforeAfterScoreValue $highlight>
-                      <div className="score-number">{optimizedScore}%</div>
-                      <div className="score-label">After</div>
-                    </BeforeAfterScoreValue>
-                  </BeforeAfterScore>
-                </ProblemSummaryHeader>
-
-                <ProblemStats>
-                  {getProblemStats(improvementBreakdown).critical.count > 0 && (
-                    <StatCard $severity="critical">
-                      <StatIcon $severity="critical"><CriticalIssueIcon /></StatIcon>
-                      <StatCount>{getProblemStats(improvementBreakdown).critical.count}</StatCount>
-                      <StatLabel>Critical Issues</StatLabel>
-                      <StatImpact>
-                        +{Math.round(getProblemStats(improvementBreakdown).critical.impact * 10) / 10}% recovered
-                      </StatImpact>
-                    </StatCard>
-                  )}
-                  {getProblemStats(improvementBreakdown).important.count > 0 && (
-                    <StatCard $severity="important">
-                      <StatIcon $severity="important"><ImportantIssueIcon /></StatIcon>
-                      <StatCount>{getProblemStats(improvementBreakdown).important.count}</StatCount>
-                      <StatLabel>Important Gaps</StatLabel>
-                      <StatImpact>
-                        +{Math.round(getProblemStats(improvementBreakdown).important.impact * 10) / 10}% recovered
-                      </StatImpact>
-                    </StatCard>
-                  )}
-                  {getProblemStats(improvementBreakdown).minor.count > 0 && (
-                    <StatCard $severity="minor">
-                      <StatIcon $severity="minor"><MinorIssueIcon /></StatIcon>
-                      <StatCount>{getProblemStats(improvementBreakdown).minor.count}</StatCount>
-                      <StatLabel>Minor Tweaks</StatLabel>
-                      <StatImpact>
-                        +{Math.round(getProblemStats(improvementBreakdown).minor.impact * 10) / 10}% recovered
-                      </StatImpact>
-                    </StatCard>
-                  )}
-                </ProblemStats>
+                  <FixesScoreBadge>
+                    <FixesScoreItem>
+                      <FixesScoreValue>{report.fit_score}%</FixesScoreValue>
+                      <FixesScoreLabel>Before</FixesScoreLabel>
+                    </FixesScoreItem>
+                    <FixesScoreArrow>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                    </FixesScoreArrow>
+                    <FixesScoreItem>
+                      <FixesScoreValue $isAfter>{optimizedScore}%</FixesScoreValue>
+                      <FixesScoreLabel>After</FixesScoreLabel>
+                    </FixesScoreItem>
+                  </FixesScoreBadge>
+                </FixesHeader>
 
                 {report.fake_it_mode && (
                   <FakeItModeWarning>
-                    <div className="warning-icon">⚠️</div>
+                    <div className="warning-icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: 20, height: 20 }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                      </svg>
+                    </div>
                     <div className="warning-content">
-                      <div className="warning-title">🚀 Fake It Mode Active</div>
+                      <div className="warning-title">Fake It Mode Active</div>
                       <div className="warning-text">
-                        This resume was optimized with aggressive keyword addition. ALL missing keywords were added, even without verified experience. Use responsibly and be prepared to discuss these skills in interviews.
+                        All missing keywords were added. Be prepared to discuss these skills in interviews.
                       </div>
                     </div>
                   </FakeItModeWarning>
                 )}
 
-                <ResultMessage>
-                  <CheckCircleFilledIcon />
-                  All Problems Solved! Your new resume recovered +{Math.round(getProblemStats(improvementBreakdown).totalImpact * 10) / 10}% match score
-                </ResultMessage>
-              </ProblemSummaryCard>
-            </Section>
+                <FixesList>
+                  {improvementBreakdown.map((improvement, index) => (
+                    <FixItem
+                      key={index}
+                      onClick={() => handleImprovementClick(improvement)}
+                      title="Click to view this fix in your resume"
+                    >
+                      <FixSeverityDot $severity={improvement.severity || "minor"} />
+                      <FixContent>
+                        <FixCategory>{improvement.category}</FixCategory>
+                        <FixProblem>
+                          {improvement.problem || improvement.action}
+                        </FixProblem>
+                        <FixReason>{improvement.reason}</FixReason>
+                      </FixContent>
+                      <FixImpact>
+                        <FixImpactValue>+{Math.round(improvement.impact * 10) / 10}%</FixImpactValue>
+                        <FixImpactLabel>Impact</FixImpactLabel>
+                      </FixImpact>
+                    </FixItem>
+                  ))}
+                </FixesList>
 
-            {/* Individual Problems */}
-            <Section>
-              <Card variant="bordered">
-                <Card.Header>
-                  <Card.Title>
-                    Problems We Fixed
-                  </Card.Title>
-                  <Card.Description>
-                    See exactly what was wrong and how we fixed it
-                  </Card.Description>
-                </Card.Header>
-                <Card.Content>
-                  <BreakdownContainer>
-                    {improvementBreakdown.map((improvement, index) => {
-                      const severityInfo = getSeverityInfo(improvement.severity);
-                      return (
-                        <BreakdownItem
-                          key={index}
-                          onClick={() => handleImprovementClick(improvement)}
-                          title="Click to view this fix in your resume"
-                        >
-                          <ImpactBadge>
-                            {severityInfo.emoji}
-                          </ImpactBadge>
-                          <ImpactContent>
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                              <ProblemSeverityBadge $severity={improvement.severity || "minor"}>
-                                {severityInfo.text}
-                              </ProblemSeverityBadge>
-                              <ImpactCategory>
-                                {improvement.category}
-                              </ImpactCategory>
-                            </div>
-
-                            {improvement.problem && (
-                              <ProblemText>
-                                ❌ Problem: {improvement.problem}
-                              </ProblemText>
-                            )}
-
-                            {improvement.before && improvement.after && (
-                              <div style={{ marginTop: "12px", marginBottom: "8px" }}>
-                                <div style={{
-                                  padding: "8px",
-                                  background: "rgba(239, 68, 68, 0.05)",
-                                  borderRadius: "6px",
-                                  borderLeft: "3px solid #ef4444",
-                                  marginBottom: "8px",
-                                  fontSize: "13px"
-                                }}>
-                                  <div style={{
-                                    fontSize: "11px",
-                                    fontWeight: 600,
-                                    color: "#ef4444",
-                                    marginBottom: "4px"
-                                  }}>
-                                    BEFORE (Original)
-                                  </div>
-                                  <div style={{ fontFamily: "monospace", lineHeight: "1.6" }}>
-                                    {improvement.before}
-                                  </div>
-                                </div>
-                                <div style={{
-                                  padding: "8px",
-                                  background: "rgba(34, 197, 94, 0.05)",
-                                  borderRadius: "6px",
-                                  borderLeft: "3px solid #22c55e",
-                                  fontSize: "13px"
-                                }}>
-                                  <div style={{
-                                    fontSize: "11px",
-                                    fontWeight: 600,
-                                    color: "#22c55e",
-                                    marginBottom: "4px"
-                                  }}>
-                                    AFTER (Optimized)
-                                  </div>
-                                  <div style={{ fontFamily: "monospace", lineHeight: "1.6" }}>
-                                    {improvement.after}
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-
-                            {!improvement.before && !improvement.after && (
-                              <ImpactAction>{improvement.action}</ImpactAction>
-                            )}
-
-                            <ImpactReason>
-                              💪 Why this matters: {improvement.reason}
-                            </ImpactReason>
-
-                            {improvement.section && (
-                              <div style={{
-                                marginTop: "8px",
-                                fontSize: "12px",
-                                color: "#6b7280",
-                                fontStyle: "italic"
-                              }}>
-                                📍 Location: {improvement.section.charAt(0).toUpperCase() + improvement.section.slice(1)} Section
-                              </div>
-                            )}
-                          </ImpactContent>
-                          <ImpactPoints>
-                            <ImpactValue>
-                              +{Math.round(improvement.impact * 10) / 10}%
-                            </ImpactValue>
-                            <ImpactLabel>Fixed</ImpactLabel>
-                          </ImpactPoints>
-                        </BreakdownItem>
-                      );
-                    })}
-                  </BreakdownContainer>
-                  <TotalImpactSummary>
-                    <TotalLabel>Total Recovery</TotalLabel>
-                    <TotalValue>
-                      +
-                      {Math.round(
-                        improvementBreakdown.reduce(
-                          (sum, imp) => sum + imp.impact,
-                          0
-                        ) * 10
-                      ) / 10}
-                      %
-                    </TotalValue>
-                  </TotalImpactSummary>
-                </Card.Content>
-              </Card>
+                <FixesFooter>
+                  <FixesFooterLabel>Total Score Improvement</FixesFooterLabel>
+                  <FixesFooterValue>
+                    +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}%
+                  </FixesFooterValue>
+                </FixesFooter>
+              </FixesCard>
             </Section>
 
             <Section>
@@ -5869,29 +5782,26 @@ export default function ReportDetailPage() {
         isOpen={isPreviewOpen}
         onClose={handleClosePreview}
         title="Resume Preview"
-        description="Review your optimized resume before downloading"
         size="lg"
       >
-        <Modal.Body>
+        <PreviewModalBody>
           {selectedImprovement && (
             <ImprovementHighlight>
-              <HighlightTitle>
-                {selectedImprovement.category} • +
-                {Math.round(selectedImprovement.impact * 10) / 10}% Impact
-                {selectedImprovement.section &&
-                  ` • ${
-                    selectedImprovement.section.charAt(0).toUpperCase() +
-                    selectedImprovement.section.slice(1)
-                  } Section`}
-              </HighlightTitle>
+              <HighlightHeader>
+                <HighlightMeta>
+                  <HighlightCategory>{selectedImprovement.category}</HighlightCategory>
+                  {selectedImprovement.section && (
+                    <HighlightSection>
+                      {selectedImprovement.section.charAt(0).toUpperCase() + selectedImprovement.section.slice(1)}
+                    </HighlightSection>
+                  )}
+                </HighlightMeta>
+                <HighlightImpactBadge>
+                  +{Math.round(selectedImprovement.impact * 10) / 10}%
+                </HighlightImpactBadge>
+              </HighlightHeader>
               <HighlightAction>{selectedImprovement.action}</HighlightAction>
               <HighlightReason>{selectedImprovement.reason}</HighlightReason>
-              <HighlightImpact>
-                <LightBulbIcon /> This improvement boosted your score by +
-                {Math.round(selectedImprovement.impact * 10) / 10}%
-                {selectedImprovement.section &&
-                  ` - Look for the green highlighted section in the resume below`}
-              </HighlightImpact>
             </ImprovementHighlight>
           )}
           <PDFPreviewContainer>
@@ -5913,7 +5823,7 @@ export default function ReportDetailPage() {
               </div>
             )}
           </PDFPreviewContainer>
-        </Modal.Body>
+        </PreviewModalBody>
         <Modal.Footer>
           <Button variant="ghost" onClick={handleClosePreview}>
             Close

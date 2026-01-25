@@ -1758,16 +1758,20 @@ const Section = styled.section`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
-// Bento Grid Components
+// Bento Grid Components - Matches StatBentoCard style
 const BentoGrid = styled.div`
   display: grid;
+  width: 100%;
   gap: 16px;
   grid-template-columns: 1fr;
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, auto);
+    grid-template-columns: repeat(2, 1fr);
   }
 `;
 
@@ -1777,35 +1781,34 @@ const BentoCard = styled.div<{ $rowSpan?: number; $position?: 'left' | 'right' |
   flex-direction: column;
   overflow: hidden;
   border-radius: 16px;
-  background: ${({ theme }) => theme.colors.surface};
+  background: var(--bg-alt);
+  transition: all 0.3s ease;
 
-  /* Light mode - subtle shadow */
+  /* Match StatBentoCard shadow */
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
     0 12px 24px rgba(0, 0, 0, 0.05);
 
   @media (prefers-color-scheme: dark) {
-    box-shadow: none;
-    border: 1px solid ${({ theme }) => theme.colors.border};
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover {
+      box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.18) inset,
+        0 20px 40px rgba(0, 0, 0, 0.3);
+    }
   }
 
   /* Row span for desktop */
   @media (min-width: 1024px) {
     ${({ $rowSpan }) => $rowSpan === 2 && `
       grid-row: span 2;
-    `}
-
-    /* Left card - extra rounded on left */
-    ${({ $position }) => $position === 'left' && `
-      border-radius: 24px;
-      border-top-right-radius: 16px;
-      border-bottom-right-radius: 16px;
-    `}
-
-    /* Right card - extra rounded on right */
-    ${({ $position }) => $position === 'right' && `
-      border-radius: 24px;
-      border-top-left-radius: 16px;
-      border-bottom-left-radius: 16px;
     `}
   }
 `;
@@ -1819,50 +1822,54 @@ const BentoCardInner = styled.div`
 `;
 
 const BentoCardContent = styled.div`
-  padding: 24px;
+  padding: 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+`;
 
-  @media (min-width: 640px) {
-    padding: 28px;
-  }
+// Keep for backwards compatibility but don't use
+const BentoCardIcon = styled.div<{ $color?: string }>`
+  display: none;
 `;
 
 const BentoCardTitle = styled.h3`
   font-size: 18px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 8px;
-  letter-spacing: -0.01em;
+  color: var(--text-color);
+  margin-bottom: 4px;
+
+  @media (max-width: 640px) {
+    font-size: 16px;
+  }
 `;
 
 const BentoCardDescription = styled.p`
+  color: var(--text-secondary);
   font-size: 14px;
-  line-height: 1.6;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: 1.4;
   margin-bottom: 16px;
 `;
 
 const BentoCardBody = styled.div`
   flex: 1;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-color);
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.6;
+
+  p {
+    margin: 0;
+    line-height: 1.6;
+  }
 `;
 
 const BentoOverlay = styled.div`
   pointer-events: none;
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-
-  /* Light mode outline */
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  }
+  transition: all 0.3s ease;
+  border-radius: 16px;
 `;
 
 const KeywordList = styled.div`
@@ -1873,63 +1880,54 @@ const KeywordList = styled.div`
 
 const BulletList = styled.ul`
   list-style: disc;
-  padding-left: ${({ theme }) => theme.spacing.lg};
+  padding-left: 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
   li {
-    margin-bottom: ${({ theme }) => theme.spacing.sm};
-    color: ${({ theme }) => theme.colors.textPrimary};
+    color: var(--text-color);
+    font-size: 14px;
+    line-height: 1.6;
+    padding-left: 4px;
+
+    &::marker {
+      color: var(--text-secondary);
+    }
   }
 `;
 
 const ProUpgradeCard = styled(Card)`
-  background: var(--gradient-primary);
-  color: white;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
   text-align: center;
-
-  * {
-    color: white !important;
-  }
 `;
 
 const MainCTAButton = styled(Button)`
-  background: white !important;
-  color: #667eea !important;
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  padding: ${({ theme }) => `${theme.spacing.lg} ${theme.spacing.xl}`};
+  background: var(--text-color) !important;
+  color: var(--bg-color) !important;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 24px;
   width: 100%;
-  margin-top: ${({ theme }) => theme.spacing.xl};
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
-  transition: all 0.3s ease;
+  gap: 8px;
+  transition: all 0.2s ease;
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.5);
+    opacity: 0.9;
   }
-
-  &:active {
-    transform: translateY(-1px);
-  }
-
-  @keyframes glow {
-    0%, 100% {
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
-    }
-    50% {
-      box-shadow: 0 4px 30px rgba(255, 255, 255, 0.6);
-    }
-  }
-
-  animation: glow 2s ease-in-out infinite;
 `;
 
 const UpgradeTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 16px;
 `;
 
 const UpgradeFeatures = styled.ul`
@@ -1966,41 +1964,75 @@ const BlurredContent = styled.div`
 `;
 
 const SeeMoreButton = styled.button`
-  position: absolute;
-  bottom: ${({ theme }) => theme.spacing.md};
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.xl}`};
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(102, 126, 234, 0.4);
-  border-radius: ${({ theme }) => theme.radius.full};
-  color: #a5b4fc;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-  z-index: 10;
+  transition: all 0.2s ease;
+  margin-top: 16px;
 
   &:hover {
-    border-color: #667eea;
-    color: white;
-    background: rgba(102, 126, 234, 0.2);
-    transform: translateX(-50%) translateY(-2px);
+    background: var(--bg-alt);
+    border-color: var(--text-secondary);
   }
 
   svg {
-    width: 14px;
-    height: 14px;
-    transition: transform 0.2s ease;
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+  }
+`;
+
+const LockedPreview = styled.div`
+  margin-top: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border: 1px dashed rgba(102, 126, 234, 0.3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const LockedIcon = styled.div`
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const LockedText = styled.div`
+  flex: 1;
+
+  span {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-color);
   }
 
-  &:hover svg {
-    transform: translateY(2px);
+  small {
+    font-size: 12px;
+    color: var(--text-secondary);
   }
 `;
 
@@ -2150,10 +2182,11 @@ const UnlockButton = styled(Button)`
 const TestimonialCarousel = styled.div`
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: ${({ theme }) => theme.radius.md};
-  padding: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
   min-height: 100px;
 `;
 
@@ -2169,31 +2202,32 @@ const TestimonialSlide = styled.div<{ $isActive: boolean }>`
 `;
 
 const TestimonialText = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: 14px;
   font-style: italic;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  color: var(--text-color);
+  margin-bottom: 8px;
   line-height: 1.5;
 `;
 
 const TestimonialAuthor = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  opacity: 0.8;
+  font-size: 12px;
+  color: var(--text-secondary);
   text-align: center;
-  margin-top: ${({ theme }) => theme.spacing.sm};
+  margin-top: 8px;
 `;
 
 const TestimonialDots = styled.div`
   display: flex;
   justify-content: center;
   gap: 6px;
-  margin-top: ${({ theme }) => theme.spacing.sm};
+  margin-top: 8px;
 `;
 
 const TestimonialDot = styled.div<{ $isActive: boolean }>`
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: ${({ $isActive }) => $isActive ? 'white' : 'rgba(255, 255, 255, 0.3)'};
+  background: ${({ $isActive }) => $isActive ? 'var(--text-color)' : 'var(--border-color)'};
   transition: all 0.3s ease;
 `;
 
@@ -2503,30 +2537,30 @@ const GuaranteeBadge = styled.div`
 // Social Proof Components
 const HeroStat = styled.div`
   text-align: center;
-  padding: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: ${({ theme }) => theme.radius.md};
-  backdrop-filter: blur(10px);
+  padding: 16px;
+  margin-bottom: 16px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
 `;
 
 const HeroStatNumber = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: white;
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 4px;
 `;
 
 const HeroStatLabel = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  color: var(--text-secondary);
 `;
 
 const SocialProofContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  gap: 12px;
+  margin-bottom: 16px;
 
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
@@ -2536,20 +2570,22 @@ const SocialProofContainer = styled.div`
 const SocialProofBadge = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding: ${({ theme }) => theme.spacing.md};
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: ${({ theme }) => theme.radius.md};
-  backdrop-filter: blur(10px);
+  gap: 10px;
+  padding: 12px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
 `;
 
 const ProofIcon = styled.span`
-  font-size: 24px;
+  font-size: 20px;
+  color: var(--text-secondary);
 `;
 
 const ProofText = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: 13px;
   line-height: 1.4;
+  color: var(--text-color);
 `;
 
 // Personalized Message
@@ -2574,22 +2610,22 @@ const PersonalizedAlert = styled.div<{
 
 // Comparison Table
 const ComparisonTable = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: ${({ theme }) => theme.radius.lg};
+  background: var(--bg-color);
+  border-radius: 8px;
   overflow: hidden;
-  margin: ${({ theme }) => theme.spacing.lg} 0;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 16px 0;
+  border: 1px solid var(--border-color);
 `;
 
 const ComparisonRow = styled.div<{ $isHeader?: boolean }>`
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-color);
 
   ${({ $isHeader }) =>
     $isHeader &&
     `
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-alt);
     font-weight: 600;
   `}
 
@@ -2599,15 +2635,16 @@ const ComparisonRow = styled.div<{ $isHeader?: boolean }>`
 `;
 
 const ComparisonCell = styled.div`
-  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.lg}`};
+  padding: 12px 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-size: 14px;
+  color: var(--text-color);
 
   &:first-child {
     justify-content: flex-start;
-    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+    font-weight: 500;
   }
 `;
 
@@ -2644,46 +2681,63 @@ const DiscountBadge = styled.span`
 const BeforeAfterCard = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 2px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
+  gap: 12px;
+  position: relative;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: ${({ theme }) => theme.spacing.md};
+    gap: 8px;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px;
+    height: 28px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    z-index: 1;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  &::after {
+    content: '→';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 2;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 `;
 
 const ComparisonColumn = styled.div<{ $isAfter?: boolean }>`
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ $isAfter, theme }) =>
-    $isAfter
-      ? "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)"
-      : "rgba(239, 68, 68, 0.05)"};
-  border: 1px solid ${({ $isAfter }) => ($isAfter ? "var(--success)" : "#ef4444")};
-  border-radius: ${({ theme }) => theme.radius.md};
-  position: relative;
+  padding: 14px;
+  background: var(--bg-color);
+  border: 1px solid ${({ $isAfter }) => $isAfter ? 'var(--success)' : 'var(--border-color)'};
+  border-radius: 8px;
 `;
 
 const ColumnLabel = styled.div<{ $isAfter?: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  background: ${({ $isAfter }) =>
-    $isAfter
-      ? "linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%)"
-      : "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"};
-  color: white;
-  border-radius: ${({ theme }) => theme.radius.full};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  color: ${({ $isAfter }) => ($isAfter ? "var(--success)" : "var(--text-secondary)")};
+  margin-bottom: 10px;
 `;
 
 const ComparisonText = styled.p`
@@ -2700,15 +2754,25 @@ const ComparisonText = styled.p`
 const SampleBadge = styled.div`
   display: inline-flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  background: var(--gradient-primary);
-  color: white;
-  border-radius: ${({ theme }) => theme.radius.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+  }
 `;
 
 const ArrowIcon = styled.div`
@@ -2725,96 +2789,74 @@ const ArrowIcon = styled.div`
 `;
 
 const RoleCard = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
-  border: 2px solid rgba(102, 126, 234, 0.3);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  transition: all ${({ theme }) => theme.transitions.normal};
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
-    border-color: rgba(102, 126, 234, 0.5);
-  }
+  padding: 14px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
 `;
 
 const RoleCardHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: start;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 12px;
 
   @media (max-width: 640px) {
     flex-direction: column;
-    gap: ${({ theme }) => theme.spacing.sm};
+    align-items: flex-start;
+    gap: 8px;
   }
 `;
 
 const RoleTitle = styled.h4`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
   margin: 0;
 `;
 
 const RoleFitBadge = styled.div`
   display: inline-flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
-  color: white;
-  border-radius: ${({ theme }) => theme.radius.full};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  padding: 4px 10px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  color: var(--success);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
 `;
 
 const RoleDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: 13px;
   line-height: 1.6;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary);
   margin: 0;
 `;
 
 const ATSTipCard = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: linear-gradient(
-    135deg,
-    rgba(16, 185, 129, 0.1) 0%,
-    rgba(5, 150, 105, 0.05) 100%
-  );
-  border: 2px solid rgba(16, 185, 129, 0.3);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  padding: 14px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
   display: flex;
-  gap: ${({ theme }) => theme.spacing.md};
-  transition: all ${({ theme }) => theme.transitions.normal};
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
-    border-color: rgba(16, 185, 129, 0.5);
-  }
+  gap: 12px;
+  align-items: flex-start;
 `;
 
 const ATSIcon = styled.div`
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
-  color: white;
-  border-radius: ${({ theme }) => theme.radius.md};
+  width: 36px;
+  height: 36px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 `;
 
 const ATSTipContent = styled.div`
@@ -2832,6 +2874,81 @@ const ATSTipText = styled.div`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   line-height: 1.6;
   color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const ATSProofCard = styled.div`
+  padding: 20px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  text-align: center;
+`;
+
+const ATSProofIcon = styled.div`
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 14px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--success);
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
+const ATSProofTitle = styled.h4`
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 6px 0;
+`;
+
+const ATSProofText = styled.p`
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 14px 0;
+`;
+
+const ATSProofFeatures = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+`;
+
+const ATSProofFeature = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+
+  svg {
+    width: 12px;
+    height: 12px;
+    color: var(--success);
+  }
+`;
+
+const LoadingPlaceholder = styled.div`
+  padding: 16px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
 `;
 
 const PreviewModalBody = styled.div`
@@ -5218,47 +5335,71 @@ export default function ReportDetailPage() {
                   AI-generated analysis of your resume match
                 </BentoCardDescription>
                 <BentoCardBody>
-                  <p>{report.summary_free}</p>
+                  <p>
+                    {report.summary_free
+                      ?.replace(/[Tt]he candidate/g, 'You')
+                      ?.replace(/[Tt]he candidate's/g, 'Your')
+                      ?.replace(/[Tt]heir/g, 'your')
+                      ?.replace(/[Tt]hey have/g, 'you have')
+                      ?.replace(/[Tt]hey are/g, 'you are')
+                    }
+                  </p>
                 </BentoCardBody>
               </BentoCardContent>
               <BentoOverlay />
             </BentoCardInner>
           </BentoCard>
 
-          {/* Rewritten Bullet Points - Middle Top */}
+          {/* Missing Keywords - Middle Top */}
           <BentoCard>
             <BentoCardInner>
               <BentoCardContent>
-                <BentoCardTitle>Rewritten Bullet Points</BentoCardTitle>
+                <BentoCardTitle>Missing Keywords</BentoCardTitle>
                 <BentoCardDescription>
-                  Professionally enhanced versions of your experience bullets
+                  Keywords from the job posting not found in your resume
                 </BentoCardDescription>
                 <BentoCardBody>
-                  <SampleBadge>✨ Free Sample - See the Difference</SampleBadge>
-                  {report.sample_rewrite ? (
-                    <BeforeAfterCard>
-                      <ComparisonColumn>
-                        <ColumnLabel>❌ Before (Your Resume)</ColumnLabel>
-                        <ComparisonText>
-                          {report.sample_rewrite.original}
-                        </ComparisonText>
-                      </ComparisonColumn>
-                      <ComparisonColumn $isAfter>
-                        <ColumnLabel $isAfter>✅ After (Pro)</ColumnLabel>
-                        <ComparisonText>
-                          {report.sample_rewrite.rewritten}
-                        </ComparisonText>
-                      </ComparisonColumn>
-                    </BeforeAfterCard>
-                  ) : (
-                    <div style={{ padding: "16px", textAlign: "center", color: "#9ca3af", fontSize: "14px", border: "1px dashed #334155", borderRadius: "8px" }}>
-                      Sample rewrite is being generated...
+                  {missingKeywords.length > 0 ? (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {missingKeywords.slice(0, 6).map((keyword: string, index: number) => (
+                        <span
+                          key={index}
+                          style={{
+                            padding: '6px 12px',
+                            background: 'var(--bg-color)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '6px',
+                            fontSize: '13px',
+                            color: 'var(--text-color)',
+                          }}
+                        >
+                          {keyword}
+                        </span>
+                      ))}
+                      {missingKeywords.length > 6 && (
+                        <span
+                          style={{
+                            padding: '6px 12px',
+                            background: 'var(--bg-alt)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '6px',
+                            fontSize: '13px',
+                            color: 'var(--text-secondary)',
+                          }}
+                        >
+                          +{missingKeywords.length - 6} more
+                        </span>
+                      )}
                     </div>
+                  ) : (
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+                      No missing keywords detected
+                    </p>
                   )}
-                  <SeeMoreButton onClick={scrollToUpgrade} style={{ marginTop: "16px" }}>
-                    See all professional rewrites
+                  <SeeMoreButton onClick={scrollToUpgrade}>
+                    Get Optimized CV
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                     </svg>
                   </SeeMoreButton>
                 </BentoCardBody>
@@ -5267,38 +5408,30 @@ export default function ReportDetailPage() {
             </BentoCardInner>
           </BentoCard>
 
-          {/* ATS Optimization Tips - Right Column, Row Span 2 */}
+          {/* ATS-Optimized CV - Right Column, Row Span 2 */}
           <BentoCard $rowSpan={2} $position="right">
             <BentoCardInner>
               <BentoCardContent>
-                <BentoCardTitle>ATS Optimization Tips</BentoCardTitle>
+                <BentoCardTitle>ATS-Optimized CV</BentoCardTitle>
                 <BentoCardDescription>
-                  Improve your chances with applicant tracking systems
+                  Your new CV will pass Applicant Tracking Systems
                 </BentoCardDescription>
                 <BentoCardBody>
-                  <SampleBadge>✨ Free Tip - Boost Your ATS Score</SampleBadge>
-                  <ATSTipCard>
-                    <ATSIcon>📄</ATSIcon>
-                    <ATSTipContent>
-                      <ATSTipTitle>Optimize Your Resume File Name</ATSTipTitle>
-                      <ATSTipText>
-                        Name your resume file strategically:
-                        &quot;FirstName_LastName_Position_Resume.pdf&quot; (e.g.,
-                        &quot;John_Smith_Senior_Developer_Resume.pdf&quot;). ATS
-                        systems often index file names, and including the position
-                        helps recruiters find your application quickly.
-                      </ATSTipText>
-                    </ATSTipContent>
-                  </ATSTipCard>
-                  <SeeMoreButton onClick={scrollToUpgrade} style={{ marginTop: "16px" }}>
-                    See all ATS optimization tips
+                  <BulletList>
+                    <li>All missing keywords added to your CV</li>
+                    <li>ATS-friendly formatting applied</li>
+                    <li>Optimized section structure</li>
+                    <li>Clean, parseable layout</li>
+                  </BulletList>
+                  <SeeMoreButton onClick={scrollToUpgrade}>
+                    Get Optimized CV
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                     </svg>
                   </SeeMoreButton>
                 </BentoCardBody>
               </BentoCardContent>
-              <BentoOverlay />
+              <BentoOverlay className="bento-overlay" />
             </BentoCardInner>
           </BentoCard>
 
@@ -5306,33 +5439,32 @@ export default function ReportDetailPage() {
           <BentoCard>
             <BentoCardInner>
               <BentoCardContent>
-                <BentoCardTitle>Alternative Role Recommendations</BentoCardTitle>
+                <BentoCardTitle>Role Recommendations</BentoCardTitle>
                 <BentoCardDescription>
-                  Discover roles that match your skills and experience
+                  Roles that match your skills and experience
                 </BentoCardDescription>
                 <BentoCardBody>
-                  <SampleBadge>✨ Top Match for Your Profile</SampleBadge>
-                  {report.sample_role ? (
-                    <RoleCard>
-                      <RoleCardHeader>
-                        <RoleTitle>{report.sample_role.title}</RoleTitle>
-                        <RoleFitBadge>
-                          ✓ {report.sample_role.fit}% Match
-                        </RoleFitBadge>
-                      </RoleCardHeader>
-                      <RoleDescription>
-                        {report.sample_role.description}
-                      </RoleDescription>
-                    </RoleCard>
-                  ) : (
-                    <div style={{ padding: "16px", textAlign: "center", color: "#9ca3af", fontSize: "14px", border: "1px dashed #334155", borderRadius: "8px" }}>
-                      Role recommendation is being generated...
-                    </div>
-                  )}
-                  <SeeMoreButton onClick={scrollToUpgrade} style={{ marginTop: "16px" }}>
-                    See all role recommendations
+                  <RoleCard>
+                    <RoleCardHeader>
+                      <RoleTitle>
+                        {roleRecommendations[0]?.title || report.sample_role?.title || 'Senior Product Manager'}
+                      </RoleTitle>
+                      <RoleFitBadge>
+                        {roleRecommendations[0]?.fit || report.sample_role?.fit || 87}% Match
+                      </RoleFitBadge>
+                    </RoleCardHeader>
+                  </RoleCard>
+                  <p style={{
+                    marginTop: '8px',
+                    fontSize: '13px',
+                    color: 'var(--text-secondary)'
+                  }}>
+                    +{roleRecommendations.length > 1 ? roleRecommendations.length - 1 : 4} more roles available
+                  </p>
+                  <SeeMoreButton onClick={scrollToUpgrade}>
+                    See All Roles
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                     </svg>
                   </SeeMoreButton>
                 </BentoCardBody>
@@ -5352,7 +5484,15 @@ export default function ReportDetailPage() {
                   AI-generated analysis of your resume match
                 </BentoCardDescription>
                 <BentoCardBody>
-                  <p>{report.summary_free}</p>
+                  <p>
+                    {report.summary_free
+                      ?.replace(/[Tt]he candidate/g, 'You')
+                      ?.replace(/[Tt]he candidate's/g, 'Your')
+                      ?.replace(/[Tt]heir/g, 'your')
+                      ?.replace(/[Tt]hey have/g, 'you have')
+                      ?.replace(/[Tt]hey are/g, 'you are')
+                    }
+                  </p>
                 </BentoCardBody>
               </BentoCardContent>
               <BentoOverlay />
@@ -5420,7 +5560,7 @@ export default function ReportDetailPage() {
                   Alternative roles that match your profile
                 </BentoCardDescription>
                 <BentoCardBody>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     {roleRecommendations.map((role: RoleRecommendation) => (
                       <div
                         key={role.title}
@@ -5429,11 +5569,11 @@ export default function ReportDetailPage() {
                           justifyContent: "space-between",
                           alignItems: "center",
                           padding: "12px",
-                          backgroundColor: "var(--checkbox)",
+                          backgroundColor: "var(--bg-color)",
                           borderRadius: "8px",
                         }}
                       >
-                        <span style={{ fontWeight: 500 }}>{role.title}</span>
+                        <span style={{ fontWeight: 500, fontSize: "14px" }}>{role.title}</span>
                         <Badge variant="success">{role.fit}% Match</Badge>
                       </div>
                     ))}

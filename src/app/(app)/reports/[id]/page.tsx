@@ -1157,7 +1157,7 @@ const FixesHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   gap: 16px;
   flex-wrap: wrap;
 
@@ -1237,8 +1237,7 @@ const FixItem = styled.div`
   align-items: flex-start;
   gap: 16px;
   padding: 16px 24px;
-  border-bottom: 1px solid var(--border-color);
-  cursor: pointer;
+border-bottom: 1px solid ${({ theme }) => theme.colors.border};  cursor: pointer;
   transition: background 0.15s ease;
 
   &:last-child {
@@ -1510,122 +1509,150 @@ const ATSResultMessage = styled.div`
 // Keywords Drawer Styled Components
 const KeywordsSummaryRow = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 16px 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  gap: 8px;
+  padding: 32px 24px;
+  margin: 0 auto 8px;
+  max-width: 600px;
 `;
 
 const KeywordsSummaryCount = styled.div`
-  font-size: 32px;
-  font-weight: 700;
+  font-size: 56px;
+  font-weight: 600;
   color: ${({ theme }) => theme.colors.textPrimary};
   line-height: 1;
+  letter-spacing: -2px;
 `;
 
 const KeywordsSummaryText = styled.div`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 15px;
+  color: ${({ theme }) => theme.colors.textTertiary};
   line-height: 1.4;
+  text-align: center;
 `;
 
 const KeywordItemCard = styled.div`
   max-width: 600px;
+  padding: 20px 0;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  padding: 4px;
+
+  &:first-child {
+    padding-top: 0;
+  }
 
   &:last-child {
     border-bottom: none;
+    padding-bottom: 0;
   }
 `;
 
 const KeywordItemHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 24px;
-  margin-bottom: 4px;
-  margin-top: 8px;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
 `;
 
 const KeywordBadge = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
+  letter-spacing: -0.2px;
 
-  svg {
-    width: 16px;
-    height: 16px;
-    color: var(--primary-500);
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary-500);
+    flex-shrink: 0;
   }
 `;
 
 const KeywordImpact = styled.span`
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.textTertiary};
   font-weight: 500;
-  font-style: italic;
 `;
 
 const KeywordDescription = styled.p`
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textTertiary};
   line-height: 1.5;
   margin: 0;
+  text-align: center;
+  padding: 8px 0;
 `;
 
 const KeywordContextList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 `;
 
 const KeywordContext = styled.div`
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 13px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 14px;
   color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.5;
+  line-height: 1.6;
 
   .section-label {
-    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
     color: ${({ theme }) => theme.colors.textTertiary};
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     font-weight: 500;
+
+    i {
+      font-style: normal;
+      color: ${({ theme }) => theme.colors.textTertiary};
+    }
   }
 
   .highlight {
-    background: rgba(var(--accent-rgb), 0.15);
-    color: var(--accent);
-    padding: 1px 4px;
-    border-radius: 3px;
+    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.15), rgba(var(--primary-500-rgb), 0.08));
+    color: var(--primary-600);
+    padding: 2px 6px;
+    border-radius: 4px;
     font-weight: 600;
+
+    @media (prefers-color-scheme: dark) {
+      color: var(--primary-400);
+    }
   }
 `;
 
 const KeywordNotFound = styled.div`
-  font-size: 13px;
+  font-size: 14px;
   color: ${({ theme }) => theme.colors.textTertiary};
-  padding: 12px;
-  border-radius: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
 // Role Recommendations Drawer Styled Components
 const RoleItemCard = styled.div`
   max-width: 600px;
+  padding: 20px 0;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  padding: 16px 12px;
+
+  &:first-child {
+    padding-top: 0;
+  }
 
   &:last-child {
     border-bottom: none;
+    padding-bottom: 0;
   }
 `;
 
@@ -1634,31 +1661,36 @@ const RoleItemHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 `;
 
 const RoleItemTitle = styled.span`
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.textPrimary};
+  letter-spacing: -0.2px;
 `;
 
 const RoleItemMatch = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   font-size: 13px;
   font-weight: 600;
   color: #10b981;
   background: rgba(16, 185, 129, 0.1);
-  padding: 4px 10px;
-  border-radius: 20px;
+  padding: 5px 12px;
+  border-radius: 100px;
+
+  svg {
+    flex-shrink: 0;
+  }
 `;
 
 const RoleItemDescription = styled.p`
-  font-size: 13px;
+  font-size: 14px;
   color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 0;
 `;
 
@@ -4934,7 +4966,7 @@ export default function ReportDetailPage() {
                   <StatBentoValue $color={optimizedScore! >= 85 ? 'var(--primary-500)' : optimizedScore! >= 70 ? '#2a57a0ff' : optimizedScore! >= 50 ? '#EAB308' : '#F97316'}>{optimizedScore}%</StatBentoValue>
                 </div>
                 <StatBentoTitle>Match Score</StatBentoTitle>
-                <StatBentoDescription>↑ +{optimizedScore! - report.fit_score}% improvement after optimization</StatBentoDescription>
+                <StatBentoDescription><strong>↑ +{optimizedScore! - report.fit_score}%</strong> improvement after optimization</StatBentoDescription>
               </>
             ) : (
               <>
@@ -5251,12 +5283,12 @@ export default function ReportDetailPage() {
                   {(() => {
                     // Softer, pastel colors
                     const colors = [
-                      "#4ade80", // soft green
-                      "#60a5fa", // soft blue
-                      "#a78bfa", // soft purple
-                      "#fbbf24", // soft amber
-                      "#f472b6", // soft pink
-                      "#2dd4bf", // soft teal
+                      "var(--primary-500)", // soft green
+                      "#2A57A0", // soft blue
+                      "#EAB308", // soft purple
+                      "#F97316", // soft amber
+                      "#F97316", // soft pink
+                      "var(--accent)", // soft teal
                     ];
                     const totalImprovement = improvementBreakdown.reduce((sum, i) => sum + i.impact, 0);
 
@@ -6451,20 +6483,23 @@ export default function ReportDetailPage() {
                 {matches.length > 0 ? (
                   <KeywordContextList>
                     {matches.slice(0, 3).map((match, idx) => (
-                      <KeywordContext key={idx}> 
-                        <div className="section-label"><i style={{textTransform: "none", color: "var(--text-secondary)", fontSize: "12px"}}>Added to:</i> {match.section}</div>
+                      <KeywordContext key={idx}>
+                        <div className="section-label">
+                          <i>Found in</i>
+                          {match.section}
+                        </div>
                         <div>{highlightKeyword(match.text, keyword)}</div>
                       </KeywordContext>
                     ))}
                     {matches.length > 3 && (
-                      <KeywordDescription style={{ textAlign: 'center' }}>
-                        +{matches.length - 3} more occurrence{matches.length - 3 > 1 ? 's' : ''} in your resume
+                      <KeywordDescription>
+                        +{matches.length - 3} more occurrence{matches.length - 3 > 1 ? 's' : ''}
                       </KeywordDescription>
                     )}
                   </KeywordContextList>
                 ) : (
                   <KeywordNotFound>
-                    This keyword was added to your skills section
+                    Added to your skills section
                   </KeywordNotFound>
                 )}
               </KeywordItemCard>

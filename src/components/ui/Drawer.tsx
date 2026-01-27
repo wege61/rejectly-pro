@@ -114,15 +114,80 @@ const Description = styled.p`
   line-height: 1.5;
 `;
 
+const BodyWrapper = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  margin: 0 24px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  }
+
+  /* Top fade indicator */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(
+      to bottom,
+      ${({ theme }) => theme.colors.backgroundAlt} 0%,
+      transparent 100%
+    );
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    border-radius: 12px 12px 0 0;
+  }
+
+  /* Bottom fade indicator */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(
+      to top,
+      ${({ theme }) => theme.colors.backgroundAlt} 0%,
+      transparent 100%
+    );
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    border-radius: 0 0 12px 12px;
+  }
+
+  &[data-scroll-top="true"]::before {
+    opacity: 1;
+  }
+
+  &[data-scroll-bottom="true"]::after {
+    opacity: 1;
+  }
+`;
+
 const Body = styled.div`
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   margin: 0 auto;
-  max-width: 1200px;
-  max-width: 90vw;
-  padding: 24px;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.colors.backgroundAlt3};
+  max-width: 600px;
+  width: 100%;
+  padding: 20px 16px;
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
@@ -290,7 +355,45 @@ export function DrawerDescription({ children }: DrawerDescriptionProps) {
 }
 
 export function DrawerBody({ children }: DrawerBodyProps) {
-  return <Body>{children}</Body>;
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const body = bodyRef.current;
+    const wrapper = wrapperRef.current;
+    if (!body || !wrapper) return;
+
+    const updateScrollIndicators = () => {
+      const { scrollTop, scrollHeight, clientHeight } = body;
+      const isScrollable = scrollHeight > clientHeight;
+      const isScrolledFromTop = scrollTop > 10;
+      const isScrolledFromBottom = scrollTop < scrollHeight - clientHeight - 10;
+
+      wrapper.setAttribute('data-scroll-top', String(isScrollable && isScrolledFromTop));
+      wrapper.setAttribute('data-scroll-bottom', String(isScrollable && isScrolledFromBottom));
+    };
+
+    // Initial check
+    updateScrollIndicators();
+
+    // Listen for scroll
+    body.addEventListener('scroll', updateScrollIndicators);
+
+    // Also check on resize
+    const resizeObserver = new ResizeObserver(updateScrollIndicators);
+    resizeObserver.observe(body);
+
+    return () => {
+      body.removeEventListener('scroll', updateScrollIndicators);
+      resizeObserver.disconnect();
+    };
+  }, [children]);
+
+  return (
+    <BodyWrapper ref={wrapperRef}>
+      <Body ref={bodyRef}>{children}</Body>
+    </BodyWrapper>
+  );
 }
 
 export function DrawerFooter({ children }: DrawerFooterProps) {

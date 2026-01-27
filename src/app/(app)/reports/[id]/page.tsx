@@ -1191,7 +1191,6 @@ const FixesScoreBadge = styled.div`
   align-items: center;
   gap: 12px;
   padding: 8px 16px;
-  background: rgba(16, 185, 129, 0.1);
   border-radius: 8px;
 `;
 
@@ -1237,7 +1236,8 @@ const FixItem = styled.div`
   align-items: flex-start;
   gap: 16px;
   padding: 16px 24px;
-border-bottom: 1px solid ${({ theme }) => theme.colors.border};  cursor: pointer;
+border-bottom: 1px solid ${({ theme }) => theme.colors.border};  
+cursor: pointer;
   transition: background 0.15s ease;
 
   &:last-child {
@@ -1265,17 +1265,28 @@ const FixSeverityDot = styled.div<{ $severity: 'critical' | 'important' | 'minor
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
-  margin-top: 6px;
   background: ${({ $severity }) => {
-    if ($severity === 'critical') return '#ef4444';
-    if ($severity === 'important') return '#f59e0b';
-    return '#10b981';
+    if ($severity === 'critical') return '#F97316';
+    if ($severity === 'important') return '#EAB308';
+    return 'var(--accent)';
   }};
 
   @media (max-width: 640px) {
     display: none;
   }
 `;
+
+const IconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: var(--checkbox);
+  
+`;
+
 
 const FixContent = styled.div`
   flex: 1;
@@ -1337,8 +1348,8 @@ const FixesFooter = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  background: rgba(16, 185, 129, 0.05);
-  border-top: 1px solid var(--border-color);
+  background: var(--accent);
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 
   @media (max-width: 640px) {
     flex-direction: column;
@@ -1350,13 +1361,13 @@ const FixesFooter = styled.div`
 const FixesFooterLabel = styled.span`
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-color);
+  color: white;
 `;
 
 const FixesFooterValue = styled.span`
   font-size: 18px;
   font-weight: 700;
-  color: var(--success);
+  color: var(--primary-500);
 `;
 
 // ATS Optimized Card - For high-score users showing what was done
@@ -3636,7 +3647,7 @@ const ScoreBreakdownHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   gap: 16px;
   flex-wrap: wrap;
 
@@ -3670,7 +3681,6 @@ const ScoreBreakdownBadge = styled.div`
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  background: rgba(16, 185, 129, 0.1);
   border-radius: 8px;
 `;
 
@@ -3801,20 +3811,20 @@ const ScoreBreakdownFooter = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  background: rgba(16, 185, 129, 0.05);
-  border-top: 1px solid var(--border-color);
+  background: var(--accent);
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const BreakdownFooterLabel = styled.span`
   font-size: 14px;
+  color: white;
   font-weight: 500;
-  color: var(--text-secondary);
 `;
 
 const BreakdownFooterValue = styled.span`
   font-size: 18px;
   font-weight: 700;
-  color: var(--success);
+  color: var(--primary-500);
 `;
 
 // Generate Resume Card - FixesCard tarzında
@@ -5186,84 +5196,8 @@ export default function ReportDetailPage() {
         !isAnalyzingOptimized && (
           <>
             {/* Fixes Card - Unified Component */}
-            <Section>
-              <FixesCard>
-                <FixesHeader>
-                  <FixesHeaderLeft>
-                    <FixesTitle>
-                      {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed
-                    </FixesTitle>
-                    <FixesSubtitle>
-                      Issues identified and resolved in your resume
-                    </FixesSubtitle>
-                  </FixesHeaderLeft>
 
-                  <FixesScoreBadge>
-                    <FixesScoreItem>
-                      <FixesScoreValue>{report.fit_score}%</FixesScoreValue>
-                      <FixesScoreLabel>Before</FixesScoreLabel>
-                    </FixesScoreItem>
-                    <FixesScoreArrow>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                      </svg>
-                    </FixesScoreArrow>
-                    <FixesScoreItem>
-                      <FixesScoreValue $isAfter>{optimizedScore}%</FixesScoreValue>
-                      <FixesScoreLabel>After</FixesScoreLabel>
-                    </FixesScoreItem>
-                  </FixesScoreBadge>
-                </FixesHeader>
-
-                {report.fake_it_mode && (
-                  <FakeItModeWarning>
-                    <div className="warning-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: 20, height: 20 }}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                      </svg>
-                    </div>
-                    <div className="warning-content">
-                      <div className="warning-title">Fake It Mode Active</div>
-                      <div className="warning-text">
-                        All missing keywords were added. Be prepared to discuss these skills in interviews.
-                      </div>
-                    </div>
-                  </FakeItModeWarning>
-                )}
-
-                <FixesList>
-                  {improvementBreakdown.map((improvement, index) => (
-                    <FixItem
-                      key={index}
-                      onClick={() => handleImprovementClick(improvement)}
-                      title="Click to view this fix in your resume"
-                    >
-                      <FixSeverityDot $severity={improvement.severity || "minor"} />
-                      <FixContent>
-                        <FixCategory>{improvement.category}</FixCategory>
-                        <FixProblem>
-                          {improvement.problem || improvement.action}
-                        </FixProblem>
-                        <FixReason>{improvement.reason}</FixReason>
-                      </FixContent>
-                      <FixImpact>
-                        <FixImpactValue>+{Math.round(improvement.impact * 10) / 10}%</FixImpactValue>
-                        <FixImpactLabel>Impact</FixImpactLabel>
-                      </FixImpact>
-                    </FixItem>
-                  ))}
-                </FixesList>
-
-                <FixesFooter>
-                  <FixesFooterLabel>Total Score Improvement</FixesFooterLabel>
-                  <FixesFooterValue>
-                    +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}%
-                  </FixesFooterValue>
-                </FixesFooter>
-              </FixesCard>
-            </Section>
-
-            <Section>
+<Section>
               <ScoreBreakdownCard>
                 <ScoreBreakdownHeader>
                   <ScoreBreakdownHeaderLeft>
@@ -5287,8 +5221,8 @@ export default function ReportDetailPage() {
                       "#2A57A0", // soft blue
                       "#EAB308", // soft purple
                       "#F97316", // soft amber
-                      "#F97316", // soft pink
-                      "var(--accent)", // soft teal
+                      "var(--accent)", // soft pink
+                      "#F97316", // soft teal
                     ];
                     const totalImprovement = improvementBreakdown.reduce((sum, i) => sum + i.impact, 0);
 
@@ -5352,6 +5286,87 @@ export default function ReportDetailPage() {
                 </ScoreBreakdownFooter>
               </ScoreBreakdownCard>
             </Section>
+
+            <Section>
+              <FixesCard>
+                <FixesHeader>
+                  <FixesHeaderLeft>
+                    <FixesTitle>
+                      {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed
+                    </FixesTitle>
+                    <FixesSubtitle>
+                      Issues identified and resolved in your resume
+                    </FixesSubtitle>
+                  </FixesHeaderLeft>
+
+                  <FixesScoreBadge>
+                    <FixesScoreItem>
+                      <FixesScoreValue>{report.fit_score}%</FixesScoreValue>
+                      <FixesScoreLabel>Before</FixesScoreLabel>
+                    </FixesScoreItem>
+                    <FixesScoreArrow>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                    </FixesScoreArrow>
+                    <FixesScoreItem>
+                      <FixesScoreValue $isAfter>{optimizedScore}%</FixesScoreValue>
+                      <FixesScoreLabel>After</FixesScoreLabel>
+                    </FixesScoreItem>
+                  </FixesScoreBadge>
+                </FixesHeader>
+
+                {report.fake_it_mode && (
+                  <FakeItModeWarning>
+                    <div className="warning-icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: 20, height: 20 }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                      </svg>
+                    </div>
+                    <div className="warning-content">
+                      <div className="warning-title">Fake It Mode Active</div>
+                      <div className="warning-text">
+                        All missing keywords were added. Be prepared to discuss these skills in interviews.
+                      </div>
+                    </div>
+                  </FakeItModeWarning>
+                )}
+
+                <FixesList>
+                  {improvementBreakdown.map((improvement, index) => (
+                    <FixItem
+                      key={index}
+                      onClick={() => handleImprovementClick(improvement)}
+                      title="Click to view this fix in your resume"
+                    >
+                      <IconWrapper>
+                      <FixSeverityDot $severity={improvement.severity || "minor"} />
+                      </IconWrapper>
+                      <FixContent>
+                        <FixCategory>{improvement.category}</FixCategory>
+                        <FixProblem>
+                          {improvement.problem || improvement.action}
+                        </FixProblem>
+                        <FixReason>{improvement.reason}</FixReason>
+                      </FixContent>
+                      <FixImpact>
+                        <FixImpactValue>+{Math.round(improvement.impact * 10) / 10}%</FixImpactValue>
+                        <FixImpactLabel>Impact</FixImpactLabel>
+                      </FixImpact>
+                    </FixItem>
+                  ))}
+                </FixesList>
+
+                <FixesFooter>
+                  <FixesFooterLabel>Total Score Improvement</FixesFooterLabel>
+                  <FixesFooterValue>
+                    +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}%
+                  </FixesFooterValue>
+                </FixesFooter>
+              </FixesCard>
+            </Section>
+
+            
           </>
         )}
 

@@ -15,6 +15,12 @@ interface ATSCategoryCardProps {
   }>;
   passes: string[];
   expanded?: boolean;
+  changes?: Array<{
+    category: string;
+    issue: string;
+    fix: string;
+    impact?: string;
+  }>;
 }
 
 const getScoreColor = (percentage: number): string => {
@@ -401,7 +407,8 @@ export function ATSCategoryCard({
   maxPoints,
   issues,
   passes,
-  expanded = false
+  expanded = false,
+  changes = []
 }: ATSCategoryCardProps) {
   const [isExpanded, setIsExpanded] = useState(expanded);
   const [isHovered, setIsHovered] = useState(false);
@@ -520,45 +527,123 @@ export function ATSCategoryCard({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                {issues.length > 0 && (
-                  <Section>
+                {changes.length > 0 ? (
+                  <>
+                  {/* Show specific changes relevant to this category if we have them */}
+                   <Section>
                     <SectionHeader $type="issues">
-                     Issues to fix
+                     Optimizations Made
                     </SectionHeader>
                     <List>
-                      {issues.map((issue, idx) => (
-                        <IssueItem key={idx}>
-                          <ItemIcon $type="issue">
-                           <SeverityDot $type="issues" />
-                          </ItemIcon>
-                          <ItemContent>
-                            <ItemText>{issue.issue}</ItemText>
-                            {issue.recommendation && (
-                              <ItemSuggestion>{issue.recommendation}</ItemSuggestion>
-                            )}
-                          </ItemContent>
-                        </IssueItem>
-                      ))}
-                    </List>
-                  </Section>
-                )}
+                      {changes.filter(c => c.category.toLowerCase() === name.toLowerCase()).map((change, idx) => (
+                         <IssueItem key={idx} style={{ flexDirection: 'column', gap: 6 }}>
+                             {/* Before - Issue */}
+                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+                                <div style={{ fontSize: 11, fontWeight: 600, color: '#dc2626', textTransform: 'uppercase', width: 40 }}>Issue</div>
+                                <div style={{ fontSize: 13, color: 'var(--text-color)', flex: 1 }}>{change.issue}</div>
+                             </div>
 
-                {passes.length > 0 && (
-                  <Section>
-                    <SectionHeader $type="passes">
-                     Passed checks
-                    </SectionHeader>
-                    <List>
-                      {passes.map((pass, idx) => (
-                        <PassItem key={idx}>
-                          <ItemIcon $type="pass">
-                            <SeverityDot $type="passes" />
-                          </ItemIcon>
-                          <ItemText>{pass}</ItemText>
-                        </PassItem>
+                             {/* Arrow down */}
+                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', paddingLeft: 48, opacity: 0.5 }}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                             </div>
+
+                             {/* After - Fixed */}
+                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+                                <div style={{ fontSize: 11, fontWeight: 600, color: '#059669', textTransform: 'uppercase', width: 40 }}>Fixed</div>
+                                <div style={{ fontSize: 13, color: 'var(--text-color)', fontWeight: 500, flex: 1 }}>{change.fix}</div>
+                             </div>
+                         </IssueItem>
                       ))}
                     </List>
                   </Section>
+
+                  {/* Show Issues that were NOT fixed (if any) */}
+                  {issues.length > 0 && (
+                      <Section>
+                        <SectionHeader $type="issues">
+                         Remaining Issues
+                        </SectionHeader>
+                        <List>
+                          {issues.map((issue, idx) => (
+                            <IssueItem key={idx}>
+                              <ItemIcon $type="issue">
+                               <SeverityDot $type="issues" />
+                              </ItemIcon>
+                              <ItemContent>
+                                <ItemText>{issue.issue}</ItemText>
+                                {issue.recommendation && (
+                                  <ItemSuggestion>{issue.recommendation}</ItemSuggestion>
+                                )}
+                              </ItemContent>
+                            </IssueItem>
+                          ))}
+                        </List>
+                      </Section>
+                   )}
+
+                  {/* Always show Passed Checks */}
+                  {passes.length > 0 && (
+                    <Section>
+                      <SectionHeader $type="passes">
+                       Passed checks
+                      </SectionHeader>
+                      <List>
+                        {passes.map((pass, idx) => (
+                          <PassItem key={idx}>
+                            <ItemIcon $type="pass">
+                              <SeverityDot $type="passes" />
+                            </ItemIcon>
+                            <ItemText>{pass}</ItemText>
+                          </PassItem>
+                        ))}
+                      </List>
+                    </Section>
+                  )}
+                  </>
+                ) : (
+                  <>
+                  {issues.length > 0 && (
+                    <Section>
+                      <SectionHeader $type="issues">
+                      Issues to fix
+                      </SectionHeader>
+                      <List>
+                        {issues.map((issue, idx) => (
+                          <IssueItem key={idx}>
+                            <ItemIcon $type="issue">
+                            <SeverityDot $type="issues" />
+                            </ItemIcon>
+                            <ItemContent>
+                              <ItemText>{issue.issue}</ItemText>
+                              {issue.recommendation && (
+                                <ItemSuggestion>{issue.recommendation}</ItemSuggestion>
+                              )}
+                            </ItemContent>
+                          </IssueItem>
+                        ))}
+                      </List>
+                    </Section>
+                  )}
+
+                  {passes.length > 0 && (
+                    <Section>
+                      <SectionHeader $type="passes">
+                      Passed checks
+                      </SectionHeader>
+                      <List>
+                        {passes.map((pass, idx) => (
+                          <PassItem key={idx}>
+                            <ItemIcon $type="pass">
+                              <SeverityDot $type="passes" />
+                            </ItemIcon>
+                            <ItemText>{pass}</ItemText>
+                          </PassItem>
+                        ))}
+                      </List>
+                    </Section>
+                  )}
+                  </>
                 )}
 
                 {issues.length === 0 && passes.length === 0 && (

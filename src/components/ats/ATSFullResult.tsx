@@ -260,14 +260,7 @@ export function ATSFullResult({
         </SuccessBanner>
       )}
 
-      {/* Before/After comparison */}
-      {isOptimized && beforeScore && changes.length > 0 && (
-        <ATSBeforeAfter
-          beforeScore={beforeScore}
-          afterScore={score}
-          changes={changes}
-        />
-      )}
+
 
       {/* Hero: Score + Summary + Actions */}
       <HeroSection>
@@ -312,6 +305,7 @@ export function ATSFullResult({
             maxPoints={categories.format.maxPoints}
             issues={categories.format.issues}
             passes={categories.format.passes}
+            changes={changes}
           />
           <ATSCategoryCard
             name="Structure"
@@ -319,6 +313,7 @@ export function ATSFullResult({
             maxPoints={categories.structure.maxPoints}
             issues={categories.structure.issues}
             passes={categories.structure.passes}
+            changes={changes}
           />
           <ATSCategoryCard
             name="Keywords"
@@ -326,6 +321,7 @@ export function ATSFullResult({
             maxPoints={categories.keywords.maxPoints}
             issues={categories.keywords.issues}
             passes={categories.keywords.passes}
+            changes={changes}
           />
           <ATSCategoryCard
             name="Readability"
@@ -333,6 +329,7 @@ export function ATSFullResult({
             maxPoints={categories.readability.maxPoints}
             issues={categories.readability.issues}
             passes={categories.readability.passes}
+            changes={changes}
           />
         </CategoriesGrid>
       </Section>

@@ -1381,61 +1381,7 @@ const ImprovementBadge = styled.div`
   color: #10b981;
 `;
 
-const ChangesSection = styled.div`
-  text-align: left;
-  margin-top: 32px;
-`;
 
-const SectionTitle = styled.h3`
-  font-size: 18px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 16px;
-`;
-
-const ChangeItem = styled.div`
-  padding: 16px;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  margin-bottom: 12px;
-  display: flex;
-  gap: 12px;
-`;
-
-const ChangeIcon = styled.div<{ $impact: string }>`
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  background: ${({ $impact }) =>
-    $impact === "high" ? "rgba(16, 185, 129, 0.1)" :
-    $impact === "medium" ? "rgba(99, 102, 241, 0.1)" : "rgba(156, 163, 175, 0.1)"
-  };
-  color: ${({ $impact }) =>
-    $impact === "high" ? "#10b981" :
-    $impact === "medium" ? "#6366f1" : "#9ca3af"
-  };
-`;
-
-const ChangeContent = styled.div`
-  flex: 1;
-`;
-
-const ChangeIssue = styled.div`
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 4px;
-`;
-
-const ChangeFix = styled.div`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-weight: 500;
-`;
 
 const ButtonGroup = styled.div`
   display: flex;

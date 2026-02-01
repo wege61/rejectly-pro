@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-import { Modal } from "@/components/ui/Modal";
+import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerBody, DrawerFooter } from "@/components/ui/Drawer";
 import { Button } from "@/components/ui/Button";
 import {
   ScoreBreakdown,
@@ -25,223 +25,227 @@ interface ScoreBreakdownModalProps {
   onClose: () => void;
   breakdown: ScoreBreakdown | null;
   fitScore: number;
+  originalScore?: number;
 }
 
-const ModalContent = styled.div`
+// --- Styled Components ---
+
+const Content = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: 24px;
 `;
 
-const ScoreHeader = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.colors.surfaceHover} 0%,
-    ${({ theme }) => theme.colors.surface} 100%
-  );
-  border-radius: ${({ theme }) => theme.radius.lg};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+const ScoreHero = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
 `;
 
-const MainScore = styled.div<{ $color: string }>`
-  font-size: 4rem;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+const ScoreRow = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+`;
+
+const OriginalScore = styled.span`
+  font-size: 28px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textTertiary};
+  text-decoration: line-through;
+  line-height: 1;
+`;
+
+const HeroScore = styled.span<{ $color: string }>`
+  font-size: 48px;
+  font-weight: 700;
   color: ${({ $color }) => $color};
   line-height: 1;
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-
-  @media (max-width: 640px) {
-    font-size: 3rem;
-  }
+  letter-spacing: -2px;
 `;
 
-const ScoreLabel = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+const ScoreSubtext = styled.div`
+  font-size: 15px;
   color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
-const Verdict = styled.div<{ $color: string }>`
+const VerdictBadge = styled.div<{ $color: string }>`
   display: inline-flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
+  gap: 6px;
+  padding: 6px 14px;
   background: ${({ $color }) => `${$color}15`};
   color: ${({ $color }) => $color};
-  border-radius: ${({ theme }) => theme.radius.full};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
 `;
 
-const JobLevelBadge = styled.span`
-  display: inline-block;
-  padding: 2px 8px;
-  background: ${({ theme }) => theme.colors.primary}15;
-  color: ${({ theme }) => theme.colors.primary};
-  border-radius: ${({ theme }) => theme.radius.sm};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  text-transform: uppercase;
-  margin-top: ${({ theme }) => theme.spacing.sm};
-`;
-
-const SectionTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-
-  svg {
-    width: 18px;
-    height: 18px;
-    color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const ScoreSummaryGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.surfaceHover};
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-    gap: ${({ theme }) => theme.spacing.sm};
-  }
-`;
-
-const SummaryItem = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing.sm};
-`;
-
-const SummaryValue = styled.div<{ $color?: string }>`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ $color, theme }) => $color || theme.colors.textPrimary};
-`;
-
-const SummaryLabel = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
+const JobBadge = styled.span`
+  font-size: 12px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textTertiary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
 
-const ComponentsGrid = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
+const StatsRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 
-const ComponentCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  padding: ${({ theme }) => theme.spacing.md};
-  transition: all ${({ theme }) => theme.transitions.fast};
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary}50;
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
   }
 `;
 
-const ComponentHeader = styled.div`
+const StatItem = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  gap: 4px;
+  padding: 14px 8px;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
-const ComponentName = styled.div`
+const StatValue = styled.div<{ $color?: string }>`
+  font-size: 20px;
+  font-weight: 700;
+  color: ${({ $color, theme }) => $color || theme.colors.textPrimary};
+  line-height: 1;
+`;
+
+const StatLabel = styled.div`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.textTertiary};
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+`;
+
+const SectionHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
   color: ${({ theme }) => theme.colors.textPrimary};
 
   svg {
     width: 16px;
     height: 16px;
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: ${({ theme }) => theme.colors.textTertiary};
   }
 `;
 
-const ComponentScore = styled.span<{ $percentage: number }>`
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ $percentage }) =>
-    $percentage >= 70
-      ? "#10b981"
-      : $percentage >= 50
-        ? "#f59e0b"
-        : "#ef4444"};
+const ComponentsStack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `;
 
-const ProgressBarContainer = styled.div`
-  height: 8px;
+const ComponentCard = styled.div`
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+`;
+
+const ComponentTop = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const ComponentName = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.textPrimary};
+
+  svg {
+    width: 15px;
+    height: 15px;
+    color: ${({ theme }) => theme.colors.textTertiary};
+  }
+`;
+
+const ComponentWeight = styled.span`
+  font-size: 12px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textTertiary};
+`;
+
+const ComponentScore = styled.span<{ $color: string }>`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ $color }) => $color};
+`;
+
+const ProgressTrack = styled.div`
+  height: 6px;
   background: ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.full};
+  border-radius: 9999px;
   overflow: hidden;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: 10px;
 `;
 
-const ProgressBarFill = styled.div<{ $percentage: number; $color: string }>`
+const ProgressFill = styled.div<{ $percentage: number; $color: string }>`
   height: 100%;
   width: ${({ $percentage }) => Math.min($percentage, 100)}%;
   background: ${({ $color }) => $color};
-  border-radius: ${({ theme }) => theme.radius.full};
-  transition: width 0.5s ease;
+  border-radius: 9999px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 `;
 
-const ComponentDetails = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+const ComponentDetail = styled.p`
+  font-size: 13px;
   color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
   line-height: 1.5;
+  margin: 0 0 8px;
 `;
 
-const ItemsContainer = styled.div`
+const ChipsRow = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.lg};
-  margin-top: ${({ theme }) => theme.spacing.xs};
+  gap: 12px;
+  flex-wrap: wrap;
 
   @media (max-width: 640px) {
     flex-direction: column;
-    gap: ${({ theme }) => theme.spacing.sm};
+    gap: 8px;
   }
 `;
 
-const ItemsList = styled.div`
+const ChipGroup = styled.div`
   flex: 1;
+  min-width: 0;
 `;
 
-const ItemsLabel = styled.div<{ $type: "matched" | "missing" }>`
+const ChipLabel = styled.div<{ $type: "matched" | "missing" }>`
   display: flex;
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ $type }) => ($type === "matched" ? "#10b981" : "#ef4444")};
+  font-weight: 600;
+  color: ${({ $type }) => ($type === "matched" ? "var(--primary-500, #35A29F)" : "#ef4444")};
   margin-bottom: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 
   svg {
-    width: 12px;
-    height: 12px;
+    width: 11px;
+    height: 11px;
   }
 `;
 
-const ItemsChips = styled.div`
+const ChipsWrap = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
@@ -249,39 +253,35 @@ const ItemsChips = styled.div`
 
 const Chip = styled.span<{ $type: "matched" | "missing" }>`
   display: inline-block;
-  padding: 2px 8px;
+  padding: 3px 8px;
   background: ${({ $type }) =>
-    $type === "matched" ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)"};
-  color: ${({ $type }) => ($type === "matched" ? "#10b981" : "#ef4444")};
-  border-radius: 4px;
-  font-size: 11px;
-  max-width: 150px;
+    $type === "matched" ? "rgba(53, 162, 159, 0.1)" : "rgba(239, 68, 68, 0.08)"};
+  color: ${({ $type }) => ($type === "matched" ? "var(--primary-500, #35A29F)" : "#ef4444")};
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;
 
-const PenaltiesSection = styled.div`
-  background: rgba(239, 68, 68, 0.05);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.md};
+const PenaltiesCard = styled.div`
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.04);
+  border: 1px solid rgba(239, 68, 68, 0.1);
+  overflow: hidden;
 `;
 
-const PenaltyItem = styled.div`
+const PenaltyRow = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding: ${({ theme }) => theme.spacing.sm} 0;
-  border-bottom: 1px solid rgba(239, 68, 68, 0.1);
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(239, 68, 68, 0.06);
 
   &:last-child {
     border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  &:first-child {
-    padding-top: 0;
   }
 `;
 
@@ -289,170 +289,158 @@ const PenaltyIcon = styled.span<{ $severity: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: ${({ theme }) => theme.radius.sm};
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  flex-shrink: 0;
   background: ${({ $severity }) =>
     $severity === "critical"
-      ? "rgba(239, 68, 68, 0.2)"
+      ? "rgba(239, 68, 68, 0.15)"
       : $severity === "major"
-        ? "rgba(249, 115, 22, 0.2)"
-        : "rgba(245, 158, 11, 0.2)"};
+        ? "rgba(249, 115, 22, 0.15)"
+        : "rgba(245, 158, 11, 0.15)"};
   color: ${({ $severity }) =>
     $severity === "critical"
       ? "#ef4444"
       : $severity === "major"
         ? "#f97316"
         : "#f59e0b"};
-  flex-shrink: 0;
 
   svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
   }
 `;
 
-const PenaltyContent = styled.div`
+const PenaltyText = styled.div`
   flex: 1;
   min-width: 0;
 `;
 
-const PenaltyDescription = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+const PenaltyDesc = styled.div`
+  font-size: 13px;
+  font-weight: 500;
   color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: 1.4;
 `;
 
 const PenaltyReason = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.textTertiary};
   margin-top: 2px;
 `;
 
-const PenaltyPoints = styled.span`
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+const PenaltyPts = styled.span`
+  font-weight: 700;
   color: #ef4444;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: 13px;
   flex-shrink: 0;
 `;
 
-const AssessmentCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  padding: ${({ theme }) => theme.spacing.md};
-`;
-
-const RecommendationText = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.6;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-`;
-
-const PrimaryGap = styled.div`
+const NoPenalties = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding: ${({ theme }) => theme.spacing.sm};
-  background: ${({ theme }) => theme.colors.surfaceHover};
-  border-radius: ${({ theme }) => theme.radius.sm};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  gap: 8px;
+  padding: 14px 16px;
+  background: rgba(53, 162, 159, 0.06);
+  border: 1px solid rgba(53, 162, 159, 0.12);
+  border-radius: 12px;
+  color: var(--primary-500, #35A29F);
+  font-size: 14px;
+  font-weight: 500;
 
   svg {
     width: 16px;
     height: 16px;
-    color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const AssessmentCard = styled.div`
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  padding: 16px;
+`;
+
+const AssessmentText = styled.p`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: 1.6;
+  margin: 0 0 12px;
+`;
+
+const GapRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: ${({ theme }) => theme.colors.backgroundAlt2};
+  border-radius: 8px;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: ${({ theme }) => theme.colors.textTertiary};
     flex-shrink: 0;
   }
 `;
 
-const NoPenaltiesMessage = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding: ${({ theme }) => theme.spacing.md};
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: ${({ theme }) => theme.radius.md};
-  color: #10b981;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+// --- Helpers ---
 
-  svg {
-    width: 18px;
-    height: 18px;
-  }
-`;
+const getScoreColor = (score: number): string => {
+  if (score >= 85) return "var(--primary-500, #35A29F)";
+  if (score >= 70) return "#2a57a0ff";
+  if (score >= 50) return "#EAB308";
+  return "#F97316";
+};
 
 const getComponentIcon = (name: string) => {
   if (name.toLowerCase().includes("skill")) return <Target />;
-  if (
-    name.toLowerCase().includes("experience") ||
-    name.toLowerCase().includes("potential")
-  )
-    return <Briefcase />;
+  if (name.toLowerCase().includes("experience") || name.toLowerCase().includes("potential")) return <Briefcase />;
   if (name.toLowerCase().includes("industry")) return <Building2 />;
   if (name.toLowerCase().includes("education")) return <GraduationCap />;
   return <Target />;
 };
 
 const getProgressColor = (percentage: number): string => {
-  if (percentage >= 70) return "#10b981";
-  if (percentage >= 50) return "#f59e0b";
+  if (percentage >= 70) return "var(--primary-500, #35A29F)";
+  if (percentage >= 50) return "#EAB308";
   return "#ef4444";
 };
 
 const getJobLevelLabel = (level: string): string => {
   switch (level) {
-    case "entry":
-      return "Entry Level";
-    case "mid":
-      return "Mid Level";
-    case "senior":
-      return "Senior Level";
-    default:
-      return level;
+    case "entry": return "Entry Level";
+    case "mid": return "Mid Level";
+    case "senior": return "Senior Level";
+    default: return level;
   }
 };
 
 const formatComponentDetails = (details: string | object): string => {
-  if (typeof details === "string") {
-    return details;
-  }
+  if (typeof details === "string") return details;
 
   const d = details as Record<string, unknown>;
   const parts: string[] = [];
-
-  if (d.requiredSkillsTotal !== undefined) {
-    parts.push(`Required: ${d.requiredSkillsMatched}/${d.requiredSkillsTotal}`);
-  }
-  if (d.preferredSkillsTotal !== undefined) {
-    parts.push(`Preferred: ${d.preferredSkillsMatched}/${d.preferredSkillsTotal}`);
-  }
-  if (d.yearsRequired !== undefined) {
-    parts.push(`Experience: ${d.yearsCandidate}/${d.yearsRequired} years`);
-  }
-  if (d.seniorityRequired !== undefined) {
-    parts.push(`Seniority: ${d.seniorityCandidate} (required: ${d.seniorityRequired})`);
-  }
-  if (d.industryMatch !== undefined) {
-    parts.push(`Industry: ${d.industryMatch}`);
-  }
-  if (d.educationMatch !== undefined) {
-    parts.push(`Education: ${d.educationMatch}`);
-  }
-  if (d.certMatch !== undefined) {
-    parts.push(`Certifications: ${d.certMatch}`);
-  }
-
-  return parts.length > 0 ? parts.join(" • ") : "";
+  if (d.requiredSkillsTotal !== undefined) parts.push(`Required: ${d.requiredSkillsMatched}/${d.requiredSkillsTotal}`);
+  if (d.preferredSkillsTotal !== undefined) parts.push(`Preferred: ${d.preferredSkillsMatched}/${d.preferredSkillsTotal}`);
+  if (d.yearsRequired !== undefined) parts.push(`Experience: ${d.yearsCandidate}/${d.yearsRequired} years`);
+  if (d.seniorityRequired !== undefined) parts.push(`Seniority: ${d.seniorityCandidate} (required: ${d.seniorityRequired})`);
+  if (d.industryMatch !== undefined) parts.push(`Industry: ${d.industryMatch}`);
+  if (d.educationMatch !== undefined) parts.push(`Education: ${d.educationMatch}`);
+  if (d.certMatch !== undefined) parts.push(`Certifications: ${d.certMatch}`);
+  return parts.length > 0 ? parts.join(" · ") : "";
 };
+
+// --- Component ---
 
 export const ScoreBreakdownModal: React.FC<ScoreBreakdownModalProps> = ({
   isOpen,
   onClose,
   breakdown,
   fitScore,
+  originalScore,
 }) => {
   if (!breakdown) return null;
 
@@ -461,184 +449,163 @@ export const ScoreBreakdownModal: React.FC<ScoreBreakdownModalProps> = ({
     breakdown.components.experienceMatch,
     breakdown.components.industryRelevance,
     breakdown.components.educationCerts,
-  ];
+  ].filter(Boolean);
 
   const verdictColor = getVerdictColor(breakdown.assessment.verdict);
+  const scoreColor = getScoreColor(fitScore);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Score Breakdown"
-      description="See how your CV matches the job requirements"
-      size="lg"
-    >
-      <Modal.Body>
-        <ModalContent>
-          {/* Main Score Display */}
-          <ScoreHeader>
-            <MainScore $color={breakdown.displayData.scoreColor}>
-              {fitScore}%
-            </MainScore>
-            <ScoreLabel>{breakdown.displayData.scoreLabel}</ScoreLabel>
-            <Verdict $color={verdictColor}>
-              {breakdown.assessment.verdict === "would_interview" && (
-                <CheckCircle2 size={14} />
+    <Drawer isOpen={isOpen} onClose={onClose}>
+      <DrawerHeader>
+        <DrawerTitle>Score Breakdown</DrawerTitle>
+        <DrawerDescription>How your CV matches the job requirements</DrawerDescription>
+      </DrawerHeader>
+      <DrawerBody>
+        <Content>
+          {/* Hero Score */}
+          <ScoreHero>
+            <ScoreRow>
+              {originalScore !== undefined && originalScore !== fitScore && (
+                <OriginalScore>{originalScore}%</OriginalScore>
               )}
-              {breakdown.assessment.verdict === "maybe_with_reservations" && (
-                <Info size={14} />
-              )}
-              {breakdown.assessment.verdict === "would_not_interview" && (
-                <XCircle size={14} />
-              )}
+              <HeroScore $color={scoreColor}>{fitScore}%</HeroScore>
+            </ScoreRow>
+            <ScoreSubtext>{breakdown.displayData.scoreLabel}</ScoreSubtext>
+            <VerdictBadge $color={verdictColor}>
+              {breakdown.assessment.verdict === "would_interview" && <CheckCircle2 size={13} />}
+              {breakdown.assessment.verdict === "maybe_with_reservations" && <Info size={13} />}
+              {breakdown.assessment.verdict === "would_not_interview" && <XCircle size={13} />}
               {getVerdictText(breakdown.assessment.verdict)}
-            </Verdict>
-            <JobLevelBadge>{getJobLevelLabel(breakdown.jobLevel)}</JobLevelBadge>
-          </ScoreHeader>
+            </VerdictBadge>
+            {breakdown.jobLevel && (
+              <JobBadge>{getJobLevelLabel(breakdown.jobLevel)}</JobBadge>
+            )}
+          </ScoreHero>
 
-          {/* Score Summary */}
-          <ScoreSummaryGrid>
-            <SummaryItem>
-              <SummaryValue>{breakdown.rawScore}</SummaryValue>
-              <SummaryLabel>Raw Score</SummaryLabel>
-            </SummaryItem>
-            <SummaryItem>
-              <SummaryValue $color="#ef4444">
-                -{breakdown.totalPenalties}
-              </SummaryValue>
-              <SummaryLabel>Penalties</SummaryLabel>
-            </SummaryItem>
-            <SummaryItem>
-              <SummaryValue $color={breakdown.displayData.scoreColor}>
-                {breakdown.finalScore}
-              </SummaryValue>
-              <SummaryLabel>Final Score</SummaryLabel>
-            </SummaryItem>
-          </ScoreSummaryGrid>
+          {/* Stats Row */}
+          <StatsRow>
+            <StatItem>
+              <StatValue>{breakdown.rawScore}</StatValue>
+              <StatLabel>Raw</StatLabel>
+            </StatItem>
+            <StatItem>
+              <StatValue $color="#ef4444">-{breakdown.totalPenalties}</StatValue>
+              <StatLabel>Penalties</StatLabel>
+            </StatItem>
+            <StatItem>
+              <StatValue $color={scoreColor}>{breakdown.finalScore}</StatValue>
+              <StatLabel>Final</StatLabel>
+            </StatItem>
+          </StatsRow>
 
-          {/* Components Breakdown */}
+          {/* Components */}
           <div>
-            <SectionTitle>
+            <SectionHeader>
               <TrendingUp /> Score Components
-            </SectionTitle>
-            <ComponentsGrid>
-              {components.map((component) => (
-                <ComponentCard key={component.name}>
-                  <ComponentHeader>
-                    <ComponentName>
-                      {getComponentIcon(component.name)}
-                      {component.name} ({component.weight}%)
-                    </ComponentName>
-                    <ComponentScore $percentage={component.percentage}>
-                      {component.earnedPoints.toFixed(1)}/{component.maxPoints}
-                    </ComponentScore>
-                  </ComponentHeader>
-                  <ProgressBarContainer>
-                    <ProgressBarFill
-                      $percentage={component.percentage}
-                      $color={getProgressColor(component.percentage)}
-                    />
-                  </ProgressBarContainer>
-                  <ComponentDetails>{formatComponentDetails(component.details)}</ComponentDetails>
-                  <ItemsContainer>
-                    {component.matchedItems &&
-                      component.matchedItems.length > 0 && (
-                        <ItemsList>
-                          <ItemsLabel $type="matched">
-                            <CheckCircle2 /> Matched
-                          </ItemsLabel>
-                          <ItemsChips>
-                            {component.matchedItems.slice(0, 4).map((item, i) => (
-                              <Chip key={i} $type="matched" title={item}>
-                                {item}
-                              </Chip>
+            </SectionHeader>
+            <ComponentsStack>
+              {components.map((component) => {
+                const pColor = getProgressColor(component!.percentage);
+                return (
+                  <ComponentCard key={component!.name}>
+                    <ComponentTop>
+                      <ComponentName>
+                        {getComponentIcon(component!.name)}
+                        {component!.name}
+                        <ComponentWeight>({component!.weight}%)</ComponentWeight>
+                      </ComponentName>
+                      <ComponentScore $color={pColor}>
+                        {component!.earnedPoints.toFixed(1)}/{component!.maxPoints}
+                      </ComponentScore>
+                    </ComponentTop>
+                    <ProgressTrack>
+                      <ProgressFill $percentage={component!.percentage} $color={pColor} />
+                    </ProgressTrack>
+                    {formatComponentDetails(component!.details) && (
+                      <ComponentDetail>{formatComponentDetails(component!.details)}</ComponentDetail>
+                    )}
+                    <ChipsRow>
+                      {component!.matchedItems && component!.matchedItems.length > 0 && (
+                        <ChipGroup>
+                          <ChipLabel $type="matched"><CheckCircle2 /> Matched</ChipLabel>
+                          <ChipsWrap>
+                            {component!.matchedItems.slice(0, 5).map((item, i) => (
+                              <Chip key={i} $type="matched" title={item}>{item}</Chip>
                             ))}
-                            {component.matchedItems.length > 4 && (
-                              <Chip $type="matched">
-                                +{component.matchedItems.length - 4}
-                              </Chip>
+                            {component!.matchedItems.length > 5 && (
+                              <Chip $type="matched">+{component!.matchedItems.length - 5}</Chip>
                             )}
-                          </ItemsChips>
-                        </ItemsList>
+                          </ChipsWrap>
+                        </ChipGroup>
                       )}
-                    {component.missingItems &&
-                      component.missingItems.length > 0 && (
-                        <ItemsList>
-                          <ItemsLabel $type="missing">
-                            <XCircle /> Missing
-                          </ItemsLabel>
-                          <ItemsChips>
-                            {component.missingItems.slice(0, 4).map((item, i) => (
-                              <Chip key={i} $type="missing" title={item}>
-                                {item}
-                              </Chip>
+                      {component!.missingItems && component!.missingItems.length > 0 && (
+                        <ChipGroup>
+                          <ChipLabel $type="missing"><XCircle /> Missing</ChipLabel>
+                          <ChipsWrap>
+                            {component!.missingItems.slice(0, 5).map((item, i) => (
+                              <Chip key={i} $type="missing" title={item}>{item}</Chip>
                             ))}
-                            {component.missingItems.length > 4 && (
-                              <Chip $type="missing">
-                                +{component.missingItems.length - 4}
-                              </Chip>
+                            {component!.missingItems.length > 5 && (
+                              <Chip $type="missing">+{component!.missingItems.length - 5}</Chip>
                             )}
-                          </ItemsChips>
-                        </ItemsList>
+                          </ChipsWrap>
+                        </ChipGroup>
                       )}
-                  </ItemsContainer>
-                </ComponentCard>
-              ))}
-            </ComponentsGrid>
+                    </ChipsRow>
+                  </ComponentCard>
+                );
+              })}
+            </ComponentsStack>
           </div>
 
-          {/* Penalties Section */}
+          {/* Penalties */}
           <div>
-            <SectionTitle>
-              <AlertTriangle /> Penalties Applied
-            </SectionTitle>
+            <SectionHeader>
+              <AlertTriangle /> Penalties
+            </SectionHeader>
             {breakdown.penalties && breakdown.penalties.length > 0 ? (
-              <PenaltiesSection>
+              <PenaltiesCard>
                 {breakdown.penalties.map((penalty) => (
-                  <PenaltyItem key={penalty.id}>
+                  <PenaltyRow key={penalty.id}>
                     <PenaltyIcon $severity={penalty.severity}>
                       <AlertTriangle />
                     </PenaltyIcon>
-                    <PenaltyContent>
-                      <PenaltyDescription>{penalty.description}</PenaltyDescription>
-                      <PenaltyReason>{penalty.reason}</PenaltyReason>
-                    </PenaltyContent>
-                    <PenaltyPoints>-{penalty.pointsDeducted}</PenaltyPoints>
-                  </PenaltyItem>
+                    <PenaltyText>
+                      <PenaltyDesc>{penalty.description}</PenaltyDesc>
+                      {penalty.reason && <PenaltyReason>{penalty.reason}</PenaltyReason>}
+                    </PenaltyText>
+                    <PenaltyPts>-{penalty.pointsDeducted}</PenaltyPts>
+                  </PenaltyRow>
                 ))}
-              </PenaltiesSection>
+              </PenaltiesCard>
             ) : (
-              <NoPenaltiesMessage>
+              <NoPenalties>
                 <CheckCircle2 />
-                No penalties applied - great job!
-              </NoPenaltiesMessage>
+                No penalties applied
+              </NoPenalties>
             )}
           </div>
 
           {/* HR Assessment */}
           <div>
-            <SectionTitle>
+            <SectionHeader>
               <Briefcase /> HR Assessment
-            </SectionTitle>
+            </SectionHeader>
             <AssessmentCard>
-              <RecommendationText>
-                {breakdown.assessment.recommendation}
-              </RecommendationText>
-              <PrimaryGap>
+              <AssessmentText>{breakdown.assessment.recommendation}</AssessmentText>
+              <GapRow>
                 <Target />
-                <span>
-                  <strong>Primary Gap:</strong> {breakdown.displayData.primaryGap}
-                </span>
-              </PrimaryGap>
+                <span><strong>Primary Gap:</strong> {breakdown.displayData.primaryGap}</span>
+              </GapRow>
             </AssessmentCard>
           </div>
-        </ModalContent>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="primary" onClick={onClose}>
-          Got it
+        </Content>
+      </DrawerBody>
+      <DrawerFooter>
+        <Button variant="primary" onClick={onClose} style={{width: "300px", maxWidth: "95%"}}>
+          Done
         </Button>
-      </Modal.Footer>
-    </Modal>
+      </DrawerFooter>
+    </Drawer>
   );
 };

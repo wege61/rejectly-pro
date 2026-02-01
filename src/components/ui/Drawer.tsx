@@ -92,14 +92,14 @@ const Header = styled.div`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  gap: 4px;
-  padding: 0 24px 16px;
+  gap: 6px;
+  padding: 0 24px 20px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   max-width: 1200px;
 `;
 
 const Title = styled.h2`
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.textPrimary};
   margin: 0;
@@ -107,7 +107,7 @@ const Title = styled.h2`
 `;
 
 const Description = styled.p`
-  font-size: 14px;
+  font-size: 15px;
   color: ${({ theme }) => theme.colors.textSecondary};
   margin: 0 auto;
   max-width: 1200px;
@@ -185,9 +185,9 @@ const Body = styled.div`
   min-height: 0;
   overflow-y: auto;
   margin: 0 auto;
-  max-width: 600px;
+  max-width: 720px;
   width: 100%;
-  padding: 20px 16px;
+  padding: 28px 24px;
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
@@ -254,8 +254,10 @@ function applyScaleBackground(scale: boolean) {
 // Main Drawer Component
 export function Drawer({ isOpen, onClose, children, shouldScaleBackground = true }: DrawerProps) {
   const dragY = useRef(0);
+  const scrollYRef = useRef(0);
+  const wasOpenRef = useRef(false);
 
-  // Handle escape key
+  // Handle escape key + scroll lock
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -265,9 +267,24 @@ export function Drawer({ isOpen, onClose, children, shouldScaleBackground = true
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
+      scrollYRef.current = window.scrollY;
       document.body.style.overflow = 'hidden';
-    } else {
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollYRef.current}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.documentElement.style.overflow = 'hidden';
+      wasOpenRef.current = true;
+    } else if (wasOpenRef.current) {
+      // Only restore when transitioning from open → closed
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.documentElement.style.overflow = '';
+      window.scrollTo(0, scrollYRef.current);
+      wasOpenRef.current = false;
     }
 
     return () => {

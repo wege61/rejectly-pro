@@ -1651,57 +1651,78 @@ const KeywordNotFound = styled.div`
   background: ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
-// Role Recommendations Drawer Styled Components
-const RoleItemCard = styled.div`
-  max-width: 600px;
-  padding: 20px 0;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-
-  &:first-child {
-    padding-top: 0;
-  }
-
-  &:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
+// Role Recommendations Drawer Styled Components - BarList Style
+// BarList — Tremor-style two-column bar chart
+const BarListWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
 `;
 
-const RoleItemHeader = styled.div`
+const BarListBars = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  flex: 1;
+  min-width: 0;
+`;
+
+const BarListRow = styled.div`
+  position: relative;
+  width: 100%;
+  border-radius: 4px;
+`;
+
+const BarListFill = styled.div<{ $width: number }>`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 10px;
-`;
+  height: 32px;
+  border-radius: 4px;
+  width: ${({ $width }) => Math.max($width, 2)}%;
+  background: ${({ theme }) => theme.colors.primaryLight};
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 
-const RoleItemTitle = styled.span`
-  font-size: 16px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  letter-spacing: -0.2px;
-`;
-
-const RoleItemMatch = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
-  padding: 5px 12px;
-  border-radius: 100px;
-
-  svg {
-    flex-shrink: 0;
+  @media (prefers-color-scheme: dark) {
+    background: rgba(53, 162, 159, 0.2);
   }
 `;
 
-const RoleItemDescription = styled.p`
+const BarListLabel = styled.p`
+  position: absolute;
+  left: 8px;
+  display: flex;
+  max-width: 100%;
+  padding-right: 8px;
   font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.6;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+`;
+
+const BarListValues = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+`;
+
+const BarListValueRow = styled.div<{ $isLast?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 32px;
+  margin-bottom: ${({ $isLast }) => ($isLast ? '0' : '6px')};
+`;
+
+const BarListValue = styled.p`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  white-space: nowrap;
+  line-height: 1;
   margin: 0;
 `;
 
@@ -1824,29 +1845,10 @@ const BentoCard = styled.div<{ $rowSpan?: number; $position?: 'left' | 'right' |
   flex-direction: column;
   overflow: hidden;
   border-radius: 16px;
-  background: var(--bg-alt);
   transition: all 0.3s ease;
 
-  /* Match StatBentoCard shadow */
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
+  
 
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover {
-      box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.18) inset,
-        0 20px 40px rgba(0, 0, 0, 0.3);
-    }
-  }
 
   /* Row span for desktop */
   @media (min-width: 1024px) {
@@ -1881,18 +1883,17 @@ const BentoCardTitle = styled.h3`
   font-size: 18px;
   font-weight: 600;
   color: var(--text-color);
-  margin-bottom: 4px;
-
-  @media (max-width: 640px) {
-    font-size: 16px;
-  }
+  margin: 0;
 `;
 
 const BentoCardDescription = styled.p`
   color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.4;
-  margin-bottom: 16px;
+  margin: 0;
+  padding-bottom: 20px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  margin-bottom: 20px;
 `;
 
 const BentoCardBody = styled.div`
@@ -3239,71 +3240,104 @@ const GenerateCTAContainer = styled.div`
 
 // Resume Actions - Minimal list style
 const ResumeActionsList = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  width: 100%;
+  gap: 16px;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 `;
 
-const ResumeActionItem = styled.div<{ $disabled?: boolean }>`
+const ResumeActionItem = styled.div<{ $disabled?: boolean; $color?: string }>`
   display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border-color);
-  cursor: ${({ $disabled }) => $disabled ? 'not-allowed' : 'pointer'};
-  opacity: ${({ $disabled }) => $disabled ? 0.5 : 1};
-  transition: all 0.15s ease;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--bg-alt);
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
+  transition: all 0.3s ease;
+  min-height: 180px;
 
-  &:last-child {
-    border-bottom: none;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 12px 24px rgba(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   &:hover {
-    opacity: ${({ $disabled }) => $disabled ? 0.5 : 0.7};
+    transform: ${({ $disabled }) => ($disabled ? 'none' : 'translateY(-4px)')};
+    box-shadow: ${({ $disabled }) => ($disabled ? 'none' : '0 20px 40px rgba(0, 0, 0, 0.12)')};
+  }
+
+  &:hover .action-cta svg {
+    transform: translateX(3px);
   }
 `;
 
 const ResumeActionIcon = styled.div<{ $color?: string }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: ${({ $color }) => $color ? `${$color}15` : 'rgba(102, 126, 234, 0.1)'};
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: ${({ $color }) => $color || '#667eea'};
+  color: ${({ $color }) => $color || 'var(--text-color)'};
+  margin-bottom: 20px;
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 32px;
+    height: 32px;
   }
 `;
 
 const ResumeActionContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   flex: 1;
-  min-width: 0;
 `;
 
 const ResumeActionTitle = styled.div`
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 19px;
+  font-weight: 700;
   color: var(--text-color);
+  letter-spacing: -0.3px;
+  line-height: 1.25;
 `;
 
 const ResumeActionDescription = styled.div`
   font-size: 14px;
   color: var(--text-secondary);
-  margin-top: 2px;
+  line-height: 1.5;
+`;
+
+const ResumeActionCTA = styled.div<{ $color?: string }>`
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: auto;
+  padding-top: 16px;
+  color: ${({ $color }) => $color || 'var(--primary-500)'};
+  font-size: 14px;
+  font-weight: 400;
+
+  svg {
+    width: 10px;
+    height: 10px;
+    transition: transform 0.2s ease;
+  }
 `;
 
 const ResumeActionArrow = styled.div`
-  color: var(--text-tertiary);
-  flex-shrink: 0;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
+  display: none;
 `;
 
 const ResumeStatusBadge = styled.div<{ $ready?: boolean }>`
@@ -3326,25 +3360,28 @@ const ResumeStatusBadge = styled.div<{ $ready?: boolean }>`
 const ResumeFooter = styled.div<{ $variant?: 'default' | 'accent' }>`
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 18px 24px;
-  background: ${({ $variant }) =>
-    $variant === 'accent' ? 'rgba(245, 158, 11, 0.06)' : 'rgba(102, 126, 234, 0.04)'};
-  border-top: 1px solid var(--border-color);
+  gap: 14px;
+  padding: 14px 20px;
+  margin: 0 24px 24px;
+  border-radius: 12px;
+  background: transparent;
+  border: 1px dashed ${({ $variant }) =>
+    $variant === 'accent' ? 'rgba(245, 158, 11, 0.35)' : 'var(--border-color)'};
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 
   &:hover {
     background: ${({ $variant }) =>
-      $variant === 'accent' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(102, 126, 234, 0.08)'};
+      $variant === 'accent' ? 'rgba(245, 158, 11, 0.06)' : 'rgba(102, 126, 234, 0.04)'};
+    border-color: ${({ $variant }) =>
+      $variant === 'accent' ? 'rgba(245, 158, 11, 0.5)' : 'var(--primary-300)'};
   }
 `;
 
 const ResumeFooterIcon = styled.div<{ $color?: string }>`
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
-  background: ${({ $color }) => $color ? `${$color}20` : 'rgba(102, 126, 234, 0.15)'};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3362,15 +3399,15 @@ const ResumeFooterContent = styled.div`
 `;
 
 const ResumeFooterTitle = styled.div<{ $color?: string }>`
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: ${({ $color }) => $color || 'var(--text-color)'};
 `;
 
 const ResumeFooterDescription = styled.div`
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-secondary);
-  margin-top: 2px;
+  margin-top: 1px;
 `;
 
 const ActionCardIcon = styled.div<{ $variant?: 'primary' | 'secondary' | 'ghost' | 'accent' }>`
@@ -3563,83 +3600,12 @@ const SectionLabel = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const AlternativeRolesList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: ${({ theme }) => theme.spacing.md};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const AlternativeRoleItem = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: linear-gradient(
-    135deg,
-    rgba(139, 92, 246, 0.05) 0%,
-    rgba(236, 72, 153, 0.05) 100%
-  );
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  transition: all ${({ theme }) => theme.transitions.normal};
-  cursor: pointer;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.15);
-    border-color: rgba(139, 92, 246, 0.4);
-  }
-`;
-
-const RoleHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-`;
-
-const RoleName = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.4;
-`;
-
-const RoleMatch = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--success);
-`;
-
-const RoleMatchIcon = styled.div`
-  width: 20px;
-  height: 20px;
-  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 12px;
-`;
 
 // Score Breakdown Card - FixesCard tarzında
 const ScoreBreakdownCard = styled.div`
-  background: var(--bg-alt);
   border-radius: 16px;
   overflow: hidden;
 
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
 `;
 
 const ScoreBreakdownHeader = styled.div`
@@ -3829,17 +3795,9 @@ const BreakdownFooterValue = styled.span`
 
 // Generate Resume Card - FixesCard tarzında
 const GenerateResumeCard = styled.div`
-  background: var(--bg-alt);
   border-radius: 16px;
   overflow: hidden;
 
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
 `;
 
 const GenerateResumeHeader = styled.div`
@@ -3847,7 +3805,7 @@ const GenerateResumeHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   gap: 16px;
 
   @media (max-width: 640px) {
@@ -5112,19 +5070,31 @@ export default function ReportDetailPage() {
 
             <AlternativeRolesSection>
               <SectionLabel>Recommended Positions</SectionLabel>
-              <AlternativeRolesList>
-                {roleRecommendations.slice(0, 3).map((role, index) => (
-                  <AlternativeRoleItem key={index}>
-                    <RoleHeader>
-                      <RoleName>{role.title}</RoleName>
-                      <RoleMatch>
-                        <RoleMatchIcon>✓</RoleMatchIcon>
-                        {role.fit}%
-                      </RoleMatch>
-                    </RoleHeader>
-                  </AlternativeRoleItem>
-                ))}
-              </AlternativeRolesList>
+              {(() => {
+                const sorted = [...roleRecommendations].slice(0, 3).sort((a, b) => b.fit - a.fit);
+                const maxValue = Math.max(...sorted.map(r => r.fit), 0);
+                const widths = sorted.map(r => r.fit === 0 ? 0 : Math.max((r.fit / maxValue) * 100, 2));
+                return (
+                  <BarListWrapper>
+                    <BarListBars>
+                      {sorted.map((role, index) => (
+                        <BarListRow key={index}>
+                          <BarListFill $width={widths[index]}>
+                            <BarListLabel>{role.title}</BarListLabel>
+                          </BarListFill>
+                        </BarListRow>
+                      ))}
+                    </BarListBars>
+                    <BarListValues>
+                      {sorted.map((role, index) => (
+                        <BarListValueRow key={index} $isLast={index === sorted.length - 1}>
+                          <BarListValue>{role.fit}%</BarListValue>
+                        </BarListValueRow>
+                      ))}
+                    </BarListValues>
+                  </BarListWrapper>
+                );
+              })()}
             </AlternativeRolesSection>
           </CareerInsightCard>
         )}
@@ -5491,16 +5461,25 @@ export default function ReportDetailPage() {
                   Roles that match your skills and experience
                 </BentoCardDescription>
                 <BentoCardBody>
-                  <RoleCard>
-                    <RoleCardHeader>
-                      <RoleTitle>
-                        {roleRecommendations[0]?.title || report.sample_role?.title || 'Senior Product Manager'}
-                      </RoleTitle>
-                      <RoleFitBadge>
-                        {roleRecommendations[0]?.fit || report.sample_role?.fit || 87}% Match
-                      </RoleFitBadge>
-                    </RoleCardHeader>
-                  </RoleCard>
+                  {(() => {
+                    const firstRole = roleRecommendations[0] || report.sample_role || { title: 'Senior Product Manager', fit: 87 };
+                    return (
+                      <BarListWrapper>
+                        <BarListBars>
+                          <BarListRow>
+                            <BarListFill $width={100}>
+                              <BarListLabel>{firstRole.title}</BarListLabel>
+                            </BarListFill>
+                          </BarListRow>
+                        </BarListBars>
+                        <BarListValues>
+                          <BarListValueRow $isLast>
+                            <BarListValue>{firstRole.fit}%</BarListValue>
+                          </BarListValueRow>
+                        </BarListValues>
+                      </BarListWrapper>
+                    );
+                  })()}
                   <p style={{
                     marginTop: '8px',
                     fontSize: '13px',
@@ -5607,24 +5586,31 @@ export default function ReportDetailPage() {
                   Alternative roles that match your profile
                 </BentoCardDescription>
                 <BentoCardBody>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                    {roleRecommendations.map((role: RoleRecommendation) => (
-                      <div
-                        key={role.title}
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: "12px",
-                          backgroundColor: "var(--bg-color)",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        <span style={{ fontWeight: 500, fontSize: "14px" }}>{role.title}</span>
-                        <Badge variant="success">{role.fit}% Match</Badge>
-                      </div>
-                    ))}
-                  </div>
+                  {(() => {
+                    const sorted = [...roleRecommendations].sort((a, b) => b.fit - a.fit);
+                    const maxValue = Math.max(...sorted.map(r => r.fit), 0);
+                    const widths = sorted.map(r => r.fit === 0 ? 0 : Math.max((r.fit / maxValue) * 100, 2));
+                    return (
+                      <BarListWrapper>
+                        <BarListBars>
+                          {sorted.map((role, index) => (
+                            <BarListRow key={index}>
+                              <BarListFill $width={widths[index]}>
+                                <BarListLabel>{role.title}</BarListLabel>
+                              </BarListFill>
+                            </BarListRow>
+                          ))}
+                        </BarListBars>
+                        <BarListValues>
+                          {sorted.map((role, index) => (
+                            <BarListValueRow key={index} $isLast={index === sorted.length - 1}>
+                              <BarListValue>{role.fit}%</BarListValue>
+                            </BarListValueRow>
+                          ))}
+                        </BarListValues>
+                      </BarListWrapper>
+                    );
+                  })()}
                 </BentoCardBody>
               </BentoCardContent>
               <BentoOverlay />
@@ -5845,20 +5831,15 @@ export default function ReportDetailPage() {
               <GenerateResumeHeader>
                 <GenerateResumeHeaderLeft>
                   <GenerateResumeTitle>
-                    {report.generated_cv ? 'Optimized Resume' : 'Generate Optimized Resume'}
+                    {report.generated_cv ? 'Your Results' : 'Generate Optimized Resume'}
                   </GenerateResumeTitle>
                   <GenerateResumeSubtitle>
                     {report.generated_cv
-                      ? 'Your ATS-optimized resume is ready'
+                      ? 'Download, share, or continue customizing'
                       : 'ATS-friendly resume with all improvements applied'}
                   </GenerateResumeSubtitle>
                 </GenerateResumeHeaderLeft>
-                {report.generated_cv && (
-                  <ResumeStatusBadge $ready>
-                    <CheckCircleIcon />
-                    Ready
-                  </ResumeStatusBadge>
-                )}
+                
               </GenerateResumeHeader>
 
               {!report.generated_cv ? (
@@ -5983,58 +5964,62 @@ export default function ReportDetailPage() {
                 <>
                   <GenerateResumeBody>
                     <ResumeActionsList>
-                      <ResumeActionItem onClick={handlePreviewCV}>
-                        <ResumeActionIcon $color="#667eea">
+                      <ResumeActionItem onClick={handlePreviewCV} $color="var(--accent)">
+                        <ResumeActionIcon className="action-icon" $color="var(--accent)">
                           <DocumentIcon />
                         </ResumeActionIcon>
                         <ResumeActionContent>
                           <ResumeActionTitle>Preview & Download</ResumeActionTitle>
                           <ResumeActionDescription>View and download as PDF</ResumeActionDescription>
                         </ResumeActionContent>
-                        <ResumeActionArrow>
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <ResumeActionCTA className="action-cta" $color="var(--accent)">
+                          Open preview
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                           </svg>
-                        </ResumeActionArrow>
+                        </ResumeActionCTA>
                       </ResumeActionItem>
 
-                      <ResumeActionItem onClick={() => {
+                      <ResumeActionItem $color="#8b5cf6" onClick={() => {
                         if (report?.pro) {
                           setIsCoverLetterModalOpen(true);
                         } else {
                           setIsPremiumModalOpen(true);
                         }
                       }}>
-                        <ResumeActionIcon $color="#8b5cf6">
+                        <ResumeActionIcon className="action-icon" $color="#2A57A0">
                           <EnvelopeIcon size="18" />
                         </ResumeActionIcon>
                         <ResumeActionContent>
-                          <ResumeActionTitle>Generate Cover Letter</ResumeActionTitle>
-                          <ResumeActionDescription>Tailored letter for this position</ResumeActionDescription>
+                          <ResumeActionTitle>Cover Letter</ResumeActionTitle>
+                          <ResumeActionDescription>Tailored for this position</ResumeActionDescription>
                         </ResumeActionContent>
-                        <ResumeActionArrow>
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <ResumeActionCTA className="action-cta" $color="#2A57A0">
+                          Generate letter
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                           </svg>
-                        </ResumeActionArrow>
+                        </ResumeActionCTA>
                       </ResumeActionItem>
 
                       <ResumeActionItem
+                        $color="#10b981"
                         $disabled={isGeneratingCV}
                         onClick={isGeneratingCV ? undefined : handleRegenerateCV}
                       >
-                        <ResumeActionIcon $color="#10b981">
+                        <ResumeActionIcon className="action-icon" $color="#F97316">
                           {isGeneratingCV ? <Spinner size="sm" /> : <RefreshIcon />}
                         </ResumeActionIcon>
                         <ResumeActionContent>
-                          <ResumeActionTitle>Regenerate Resume</ResumeActionTitle>
+                          <ResumeActionTitle>Regenerate</ResumeActionTitle>
                           <ResumeActionDescription>Create a new optimized version</ResumeActionDescription>
                         </ResumeActionContent>
-                        <ResumeActionArrow>
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <ResumeActionCTA className="action-cta" $color="#F97316">
+                          Regenerate now
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                           </svg>
-                        </ResumeActionArrow>
+                        </ResumeActionCTA>
                       </ResumeActionItem>
                     </ResumeActionsList>
                   </GenerateResumeBody>
@@ -6541,22 +6526,31 @@ export default function ReportDetailPage() {
         </KeywordsSummaryRow>
 
         <DrawerBody>
-          {roleRecommendations.map((role, index) => (
-            <RoleItemCard key={index}>
-              <RoleItemHeader>
-                <RoleItemTitle>{role.title}</RoleItemTitle>
-                <RoleItemMatch>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  {role.fit}% Match
-                </RoleItemMatch>
-              </RoleItemHeader>
-              {role.description && (
-                <RoleItemDescription>{role.description}</RoleItemDescription>
-              )}
-            </RoleItemCard>
-          ))}
+          {(() => {
+            const sorted = [...roleRecommendations].sort((a, b) => b.fit - a.fit);
+            const maxValue = Math.max(...sorted.map(r => r.fit), 0);
+            const widths = sorted.map(r => r.fit === 0 ? 0 : Math.max((r.fit / maxValue) * 100, 2));
+            return (
+              <BarListWrapper>
+                <BarListBars>
+                  {sorted.map((role, index) => (
+                    <BarListRow key={index}>
+                      <BarListFill $width={widths[index]}>
+                        <BarListLabel>{role.title}</BarListLabel>
+                      </BarListFill>
+                    </BarListRow>
+                  ))}
+                </BarListBars>
+                <BarListValues>
+                  {sorted.map((role, index) => (
+                    <BarListValueRow key={index} $isLast={index === sorted.length - 1}>
+                      <BarListValue>{role.fit}%</BarListValue>
+                    </BarListValueRow>
+                  ))}
+                </BarListValues>
+              </BarListWrapper>
+            );
+          })()}
         </DrawerBody>
         <DrawerFooter>
           <Button variant="primary" onClick={() => setIsRoleRecommendationsDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>

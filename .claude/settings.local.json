@@ -23,7 +23,8 @@
       "Bash(netstat:*)",
       "Bash(ss:*)",
       "Bash(xargs:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "WebFetch(domain:www.apple.com)"
     ],
     "deny": [],
     "ask": []

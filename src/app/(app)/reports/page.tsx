@@ -236,6 +236,8 @@ const ContentInner = styled.div`
 
 const ScoreDisplay = styled.div`
   margin-bottom: 8px;
+  display: flex;
+  align-items: flex-end;
 `;
 
 const ScoreValue = styled.span<{ $category: 'excellent' | 'good' | 'fair' | 'poor' }>`
@@ -268,6 +270,22 @@ const ScoreValue = styled.span<{ $category: 'excellent' | 'good' | 'fair' | 'poo
     &::after {
       font-size: 20px;
     }
+  }
+`;
+
+const OriginalScore = styled.span`
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: line-through;
+  opacity: 0.5;
+  margin-right: 8px;
+  line-height: 1;
+  align-self: flex-end;
+  padding-bottom: 4px;
+
+  @media (max-width: 640px) {
+    font-size: 24px;
   }
 `;
 
@@ -682,10 +700,11 @@ export default function ReportsPage() {
       ) : (
         <>
           {(() => {
-            const excellent = reports.filter((r) => r.fit_score >= 85);
-            const good = reports.filter((r) => r.fit_score >= 70 && r.fit_score < 85);
-            const fair = reports.filter((r) => r.fit_score >= 50 && r.fit_score < 70);
-            const poor = reports.filter((r) => r.fit_score < 50);
+            const getDisplayScore = (r: Report) => r.optimized_score ?? r.fit_score;
+            const excellent = reports.filter((r) => getDisplayScore(r) >= 85);
+            const good = reports.filter((r) => getDisplayScore(r) >= 70 && getDisplayScore(r) < 85);
+            const fair = reports.filter((r) => getDisplayScore(r) >= 50 && getDisplayScore(r) < 70);
+            const poor = reports.filter((r) => getDisplayScore(r) < 50);
 
             const renderReportCard = (report: Report) => {
               const jobTitles = report.job_ids
@@ -707,7 +726,10 @@ export default function ReportsPage() {
                   <CardContent>
                     <ContentInner className="report-content">
                       <ScoreDisplay>
-                        <ScoreValue $category={report.fit_score >= 85 ? 'excellent' : report.fit_score >= 70 ? 'good' : report.fit_score >= 50 ? 'fair' : 'poor'}>{report.fit_score}</ScoreValue>
+                        {report.optimized_score != null && report.optimized_score !== report.fit_score && (
+                          <OriginalScore>{report.fit_score}%</OriginalScore>
+                        )}
+                        <ScoreValue $category={(() => { const s = report.optimized_score ?? report.fit_score; return s >= 85 ? 'excellent' : s >= 70 ? 'good' : s >= 50 ? 'fair' : 'poor'; })()}>{report.optimized_score ?? report.fit_score}</ScoreValue>
                       </ScoreDisplay>
                       <ReportTitle>
                         {jobTitles || "CV Analysis Report"}

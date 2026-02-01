@@ -415,6 +415,39 @@ const getJobLevelLabel = (level: string): string => {
   }
 };
 
+const formatComponentDetails = (details: string | object): string => {
+  if (typeof details === "string") {
+    return details;
+  }
+
+  const d = details as Record<string, unknown>;
+  const parts: string[] = [];
+
+  if (d.requiredSkillsTotal !== undefined) {
+    parts.push(`Required: ${d.requiredSkillsMatched}/${d.requiredSkillsTotal}`);
+  }
+  if (d.preferredSkillsTotal !== undefined) {
+    parts.push(`Preferred: ${d.preferredSkillsMatched}/${d.preferredSkillsTotal}`);
+  }
+  if (d.yearsRequired !== undefined) {
+    parts.push(`Experience: ${d.yearsCandidate}/${d.yearsRequired} years`);
+  }
+  if (d.seniorityRequired !== undefined) {
+    parts.push(`Seniority: ${d.seniorityCandidate} (required: ${d.seniorityRequired})`);
+  }
+  if (d.industryMatch !== undefined) {
+    parts.push(`Industry: ${d.industryMatch}`);
+  }
+  if (d.educationMatch !== undefined) {
+    parts.push(`Education: ${d.educationMatch}`);
+  }
+  if (d.certMatch !== undefined) {
+    parts.push(`Certifications: ${d.certMatch}`);
+  }
+
+  return parts.length > 0 ? parts.join(" • ") : "";
+};
+
 export const ScoreBreakdownModal: React.FC<ScoreBreakdownModalProps> = ({
   isOpen,
   onClose,
@@ -506,7 +539,7 @@ export const ScoreBreakdownModal: React.FC<ScoreBreakdownModalProps> = ({
                       $color={getProgressColor(component.percentage)}
                     />
                   </ProgressBarContainer>
-                  <ComponentDetails>{component.details}</ComponentDetails>
+                  <ComponentDetails>{formatComponentDetails(component.details)}</ComponentDetails>
                   <ItemsContainer>
                     {component.matchedItems &&
                       component.matchedItems.length > 0 && (

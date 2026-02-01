@@ -74,6 +74,8 @@ export interface Report {
   fake_it_mode: boolean;
   score_breakdown: ScoreBreakdown | null;
   optimized_score_breakdown: ScoreBreakdown | null;
+  ats_score_optimized: number | null;
+  ats_breakdown_optimized: any | null;
   created_at: string;
 }
 

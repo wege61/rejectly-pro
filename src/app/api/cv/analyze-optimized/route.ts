@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
-import { generateImprovementBreakdownPrompt, generateSystematicScoringPrompt } from "@/lib/ai/prompts";
+import { generateImprovementBreakdownPrompt, generateSystematicScoringPrompt, ScoringOptions } from "@/lib/ai/prompts";
 import { GeneratedCV } from "@/types/cv";
-import { ScoreBreakdown } from "@/types/scoreBreakdown";
+import { ScoreBreakdown, normalizeScoreBreakdown } from "@/types/scoreBreakdown";
 
 // Helper function to convert GeneratedCV to text format
 function convertCVToText(cv: GeneratedCV): string {
@@ -164,13 +164,35 @@ export async function POST(request: NextRequest) {
     // Convert generated CV to text
     const optimizedCVText = convertCVToText(report.generated_cv as GeneratedCV);
     const originalScore = report.fit_score || 0;
+    const fakeItMode = report.fake_it_mode || false;
 
-    // Generate detailed score breakdown for optimized CV FIRST
-    // This ensures the displayed score matches the breakdown details
-    console.log('📊 Generating optimized score breakdown...');
+    // Fetch original CV FIRST (needed for scoring comparison)
+    const { data: cvDoc, error: cvError } = await supabase
+      .from("documents")
+      .select("text")
+      .eq("id", report.cv_id)
+      .eq("user_id", user.id)
+      .eq("type", "cv")
+      .single();
+
+    const originalCVText = cvDoc?.text || '';
+
+    // Generate detailed score breakdown for optimized CV
+    // Pass optimization context to prevent score inflation
+    console.log('📊 Generating optimized score breakdown with anti-inflation rules...');
+    console.log('📊 Context:', { isOptimizedCV: true, fakeItMode, originalScore });
+
+    const scoringOptions: ScoringOptions = {
+      isOptimizedCV: true,
+      fakeItMode: fakeItMode,
+      originalScore: originalScore,
+      originalCVText: originalCVText
+    };
+
     const scoreBreakdownPrompt = generateSystematicScoringPrompt(
       optimizedCVText,
-      jobDocs.map((job) => job.text)
+      jobDocs.map((job) => job.text),
+      scoringOptions
     );
 
     const scoreBreakdownCompletion = await openai.chat.completions.create({
@@ -181,12 +203,17 @@ export async function POST(request: NextRequest) {
       response_format: { type: "json_object" },
     });
 
-    const optimizedScoreBreakdown: ScoreBreakdown = JSON.parse(
+    const rawScoreBreakdown: ScoreBreakdown = JSON.parse(
       scoreBreakdownCompletion.choices[0].message.content || "{}"
     );
 
+    // Normalize the score breakdown to handle both v1 and v2 formats
+    const optimizedScoreBreakdown = normalizeScoreBreakdown(rawScoreBreakdown);
+
     // Use the finalScore from breakdown for consistency
-    const optimizedScore = optimizedScoreBreakdown.finalScore || 0;
+    // Check both direct finalScore and nested calculation.finalScore
+    const optimizedScore = optimizedScoreBreakdown.finalScore ||
+                          optimizedScoreBreakdown.calculation?.finalScore || 0;
     const actualScoreDifference = optimizedScore - originalScore;
 
     console.log('📊 Score calculation (from breakdown):', {
@@ -194,34 +221,17 @@ export async function POST(request: NextRequest) {
       optimizedScore,
       actualScoreDifference,
       verdict: optimizedScoreBreakdown.assessment?.verdict,
+      fakeItMode,
       shouldGenerateImprovementBreakdown: actualScoreDifference > 0
     });
 
-    // Fetch original CV for improvement breakdown comparison
-    const { data: cvDoc, error: cvError } = await supabase
-      .from("documents")
-      .select("text")
-      .eq("id", report.cv_id)
-      .eq("user_id", user.id)
-      .eq("type", "cv")
-      .single();
-
-    console.log('📄 Original CV fetch:', {
-      hasCvDoc: !!cvDoc,
-      hasError: !!cvError,
-      error: cvError,
-      cvId: report.cv_id
-    });
-
-    // Get fake it mode flag from report
-    const fakeItMode = report.fake_it_mode || false;
     let improvementBreakdown: string[] = [];
 
-    if (!cvError && cvDoc && actualScoreDifference > 0) {
+    if (originalCVText && actualScoreDifference > 0) {
       console.log('🎯 Generating improvement breakdown...');
       // Generate improvement breakdown
       const breakdownPrompt = generateImprovementBreakdownPrompt(
-        cvDoc.text,
+        originalCVText,
         optimizedCVText,
         jobDocs.map((job) => job.text),
         (report.keywords as { missing?: string[] })?.missing || [],

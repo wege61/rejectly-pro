@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateSystematicScoringPrompt } from "@/lib/ai/prompts";
-import { ScoreBreakdown } from "@/types/scoreBreakdown";
+import { ScoreBreakdown, normalizeScoreBreakdown } from "@/types/scoreBreakdown";
 
 export async function POST(request: NextRequest) {
   try {
@@ -73,18 +73,39 @@ export async function POST(request: NextRequest) {
       response_format: { type: "json_object" },
     });
 
-    const scoreBreakdown: ScoreBreakdown = JSON.parse(
+    const rawScoreBreakdown: ScoreBreakdown = JSON.parse(
       completion.choices[0].message.content || "{}"
     );
 
-    // Extract missing keywords from all components
+    // Normalize the score breakdown to handle both v1 and v2 formats
+    const scoreBreakdown = normalizeScoreBreakdown(rawScoreBreakdown);
+
+    // Extract missing keywords from all components (supports both old and new formats)
     const missingKeywords: string[] = [];
     Object.values(scoreBreakdown.components).forEach((component) => {
+      if (!component) return;
+      // Old format: missingItems array of strings
       if (component.missingItems) {
         missingKeywords.push(...component.missingItems);
       }
+      // New format: missingSkills array of objects
+      if (component.missingSkills) {
+        component.missingSkills.forEach((skill) => {
+          if (skill.required) {
+            missingKeywords.push(skill.skill);
+          }
+        });
+      }
+      // Role-specific requirements not met
+      if (component.requirementsNotMet) {
+        missingKeywords.push(...component.requirementsNotMet);
+      }
     });
     const uniqueMissingKeywords = [...new Set(missingKeywords)].slice(0, 10);
+
+    // Get finalScore (handles both direct and nested calculation formats)
+    const finalScore = scoreBreakdown.finalScore ||
+                      scoreBreakdown.calculation?.finalScore || 0;
 
     // Save report to database with score breakdown
     const { data: report, error: reportError } = await supabase
@@ -93,7 +114,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         cv_id: cvId,
         job_ids: jobIds,
-        fit_score: scoreBreakdown.finalScore || 0,
+        fit_score: finalScore,
         summary_free: scoreBreakdown.summary || "",
         keywords: { missing: uniqueMissingKeywords },
         score_breakdown: scoreBreakdown,

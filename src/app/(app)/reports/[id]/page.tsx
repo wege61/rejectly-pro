@@ -41,6 +41,15 @@ import {
   CHART_COLORS,
   hasSignificantImprovements,
 } from "@/components/report";
+import { 
+  Type, 
+  AlignLeft, 
+  Zap, 
+  Search, 
+  Layout, 
+  CheckCircle, 
+  MousePointer2 
+} from "lucide-react";
 
 const RocketIcon = () => (
   <svg
@@ -1226,67 +1235,76 @@ const FixesScoreArrow = styled.div`
   }
 `;
 
+
+
 const FixesList = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 `;
 
 const FixItem = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  padding: 16px 24px;
-border-bottom: 1px solid ${({ theme }) => theme.colors.border};  
-cursor: pointer;
-  transition: background 0.15s ease;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
+  gap: 20px;
+  padding: 24px;
+  background: ${({ theme }) => theme.colors.bgSecondary || '#ffffff'};
+  /* Subtle, elegant border definition */
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 20px; /* Squircle-ish */
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* Slower, smoother ease */
+  position: relative;
+  
   &:hover {
-    background: rgba(0, 0, 0, 0.02);
+    background: #ffffff;
+    transform: translateY(-4px) scale(1.005);
+    /* Deep, diffused, premium shadow */
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
+    border-color: rgba(0,0,0,0.02);
   }
 
   @media (prefers-color-scheme: dark) {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+    
     &:hover {
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.1);
     }
   }
 
   @media (max-width: 640px) {
     flex-direction: column;
-    gap: 12px;
-  }
-`;
-
-const FixSeverityDot = styled.div<{ $severity: 'critical' | 'important' | 'minor' }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  background: ${({ $severity }) => {
-    if ($severity === 'critical') return '#F97316';
-    if ($severity === 'important') return '#EAB308';
-    return 'var(--accent)';
-  }};
-
-  @media (max-width: 640px) {
-    display: none;
+    gap: 16px;
+    padding: 20px;
   }
 `;
 
 const IconWrapper = styled.div`
-  width: 24px;
-  height: 24px;
+  width: 48px;
+  height: 48px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 50%;
-  background: var(--checkbox);
-  
-`;
+  border-radius: 14px;
+  /* Ultra-subtle tint instead of solid color */
+  background: rgba(var(--accent-rgb), 0.06);
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 
+  ${FixItem}:hover & {
+    transform: scale(1.1) rotate(-5deg);
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2px;
+  }
+`;
 
 const FixContent = styled.div`
   flex: 1;
@@ -1297,50 +1315,103 @@ const FixContent = styled.div`
 `;
 
 const FixCategory = styled.span`
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.8;
 `;
 
 const FixProblem = styled.p`
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--text-color);
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4;
+  letter-spacing: -0.01em; /* Tighter for headlines */
 `;
 
 const FixReason = styled.p`
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-secondary);
-  margin: 0;
-  line-height: 1.4;
+  margin: 4px 0 0 0;
+  line-height: 1.6; /* More breathing room */
+  font-weight: 400;
 `;
 
 const FixImpact = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: 6px;
   flex-shrink: 0;
 
   @media (max-width: 640px) {
     flex-direction: row;
     align-items: center;
-    gap: 8px;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0,0,0,0.04);
+    
+    @media (prefers-color-scheme: dark) {
+      border-color: rgba(255,255,255,0.08);
+    }
   }
 `;
 
 const FixImpactValue = styled.span`
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--success);
+  color: #15803d; 
+  /* Minimalist pill - lighter background */
+  background: rgba(34, 197, 94, 0.1);
+  padding: 6px 12px;
+  border-radius: 100px; /* Full pill shape */
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: -0.01em;
+  
+  @media (prefers-color-scheme: dark) {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+  }
 `;
 
 const FixImpactLabel = styled.span`
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-tertiary);
   text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+`;
+
+const FixArrow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  opacity: 0; /* Hidden by default for cleaner look */
+  transform: translateX(-10px);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  margin-left: 16px;
+  align-self: center;
+
+  ${FixItem}:hover & {
+    opacity: 1;
+    color: var(--accent);
+    transform: translateX(0);
+  }
+
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 const FixesFooter = styled.div`
@@ -3879,6 +3950,18 @@ const EmptyStateDescription = styled.p`
 
 // Types are now imported from @/components/report
 
+
+
+const getCategoryIcon = (category: string) => {
+  const lowerCat = category.toLowerCase();
+  if (lowerCat.includes('keyword')) return <Zap />;
+  if (lowerCat.includes('format') || lowerCat.includes('layout')) return <Layout />;
+  if (lowerCat.includes('grammar') || lowerCat.includes('typo')) return <Type />;
+  if (lowerCat.includes('length') || lowerCat.includes('section')) return <AlignLeft />;
+  if (lowerCat.includes('role') || lowerCat.includes('match') || lowerCat.includes('job')) return <Search />;
+  return <CheckCircle />;
+};
+
 export default function ReportDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -3922,6 +4005,13 @@ export default function ReportDetailPage() {
   const [isKeywordsModalOpen, setIsKeywordsModalOpen] = useState(false);
   const [isRoleRecommendationsDrawerOpen, setIsRoleRecommendationsDrawerOpen] = useState(false);
   const [optimizedScoreBreakdown, setOptimizedScoreBreakdown] = useState<ScoreBreakdown | null>(null);
+  const [atsScore, setAtsScore] = useState<number | null>(null);
+  const [atsScoreError, setAtsScoreError] = useState<boolean>(false);
+  const [originalAtsScore, setOriginalAtsScore] = useState<number | null>(null);
+  const [originalAtsScoreError, setOriginalAtsScoreError] = useState<boolean>(false);
+  const [isLoadingAtsScore, setIsLoadingAtsScore] = useState(false);
+  const [isLoadingOriginalAtsScore, setIsLoadingOriginalAtsScore] = useState(false);
+  const [originalCvText, setOriginalCvText] = useState<string | null>(null);
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
   const [pendingCVGeneration, setPendingCVGeneration] = useState<{ fakeItMode: boolean } | null>(null);
@@ -3961,6 +4051,143 @@ export default function ReportDetailPage() {
   useEffect(() => {
     fetchCredits();
   }, []);
+
+  // Fetch ATS score when optimized CV is available
+  const fetchAtsScore = useCallback(async () => {
+    if (!report?.generated_cv) return;
+
+    setIsLoadingAtsScore(true);
+    try {
+      // Convert GeneratedCV to text for ATS check
+      const cv = report.generated_cv;
+      const sections: string[] = [];
+
+      // Contact Information
+      sections.push(cv.contact?.name || '');
+      if (cv.contact?.email) sections.push(`Email: ${cv.contact.email}`);
+      if (cv.contact?.phone) sections.push(`Phone: ${cv.contact.phone}`);
+      if (cv.contact?.location) sections.push(`Location: ${cv.contact.location}`);
+      if (cv.contact?.linkedin) sections.push(`LinkedIn: ${cv.contact.linkedin}`);
+      sections.push('');
+
+      // Professional Summary
+      if (cv.summary) {
+        sections.push('PROFESSIONAL SUMMARY');
+        sections.push(cv.summary);
+        sections.push('');
+      }
+
+      // Experience
+      if (cv.experience && cv.experience.length > 0) {
+        sections.push('PROFESSIONAL EXPERIENCE');
+        cv.experience.forEach((exp) => {
+          sections.push(`${exp.title || ''} at ${exp.company || ''}`);
+          if (exp.location) sections.push(`Location: ${exp.location}`);
+          if (exp.startDate || exp.endDate) {
+            sections.push(`${exp.startDate || ''} - ${exp.endDate || ''}`);
+          }
+          if (exp.bullets && exp.bullets.length > 0) {
+            exp.bullets.forEach((bullet) => {
+              sections.push(`• ${bullet}`);
+            });
+          }
+          sections.push('');
+        });
+      }
+
+      // Education
+      if (cv.education && cv.education.length > 0) {
+        sections.push('EDUCATION');
+        cv.education.forEach((edu) => {
+          sections.push(`${edu.degree || ''} - ${edu.institution || ''}`);
+          if (edu.location) sections.push(`Location: ${edu.location}`);
+          if (edu.graduationDate) sections.push(`Graduated: ${edu.graduationDate}`);
+          if (edu.details) sections.push(edu.details);
+          sections.push('');
+        });
+      }
+
+      // Skills
+      if (cv.skills) {
+        sections.push('SKILLS');
+        if (cv.skills.technical && cv.skills.technical.length > 0) {
+          sections.push(`Technical Skills: ${cv.skills.technical.join(', ')}`);
+        }
+        if (cv.skills.soft && cv.skills.soft.length > 0) {
+          sections.push(`Soft Skills: ${cv.skills.soft.join(', ')}`);
+        }
+        sections.push('');
+      }
+
+      const cvText = sections.join('\n');
+
+      const response = await fetch('/api/ats/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          cvText, 
+          reportId: report.id 
+          // Removed useAI: true to match ATS Optimizer logic (deterministic)
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.result?.overallScore !== undefined) {
+          setAtsScore(data.result.overallScore);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching ATS score:', error);
+      setAtsScoreError(true);
+    } finally {
+      setIsLoadingAtsScore(false);
+    }
+  }, [report?.generated_cv]);
+
+  useEffect(() => {
+    if (report?.generated_cv && atsScore === null && !isLoadingAtsScore && !atsScoreError) {
+      fetchAtsScore();
+    }
+  }, [report?.generated_cv, atsScore, isLoadingAtsScore, fetchAtsScore, atsScoreError]);
+
+  // Fetch ATS score for original CV (free report)
+  const fetchOriginalAtsScore = useCallback(async () => {
+    if (!originalCvText) return;
+
+    setIsLoadingOriginalAtsScore(true);
+    try {
+      // Use documentId if available (for caching), otherwise fallback to text
+      const body = report?.cv_id 
+        ? { documentId: report.cv_id }
+        : { cvText: originalCvText };
+
+      const response = await fetch('/api/ats/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        // Removed useAI: true to match ATS Optimizer logic (deterministic)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.result?.overallScore !== undefined) {
+          setOriginalAtsScore(data.result.overallScore);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching original ATS score:', error);
+      setOriginalAtsScoreError(true);
+    } finally {
+      setIsLoadingOriginalAtsScore(false);
+    }
+  }, [originalCvText]);
+
+  useEffect(() => {
+    if (originalCvText && originalAtsScore === null && !isLoadingOriginalAtsScore && !originalAtsScoreError) {
+      fetchOriginalAtsScore();
+    }
+  }, [originalCvText, originalAtsScore, isLoadingOriginalAtsScore, fetchOriginalAtsScore, originalAtsScoreError]);
 
   // Buy credits handler
   const handleBuyCredits = async (planId: string, credits: number, planName: string) => {
@@ -4104,7 +4331,7 @@ export default function ReportDetailPage() {
       const supabase = createClient();
       const { data, error } = await supabase
         .from("reports")
-        .select("*")
+        .select("*, cv:documents!cv_id(text, ats_score)")
         .eq("id", reportId)
         .eq("user_id", user.id)
         .single();
@@ -4113,6 +4340,11 @@ export default function ReportDetailPage() {
         toast.error("Report not found");
         router.push("/reports");
         return;
+      }
+
+      // Store original CV text for ATS check
+      if (data.cv?.text) {
+        setOriginalCvText(data.cv.text);
       }
 
       // Fetch job posting titles from job_ids
@@ -4163,11 +4395,24 @@ export default function ReportDetailPage() {
         data.improvement_breakdown &&
         Array.isArray(data.improvement_breakdown);
 
+      // Preload ATS scores from database
+      if (typeof data.ats_score_optimized === 'number') {
+        console.log("✅ Loaded optimized ATS score from cache:", data.ats_score_optimized);
+        setAtsScore(data.ats_score_optimized);
+      }
+
+      if (data.cv && typeof data.cv.ats_score === 'number') {
+        console.log("✅ Loaded original ATS score from cache:", data.cv.ats_score);
+        setOriginalAtsScore(data.cv.ats_score);
+      }
+
       console.log("🔍 Cache validation:", {
         hasValidScore,
         hasValidBreakdown,
         fakeItMode: data.fake_it_mode,
         willLoadFromCache: hasValidScore,
+        hasOptimizedAtsScore: typeof data.ats_score_optimized === 'number',
+        hasOriginalAtsScore: data.cv && typeof data.cv.ats_score === 'number'
       });
 
       if (hasValidScore) {
@@ -4934,7 +5179,7 @@ export default function ReportDetailPage() {
                   <StatBentoValue $color={optimizedScore! >= 85 ? 'var(--primary-500)' : optimizedScore! >= 70 ? '#2a57a0ff' : optimizedScore! >= 50 ? '#EAB308' : '#F97316'}>{optimizedScore}%</StatBentoValue>
                 </div>
                 <StatBentoTitle>Match Score</StatBentoTitle>
-                <StatBentoDescription><strong>↑ +{optimizedScore! - report.fit_score}%</strong> improvement after optimization</StatBentoDescription>
+                <StatBentoDescription><strong>↑ +{(optimizedScore! - report.fit_score!).toFixed(1)}%</strong> improvement after optimization</StatBentoDescription>
               </>
             ) : (
               <>
@@ -4999,6 +5244,119 @@ export default function ReportDetailPage() {
               </StatBentoCTALink>
             </StatBentoCTA>
           )}
+          <StatBentoOverlay className="stat-overlay" />
+        </StatBentoCard>
+
+        {/* ATS Score Card - Shows for both free and pro reports */}
+        <StatBentoCard $isClickable={false}>
+          <StatBentoBackground>
+            {(() => {
+              const displayScore = report.pro && report.generated_cv ? atsScore : originalAtsScore;
+              return (
+                <>
+                  <ScoreBgCircle className="stat-bg-element" $score={displayScore || 0} $size={100} $delay={0} style={{ top: '15%', right: '15%' }} />
+                  <ScoreBgCircle className="stat-bg-element" $score={displayScore || 0} $size={70} $delay={0.3} style={{ top: '25%', right: '35%' }} />
+                  <ScoreBgCircle className="stat-bg-element" $score={displayScore || 0} $size={50} $delay={0.6} style={{ top: '20%', right: '55%' }} />
+                </>
+              );
+            })()}
+          </StatBentoBackground>
+          <StatBentoContent className="stat-content">
+            <StatBentoIcon
+              className="stat-icon"
+              $color={(() => {
+                const score = report.pro && report.generated_cv ? atsScore : originalAtsScore;
+                if (score === null) return 'var(--text-secondary)';
+                return score >= 85 ? '#10b981' : score >= 70 ? '#22c55e' : score >= 55 ? '#EAB308' : '#F97316';
+              })()}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              </svg>
+            </StatBentoIcon>
+            {/* Pro report with optimized CV - show comparison */}
+            {report.pro && report.generated_cv ? (
+              isLoadingAtsScore ? (
+                <>
+                  <StatBentoValue $color="var(--text-secondary)">...</StatBentoValue>
+                  <StatBentoTitle>ATS Score</StatBentoTitle>
+                  <StatBentoDescription>Calculating ATS compatibility...</StatBentoDescription>
+                </>
+              ) : atsScore !== null ? (
+                <>
+                  {originalAtsScore !== null && originalAtsScore < atsScore ? (
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+                      <span style={{ fontSize: '24px', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>{originalAtsScore}%</span>
+                      <StatBentoValue
+                        $color={atsScore >= 85 ? '#10b981' : atsScore >= 70 ? '#22c55e' : atsScore >= 55 ? '#EAB308' : '#F97316'}
+                      >
+                        {atsScore}%
+                      </StatBentoValue>
+                    </div>
+                  ) : (
+                    <StatBentoValue
+                      $color={atsScore >= 85 ? '#10b981' : atsScore >= 70 ? '#22c55e' : atsScore >= 55 ? '#EAB308' : '#F97316'}
+                    >
+                      {atsScore}%
+                    </StatBentoValue>
+                  )}
+                  <StatBentoTitle>ATS Score</StatBentoTitle>
+                  <StatBentoDescription>
+                    {originalAtsScore !== null && originalAtsScore < atsScore ? (
+                      <><strong>↑ +{atsScore - originalAtsScore}%</strong> ATS improvement</>
+                    ) : (
+                      atsScore >= 85
+                        ? 'Excellent ATS compatibility'
+                        : atsScore >= 70
+                        ? 'Good ATS compatibility'
+                        : atsScore >= 55
+                        ? 'Moderate ATS compatibility'
+                        : 'Needs ATS optimization'
+                    )}
+                  </StatBentoDescription>
+                </>
+              ) : (
+                <>
+                  <StatBentoValue $color="var(--text-secondary)">--</StatBentoValue>
+                  <StatBentoTitle>ATS Score</StatBentoTitle>
+                  <StatBentoDescription>ATS compatibility score unavailable</StatBentoDescription>
+                </>
+              )
+            ) : (
+              /* Free report - show original CV ATS score */
+              isLoadingOriginalAtsScore ? (
+                <>
+                  <StatBentoValue $color="var(--text-secondary)">...</StatBentoValue>
+                  <StatBentoTitle>ATS Score</StatBentoTitle>
+                  <StatBentoDescription>Calculating ATS compatibility...</StatBentoDescription>
+                </>
+              ) : originalAtsScore !== null ? (
+                <>
+                  <StatBentoValue
+                    $color={originalAtsScore >= 85 ? '#10b981' : originalAtsScore >= 70 ? '#22c55e' : originalAtsScore >= 55 ? '#EAB308' : '#F97316'}
+                  >
+                    {originalAtsScore}%
+                  </StatBentoValue>
+                  <StatBentoTitle>ATS Score</StatBentoTitle>
+                  <StatBentoDescription>
+                    {originalAtsScore >= 85
+                      ? 'Excellent ATS compatibility'
+                      : originalAtsScore >= 70
+                      ? 'Good ATS compatibility'
+                      : originalAtsScore >= 55
+                      ? 'Moderate ATS compatibility'
+                      : 'Optimize your CV for better ATS results'}
+                  </StatBentoDescription>
+                </>
+              ) : (
+                <>
+                  <StatBentoValue $color="var(--text-secondary)">--</StatBentoValue>
+                  <StatBentoTitle>ATS Score</StatBentoTitle>
+                  <StatBentoDescription>ATS compatibility score unavailable</StatBentoDescription>
+                </>
+              )
+            )}
+          </StatBentoContent>
           <StatBentoOverlay className="stat-overlay" />
         </StatBentoCard>
 
@@ -5307,13 +5665,15 @@ export default function ReportDetailPage() {
                     <FixItem
                       key={index}
                       onClick={() => handleImprovementClick(improvement)}
-                      title="Click to view this fix in your resume"
+                      title="Click to view details"
                     >
                       <IconWrapper>
-                      <FixSeverityDot $severity={improvement.severity || "minor"} />
+                        {getCategoryIcon(improvement.category)}
                       </IconWrapper>
                       <FixContent>
-                        <FixCategory>{improvement.category}</FixCategory>
+                        <FixCategory>
+                          {improvement.category}
+                        </FixCategory>
                         <FixProblem>
                           {improvement.problem || improvement.action}
                         </FixProblem>
@@ -5323,6 +5683,11 @@ export default function ReportDetailPage() {
                         <FixImpactValue>+{Math.round(improvement.impact * 10) / 10}%</FixImpactValue>
                         <FixImpactLabel>Impact</FixImpactLabel>
                       </FixImpact>
+                      <FixArrow>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: 20, height: 20 }}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                      </FixArrow>
                     </FixItem>
                   ))}
                 </FixesList>
@@ -6108,24 +6473,29 @@ export default function ReportDetailPage() {
         </Modal.Footer>
       </Modal>
 
-      {/* CV Generation Loading Modal */}
+      {/* CV Generation Loading Modal - stays open until ATS score is calculated */}
       <LoadingModal
-        isOpen={isGeneratingCV}
-        title="Generating optimized resume"
-        messages={[
+        isOpen={isGeneratingCV || (report?.generated_cv && isLoadingAtsScore)}
+        title={isLoadingAtsScore && !isGeneratingCV ? "Calculating ATS Score" : "Generating optimized resume"}
+        messages={isLoadingAtsScore && !isGeneratingCV ? [
+          "Analyzing ATS compatibility...",
+          "Checking format and structure...",
+          "Evaluating keyword optimization...",
+          "Calculating final ATS score...",
+        ] : [
           "Analyzing your experience and skills...",
           "Optimizing keywords for ATS systems...",
           "Highlighting your achievements...",
           "Restructuring for maximum impact...",
           "Tailoring content to job requirements...",
           "Adding the finishing touches...",
+          "Calculating ATS compatibility score...",
           "Almost ready, just a moment...",
-          "Creating something amazing...",
         ]}
         steps={[
-          { label: "Analyze", completed: true },
-          { label: "Optimize", active: true },
-          { label: "Complete", active: false },
+          { label: "Analyze", completed: !isGeneratingCV },
+          { label: "Optimize", completed: !isGeneratingCV, active: isGeneratingCV },
+          { label: "ATS Score", active: isLoadingAtsScore && !isGeneratingCV },
         ]}
       />
 

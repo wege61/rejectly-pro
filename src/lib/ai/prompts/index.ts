@@ -25,7 +25,7 @@ export { generateFakeSkillsRecommendationsPrompt } from './fakeSkills';
 export { generateCoverLetterPrompt } from './coverLetter';
 
 // Scoring - Systematic match scoring
-export { generateSystematicScoringPrompt } from './scoring';
+export { generateSystematicScoringPrompt, type ScoringOptions } from './scoring';
 
 // ATS Check - ATS compatibility analysis and optimization
 export {

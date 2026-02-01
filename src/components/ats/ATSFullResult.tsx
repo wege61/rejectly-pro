@@ -354,13 +354,7 @@ export function ATSFullResult({
       </Section>
 
       
-      {/* Top Issues */}
-      {topIssues.length > 0 && (
-        <Section>
-          <SectionTitle>Priority Issues</SectionTitle>
-          <ATSIssuesList issues={topIssues} maxItems={5} />
-        </Section>
-      )}
+
     </Container>
   );
 }

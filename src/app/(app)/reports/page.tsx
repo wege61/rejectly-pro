@@ -1,6 +1,6 @@
 "use client";
 
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -500,6 +500,55 @@ const ReportCardBackground = ({ keywords, summary }: ReportCardBackgroundProps) 
   );
 };
 
+const FAB = styled.button`
+  position: fixed;
+  bottom: ${({ theme }) => theme.spacing["2xl"]};
+  right: ${({ theme }) => theme.spacing["2xl"]};
+  width: 64px;
+  height: 64px;
+  border-radius: ${({ theme }) => theme.radius.full};
+  background: var(--accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px var(--accent-shadow);
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.normal};
+  z-index: 10010;
+  border: none;
+
+  &:hover {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 12px 32px var(--accent-shadow);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+`;
+
+const PlusIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2.5}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 4.5v15m7.5-7.5h-15"
+    />
+  </svg>
+);
+
 interface Report {
   id: string;
   fit_score: number;
@@ -615,9 +664,7 @@ export default function ReportsPage() {
           <Title>Job Match & Optimize</Title>
           <Subtitle>Analyze how well your resume matches a job posting and generate a targeted version to boost your chances.</Subtitle>
         </HeaderContent>
-        <Button onClick={() => router.push(ROUTES.APP.ANALYZE)}>
-          New Analysis
-        </Button>
+        {/* Button removed as requested */}
       </Header>
 
       {reports.length === 0 ? (
@@ -757,6 +804,10 @@ export default function ReportsPage() {
           })()}
         </>
       )}
+      
+      <FAB onClick={() => router.push(ROUTES.APP.ANALYZE)}>
+        <PlusIcon />
+      </FAB>
 
       {/* Delete Confirmation Modal */}
       <Modal

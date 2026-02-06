@@ -119,7 +119,8 @@ const BodyWrapper = styled.div`
   min-height: 0;
   overflow: hidden;
   position: relative;
-  margin: 0 24px;
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   border-radius: 12px;

@@ -263,9 +263,9 @@ export function getVerdictText(verdict: HRVerdict): string {
 export function getVerdictColor(verdict: HRVerdict): string {
   switch (verdict) {
     case "would_interview":
-      return "#10b981";
+      return "var(--primary-500)";
     case "lean_interview":
-      return "#22c55e";
+      return "var(--secondary-500)";
     case "maybe_with_reservations":
       return "#f59e0b";
     case "likely_reject":

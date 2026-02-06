@@ -8,17 +8,6 @@ import {
   getVerdictText,
   getVerdictColor,
 } from "@/types/scoreBreakdown";
-import {
-  Target,
-  Briefcase,
-  Building2,
-  GraduationCap,
-  AlertTriangle,
-  TrendingUp,
-  CheckCircle2,
-  XCircle,
-  Info,
-} from "lucide-react";
 
 interface ScoreBreakdownModalProps {
   isOpen: boolean;
@@ -33,356 +22,242 @@ interface ScoreBreakdownModalProps {
 const Content = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
 `;
 
+// Hero Section - Clean and focused
 const ScoreHero = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 24px 0;
+  text-align: center;
+  padding: 16px 0 24px;
+  border-bottom: 1px solid var(--border);
 `;
 
-const ScoreRow = styled.div`
+const ScoreDisplay = styled.div`
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
 `;
 
 const OriginalScore = styled.span`
-  font-size: 28px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textTertiary};
-  text-decoration: line-through;
-  line-height: 1;
-`;
-
-const HeroScore = styled.span<{ $color: string }>`
-  font-size: 48px;
-  font-weight: 700;
-  color: ${({ $color }) => $color};
-  line-height: 1;
-  letter-spacing: -2px;
-`;
-
-const ScoreSubtext = styled.div`
-  font-size: 15px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
-const VerdictBadge = styled.div<{ $color: string }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: ${({ $color }) => `${$color}15`};
-  color: ${({ $color }) => $color};
-  border-radius: 9999px;
-  font-size: 13px;
-  font-weight: 600;
-`;
-
-const JobBadge = styled.span`
-  font-size: 12px;
+  font-size: 24px;
   font-weight: 500;
-  color: ${({ theme }) => theme.colors.textTertiary};
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+`;
+
+const MainScore = styled.span<{ $color: string }>`
+  font-size: 56px;
+  font-weight: 600;
+  color: ${({ $color }) => $color};
+  letter-spacing: -3px;
+  line-height: 1;
+`;
+
+const ScoreLabel = styled.p`
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+`;
+
+const Verdict = styled.p<{ $color: string }>`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ $color }) => $color};
+  margin: 0;
+`;
+
+// Score Summary - Simple row
+const ScoreSummary = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+`;
+
+const SummaryItem = styled.div`
+  text-align: center;
+`;
+
+const SummaryValue = styled.div<{ $color?: string }>`
+  font-size: 24px;
+  font-weight: 600;
+  color: ${({ $color }) => $color || 'var(--text-primary)'};
+  margin-bottom: 4px;
+`;
+
+const SummaryLabel = styled.div`
+  font-size: 12px;
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
 
-const StatsRow = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+// Components Section
+const Section = styled.div``;
 
-  @media (max-width: 640px) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-`;
-
-const StatItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 14px 8px;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-`;
-
-const StatValue = styled.div<{ $color?: string }>`
-  font-size: 20px;
-  font-weight: 700;
-  color: ${({ $color, theme }) => $color || theme.colors.textPrimary};
-  line-height: 1;
-`;
-
-const StatLabel = styled.div`
-  font-size: 11px;
-  color: ${({ theme }) => theme.colors.textTertiary};
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  font-weight: 500;
-`;
-
-const SectionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  font-size: 14px;
+const SectionTitle = styled.h3`
+  font-size: 13px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-
-  svg {
-    width: 16px;
-    height: 16px;
-    color: ${({ theme }) => theme.colors.textTertiary};
-  }
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 16px;
 `;
 
-const ComponentsStack = styled.div`
+const ComponentsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 `;
 
-const ComponentCard = styled.div`
-  padding: 14px 16px;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
+const ComponentItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
-const ComponentTop = styled.div`
+const ComponentHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
 `;
 
-const ComponentName = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-
-  svg {
-    width: 15px;
-    height: 15px;
-    color: ${({ theme }) => theme.colors.textTertiary};
-  }
-`;
-
-const ComponentWeight = styled.span`
-  font-size: 12px;
+const ComponentName = styled.span`
+  font-size: 15px;
   font-weight: 500;
-  color: ${({ theme }) => theme.colors.textTertiary};
+  color: var(--text-primary);
 `;
 
 const ComponentScore = styled.span<{ $color: string }>`
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: ${({ $color }) => $color};
 `;
 
-const ProgressTrack = styled.div`
-  height: 6px;
+const ProgressBar = styled.div`
+  height: 4px;
   background: ${({ theme }) => theme.colors.border};
-  border-radius: 9999px;
+  border-radius: 2px;
   overflow: hidden;
-  margin-bottom: 10px;
 `;
 
-const ProgressFill = styled.div<{ $percentage: number; $color: string }>`
+const ProgressFill = styled.div<{ $width: number; $color: string }>`
   height: 100%;
-  width: ${({ $percentage }) => Math.min($percentage, 100)}%;
+  width: ${({ $width }) => Math.min($width, 100)}%;
   background: ${({ $color }) => $color};
-  border-radius: 9999px;
-  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 2px;
+  transition: width 0.5s ease-out;
 `;
 
-const ComponentDetail = styled.p`
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: 1.5;
-  margin: 0 0 8px;
-`;
-
-const ChipsRow = styled.div`
+const ComponentDetails = styled.div`
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-
-  @media (max-width: 640px) {
-    flex-direction: column;
-    gap: 8px;
-  }
+  gap: 24px;
+  margin-top: 4px;
 `;
 
-const ChipGroup = styled.div`
+const DetailGroup = styled.div`
   flex: 1;
-  min-width: 0;
 `;
 
-const ChipLabel = styled.div<{ $type: "matched" | "missing" }>`
-  display: flex;
-  align-items: center;
-  gap: 4px;
+const DetailLabel = styled.p`
   font-size: 11px;
-  font-weight: 600;
-  color: ${({ $type }) => ($type === "matched" ? "var(--primary-500, #35A29F)" : "#ef4444")};
-  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-
-  svg {
-    width: 11px;
-    height: 11px;
-  }
+  margin: 0 0 6px;
 `;
 
-const ChipsWrap = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+const DetailList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
 `;
 
-const Chip = styled.span<{ $type: "matched" | "missing" }>`
-  display: inline-block;
-  padding: 3px 8px;
-  background: ${({ $type }) =>
-    $type === "matched" ? "rgba(53, 162, 159, 0.1)" : "rgba(239, 68, 68, 0.08)"};
-  color: ${({ $type }) => ($type === "matched" ? "var(--primary-500, #35A29F)" : "#ef4444")};
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const PenaltiesCard = styled.div`
-  border-radius: 12px;
-  background: rgba(239, 68, 68, 0.04);
-  border: 1px solid rgba(239, 68, 68, 0.1);
-  overflow: hidden;
-`;
-
-const PenaltyRow = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(239, 68, 68, 0.06);
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const PenaltyIcon = styled.span<{ $severity: string }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  flex-shrink: 0;
-  background: ${({ $severity }) =>
-    $severity === "critical"
-      ? "rgba(239, 68, 68, 0.15)"
-      : $severity === "major"
-        ? "rgba(249, 115, 22, 0.15)"
-        : "rgba(245, 158, 11, 0.15)"};
-  color: ${({ $severity }) =>
-    $severity === "critical"
-      ? "#ef4444"
-      : $severity === "major"
-        ? "#f97316"
-        : "#f59e0b"};
-
-  svg {
-    width: 12px;
-    height: 12px;
-  }
-`;
-
-const PenaltyText = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
-
-const PenaltyDesc = styled.div`
-  font-size: 13px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  line-height: 1.4;
-`;
-
-const PenaltyReason = styled.div`
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.textTertiary};
-  margin-top: 2px;
-`;
-
-const PenaltyPts = styled.span`
-  font-weight: 700;
-  color: #ef4444;
-  font-size: 13px;
-  flex-shrink: 0;
-`;
-
-const NoPenalties = styled.div`
+const DetailItem = styled.li<{ $type: 'matched' | 'missing' }>`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 16px;
-  background: rgba(53, 162, 159, 0.06);
-  border: 1px solid rgba(53, 162, 159, 0.12);
-  border-radius: 12px;
-  color: var(--primary-500, #35A29F);
+  font-size: 13px;
+  color: ${({ $type }) => $type === 'matched' ? 'var(--text-secondary)' : 'var(--text-tertiary)'};
+  padding: 3px 0;
+`;
+
+const StatusDot = styled.span<{ $type: 'matched' | 'missing' }>`
+  width: 6px;
+  height: 6px;
+  background: ${({ $type }) => $type === 'matched' ? 'var(--primary-500, #35A29F)' : '#F97316'};
+  border-radius: 50%;
+  flex-shrink: 0;
+`;
+
+const MoreItems = styled.span`
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-style: italic;
+`;
+
+// Penalties Section
+const PenaltiesList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const PenaltyItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+`;
+
+const PenaltyInfo = styled.div`
+  flex: 1;
+`;
+
+const PenaltyDescription = styled.p`
   font-size: 14px;
-  font-weight: 500;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
+  color: var(--text-primary);
+  margin: 0 0 2px;
 `;
 
-const AssessmentCard = styled.div`
-  border-radius: 12px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  padding: 16px;
+const PenaltyReason = styled.p`
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin: 0;
 `;
 
+const PenaltyPoints = styled.span`
+  font-size: 14px;
+  font-weight: 600;
+  color: #ef4444;
+  flex-shrink: 0;
+`;
+
+const NoPenalties = styled.p`
+  font-size: 14px;
+  color: var(--primary-500, #35A29F);
+  margin: 0;
+`;
+
+// Assessment Section
 const AssessmentText = styled.p`
   font-size: 14px;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: var(--text-secondary);
   line-height: 1.6;
   margin: 0 0 12px;
 `;
 
-const GapRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: ${({ theme }) => theme.colors.backgroundAlt2};
-  border-radius: 8px;
+const PrimaryGap = styled.p`
   font-size: 13px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-tertiary);
+  margin: 0;
 
-  svg {
-    width: 14px;
-    height: 14px;
-    color: ${({ theme }) => theme.colors.textTertiary};
-    flex-shrink: 0;
+  strong {
+    color: var(--text-secondary);
   }
 `;
 
@@ -390,47 +265,15 @@ const GapRow = styled.div`
 
 const getScoreColor = (score: number): string => {
   if (score >= 85) return "var(--primary-500, #35A29F)";
-  if (score >= 70) return "#2a57a0ff";
+  if (score >= 70) return "#2a57a0";
   if (score >= 50) return "#EAB308";
   return "#F97316";
-};
-
-const getComponentIcon = (name: string) => {
-  if (name.toLowerCase().includes("skill")) return <Target />;
-  if (name.toLowerCase().includes("experience") || name.toLowerCase().includes("potential")) return <Briefcase />;
-  if (name.toLowerCase().includes("industry")) return <Building2 />;
-  if (name.toLowerCase().includes("education")) return <GraduationCap />;
-  return <Target />;
 };
 
 const getProgressColor = (percentage: number): string => {
   if (percentage >= 70) return "var(--primary-500, #35A29F)";
   if (percentage >= 50) return "#EAB308";
   return "#ef4444";
-};
-
-const getJobLevelLabel = (level: string): string => {
-  switch (level) {
-    case "entry": return "Entry Level";
-    case "mid": return "Mid Level";
-    case "senior": return "Senior Level";
-    default: return level;
-  }
-};
-
-const formatComponentDetails = (details: string | object): string => {
-  if (typeof details === "string") return details;
-
-  const d = details as Record<string, unknown>;
-  const parts: string[] = [];
-  if (d.requiredSkillsTotal !== undefined) parts.push(`Required: ${d.requiredSkillsMatched}/${d.requiredSkillsTotal}`);
-  if (d.preferredSkillsTotal !== undefined) parts.push(`Preferred: ${d.preferredSkillsMatched}/${d.preferredSkillsTotal}`);
-  if (d.yearsRequired !== undefined) parts.push(`Experience: ${d.yearsCandidate}/${d.yearsRequired} years`);
-  if (d.seniorityRequired !== undefined) parts.push(`Seniority: ${d.seniorityCandidate} (required: ${d.seniorityRequired})`);
-  if (d.industryMatch !== undefined) parts.push(`Industry: ${d.industryMatch}`);
-  if (d.educationMatch !== undefined) parts.push(`Education: ${d.educationMatch}`);
-  if (d.certMatch !== undefined) parts.push(`Certifications: ${d.certMatch}`);
-  return parts.length > 0 ? parts.join(" · ") : "";
 };
 
 // --- Component ---
@@ -458,147 +301,135 @@ export const ScoreBreakdownModal: React.FC<ScoreBreakdownModalProps> = ({
     <Drawer isOpen={isOpen} onClose={onClose}>
       <DrawerHeader>
         <DrawerTitle>Score Breakdown</DrawerTitle>
-        <DrawerDescription>How your CV matches the job requirements</DrawerDescription>
+        <DrawerDescription>How your resume matches the job requirements</DrawerDescription>
       </DrawerHeader>
       <DrawerBody>
         <Content>
           {/* Hero Score */}
           <ScoreHero>
-            <ScoreRow>
+            <ScoreDisplay>
               {originalScore !== undefined && originalScore !== fitScore && (
                 <OriginalScore>{originalScore}%</OriginalScore>
               )}
-              <HeroScore $color={scoreColor}>{fitScore}%</HeroScore>
-            </ScoreRow>
-            <ScoreSubtext>{breakdown.displayData.scoreLabel}</ScoreSubtext>
-            <VerdictBadge $color={verdictColor}>
-              {breakdown.assessment.verdict === "would_interview" && <CheckCircle2 size={13} />}
-              {breakdown.assessment.verdict === "maybe_with_reservations" && <Info size={13} />}
-              {breakdown.assessment.verdict === "would_not_interview" && <XCircle size={13} />}
+              <MainScore $color={scoreColor}>{fitScore}%</MainScore>
+            </ScoreDisplay>
+            <ScoreLabel>{breakdown.displayData.scoreLabel}</ScoreLabel>
+            <Verdict $color={verdictColor}>
               {getVerdictText(breakdown.assessment.verdict)}
-            </VerdictBadge>
-            {breakdown.jobLevel && (
-              <JobBadge>{getJobLevelLabel(breakdown.jobLevel)}</JobBadge>
-            )}
+            </Verdict>
           </ScoreHero>
 
-          {/* Stats Row */}
-          <StatsRow>
-            <StatItem>
-              <StatValue>{breakdown.rawScore}</StatValue>
-              <StatLabel>Raw</StatLabel>
-            </StatItem>
-            <StatItem>
-              <StatValue $color="#ef4444">-{breakdown.totalPenalties}</StatValue>
-              <StatLabel>Penalties</StatLabel>
-            </StatItem>
-            <StatItem>
-              <StatValue $color={scoreColor}>{breakdown.finalScore}</StatValue>
-              <StatLabel>Final</StatLabel>
-            </StatItem>
-          </StatsRow>
+          {/* Score Summary */}
+          <ScoreSummary>
+            <SummaryItem>
+              <SummaryValue>{breakdown.rawScore}%</SummaryValue>
+              <SummaryLabel>Raw Score</SummaryLabel>
+            </SummaryItem>
+            <SummaryItem>
+              <SummaryValue $color="#F97316">−{breakdown.totalPenalties}%</SummaryValue>
+              <SummaryLabel>Penalties</SummaryLabel>
+            </SummaryItem>
+            <SummaryItem>
+              <SummaryValue $color={scoreColor}>{breakdown.finalScore}%</SummaryValue>
+              <SummaryLabel>Final Score</SummaryLabel>
+            </SummaryItem>
+          </ScoreSummary>
 
           {/* Components */}
-          <div>
-            <SectionHeader>
-              <TrendingUp /> Score Components
-            </SectionHeader>
-            <ComponentsStack>
+          <Section>
+            <SectionTitle>Score Components</SectionTitle>
+            <ComponentsList>
               {components.map((component) => {
                 const pColor = getProgressColor(component!.percentage);
+                const matched = component!.matchedItems || [];
+                const missing = component!.missingItems || [];
+
                 return (
-                  <ComponentCard key={component!.name}>
-                    <ComponentTop>
-                      <ComponentName>
-                        {getComponentIcon(component!.name)}
-                        {component!.name}
-                        <ComponentWeight>({component!.weight}%)</ComponentWeight>
-                      </ComponentName>
+                  <ComponentItem key={component!.name}>
+                    <ComponentHeader>
+                      <ComponentName>{component!.name}</ComponentName>
                       <ComponentScore $color={pColor}>
-                        {component!.earnedPoints.toFixed(1)}/{component!.maxPoints}
+                        {Math.round(component!.percentage)}%
                       </ComponentScore>
-                    </ComponentTop>
-                    <ProgressTrack>
-                      <ProgressFill $percentage={component!.percentage} $color={pColor} />
-                    </ProgressTrack>
-                    {formatComponentDetails(component!.details) && (
-                      <ComponentDetail>{formatComponentDetails(component!.details)}</ComponentDetail>
+                    </ComponentHeader>
+                    <ProgressBar>
+                      <ProgressFill $width={component!.percentage} $color={pColor} />
+                    </ProgressBar>
+                    {(matched.length > 0 || missing.length > 0) && (
+                      <ComponentDetails>
+                        {matched.length > 0 && (
+                          <DetailGroup>
+                            <DetailLabel>Matched</DetailLabel>
+                            <DetailList>
+                              {matched.slice(0, 3).map((item, i) => (
+                                <DetailItem key={i} $type="matched">
+                                  <StatusDot $type="matched" />
+                                  {item}
+                                </DetailItem>
+                              ))}
+                              {matched.length > 3 && (
+                                <MoreItems>+{matched.length - 3} more</MoreItems>
+                              )}
+                            </DetailList>
+                          </DetailGroup>
+                        )}
+                        {missing.length > 0 && (
+                          <DetailGroup>
+                            <DetailLabel>Missing</DetailLabel>
+                            <DetailList>
+                              {missing.slice(0, 3).map((item, i) => (
+                                <DetailItem key={i} $type="missing">
+                                  <StatusDot $type="missing" />
+                                  {item}
+                                </DetailItem>
+                              ))}
+                              {missing.length > 3 && (
+                                <MoreItems>+{missing.length - 3} more</MoreItems>
+                              )}
+                            </DetailList>
+                          </DetailGroup>
+                        )}
+                      </ComponentDetails>
                     )}
-                    <ChipsRow>
-                      {component!.matchedItems && component!.matchedItems.length > 0 && (
-                        <ChipGroup>
-                          <ChipLabel $type="matched"><CheckCircle2 /> Matched</ChipLabel>
-                          <ChipsWrap>
-                            {component!.matchedItems.slice(0, 5).map((item, i) => (
-                              <Chip key={i} $type="matched" title={item}>{item}</Chip>
-                            ))}
-                            {component!.matchedItems.length > 5 && (
-                              <Chip $type="matched">+{component!.matchedItems.length - 5}</Chip>
-                            )}
-                          </ChipsWrap>
-                        </ChipGroup>
-                      )}
-                      {component!.missingItems && component!.missingItems.length > 0 && (
-                        <ChipGroup>
-                          <ChipLabel $type="missing"><XCircle /> Missing</ChipLabel>
-                          <ChipsWrap>
-                            {component!.missingItems.slice(0, 5).map((item, i) => (
-                              <Chip key={i} $type="missing" title={item}>{item}</Chip>
-                            ))}
-                            {component!.missingItems.length > 5 && (
-                              <Chip $type="missing">+{component!.missingItems.length - 5}</Chip>
-                            )}
-                          </ChipsWrap>
-                        </ChipGroup>
-                      )}
-                    </ChipsRow>
-                  </ComponentCard>
+                  </ComponentItem>
                 );
               })}
-            </ComponentsStack>
-          </div>
+            </ComponentsList>
+          </Section>
 
           {/* Penalties */}
-          <div>
-            <SectionHeader>
-              <AlertTriangle /> Penalties
-            </SectionHeader>
-            {breakdown.penalties && breakdown.penalties.length > 0 ? (
-              <PenaltiesCard>
+          {breakdown.penalties && breakdown.penalties.length > 0 && (
+            <Section>
+              <SectionTitle>Penalties</SectionTitle>
+              <PenaltiesList>
                 {breakdown.penalties.map((penalty) => (
-                  <PenaltyRow key={penalty.id}>
-                    <PenaltyIcon $severity={penalty.severity}>
-                      <AlertTriangle />
-                    </PenaltyIcon>
-                    <PenaltyText>
-                      <PenaltyDesc>{penalty.description}</PenaltyDesc>
+                  <PenaltyItem key={penalty.id}>
+                    <PenaltyInfo>
+                      <PenaltyDescription>{penalty.description}</PenaltyDescription>
                       {penalty.reason && <PenaltyReason>{penalty.reason}</PenaltyReason>}
-                    </PenaltyText>
-                    <PenaltyPts>-{penalty.pointsDeducted}</PenaltyPts>
-                  </PenaltyRow>
+                    </PenaltyInfo>
+                    <PenaltyPoints>−{penalty.pointsDeducted}</PenaltyPoints>
+                  </PenaltyItem>
                 ))}
-              </PenaltiesCard>
-            ) : (
-              <NoPenalties>
-                <CheckCircle2 />
-                No penalties applied
-              </NoPenalties>
-            )}
-          </div>
+              </PenaltiesList>
+            </Section>
+          )}
 
-          {/* HR Assessment */}
-          <div>
-            <SectionHeader>
-              <Briefcase /> HR Assessment
-            </SectionHeader>
-            <AssessmentCard>
-              <AssessmentText>{breakdown.assessment.recommendation}</AssessmentText>
-              <GapRow>
-                <Target />
-                <span><strong>Primary Gap:</strong> {breakdown.displayData.primaryGap}</span>
-              </GapRow>
-            </AssessmentCard>
-          </div>
+          {breakdown.penalties && breakdown.penalties.length === 0 && (
+            <Section>
+              <SectionTitle>Penalties</SectionTitle>
+              <NoPenalties>No penalties applied</NoPenalties>
+            </Section>
+          )}
+
+          {/* Assessment */}
+          <Section>
+            <SectionTitle>Assessment</SectionTitle>
+            <AssessmentText>{breakdown.assessment.recommendation}</AssessmentText>
+            <PrimaryGap>
+              <strong>Primary Gap:</strong> {breakdown.displayData.primaryGap}
+            </PrimaryGap>
+          </Section>
         </Content>
       </DrawerBody>
       <DrawerFooter>

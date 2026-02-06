@@ -95,27 +95,6 @@ const LightBulbIcon = () => (
   </svg>
 );
 
-const DownloadIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{
-      width: "20px",
-      height: "20px",
-      display: "inline-block",
-      verticalAlign: "middle",
-    }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
-    />
-  </svg>
-);
 
 const CheckCircleIcon = () => (
   <svg
@@ -1200,7 +1179,7 @@ const FixesScoreItem = styled.div<{ $isAfter?: boolean }>`
 const FixesScoreValue = styled.span<{ $isAfter?: boolean }>`
   font-size: ${({ $isAfter }) => ($isAfter ? '24px' : '18px')};
   font-weight: 700;
-  color: ${({ $isAfter }) => ($isAfter ? 'var(--success)' : 'var(--text-secondary)')};
+  color: ${({ $isAfter }) => ($isAfter ? 'var(--primary-500)' : 'var(--text-secondary)')};
   line-height: 1;
 `;
 
@@ -1269,7 +1248,7 @@ const FixCardContent = styled.div`
 const FixCardImpact = styled.div`
   font-size: 32px;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: var(--primary-500);
   margin-bottom: 24px;
   line-height: 1;
 `;
@@ -1606,15 +1585,20 @@ const BarListWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 24px;
+  width: 100%;
 `;
 
 const BarListBars = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 400px;
   width: 100%;
   flex: 1;
+
+  @media (max-width: 530px) {
   min-width: 0;
+  width: calc(100vw - 150px);
 `;
 
 const BarListRow = styled.div`
@@ -1624,6 +1608,7 @@ const BarListRow = styled.div`
 `;
 
 const BarListFill = styled.div<{ $width: number }>`
+  position: relative;
   display: flex;
   align-items: center;
   height: 40px;
@@ -2947,117 +2932,101 @@ const LoadingPlaceholder = styled.div`
   border-radius: 8px;
 `;
 
-const PreviewModalBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-  overflow: hidden;
-`;
-
-const PDFPreviewContainer = styled.div`
-  width: 100%;
-  height: 65vh;
-  min-height: 450px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: ${({ theme }) => theme.colors.surface};
-
-  @media (max-width: 640px) {
-    height: 55vh;
-    min-height: 350px;
-  }
-`;
-
 const PDFViewer = styled.iframe`
   width: 100%;
   height: 100%;
   border: none;
 `;
 
-const PreviewActions = styled.div`
+// Fix Details Drawer Styles
+const FixDrawerTitleRow = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.md};
-  justify-content: flex-end;
-  margin-top: ${({ theme }) => theme.spacing.lg};
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 `;
 
-// Improvement Highlight in Modal - Compact style
-const ImprovementHighlight = styled.div`
-  background: var(--bg-alt);
+const FixDrawerImpactBadge = styled.span`
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-500);
+  padding: 6px 12px;
   border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
-  flex-shrink: 0;
-
-  @media (prefers-color-scheme: dark) {
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
 `;
 
-const HighlightHeader = styled.div`
+const FixDrawerMeta = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-top: 4px;
 `;
 
-const HighlightMeta = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-const HighlightCategory = styled.span`
-  font-size: 11px;
+const FixDrawerCategory = styled.span`
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
 `;
 
-const HighlightSection = styled.span`
-  font-size: 11px;
-  color: var(--text-tertiary);
-  padding: 1px 6px;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
-
-  @media (prefers-color-scheme: dark) {
-    background: rgba(255, 255, 255, 0.05);
-  }
-`;
-
-const HighlightImpactBadge = styled.span`
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--success);
-  background: rgba(16, 185, 129, 0.12);
-  padding: 4px 10px;
-  border-radius: 6px;
-`;
-
-const HighlightTitle = styled.div`
-  display: none;
-`;
-
-const HighlightAction = styled.div`
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-color);
-  line-height: 1.4;
-  margin-bottom: 4px;
-`;
-
-const HighlightReason = styled.div`
+const FixDrawerSection = styled.span`
   font-size: 12px;
   color: var(--text-secondary);
-  line-height: 1.4;
+  padding: 2px 8px;
+  background: var(--bg-alt);
+  border-radius: 4px;
 `;
 
-const HighlightImpact = styled.div`
-  display: none;
+const FixDrawerInfoArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 24px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+`;
+
+const FixDrawerInfoRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const FixDrawerInfoLabel = styled.span`
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const FixDrawerInfoText = styled.p<{ $secondary?: boolean }>`
+  font-size: ${({ $secondary }) => $secondary ? '14px' : '15px'};
+  font-weight: ${({ $secondary }) => $secondary ? '400' : '500'};
+  color: ${({ $secondary }) => $secondary ? 'var(--text-secondary)' : 'var(--text-primary)'};
+  line-height: 1.5;
+  margin: 0;
+`;
+
+const FixDrawerPreviewArea = styled.div`
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px 24px;
+  overflow: hidden;
+`;
+
+const PDFPreviewContainerDrawer = styled.div`
+  width: 100%;
+  max-width: 600px;
+  height: 50vh;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--bg-alt);
 `;
 
 const FakeItToggleContainer = styled.div`
@@ -3570,7 +3539,7 @@ const ScoreBreakdownBadge = styled.div`
 const ScoreBadgeValue = styled.span<{ $muted?: boolean }>`
   font-size: ${({ $muted }) => ($muted ? '16px' : '22px')};
   font-weight: 700;
-  color: ${({ $muted }) => ($muted ? 'var(--text-tertiary)' : 'var(--success)')};
+  color: ${({ $muted }) => ($muted ? 'var(--text-tertiary)' : 'var(--primary-500)')};
   line-height: 1;
 `;
 
@@ -3611,7 +3580,7 @@ const StackedBarLabelTitle = styled.span`
 const StackedBarLabelValue = styled.span<{ $highlight?: boolean }>`
   font-size: 20px;
   font-weight: 700;
-  color: ${({ $highlight }) => $highlight ? 'var(--success)' : 'var(--text-secondary)'};
+  color: ${({ $highlight }) => $highlight ? 'var(--primary-500)' : 'var(--text-secondary)'};
   line-height: 1;
 `;
 
@@ -6130,37 +6099,52 @@ export default function ReportDetailPage() {
         </>
       )}
 
-      {/* CV Preview Modal */}
-      <Modal
-        isOpen={isPreviewOpen}
-        onClose={handleClosePreview}
-        title="Resume Preview"
-        size="lg"
-      >
-        <PreviewModalBody>
+      {/* CV Preview Drawer */}
+      <Drawer isOpen={isPreviewOpen} onClose={handleClosePreview}>
+        <DrawerHeader>
+          <DrawerTitle>
+            {selectedImprovement ? (
+              <FixDrawerTitleRow>
+                <span>Fix Details</span>
+                <FixDrawerImpactBadge>+{Math.round(selectedImprovement.impact * 10) / 10}%</FixDrawerImpactBadge>
+              </FixDrawerTitleRow>
+            ) : (
+              "Resume Preview"
+            )}
+          </DrawerTitle>
           {selectedImprovement && (
-            <ImprovementHighlight>
-              <HighlightHeader>
-                <HighlightMeta>
-                  <HighlightCategory>{selectedImprovement.category}</HighlightCategory>
-                  {selectedImprovement.section && (
-                    <HighlightSection>
-                      {selectedImprovement.section.charAt(0).toUpperCase() + selectedImprovement.section.slice(1)}
-                    </HighlightSection>
-                  )}
-                </HighlightMeta>
-                <HighlightImpactBadge>
-                  +{Math.round(selectedImprovement.impact * 10) / 10}%
-                </HighlightImpactBadge>
-              </HighlightHeader>
-              <HighlightAction>{selectedImprovement.action}</HighlightAction>
-              <HighlightReason>{selectedImprovement.reason}</HighlightReason>
-            </ImprovementHighlight>
+            <DrawerDescription>
+              <FixDrawerMeta>
+                <FixDrawerCategory>{selectedImprovement.category}</FixDrawerCategory>
+                {selectedImprovement.section && (
+                  <FixDrawerSection>
+                    {selectedImprovement.section.charAt(0).toUpperCase() + selectedImprovement.section.slice(1)}
+                  </FixDrawerSection>
+                )}
+              </FixDrawerMeta>
+            </DrawerDescription>
           )}
-          <PDFPreviewContainer>
+        </DrawerHeader>
+
+        {/* Fixed content area - not scrollable */}
+        {selectedImprovement && (
+          <FixDrawerInfoArea>
+            <FixDrawerInfoRow>
+              <FixDrawerInfoLabel>What to improve</FixDrawerInfoLabel>
+              <FixDrawerInfoText>{selectedImprovement.action}</FixDrawerInfoText>
+            </FixDrawerInfoRow>
+            <FixDrawerInfoRow>
+              <FixDrawerInfoLabel>Why it matters</FixDrawerInfoLabel>
+              <FixDrawerInfoText $secondary>{selectedImprovement.reason}</FixDrawerInfoText>
+            </FixDrawerInfoRow>
+          </FixDrawerInfoArea>
+        )}
+
+        <FixDrawerPreviewArea>
+          <PDFPreviewContainerDrawer>
             {pdfPreviewUrl ? (
               <PDFViewer
-                src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0`}
                 title="Resume Preview"
               />
             ) : (
@@ -6175,17 +6159,14 @@ export default function ReportDetailPage() {
                 <Spinner size="lg" />
               </div>
             )}
-          </PDFPreviewContainer>
-        </PreviewModalBody>
-        <Modal.Footer>
-          <Button variant="ghost" onClick={handleClosePreview}>
-            Close
+          </PDFPreviewContainerDrawer>
+        </FixDrawerPreviewArea>
+        <DrawerFooter>
+          <Button variant="primary" onClick={handleDownloadCV} style={{ width: '300px', maxWidth: '95%' }}>
+             Download Optimized Resume
           </Button>
-          <Button variant="primary" onClick={handleDownloadCV}>
-            <DownloadIcon /> Download PDF
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        </DrawerFooter>
+      </Drawer>
 
       {/* CV Generation Loading Modal - stays open until ATS score is calculated */}
       <LoadingModal

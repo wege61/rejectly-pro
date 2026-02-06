@@ -295,7 +295,6 @@ const FAQList = styled.div`
 
 const FAQItem = styled.div<{ $isOpen: boolean }>`
   background: var(--bg-alt);
-
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   outline: 1px solid rgba(0, 0, 0, 0.05);
 

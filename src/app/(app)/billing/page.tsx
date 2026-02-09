@@ -1,7 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -197,22 +197,43 @@ export default function BillingPage() {
   const { refreshCredits } = useCredits();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
+
+  const router = useRouter(); // Helper to clean URL after
+  
+  useEffect(() => {
+    // Check for payment status in URL
+    const query = new URLSearchParams(window.location.search);
+    if (query.get('payment') === 'success') {
+      alert('✅ Payment successful! Your credits/subscription has been updated.');
+      refreshCredits();
+      // Clean URL
+      window.history.replaceState({}, '', '/billing');
+    } else if (query.get('payment') === 'cancelled') {
+      alert('⚠️ Payment cancelled.');
+      // Clean URL
+      window.history.replaceState({}, '', '/billing');
+    }
+  }, [refreshCredits]);
+
   const handleCheckout = async (priceId: string, mode: 'subscription' | 'payment') => {
     setIsLoading(priceId);
     try {
+      const returnUrl = `${window.location.origin}/billing`;
+      
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           priceId,
           mode,
-          successUrl: `${window.location.origin}/app/billing?payment=success`,
-          cancelUrl: `${window.location.origin}/app/billing?payment=cancelled`,
+          successUrl: `${returnUrl}?payment=success`,
+          cancelUrl: `${returnUrl}?payment=cancelled`,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        const errorText = await response.text();
+        throw new Error(errorText || 'Network response was not ok');
       }
 
       const { url } = await response.json();
@@ -222,9 +243,9 @@ export default function BillingPage() {
       } else {
         throw new Error('No checkout URL received');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      alert('Payment failed to start. Please try again.');
+      alert(`Payment failed: ${error.message}`);
     } finally {
       setIsLoading(null);
     }

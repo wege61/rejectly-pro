@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
+import { PRICING } from '@/lib/constants';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST(req: NextRequest) {
@@ -23,6 +24,13 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Invalid Price ID. Please configure Stripe Price IDs in .env.local', { status: 400 });
     }
 
+    // Identify the plan based on priceId
+    const plan = Object.values(PRICING).find((p) => p.priceId === priceId);
+    
+    if (!plan) {
+      return new NextResponse('Invalid Price ID', { status: 400 });
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -37,6 +45,9 @@ export async function POST(req: NextRequest) {
       customer_email: user.email,
       metadata: {
         userId: user.id,
+        credits: plan.credits.toString(),
+        planType: plan.type,
+        planName: plan.name,
       },
     });
 

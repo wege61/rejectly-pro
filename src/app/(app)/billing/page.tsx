@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { Modal } from '@/components/ui/Modal';
+import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { PRICING } from '@/lib/constants';
 import { useCredits } from '@/contexts/CreditsContext';
 import { CreditsCard } from '@/components/dashboard/CreditsCard';
@@ -190,13 +192,73 @@ const CheckIcon = () => (
   </svg>
 );
 
+const ModalContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing.xl} 0;
+  text-align: center;
+`;
 
+const ModalIconWrapper = styled.div<{ $variant: 'success' | 'error' | 'warning' }>`
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  
+  ${({ $variant, theme }) => {
+    switch ($variant) {
+      case 'success':
+        return `
+          background-color: rgba(34, 197, 94, 0.2);
+          color: #4ade80;
+          box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        `;
+      case 'error':
+        return `
+          background-color: rgba(239, 68, 68, 0.2);
+          color: #f87171;
+          box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        `;
+      case 'warning':
+        return `
+          background-color: rgba(245, 158, 11, 0.2);
+          color: #fbbf24;
+          box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        `;
+    }
+  }}
 
-// ... (imports remain)
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+`;
+
+const ModalHeading = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const ModalMessage = styled.p`
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  max-width: 400px;
+`;
 
 export default function BillingPage() {
   const { refreshCredits } = useCredits();
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<'success' | 'cancelled' | 'error' | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
 
   const router = useRouter(); // Helper to clean URL after
@@ -205,19 +267,18 @@ export default function BillingPage() {
     // Check for payment status in URL
     const query = new URLSearchParams(window.location.search);
     if (query.get('payment') === 'success') {
-      alert('✅ Payment successful! Your credits/subscription has been updated.');
+      setPaymentStatus('success');
       refreshCredits();
-      // Clean URL
       window.history.replaceState({}, '', '/billing');
     } else if (query.get('payment') === 'cancelled') {
-      alert('⚠️ Payment cancelled.');
-      // Clean URL
+      setPaymentStatus('cancelled');
       window.history.replaceState({}, '', '/billing');
     }
   }, [refreshCredits]);
 
   const handleCheckout = async (priceId: string, mode: 'subscription' | 'payment') => {
     setIsLoading(priceId);
+    setErrorMessage('');
     try {
       const returnUrl = `${window.location.origin}/billing`;
       
@@ -246,17 +307,81 @@ export default function BillingPage() {
       }
     } catch (error: any) {
       console.error('Error:', error);
-      alert(`Payment failed: ${error.message}`);
+      setErrorMessage(error.message || 'Payment failed to start.');
+      setPaymentStatus('error');
     } finally {
       setIsLoading(null);
     }
+  };
+
+  const closeModals = () => {
+    setPaymentStatus(null);
+    setErrorMessage('');
   };
 
   // ... transactions ...
 
   return (
     <Container>
-      {/* ... Header ... */}
+      {/* Success Modal */}
+      <Modal 
+        isOpen={paymentStatus === 'success'} 
+        onClose={closeModals}
+        showCloseButton={false}
+        size="sm"
+      >
+        <Modal.Body>
+          <ModalContentWrapper>
+            <ModalIconWrapper $variant="success">
+              <CheckCircle />
+            </ModalIconWrapper>
+            <ModalHeading>Payment Successful!</ModalHeading>
+            <ModalMessage>
+              Your transaction was completed successfully. Your credits have been updated.
+            </ModalMessage>
+          </ModalContentWrapper>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button fullWidth onClick={closeModals}>Start Using Rejectly</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Cancelled/Error Modal */}
+      <Modal 
+        isOpen={paymentStatus === 'cancelled' || paymentStatus === 'error'} 
+        onClose={closeModals}
+        showCloseButton={false}
+        size="sm"
+      >
+        <Modal.Body>
+          <ModalContentWrapper>
+            <ModalIconWrapper $variant={paymentStatus === 'cancelled' ? 'warning' : 'error'}>
+              {paymentStatus === 'cancelled' ? <AlertTriangle /> : <XCircle />}
+            </ModalIconWrapper>
+            <ModalHeading>
+              {paymentStatus === 'cancelled' ? 'Payment Cancelled' : 'Payment Failed'}
+            </ModalHeading>
+            <ModalMessage>
+              {paymentStatus === 'cancelled' 
+                ? 'You cancelled the checkout process. No charges were made.' 
+                : errorMessage || 'Something went wrong with your payment. Please try again.'}
+            </ModalMessage>
+          </ModalContentWrapper>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button fullWidth variant="secondary" onClick={closeModals}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Header>
+        <TitleElements>
+          <Title>Billing</Title>
+          <Subtitle>Buy credits or subscribe for unlimited access</Subtitle>
+        </TitleElements>
+        <CreditsCardWrapper>
+          <CreditsCard />
+        </CreditsCardWrapper>
+      </Header>
       
       <Section>
         <SectionTitle>Buy Credits</SectionTitle>

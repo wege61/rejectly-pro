@@ -42,14 +42,14 @@ const Backdrop = styled.div<{ $isOpen: boolean }>`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: ${({ theme }) => theme.zIndex.modalBackdrop};
   padding: ${({ theme }) => theme.spacing.lg};
-  animation: ${fadeIn} 0.2s ease;
+  animation: ${fadeIn} 0.3s ease-out;
   overflow-y: auto;
 
   @media (max-width: 640px) {
@@ -59,15 +59,20 @@ const Backdrop = styled.div<{ $isOpen: boolean }>`
 `;
 
 const ModalContainer = styled.div<{ $size: string }>`
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  box-shadow: ${({ theme }) => theme.shadow.xl};
+  background-color: rgba(10, 10, 10, 0.65);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 0, 0, 0.2) inset;
   width: 100%;
   max-height: 90vh;
   margin: auto;
   display: flex;
   flex-direction: column;
-  animation: ${slideUp} 0.3s ease;
+  animation: ${slideUp} 0.5s cubic-bezier(0.19, 1, 0.22, 1);
   z-index: ${({ theme }) => theme.zIndex.modal};
 
   ${({ $size }) => {
@@ -95,20 +100,20 @@ const ModalContainer = styled.div<{ $size: string }>`
     max-width: 100%;
     max-height: 100vh;
     margin: 0;
-    border-radius: 16px 16px 0 0;
+    border-radius: 32px 32px 0 0;
   }
 `;
 
 const ModalHeader = styled.div`
-  padding: 16px 20px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: ${({ theme }) => theme.spacing.sm};
 
   @media (max-width: 640px) {
-    padding: 14px 16px;
+    padding: 20px 20px 14px;
   }
 `;
 
@@ -118,20 +123,21 @@ const ModalHeaderContent = styled.div`
 `;
 
 const ModalTitle = styled.h2`
-  font-size: 1.125rem;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 2px;
-  line-height: 1.3;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 4px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 
   @media (max-width: 640px) {
-    font-size: 1rem;
+    font-size: 1.125rem;
   }
 `;
 
 const ModalDescription = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: rgba(255, 255, 255, 0.7);
   margin-bottom: 0;
   line-height: 1.4;
 
@@ -147,13 +153,13 @@ const CloseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: rgba(255, 255, 255, 0.6);
   transition: all ${({ theme }) => theme.transitions.fast};
   flex-shrink: 0;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.surfaceHover};
-    color: ${({ theme }) => theme.colors.textPrimary};
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 1);
   }
 
   svg {
@@ -163,25 +169,25 @@ const CloseButton = styled.button`
 `;
 
 const ModalBody = styled.div`
-  padding: 20px;
+  padding: 0 24px 24px;
   overflow-y: auto;
   flex: 1;
 
   @media (max-width: 640px) {
-    padding: 16px;
+    padding: 0 20px 20px;
   }
 `;
 
 const ModalFooter = styled.div`
-  padding: 16px 20px;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 16px 24px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing.sm};
 
   @media (max-width: 640px) {
-    padding: 14px 16px;
+    padding: 14px 20px 20px;
     flex-direction: column-reverse;
     gap: 10px;
 

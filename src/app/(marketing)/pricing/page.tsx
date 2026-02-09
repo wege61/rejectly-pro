@@ -2,7 +2,6 @@
 
 import styled from "styled-components";
 import { Footer } from "@/components/ui/Footer";
-import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -65,88 +64,60 @@ const PricingSection = styled.section`
 const PricingGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  max-width: 1100px;
+  gap: 20px;
+  max-width: 1200px;
   margin: 0 auto;
 
-  @media (max-width: 1024px) {
+  @media (max-width: 968px) {
     grid-template-columns: 1fr;
-    max-width: 400px;
+    max-width: 480px;
   }
 `;
 
 const PricingCard = styled.div<{ $featured?: boolean }>`
   background: var(--bg-alt);
-  border: 2px solid ${({ $featured }) => ($featured ? "var(--accent)" : "none)")};
-  border-radius: 20px;
-
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  outline: 1px solid rgba(0, 0, 0, 0.05);
-
-  padding: 48px;
+  border: 1px solid ${({ $featured }) => $featured ? "var(--text-color)" : "var(--border-color)"};
+  border-radius: 16px;
+  padding: 40px;
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 
-  ${({ $featured }) =>
-    $featured &&
-    `
-    box-shadow: 0 10px 40px rgba(var(--accent-rgb), 0.25);
-    transform: scale(1.05);
-  `}
-
-  &:hover {
-    transform: ${({ $featured }) => ($featured ? "scale(1.07)" : "translateY(-8px)")};
-    box-shadow: 0 15px 50px rgba(var(--accent-rgb), 0.2);
-  }
-
-  @media (max-width: 968px) {
-    transform: none !important;
-    padding: 40px;
-
-    &:hover {
-      transform: translateY(-4px) !important;
-    }
+  @media (max-width: 768px) {
+    padding: 32px;
   }
 `;
 
 const Badge = styled.div`
   position: absolute;
-  top: -16px;
+  top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--accent);
-  color: white;
+  background: var(--text-color);
+  color: var(--bg-alt);
   padding: 8px 20px;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
 `;
 
 const PlanName = styled.h2`
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 12px;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 12px;
   color: var(--text-color);
 `;
 
 const PlanPrice = styled.div`
-  margin-bottom: 32px;
+  margin-bottom: 6px;
 `;
 
 const Price = styled.div`
   font-size: 56px;
-  font-weight: 900;
+  font-weight: 700;
   color: var(--text-color);
-  line-height: 1;
-
-  span {
-    font-size: 20px;
-    font-weight: 500;
-    color: var(--text-secondary);
-  }
+  line-height: 1.1;
+  letter-spacing: -2px;
 
   @media (max-width: 768px) {
     font-size: 48px;
@@ -154,32 +125,116 @@ const Price = styled.div`
 `;
 
 const PriceSubtext = styled.p`
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-top: 8px;
+  font-size: 15px;
+  color: var(--text-tertiary);
+  margin: 0 0 6px;
 `;
 
-const FeatureList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0 0 32px 0;
+const PlanDescription = styled.p`
+  font-size: 15px;
+  color: var(--text-tertiary);
+  margin: 0 0 20px;
 `;
 
-const Feature = styled.li<{ $enabled?: boolean }>`
+const PlanTagline = styled.p`
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 24px;
+`;
+
+const CTAButton = styled.button<{ $primary?: boolean }>`
+  width: 100%;
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 0;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 28px;
+  border-radius: 10px;
   font-size: 16px;
-  color: ${({ $enabled }) => ($enabled ? "var(--text-secondary)" : "var(--text-tertiary)")};
-  opacity: ${({ $enabled }) => ($enabled ? 1 : 0.5)};
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 32px;
+
+  ${({ $primary }) =>
+    $primary
+      ? `
+    background: var(--accent);
+    color: white;
+    border: none;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  `
+      : `
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+
+    &:hover {
+      background: var(--bg-color);
+      border-color: var(--text-tertiary);
+    }
+  `}
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const FeatureList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const FeatureRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--text-color);
 
   svg {
     flex-shrink: 0;
     width: 20px;
     height: 20px;
-    margin-top: 2px;
-    color: ${({ $enabled }) => ($enabled ? "var(--success)" : "var(--error)")};
+    color: var(--text-tertiary);
+  }
+`;
+
+const FeatureRowMuted = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-tertiary);
+
+  svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--text-tertiary);
+    opacity: 0.7;
+  }
+`;
+
+const FeatureRowHighlight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--primary-500);
+  font-weight: 500;
+
+  svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--primary-500);
   }
 `;
 
@@ -219,61 +274,200 @@ const SectionSubtitle = styled.p`
   }
 `;
 
-const ComparisonTable = styled.div`
-  background: var(--bg-alt);
-
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  outline: 1px solid rgba(0, 0, 0, 0.05);
-
-  border-radius: 16px;
-  overflow: hidden;
-  max-width: 900px;
+// New Comparison Layout - pricing38 style
+const ComparisonLayout = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  max-width: 1100px;
   margin: 0 auto;
+
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
 `;
 
-const TableRow = styled.div<{ $header?: boolean }>`
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  border-bottom: 1px solid var(--border-color);
+const InfoColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding-top: 16px;
 
-  &:last-child {
-    border-bottom: none;
+  @media (max-width: 968px) {
+    order: 2;
   }
+`;
 
-  ${({ $header }) =>
-    $header &&
+const InfoSection = styled.div``;
+
+const InfoLabel = styled.p`
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-500);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 0 0 16px;
+`;
+
+const InfoTitle = styled.h3`
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0 0 12px;
+  line-height: 1.3;
+`;
+
+const InfoText = styled.p`
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+`;
+
+const CardsColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (max-width: 968px) {
+    order: 1;
+  }
+`;
+
+const CompactCard = styled.div<{ $selected?: boolean }>`
+  position: relative;
+  background: var(--bg-alt);
+  border: 2px solid ${({ $selected }) => ($selected ? "var(--primary-500)" : "var(--border-color)")};
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  ${({ $selected }) =>
+    $selected &&
     `
-    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.08) 0%, rgba(var(--primary-700-rgb), 0.08) 100%);
-    font-weight: 700;
+    box-shadow: 0 4px 20px rgba(var(--primary-500-rgb), 0.15);
   `}
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  &:hover {
+    border-color: var(--primary-500);
   }
 `;
 
-const TableCell = styled.div<{ $center?: boolean }>`
-  padding: 20px 24px;
+const CardHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+`;
+
+const CardInfo = styled.div`
+  flex: 1;
+`;
+
+const CardName = styled.h4`
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0 0 4px;
+`;
+
+const CardDescription = styled.p`
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+`;
+
+const CardPrice = styled.div`
+  text-align: right;
+`;
+
+const CardPriceValue = styled.span`
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-color);
+`;
+
+const CardPricePeriod = styled.span`
+  font-size: 14px;
+  color: var(--text-secondary);
+`;
+
+const SelectIndicator = styled.div<{ $selected?: boolean }>`
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid ${({ $selected }) => ($selected ? "var(--primary-500)" : "var(--border-color)")};
+  background: ${({ $selected }) => ($selected ? "var(--primary-500)" : "transparent")};
   display: flex;
   align-items: center;
-  justify-content: ${({ $center }) => ($center ? "center" : "flex-start")};
-  font-size: 15px;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: white;
+    opacity: ${({ $selected }) => ($selected ? 1 : 0)};
+  }
+`;
+
+const CardFeatures = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 20px;
+`;
+
+const CardFeature = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
   color: var(--text-secondary);
 
   svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  @media (max-width: 768px) {
-    padding: 16px 12px;
-    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: var(--primary-500);
+    flex-shrink: 0;
   }
 `;
 
-const FeatureName = styled.span`
-  color: var(--text-color);
-  font-weight: 500;
+const CardButton = styled.button<{ $primary?: boolean }>`
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+
+  ${({ $primary }) =>
+    $primary
+      ? `
+    background: var(--primary-500);
+    color: white;
+
+    &:hover {
+      background: var(--primary-600);
+    }
+  `
+      : `
+    background: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+
+    &:hover {
+      background: var(--bg-alt);
+      border-color: var(--primary-500);
+    }
+  `}
 `;
 
 const FAQSection = styled.section`
@@ -380,24 +574,99 @@ const CheckIcon = () => (
   </svg>
 );
 
-const XIcon = () => (
+const ArrowIcon = () => (
   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
   </svg>
 );
 
-const features = [
-  { name: "Pro analyses", single: "1", starter: "10", pro: "Unlimited" },
-  { name: "Match score analysis", single: true, starter: true, pro: true },
-  { name: "All missing keywords", single: true, starter: true, pro: true },
-  { name: "Job postings comparison", single: "Up to 10", starter: "Up to 10", pro: "Up to 10" },
-  { name: "Professional bullet rewriting", single: "3 bullets", starter: "3 bullets", pro: "3 bullets" },
-  { name: "ATS optimization guide", single: true, starter: true, pro: true },
-  { name: "Alternative role suggestions", single: "3 roles", starter: "3 roles", pro: "3 roles" },
-  { name: "AI-generated optimized resume", single: true, starter: true, pro: true },
-  { name: "PDF download", single: true, starter: true, pro: true },
-  { name: "Priority support", single: false, starter: false, pro: true },
-];
+// Feature icons for pricing cards
+const CreditIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const AnalysisIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+  </svg>
+);
+
+const ATSIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const LetterIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+);
+
+const SparklesIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const ShieldIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  </svg>
+);
+
+const MixIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+  </svg>
+);
+
+const SaveIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const TargetIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+
+const InfinityIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.303 0-4.303 8 0 8 5.606 0 7.644-8 12.74-8z" />
+  </svg>
+);
+
+const RocketIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+  </svg>
+);
+
+const StarIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+  </svg>
+);
+
+const RefreshIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+  </svg>
+);
+
+
 
 const pricingFAQs = [
   {
@@ -525,232 +794,188 @@ export default function PricingPage() {
             <PricingCard>
               <PlanName>Single</PlanName>
               <PlanPrice>
-                <Price>
-                  $2<span> one-time</span>
-                </Price>
-                <PriceSubtext>Try it out with 1 analysis</PriceSubtext>
+                <Price>$2</Price>
               </PlanPrice>
+              <PriceSubtext>one-time payment</PriceSubtext>
+              <PlanDescription>Try it with a single analysis</PlanDescription>
+              <PlanTagline>Perfect for quick tests</PlanTagline>
+              <CTAButton onClick={() => router.push("/signup")}>
+                Get started <ArrowIcon />
+              </CTAButton>
               <FeatureList>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>1 Pro analysis</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>Detailed match insights</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>All missing keywords</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>3 bullet points rewritten</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>ATS optimization guide</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>3 role recommendations</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>AI-optimized resume</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>PDF download</span>
-                </Feature>
+                <FeatureRow><CreditIcon />1 credit — Perfect for testing</FeatureRow>
+                <FeatureRow><AnalysisIcon />1 job match analysis OR</FeatureRow>
+                <FeatureRow><ATSIcon />1 ATS optimization OR</FeatureRow>
+                <FeatureRow><LetterIcon />1 cover letter</FeatureRow>
+                <FeatureRow><SparklesIcon />Full Pro features included</FeatureRow>
+                <FeatureRowMuted><ClockIcon />Valid for 30 days</FeatureRowMuted>
+                <FeatureRowMuted><ShieldIcon />No subscription, no commitment</FeatureRowMuted>
               </FeatureList>
-              <Button
-                size="lg"
-                variant="secondary"
-                fullWidth
-                onClick={() => router.push("/signup")}
-              >
-                Buy Single
-              </Button>
             </PricingCard>
 
-            {/* Starter Plan */}
+            {/* Starter Plan - Featured */}
             <PricingCard $featured>
-              <Badge>BEST VALUE</Badge>
+              <Badge>Most popular</Badge>
               <PlanName>Starter</PlanName>
               <PlanPrice>
-                <Price>
-                  $7<span> one-time</span>
-                </Price>
-                <PriceSubtext>$0.70 per report - save 65%</PriceSubtext>
+                <Price>$7</Price>
               </PlanPrice>
+              <PriceSubtext>one-time payment</PriceSubtext>
+              <PlanDescription>$0.70 per analysis — save 65%</PlanDescription>
+              <PlanTagline>Best for active job seekers</PlanTagline>
+              <CTAButton $primary onClick={() => router.push("/signup")}>
+                Get started <ArrowIcon />
+              </CTAButton>
               <FeatureList>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>10 Pro analyses</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>Detailed match insights</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>All missing keywords</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>3 bullet points rewritten</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>ATS optimization guide</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>3 role recommendations</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>AI-optimized resume</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>PDF download</span>
-                </Feature>
+                <FeatureRow><CreditIcon />10 credits — Use however you need</FeatureRow>
+                <FeatureRow><AnalysisIcon />Job match analyses</FeatureRow>
+                <FeatureRow><ATSIcon />ATS optimizations</FeatureRow>
+                <FeatureRow><LetterIcon />Cover letters</FeatureRow>
+                <FeatureRow><MixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</FeatureRow>
+                <FeatureRowHighlight><SaveIcon />Save 65% ($0.70 per credit)</FeatureRowHighlight>
+                <FeatureRowMuted><ClockIcon />Credits valid for 90 days</FeatureRowMuted>
+                <FeatureRowMuted><TargetIcon />Best for 5-10 target positions</FeatureRowMuted>
               </FeatureList>
-              <Button
-                style={{background: "var(--accent)"}}
-                size="lg"
-                fullWidth
-                onClick={() => router.push("/signup")}
-              >
-                Buy Starter
-              </Button>
             </PricingCard>
 
             {/* Pro Plan */}
             <PricingCard>
               <PlanName>Pro</PlanName>
               <PlanPrice>
-                <Price>
-                  $12<span>/month</span>
-                </Price>
-                <PriceSubtext>Unlimited analyses for power users</PriceSubtext>
+                <Price>$12</Price>
               </PlanPrice>
+              <PriceSubtext>per month</PriceSubtext>
+              <PlanDescription>Unlimited for power users</PlanDescription>
+              <PlanTagline>Apply without limits</PlanTagline>
+              <CTAButton onClick={() => router.push("/signup")}>
+                Get started <ArrowIcon />
+              </CTAButton>
               <FeatureList>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>Unlimited Pro analyses</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>Detailed match insights</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>All missing keywords</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>3 bullet points rewritten</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>ATS optimization guide</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>3 role recommendations</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>AI-optimized resume</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>PDF download</span>
-                </Feature>
-                <Feature $enabled>
-                  <CheckIcon />
-                  <span>Priority support</span>
-                </Feature>
+                <FeatureRow><InfinityIcon />Unlimited — No limits, no counting</FeatureRow>
+                <FeatureRow><AnalysisIcon />Unlimited job match analyses</FeatureRow>
+                <FeatureRow><ATSIcon />Unlimited ATS optimizations</FeatureRow>
+                <FeatureRow><LetterIcon />Unlimited cover letters</FeatureRow>
+                <FeatureRow><RocketIcon />Perfect for career transitions</FeatureRow>
+                <FeatureRowHighlight><StarIcon />Best value for 20+ analyses/month</FeatureRowHighlight>
+                <FeatureRowMuted><RefreshIcon />Credits never expire while subscribed</FeatureRowMuted>
+                <FeatureRowMuted><ShieldIcon />Cancel anytime, no questions asked</FeatureRowMuted>
               </FeatureList>
-              <Button
-                size="lg"
-                variant="secondary"
-                fullWidth
-                onClick={() => router.push("/signup")}
-              >
-                Subscribe to Pro
-              </Button>
             </PricingCard>
           </PricingGrid>
         </PricingSection>
 
         <ComparisonSection>
           <SectionHeader>
-            <SectionTitle>Feature Comparison</SectionTitle>
+            <SectionTitle>Choose Your Plan</SectionTitle>
             <SectionSubtitle>
-              See exactly what's included in each plan
+              Flexible options for every job seeker
             </SectionSubtitle>
           </SectionHeader>
 
-          <ComparisonTable>
-            <TableRow $header>
-              <TableCell>
-                <FeatureName>Feature</FeatureName>
-              </TableCell>
-              <TableCell $center>
-                <FeatureName>Single</FeatureName>
-              </TableCell>
-              <TableCell $center>
-                <FeatureName>Starter</FeatureName>
-              </TableCell>
-              <TableCell $center>
-                <FeatureName>Pro</FeatureName>
-              </TableCell>
-            </TableRow>
-            {features.map((feature, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <FeatureName>{feature.name}</FeatureName>
-                </TableCell>
-                <TableCell $center>
-                  {typeof feature.single === "boolean" ? (
-                    feature.single ? (
-                      <CheckIcon />
-                    ) : (
-                      <XIcon />
-                    )
-                  ) : (
-                    <span>{feature.single}</span>
-                  )}
-                </TableCell>
-                <TableCell $center>
-                  {typeof feature.starter === "boolean" ? (
-                    feature.starter ? (
-                      <CheckIcon />
-                    ) : (
-                      <XIcon />
-                    )
-                  ) : (
-                    <span>{feature.starter}</span>
-                  )}
-                </TableCell>
-                <TableCell $center>
-                  {typeof feature.pro === "boolean" ? (
-                    feature.pro ? (
-                      <CheckIcon />
-                    ) : (
-                      <XIcon />
-                    )
-                  ) : (
-                    <span>{feature.pro}</span>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </ComparisonTable>
+          <ComparisonLayout>
+            <InfoColumn>
+              <InfoSection>
+                <InfoLabel>Resume Analysis</InfoLabel>
+                <InfoTitle>AI-Powered Insights</InfoTitle>
+                <InfoText>
+                  Get detailed match scores, keyword analysis, and ATS compatibility checks.
+                  Our AI compares your resume against job descriptions to identify gaps and opportunities.
+                </InfoText>
+              </InfoSection>
+
+              <InfoSection>
+                <InfoLabel>Smart Optimization</InfoLabel>
+                <InfoTitle>Tailored Improvements</InfoTitle>
+                <InfoText>
+                  Receive professionally rewritten bullet points, role-specific recommendations,
+                  and an AI-optimized version of your resume ready for download.
+                </InfoText>
+              </InfoSection>
+
+              <InfoSection>
+                <InfoLabel>Support</InfoLabel>
+                <InfoTitle>Here When You Need Us</InfoTitle>
+                <InfoText>
+                  All plans include email support. Pro subscribers get priority response times
+                  for any questions about their analyses or the platform.
+                </InfoText>
+              </InfoSection>
+            </InfoColumn>
+
+            <CardsColumn>
+              {/* Single Card */}
+              <CompactCard onClick={() => router.push("/signup")}>
+                <SelectIndicator>
+                  <CheckIcon />
+                </SelectIndicator>
+                <CardHeader>
+                  <CardInfo>
+                    <CardName>Single</CardName>
+                    <CardDescription>Try it out with 1 analysis</CardDescription>
+                  </CardInfo>
+                  <CardPrice>
+                    <CardPriceValue>$2</CardPriceValue>
+                    <CardPricePeriod> one-time</CardPricePeriod>
+                  </CardPrice>
+                </CardHeader>
+                <CardFeatures>
+                  <CardFeature><CheckIcon />1 Pro analysis</CardFeature>
+                  <CardFeature><CheckIcon />Match insights</CardFeature>
+                  <CardFeature><CheckIcon />AI-optimized resume</CardFeature>
+                  <CardFeature><CheckIcon />PDF download</CardFeature>
+                </CardFeatures>
+                <CardButton>Get Started</CardButton>
+              </CompactCard>
+
+              {/* Starter Card - Selected/Recommended */}
+              <CompactCard $selected onClick={() => router.push("/signup")}>
+                <SelectIndicator $selected>
+                  <CheckIcon />
+                </SelectIndicator>
+                <CardHeader>
+                  <CardInfo>
+                    <CardName>Starter</CardName>
+                    <CardDescription>Best value — $0.70 per analysis</CardDescription>
+                  </CardInfo>
+                  <CardPrice>
+                    <CardPriceValue>$7</CardPriceValue>
+                    <CardPricePeriod> one-time</CardPricePeriod>
+                  </CardPrice>
+                </CardHeader>
+                <CardFeatures>
+                  <CardFeature><CheckIcon />10 Pro analyses</CardFeature>
+                  <CardFeature><CheckIcon />Match insights</CardFeature>
+                  <CardFeature><CheckIcon />AI-optimized resume</CardFeature>
+                  <CardFeature><CheckIcon />PDF download</CardFeature>
+                </CardFeatures>
+                <CardButton $primary>Get Started — Save 65%</CardButton>
+              </CompactCard>
+
+              {/* Pro Card */}
+              <CompactCard onClick={() => router.push("/signup")}>
+                <SelectIndicator>
+                  <CheckIcon />
+                </SelectIndicator>
+                <CardHeader>
+                  <CardInfo>
+                    <CardName>Pro</CardName>
+                    <CardDescription>Unlimited for power users</CardDescription>
+                  </CardInfo>
+                  <CardPrice>
+                    <CardPriceValue>$12</CardPriceValue>
+                    <CardPricePeriod>/month</CardPricePeriod>
+                  </CardPrice>
+                </CardHeader>
+                <CardFeatures>
+                  <CardFeature><CheckIcon />Unlimited analyses</CardFeature>
+                  <CardFeature><CheckIcon />All features included</CardFeature>
+                  <CardFeature><CheckIcon />Priority support</CardFeature>
+                  <CardFeature><CheckIcon />Cancel anytime</CardFeature>
+                </CardFeatures>
+                <CardButton>Subscribe to Pro</CardButton>
+              </CompactCard>
+            </CardsColumn>
+          </ComparisonLayout>
         </ComparisonSection>
 
         <FAQSection>

@@ -477,15 +477,13 @@ export function Navbar() {
             <ThemeToggleWrapper>
               <ThemeToggle />
             </ThemeToggleWrapper>
-            {!loading && (
-              user ? (
-                <CTAButton href={ROUTES.APP.DASHBOARD}>Dashboard</CTAButton>
-              ) : (
-                <>
-                  <LoginLink href={ROUTES.AUTH.LOGIN}>Login</LoginLink>
-                  <CTAButton href={ROUTES.AUTH.SIGNUP}>Start Free</CTAButton>
-                </>
-              )
+            {user ? (
+              <CTAButton href={ROUTES.APP.DASHBOARD}>Dashboard</CTAButton>
+            ) : (
+              <>
+                <LoginLink href={ROUTES.AUTH.LOGIN}>Login</LoginLink>
+                <CTAButton href={ROUTES.AUTH.SIGNUP}>Start Free</CTAButton>
+              </>
             )}
           </RightSection>
 
@@ -517,21 +515,19 @@ export function Navbar() {
         <MobileThemeWrapper>
           <ThemeToggle />
         </MobileThemeWrapper>
-        {!loading && (
-          user ? (
-            <MobileCTAButton href={ROUTES.APP.DASHBOARD} onClick={closeMobileMenu}>
-              Go to Dashboard
+        {user ? (
+          <MobileCTAButton href={ROUTES.APP.DASHBOARD} onClick={closeMobileMenu}>
+            Go to Dashboard
+          </MobileCTAButton>
+        ) : (
+          <>
+            <MobileMenuItem href={ROUTES.AUTH.LOGIN} onClick={closeMobileMenu}>
+              Login
+            </MobileMenuItem>
+            <MobileCTAButton href={ROUTES.AUTH.SIGNUP} onClick={closeMobileMenu}>
+              Start Free
             </MobileCTAButton>
-          ) : (
-            <>
-              <MobileMenuItem href={ROUTES.AUTH.LOGIN} onClick={closeMobileMenu}>
-                Login
-              </MobileMenuItem>
-              <MobileCTAButton href={ROUTES.AUTH.SIGNUP} onClick={closeMobileMenu}>
-                Start Free
-              </MobileCTAButton>
-            </>
-          )
+          </>
         )}
       </MobileMenu>
     </>

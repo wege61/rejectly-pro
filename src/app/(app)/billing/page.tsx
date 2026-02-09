@@ -189,57 +189,53 @@ const CheckIcon = () => (
   </svg>
 );
 
+
+
+// ... (imports remain)
+
 export default function BillingPage() {
   const { refreshCredits } = useCredits();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
-  // TEST ONLY - Simulates purchase
-  const handleBuy = async (planId: string, credits: number, planName: string) => {
-    setIsLoading(planId);
+  const handleCheckout = async (priceId: string, mode: 'subscription' | 'payment') => {
+    setIsLoading(priceId);
     try {
-      const response = await fetch("/api/credits/add-test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credits, planName }),
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId,
+          mode,
+          successUrl: `${window.location.origin}/app/billing?payment=success`,
+          cancelUrl: `${window.location.origin}/app/billing?payment=cancelled`,
+        }),
       });
 
-      if (response.ok) {
-        alert(`✅ Success! Added ${credits} credits (${planName})`);
-        refreshCredits(); // Refresh credits
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const { url } = await response.json();
+      
+      if (url) {
+        window.location.href = url;
       } else {
-        alert("❌ Failed to add credits");
+        throw new Error('No checkout URL received');
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("❌ Error occurred");
+      console.error('Error:', error);
+      alert('Payment failed to start. Please try again.');
     } finally {
       setIsLoading(null);
     }
   };
 
-  // Mock data - gerçek data Supabase'den gelecek
-  const transactions = [
-    {
-      id: '1',
-      title: 'Starter Pack - 10 Credits',
-      date: '2025-10-17',
-      amount: 7,
-      status: 'success',
-    },
-  ];
+  // ... transactions ...
 
   return (
     <Container>
-      <Header>
-        <TitleElements>
-        <Title>Billing</Title>
-        <Subtitle>Buy credits or subscribe for unlimited access</Subtitle>
-        </TitleElements>
-        <CreditsCardWrapper>
-          <CreditsCard />
-        </CreditsCardWrapper>
-      </Header>
-
+      {/* ... Header ... */}
+      
       <Section>
         <SectionTitle>Buy Credits</SectionTitle>
         <PricingGrid>
@@ -262,10 +258,10 @@ export default function BillingPage() {
             <Button
               variant="secondary"
               fullWidth
-              onClick={() => handleBuy('single', 1, 'Single')}
-              disabled={isLoading === 'single'}
+              onClick={() => handleCheckout(PRICING.SINGLE.priceId, 'payment')}
+              disabled={isLoading === PRICING.SINGLE.priceId}
             >
-              {isLoading === 'single' ? 'Processing...' : 'Buy Single'}
+              {isLoading === PRICING.SINGLE.priceId ? 'Processing...' : 'Buy Single'}
             </Button>
           </PricingCard>
 
@@ -291,10 +287,10 @@ export default function BillingPage() {
             </FeatureList>
             <Button
               fullWidth
-              onClick={() => handleBuy('starter', 10, 'Starter')}
-              disabled={isLoading === 'starter'}
+              onClick={() => handleCheckout(PRICING.STARTER.priceId, 'payment')}
+              disabled={isLoading === PRICING.STARTER.priceId}
             >
-              {isLoading === 'starter' ? 'Processing...' : 'Buy Starter'}
+              {isLoading === PRICING.STARTER.priceId ? 'Processing...' : 'Buy Starter'}
             </Button>
           </PricingCard>
 
@@ -317,49 +313,16 @@ export default function BillingPage() {
             <Button
               variant="secondary"
               fullWidth
-              onClick={() => alert('⚠️ Subscription requires Stripe integration')}
+              onClick={() => handleCheckout(PRICING.PRO.priceId, 'subscription')}
+              disabled={isLoading === PRICING.PRO.priceId}
             >
-              Subscribe
+               {isLoading === PRICING.PRO.priceId ? 'Processing...' : 'Subscribe'}
             </Button>
           </PricingCard>
         </PricingGrid>
       </Section>
 
-      <Section>
-        <SectionTitle>Transaction History</SectionTitle>
-        {transactions.length === 0 ? (
-          <Card variant="bordered">
-            <Card.Content>
-              <p style={{ textAlign: 'center', color: '#6b7280' }}>
-                No transactions yet
-              </p>
-            </Card.Content>
-          </Card>
-        ) : (
-          <Card variant="bordered">
-            <TransactionsList>
-              {transactions.map((transaction) => (
-                <TransactionItem key={transaction.id}>
-                  <TransactionInfo>
-                    <TransactionTitle>{transaction.title}</TransactionTitle>
-                    <TransactionDate>
-                      {new Date(transaction.date).toLocaleDateString('tr-TR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </TransactionDate>
-                  </TransactionInfo>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <TransactionAmount>${transaction.amount}</TransactionAmount>
-                    <Badge variant="success">Paid</Badge>
-                  </div>
-                </TransactionItem>
-              ))}
-            </TransactionsList>
-          </Card>
-        )}
-      </Section>
+      {/* ... Transactions ... */}
     </Container>
   );
 }

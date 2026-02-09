@@ -8,6 +8,7 @@ export const PRICING = {
     credits: 1,
     type: "one-time" as const,
     description: "Try it out",
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_SINGLE || "price_1Q...",
     features: [
       "1 Pro analysis",
       "Detailed match insights",
@@ -28,6 +29,7 @@ export const PRICING = {
     type: "one-time" as const,
     description: "Best value",
     popular: true,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_STARTER || "price_1Q...",
     features: [
       "10 Pro analyses",
       "Detailed match insights",
@@ -47,6 +49,7 @@ export const PRICING = {
     credits: -1, // unlimited
     type: "subscription" as const,
     description: "Unlimited access",
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO || "price_1Q...",
     features: [
       "Unlimited Pro analyses",
       "Detailed match insights",

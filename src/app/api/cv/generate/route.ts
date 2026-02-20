@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get request body
-    const { reportId, fakeItMode = false, additionalTools = [], forceRegenerate = false } = await request.json();
+    const { reportId, fakeItMode = false, additionalTools = [], forceRegenerate = false, photoUrl, colorTemplate } = await request.json();
 
     console.log('🔍 CV Generation Request:', {
       reportId,
@@ -196,6 +196,14 @@ export async function POST(request: NextRequest) {
     // Post-process CV for ATS compliance (expand abbreviations, normalize dates, clean special chars)
     const generatedCV = postProcessCVForATS(rawGeneratedCV as GeneratedCVData);
 
+    // Add customization options to generated CV
+    if (photoUrl) {
+      (generatedCV as unknown as Record<string, unknown>).photoUrl = photoUrl;
+    }
+    if (colorTemplate) {
+      (generatedCV as unknown as Record<string, unknown>).colorTemplate = colorTemplate;
+    }
+
     // Log generated CV for debugging
     console.log('📄 Generated CV Experience:', JSON.stringify(generatedCV.experience?.map((e: { title: string; bullets: string[] }) => ({
       title: e.title,
@@ -268,7 +276,9 @@ export async function POST(request: NextRequest) {
 
     // Generate PDF and save to optimized_cvs table for My CVs page
     try {
-      const pdf = await generateCVPDF(generatedCV);
+      const pdf = await generateCVPDF(generatedCV, undefined, {
+        colorTemplate: colorTemplate || undefined,
+      });
       const pdfArrayBuffer = pdf.output('arraybuffer');
       const pdfBuffer = Buffer.from(pdfArrayBuffer);
 

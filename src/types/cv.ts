@@ -48,4 +48,6 @@ export interface GeneratedCV {
   skills: CVSkills;
   certifications?: CVCertification[];
   languages?: CVLanguage[];
+  photoUrl?: string;
+  colorTemplate?: string;
 }

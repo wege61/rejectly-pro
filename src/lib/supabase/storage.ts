@@ -42,6 +42,32 @@ export async function deleteCV(filePath: string): Promise<void> {
   }
 }
 
+export async function uploadCVPhoto(photoBlob: Blob, userId: string): Promise<string> {
+  const supabase = createClient();
+
+  const ext = photoBlob.type === 'image/png' ? 'png' : 'jpg';
+  const fileName = `${userId}/photos/${Date.now()}.${ext}`;
+
+  const { data, error } = await supabase.storage
+    .from(BUCKET_NAME)
+    .upload(fileName, photoBlob, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: photoBlob.type,
+    });
+
+  if (error) {
+    console.error('Photo upload error:', error);
+    throw new Error('Failed to upload photo');
+  }
+
+  const { data: { publicUrl } } = supabase.storage
+    .from(BUCKET_NAME)
+    .getPublicUrl(data.path);
+
+  return publicUrl;
+}
+
 export async function getCV(filePath: string): Promise<Blob | null> {
   const supabase = createClient();
   

@@ -1,15 +1,10 @@
 import { jsPDF } from "jspdf";
 import { GeneratedCV } from "@/types/cv";
+import { ColorTemplateColors } from "@/types/cvCustomization";
+import { getColorTemplate, DEFAULT_COLOR_TEMPLATE } from "./colorTemplates";
 import { loadFontsToDocument } from "./fontLoader";
 
-const COLORS = {
-  primary: "#2563eb", // Blue
-  text: "#1f2937", // Dark gray
-  textLight: "#6b7280", // Light gray
-  border: "#e5e7eb", // Very light gray
-  highlight: "#10b981", // Green for highlighting improvements
-  highlightBg: "#f0fdf4", // Light green background
-};
+const DEFAULT_COLORS = DEFAULT_COLOR_TEMPLATE.colors;
 
 const FONTS = {
   heading: 16,
@@ -18,11 +13,24 @@ const FONTS = {
   small: 9,
 };
 
+export interface CVPDFOptions {
+  colorTemplate?: string;
+  photoBase64?: string;
+}
+
 export async function generateCVPDF(
   cv: GeneratedCV,
-  highlightSection?: string
+  highlightSection?: string,
+  options?: CVPDFOptions
 ): Promise<jsPDF> {
   const doc = new jsPDF();
+
+  // Resolve colors from template
+  const COLORS: ColorTemplateColors = options?.colorTemplate
+    ? getColorTemplate(options.colorTemplate).colors
+    : DEFAULT_COLORS;
+
+  const photoBase64 = options?.photoBase64;
 
   // Load Unicode-compatible fonts (Roboto) for international character support
   await loadFontsToDocument(doc);
@@ -31,6 +39,11 @@ export async function generateCVPDF(
   const margin = 20;
   const contentWidth = pageWidth - 2 * margin;
   let yPosition = margin;
+
+  // Photo dimensions
+  const photoSize = 25; // mm
+  const hasPhoto = !!photoBase64;
+  const contactTextWidth = hasPhoto ? contentWidth - photoSize - 5 : contentWidth;
 
   // Helper function to add new page if needed
   const checkPageBreak = (requiredSpace: number) => {
@@ -66,6 +79,40 @@ export async function generateCVPDF(
 
   // 1. CONTACT SECTION
   const contactStartY = yPosition;
+
+  // Add photo if available (right side of contact section)
+  if (hasPhoto && photoBase64) {
+    try {
+      console.log("[cvGenerator] Adding photo to PDF, data length:", photoBase64.length, "starts with:", photoBase64.substring(0, 30));
+      const photoX = pageWidth - margin - photoSize;
+      const photoY = yPosition - 2;
+
+      // Draw white circle background
+      doc.setFillColor("#ffffff");
+      doc.circle(photoX + photoSize / 2, photoY + photoSize / 2, photoSize / 2, "F");
+
+      // Convert photo to JPEG via canvas for maximum jsPDF compatibility
+      // (jsPDF PNG support is unreliable in some environments)
+      const jpegDataUrl = await convertToJPEG(photoBase64);
+      console.log("[cvGenerator] After conversion, format:", jpegDataUrl.substring(0, 30));
+
+      // Detect format from data URL for jsPDF
+      const format = jpegDataUrl.includes("image/png") ? "PNG" : "JPEG";
+      doc.addImage(jpegDataUrl, format, photoX, photoY, photoSize, photoSize);
+      console.log("[cvGenerator] Photo added successfully");
+
+      // Draw circular border on top
+      doc.setDrawColor(COLORS.primary);
+      doc.setLineWidth(0.5);
+      doc.circle(photoX + photoSize / 2, photoY + photoSize / 2, photoSize / 2, "S");
+    } catch (e) {
+      console.error("[cvGenerator] Failed to add photo to PDF:", e);
+      // Continue without photo
+    }
+  } else {
+    console.log("[cvGenerator] No photo to add. hasPhoto:", hasPhoto, "photoBase64 length:", photoBase64?.length || 0);
+  }
+
   doc.setFontSize(FONTS.heading + 4);
   doc.setTextColor(COLORS.primary);
   doc.text(cv.contact.name, margin, yPosition);
@@ -85,11 +132,19 @@ export async function generateCVPDF(
     .filter(Boolean)
     .join(", ");
 
-  const contactLines = wrapText(contactDetails, contentWidth);
+  const contactLines = wrapText(contactDetails, contactTextWidth);
   contactLines.forEach((line) => {
     doc.text(line, margin, yPosition);
     yPosition += 4;
   });
+
+  // If photo is present, ensure yPosition is at least past the photo
+  if (hasPhoto) {
+    const photoBottom = contactStartY - 2 + photoSize;
+    if (yPosition < photoBottom) {
+      yPosition = photoBottom;
+    }
+  }
 
   yPosition += 5;
   if (highlightSection === "contact") {
@@ -334,4 +389,44 @@ export async function generateCVPDF(
   }
 
   return doc;
+}
+
+/**
+ * Convert any image data URL to JPEG format using canvas.
+ * jsPDF has unreliable PNG support in some environments,
+ * but JPEG always works.
+ */
+async function convertToJPEG(dataUrl: string): Promise<string> {
+  // If already JPEG, return as-is
+  if (dataUrl.startsWith("data:image/jpeg") || dataUrl.startsWith("data:image/jpg")) {
+    return dataUrl;
+  }
+
+  // In browser: use canvas to convert PNG -> JPEG
+  if (typeof window !== "undefined" && typeof document !== "undefined") {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          // Fallback: return original and hope for the best
+          resolve(dataUrl);
+          return;
+        }
+        // White background (JPEG has no transparency)
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL("image/jpeg", 0.92));
+      };
+      img.onerror = () => reject(new Error("Failed to load image for conversion"));
+      img.src = dataUrl;
+    });
+  }
+
+  // In Node.js: return as-is (server-side PDF generation won't have photos typically)
+  return dataUrl;
 }

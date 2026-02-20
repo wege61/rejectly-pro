@@ -17,10 +17,12 @@ import { GeneratedCV } from "@/types/cv";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
 import { ToolSuggestionModal } from "@/components/features/ToolSuggestionModal";
+import { CVCustomizationModal } from "@/components/features/CVCustomizationModal";
 import { ScoreBreakdownModal } from "@/components/features/ScoreBreakdownModal";
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerBody, DrawerFooter } from "@/components/ui/Drawer";
 import { CreditsCard } from "@/components/dashboard";
 import { ToolSuggestionResponse } from "@/types/toolSuggestion";
+import { CVCustomizationOptions } from "@/types/cvCustomization";
 import { ScoreBreakdown } from "@/types/scoreBreakdown";
 import { PRICING } from "@/lib/constants";
 import {
@@ -3833,6 +3835,9 @@ export default function ReportDetailPage() {
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
   const [pendingCVGeneration, setPendingCVGeneration] = useState<{ fakeItMode: boolean } | null>(null);
+  const [isCVCustomizationModalOpen, setIsCVCustomizationModalOpen] = useState(false);
+  const [pendingAdditionalTools, setPendingAdditionalTools] = useState<string[]>([]);
+  const [cvPhotoBase64, setCvPhotoBase64] = useState<string | null>(null);
   const wasGeneratingRef = useRef(false);
   const [userCredits, setUserCredits] = useState<UserCredits>({
     credits: 0,
@@ -4388,132 +4393,10 @@ export default function ReportDetailPage() {
   const handleCreateFakeItReport = async () => {
     if (!report || isGeneratingCV) return;
 
-    setIsGeneratingCV(true);
-    try {
-      // Report is already pro, generate CV with fake it mode (no credit cost)
-      // The API will handle updating both generated_cv and fake_it_mode
-      console.log('🚀 Starting fake it mode resume generation...');
-
-      const cvResponse = await fetch("/api/cv/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          reportId: report.id,
-          fakeItMode: true,
-        }),
-      });
-
-      const cvResult = await cvResponse.json();
-
-      if (!cvResponse.ok) {
-        throw new Error(cvResult.error || "Failed to generate resume");
-      }
-
-      // Refresh the report data
-      const supabase = createClient();
-      const { data: updatedReport } = await supabase
-        .from("reports")
-        .select("*")
-        .eq("id", report.id)
-        .single();
-
-      if (updatedReport) {
-        setReport(updatedReport);
-        // Update fake_it_mode state from database
-        if (updatedReport.fake_it_mode !== undefined) {
-          setFakeItMode(updatedReport.fake_it_mode);
-          console.log('📌 Updated fake_it_mode in handleUpgradeToPro:', updatedReport.fake_it_mode);
-        }
-
-        // Generate PDF on client and save to optimized_cvs via API
-        if (updatedReport.generated_cv) {
-          try {
-            const pdf = await generateCVPDF(updatedReport.generated_cv);
-            const pdfBlob = pdf.output('blob');
-
-            const userName = updatedReport.generated_cv.contact?.name || 'Optimized';
-            const sanitizedName = userName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
-            const pdfFile = new File([pdfBlob], `${sanitizedName}.pdf`, { type: 'application/pdf' });
-
-            // Use API to upload with service role (bypasses RLS)
-            const formData = new FormData();
-            formData.append('pdf', pdfFile);
-            formData.append('reportId', updatedReport.id);
-
-            const saveResponse = await fetch('/api/cv/save-optimized', {
-              method: 'POST',
-              body: formData,
-            });
-
-            const saveResult = await saveResponse.json();
-
-            if (!saveResponse.ok) {
-              console.error('Save error:', saveResult.error);
-              throw new Error(saveResult.error);
-            }
-
-            console.log('✅ Resume saved to My resume via API (fake it mode)');
-          } catch (saveError) {
-            console.error('Error saving to My resume:', saveError);
-          }
-        }
-
-        // Analyze the optimized resume to populate cache
-        console.log('📊 Analyzing optimized resume to populate cache...');
-        const analyzeResponse = await fetch("/api/cv/analyze-optimized", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            reportId: updatedReport.id,
-          }),
-        });
-
-        if (analyzeResponse.ok) {
-          const analysisResult = await analyzeResponse.json();
-          console.log('✅ Analysis complete:', {
-            optimizedScore: analysisResult.fitScore,
-            originalScore: analysisResult.originalScore,
-            fakeItMode: analysisResult.fakeItMode,
-            breakdownCount: analysisResult.improvementBreakdown?.length
-          });
-          setOptimizedScore(analysisResult.fitScore);
-          setImprovementBreakdown(analysisResult.improvementBreakdown || []);
-          if (analysisResult.optimizedScoreBreakdown) {
-            setOptimizedScoreBreakdown(analysisResult.optimizedScoreBreakdown);
-          }
-
-          // Refresh report to get updated cache from database
-          const { data: finalReport } = await supabase
-            .from("reports")
-            .select("*")
-            .eq("id", report.id)
-            .single();
-
-          if (finalReport) {
-            setReport(finalReport);
-            console.log('Report refreshed with cache:', {
-              optimizedScore: finalReport.optimized_score,
-              fakeItMode: finalReport.fake_it_mode,
-              hasBreakdown: !!finalReport.improvement_breakdown
-            });
-          }
-        } else {
-          console.error('❌ Analysis failed:', await analyzeResponse.text());
-        }
-      }
-
-      toast.success("Resume generated with Fake It Mode!");
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      toast.error(errorMessage);
-    } finally {
-      setIsGeneratingCV(false);
-    }
+    // Open customization modal instead of generating directly
+    setPendingCVGeneration({ fakeItMode: true });
+    setPendingAdditionalTools([]);
+    setIsCVCustomizationModalOpen(true);
   };
 
   const handleUpgradeToPro = async () => {
@@ -4564,11 +4447,42 @@ export default function ReportDetailPage() {
   };
 
   // Complete CV generation after tool selection (used by upgrade flow)
-  const completeUpgradeWithCV = async (additionalTools: string[] = []) => {
+  const completeUpgradeWithCV = async (additionalTools: string[] = [], customization?: CVCustomizationOptions) => {
     if (!report) return;
 
     setIsGeneratingCV(true);
     try {
+      // Upload photo to Supabase if provided
+      let photoUrl: string | undefined;
+      if (customization?.photoBase64) {
+        try {
+          // Convert base64 to blob for upload
+          const response = await fetch(customization.photoBase64);
+          const blob = await response.blob();
+          const formData = new FormData();
+          formData.append('photo', blob, 'cv-photo.png');
+
+          const uploadResponse = await fetch('/api/cv/upload-photo', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (uploadResponse.ok) {
+            const uploadResult = await uploadResponse.json();
+            photoUrl = uploadResult.url;
+          }
+        } catch (uploadError) {
+          console.error('Photo upload failed:', uploadError);
+        }
+      }
+
+      // Persist photo base64 for Preview/Download use
+      if (customization?.photoBase64) {
+        setCvPhotoBase64(customization.photoBase64);
+      } else {
+        setCvPhotoBase64(null);
+      }
+
       const cvResponse = await fetch("/api/cv/generate", {
         method: "POST",
         headers: {
@@ -4578,6 +4492,9 @@ export default function ReportDetailPage() {
           reportId: report.id,
           fakeItMode: pendingCVGeneration?.fakeItMode ?? false,
           additionalTools,
+          photoUrl,
+          colorTemplate: customization?.colorTemplateKey,
+          forceRegenerate: true,
         }),
       });
 
@@ -4601,7 +4518,11 @@ export default function ReportDetailPage() {
           // Generate PDF on client and save to optimized_cvs via API
           if (updatedData.generated_cv) {
             try {
-              const pdf = await generateCVPDF(updatedData.generated_cv);
+              const pdfOptions = {
+                colorTemplate: customization?.colorTemplateKey || updatedData.generated_cv.colorTemplate,
+                photoBase64: customization?.photoBase64 || undefined,
+              };
+              const pdf = await generateCVPDF(updatedData.generated_cv, undefined, pdfOptions);
               const pdfBlob = pdf.output('blob');
 
               const userName = updatedData.generated_cv.contact?.name || 'Optimized';
@@ -4695,25 +4616,64 @@ export default function ReportDetailPage() {
     }
   };
 
-  // Handle tool selection confirm from modal
-  const handleToolSuggestionConfirm = async (selectedTools: string[]) => {
+  // Handle tool selection confirm from modal -> open customization modal
+  const handleToolSuggestionConfirm = (selectedTools: string[]) => {
     setIsToolSuggestionModalOpen(false);
     setToolSuggestions(null);
-    await completeUpgradeWithCV(selectedTools);
+    setPendingAdditionalTools(selectedTools);
+    setIsCVCustomizationModalOpen(true);
   };
 
-  // Handle skip from tool suggestion modal
-  const handleToolSuggestionSkip = async () => {
+  // Handle skip from tool suggestion modal -> open customization modal
+  const handleToolSuggestionSkip = () => {
     setIsToolSuggestionModalOpen(false);
     setToolSuggestions(null);
-    await completeUpgradeWithCV([]);
+    setPendingAdditionalTools([]);
+    setIsCVCustomizationModalOpen(true);
+  };
+
+  // Handle CV customization confirm -> generate CV
+  const handleCVCustomizationConfirm = async (options: CVCustomizationOptions) => {
+    setIsCVCustomizationModalOpen(false);
+    await completeUpgradeWithCV(pendingAdditionalTools, options);
+  };
+
+  // Handle skip from CV customization modal
+  const handleCVCustomizationSkip = async () => {
+    setIsCVCustomizationModalOpen(false);
+    await completeUpgradeWithCV(pendingAdditionalTools);
+  };
+
+  // Helper: fetch photo from URL and convert to base64 for PDF rendering
+  const fetchPhotoAsBase64 = async (url: string): Promise<string | undefined> => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) return undefined;
+      const blob = await response.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = () => resolve(undefined);
+        reader.readAsDataURL(blob);
+      });
+    } catch {
+      return undefined;
+    }
   };
 
   const handlePreviewCV = async () => {
     if (!report?.generated_cv) return;
 
     try {
-      const pdf = await generateCVPDF(report.generated_cv);
+      // Use persisted base64 first, fall back to fetching from URL
+      let photoBase64: string | undefined = cvPhotoBase64 || undefined;
+      if (!photoBase64 && report.generated_cv.photoUrl) {
+        photoBase64 = await fetchPhotoAsBase64(report.generated_cv.photoUrl);
+      }
+      const pdf = await generateCVPDF(report.generated_cv, undefined, {
+        colorTemplate: report.generated_cv.colorTemplate,
+        photoBase64,
+      });
       const pdfBlob = pdf.output("blob");
       const blobUrl = URL.createObjectURL(pdfBlob);
       setPdfPreviewUrl(blobUrl);
@@ -4752,7 +4712,14 @@ export default function ReportDetailPage() {
       setReport((prev) => prev ? { ...prev, generated_cv: data.cv } : null);
 
       // Generate and preview the new PDF
-      const pdf = await generateCVPDF(data.cv);
+      let regenPhoto: string | undefined = cvPhotoBase64 || undefined;
+      if (!regenPhoto && data.cv.photoUrl) {
+        regenPhoto = await fetchPhotoAsBase64(data.cv.photoUrl);
+      }
+      const pdf = await generateCVPDF(data.cv, undefined, {
+        colorTemplate: data.cv.colorTemplate,
+        photoBase64: regenPhoto,
+      });
       const pdfBlob = pdf.output("blob");
       const blobUrl = URL.createObjectURL(pdfBlob);
       setPdfPreviewUrl(blobUrl);
@@ -4798,7 +4765,15 @@ export default function ReportDetailPage() {
     if (!report?.generated_cv) return;
 
     try {
-      const pdf = await generateCVPDF(report.generated_cv);
+      // Use persisted base64 first, fall back to fetching from URL
+      let photoBase64: string | undefined = cvPhotoBase64 || undefined;
+      if (!photoBase64 && report.generated_cv.photoUrl) {
+        photoBase64 = await fetchPhotoAsBase64(report.generated_cv.photoUrl);
+      }
+      const pdf = await generateCVPDF(report.generated_cv, undefined, {
+        colorTemplate: report.generated_cv.colorTemplate,
+        photoBase64,
+      });
       // Use just the name for better ATS compatibility
       const fileName = `${report.generated_cv.contact.name.replace(
         /\s+/g,
@@ -4861,7 +4836,14 @@ export default function ReportDetailPage() {
     setSelectedImprovement(improvement);
 
     try {
-      const pdf = await generateCVPDF(report.generated_cv, improvement.section);
+      let photoBase64ForImprovement: string | undefined = cvPhotoBase64 || undefined;
+      if (!photoBase64ForImprovement && report.generated_cv.photoUrl) {
+        photoBase64ForImprovement = await fetchPhotoAsBase64(report.generated_cv.photoUrl);
+      }
+      const pdf = await generateCVPDF(report.generated_cv, improvement.section, {
+        colorTemplate: report.generated_cv.colorTemplate,
+        photoBase64: photoBase64ForImprovement,
+      });
       const pdfBlob = pdf.output("blob");
       const blobUrl = URL.createObjectURL(pdfBlob);
       setPdfPreviewUrl(blobUrl);
@@ -5939,7 +5921,13 @@ export default function ReportDetailPage() {
                             // Generate PDF on client and save to optimized_cvs via API
                             if (updatedReport.generated_cv) {
                               try {
-                                const pdf = await generateCVPDF(updatedReport.generated_cv);
+                                const inlinePhoto = updatedReport.generated_cv.photoUrl
+                                  ? await fetchPhotoAsBase64(updatedReport.generated_cv.photoUrl)
+                                  : undefined;
+                                const pdf = await generateCVPDF(updatedReport.generated_cv, undefined, {
+                                  colorTemplate: updatedReport.generated_cv.colorTemplate,
+                                  photoBase64: inlinePhoto,
+                                });
                                 const pdfBlob = pdf.output('blob');
 
                                 const userName = updatedReport.generated_cv.contact?.name || 'Optimized';
@@ -6492,6 +6480,18 @@ export default function ReportDetailPage() {
         onConfirm={handleToolSuggestionConfirm}
         onSkip={handleToolSuggestionSkip}
         suggestions={toolSuggestions}
+      />
+
+      {/* CV Customization Modal */}
+      <CVCustomizationModal
+        isOpen={isCVCustomizationModalOpen}
+        onClose={() => {
+          setIsCVCustomizationModalOpen(false);
+          setPendingCVGeneration(null);
+        }}
+        onConfirm={handleCVCustomizationConfirm}
+        onSkip={handleCVCustomizationSkip}
+        documentId={report?.cv_id}
       />
 
       {/* Cover Letter Generator Modal */}

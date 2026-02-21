@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import path from "path";
+import fs from "fs";
 // @ts-ignore - Ignore missing types for legacy build
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 
+// Vercel NFT HACK: Read the file so Vercel trace includes it in the Serverless build output
+const workerPath = path.join(process.cwd(), "public", "pdfjs", "pdf.worker.mjs");
+try { fs.readFileSync(workerPath); } catch(e) {}
+
 // Tell pdfjs to use the included worker's absolute path
-pdfjsLib.GlobalWorkerOptions.workerSrc = path.join(process.cwd(), "node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs");
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath;
 
 // Polyfill for Node.js environments if needed
 if (typeof Promise.withResolvers === "undefined") {

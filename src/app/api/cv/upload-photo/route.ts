@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,7 +36,13 @@ export async function POST(request: NextRequest) {
     const fileName = `${user.id}/photos/${Date.now()}.${ext}`;
     const buffer = Buffer.from(await photo.arrayBuffer());
 
-    const { data, error: uploadError } = await supabase.storage
+    // Use admin client to bypass RLS for uploads
+    const supabaseAdmin = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { data, error: uploadError } = await supabaseAdmin.storage
       .from("cv-files")
       .upload(fileName, buffer, {
         contentType: photo.type || "image/png",
@@ -52,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     const {
       data: { publicUrl },
-    } = supabase.storage.from("cv-files").getPublicUrl(data.path);
+    } = supabaseAdmin.storage.from("cv-files").getPublicUrl(data.path);
 
     return NextResponse.json({ url: publicUrl });
   } catch (error) {

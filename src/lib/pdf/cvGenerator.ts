@@ -87,19 +87,47 @@ export async function generateCVPDF(
       const photoX = pageWidth - margin - photoSize;
       const photoY = yPosition - 2;
 
-      // Draw white circle background
       doc.setFillColor("#ffffff");
       doc.circle(photoX + photoSize / 2, photoY + photoSize / 2, photoSize / 2, "F");
 
       // Convert photo to JPEG via canvas for maximum jsPDF compatibility
-      // (jsPDF PNG support is unreliable in some environments)
       const jpegDataUrl = await convertToJPEG(photoBase64);
       console.log("[cvGenerator] After conversion, format:", jpegDataUrl.substring(0, 30));
 
-      // Detect format from data URL for jsPDF
       const format = jpegDataUrl.includes("image/png") ? "PNG" : "JPEG";
-      doc.addImage(jpegDataUrl, format, photoX, photoY, photoSize, photoSize);
-      console.log("[cvGenerator] Photo added successfully");
+      
+      // Calculate object-fit: cover dimensions
+      const imgProps = doc.getImageProperties(jpegDataUrl);
+      const imgRatio = imgProps.width / imgProps.height;
+      let targetW = photoSize;
+      let targetH = photoSize;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      if (imgRatio > 1) {
+        // Landscape
+        targetW = photoSize * imgRatio;
+        offsetX = (targetW - photoSize) / 2;
+      } else if (imgRatio < 1) {
+        // Portrait
+        targetH = photoSize / imgRatio;
+        offsetY = (targetH - photoSize) / 2;
+      }
+
+      // IMPORTANT: doc.clip() and saveGraphicsState() are broken in many jsPDF versions and cause text to disappear.
+      // Instead we draw the image and then draw four very thick white arcs/corners over the square edges to make it look circular.
+      // Easiest faux-clip: just draw a very thick circle over it.
+      
+      const imgSide = Math.max(targetW, targetH);
+      doc.addImage(jpegDataUrl, format, photoX - offsetX, photoY - offsetY, targetW, targetH);
+      
+      // Faux-clipping: draw a very thick white circular border around the image to cover the square corners
+      const coverThickness = imgSide / 2; // Thick enough to cover corners
+      doc.setDrawColor("#ffffff");
+      doc.setLineWidth(coverThickness);
+      doc.circle(photoX + photoSize / 2, photoY + photoSize / 2, photoSize / 2 + (coverThickness / 2), "S");
+      
+      console.log("[cvGenerator] Photo added successfully with robust border-based faux-clip");
 
       // Draw circular border on top
       doc.setDrawColor(COLORS.primary);

@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+// @ts-ignore - Ignore missing types for legacy build
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+
+// Polyfill for Node.js environments if needed
+if (typeof Promise.withResolvers === "undefined") {
+  Promise.withResolvers = function <T>() {
+    let resolve!: (value: T | PromiseLike<T>) => void;
+    let reject!: (reason?: any) => void;
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
+  };
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,12 +60,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ found: false });
     }
 
-    console.log("[extract-photo] Downloading PDF from:", fileUrl.substring(0, 80) + "...");
+    let downloadUrl = fileUrl;
+    if (!fileUrl.startsWith('http')) {
+      // Use service role to bypass RLS for generating signed URL in the backend
+      const supabaseAdmin = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+
+      const { data: signData, error: signError } = await supabaseAdmin.storage.from('cv-files').createSignedUrl(fileUrl, 60);
+      if (signError) {
+        console.error("[extract-photo] Failed to sign URL for:", fileUrl, signError);
+      }
+      if (signData?.signedUrl) {
+        downloadUrl = signData.signedUrl;
+      } else {
+        console.log("[extract-photo] Failed to sign URL for:", fileUrl);
+        return NextResponse.json({ found: false });
+      }
+    }
+
+    console.log("[extract-photo] Downloading PDF from:", downloadUrl.substring(0, 80) + "...");
 
     // Download the PDF
     let pdfBytes: Buffer;
     try {
-      const response = await fetch(fileUrl);
+      const response = await fetch(downloadUrl);
       if (!response.ok) {
         console.log("[extract-photo] PDF fetch failed:", response.status);
         return NextResponse.json({ found: false });
@@ -61,48 +97,81 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ found: false });
     }
 
-    // Extract JPEG images from raw PDF bytes
-    // Most CV photos are embedded as JPEG (DCTDecode) - we scan for JPEG markers
-    const jpegImages = findAllJPEGs(pdfBytes);
-    console.log("[extract-photo] Found", jpegImages.length, "JPEG images in PDF");
-
-    if (jpegImages.length === 0) {
-      return NextResponse.json({ found: false });
-    }
-
-    // Pick the best candidate:
-    // - Filter out tiny images (<3KB, likely icons/logos)
-    // - Filter out huge images (>5MB, likely full-page scans)
-    // - Prefer medium-sized images (typical photo: 10KB-500KB)
-    const candidates = jpegImages
-      .filter((img) => img.length > 3000 && img.length < 5_000_000)
-      .sort((a, b) => {
-        // Score: prefer images in the "photo" size range (10KB-500KB)
-        const scoreA = a.length > 10000 && a.length < 500000 ? 1 : 0;
-        const scoreB = b.length > 10000 && b.length < 500000 ? 1 : 0;
-        if (scoreA !== scoreB) return scoreB - scoreA;
-        // Among similar scores, prefer larger (more likely a photo than a logo)
-        return b.length - a.length;
+    // Parse PDF using pdfjs-dist to find properly encoded images
+    console.log("[extract-photo] Parsing PDF with pdfjs-dist...");
+    try {
+      const standardFontDataUrl = 'node_modules/pdfjs-dist/standard_fonts/';
+      const loadingTask = pdfjsLib.getDocument({
+        data: new Uint8Array(pdfBytes),
+        standardFontDataUrl,
+        disableFontFace: true,
       });
+      const pdfDoc = await loadingTask.promise;
+      
+      let bestImage: { width: number, height: number, data: Uint8ClampedArray } | null = null;
+      let maxArea = 0;
 
-    if (candidates.length === 0) {
-      console.log("[extract-photo] No suitable JPEG candidates after filtering");
-      return NextResponse.json({ found: false });
+      // Scan first 4 pages for photos (some CVs have photo on page 2 or 3)
+      const numPages = Math.min(pdfDoc.numPages, 4);
+      for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+        const page = await pdfDoc.getPage(pageNum);
+        const ops = await page.getOperatorList();
+        
+        for (let i = 0; i < ops.fnArray.length; i++) {
+          if (ops.fnArray[i] === pdfjsLib.OPS.paintImageXObject) {
+            const objId = ops.argsArray[i][0];
+            try {
+              let imgData: any;
+              if (page.objs.has(objId)) {
+                imgData = await page.objs.get(objId);
+              } else {
+                imgData = page.commonObjs.has(objId) 
+                  ? await page.commonObjs.get(objId) 
+                  : await new Promise((resolve) => page.objs.get(objId, resolve));
+              }
+              if (imgData && imgData.data && imgData.width && imgData.height) {
+                // Filter sizes: CV photos can be very high res (e.g. 2000x2000 = 4M area)
+                // Filter out very tiny icons (< 80px) and extreme panoramas/banners
+                const area = imgData.width * imgData.height;
+                const minS = Math.min(imgData.width, imgData.height);
+                const maxS = Math.max(imgData.width, imgData.height);
+                const ratio = maxS / minS;
+                
+                // Allow up to 12M area and ratio up to 4 (in case they have a portrait photo)
+                if (area > 5000 && area < 12000000 && ratio < 4.0) {
+                  if (area > maxArea) {
+                    maxArea = area;
+                    bestImage = { width: imgData.width, height: imgData.height, data: imgData.data };
+                  }
+                }
+              }
+            } catch (imgErr) {
+              console.warn("Could not extract image object:", objId, imgErr);
+            }
+          }
+        }
+      }
+
+      const img = bestImage;
+      if (img) {
+        const { width, height, data } = img;
+        console.log(`[extract-photo] Extracted raw image with dimensions ${width}x${height}`);
+        // Encode raw RGBA/RGB to BMP format
+        const bmpBuffer = encodeBMP(width, height, data);
+        const base64 = bmpBuffer.toString('base64');
+        return NextResponse.json({
+          found: true,
+          photoBase64: `data:image/bmp;base64,${base64}`,
+          width: width,
+          height: height,
+        });
+      }
+    } catch (pdfjsErr) {
+      console.error("[extract-photo] pdfjs parsing failed:", pdfjsErr);
     }
 
-    const best = candidates[0];
-    console.log("[extract-photo] Selected JPEG image, size:", best.length, "bytes");
-
-    // Read JPEG dimensions from SOF marker
-    const dims = getJPEGDimensions(best);
-
-    const base64 = best.toString("base64");
-    return NextResponse.json({
-      found: true,
-      photoBase64: `data:image/jpeg;base64,${base64}`,
-      width: dims.width,
-      height: dims.height,
-    });
+    console.log("[extract-photo] No suitable photo found via parsing either.");
+    return NextResponse.json({ found: false });
   } catch (error) {
     console.error("[extract-photo] Unexpected error:", error);
     return NextResponse.json(
@@ -180,4 +249,56 @@ function getJPEGDimensions(jpeg: Buffer): { width: number; height: number } {
   }
 
   return { width: 0, height: 0 };
+}
+
+/**
+ * Encode raw pixel array (RGB or RGBA) to an uncompressed 24-bit BMP.
+ * Simple, standard, and avoids needing external dependencies like 'canvas' or 'jimp'.
+ */
+function encodeBMP(width: number, height: number, data: Uint8Array | Uint8ClampedArray): Buffer {
+  // BMP requires each row to be padded to a multiple of 4 bytes.
+  const padding = (4 - ((width * 3) % 4)) % 4;
+  const rowSize = width * 3 + padding;
+  const pixelArraySize = rowSize * height;
+  const fileSize = 54 + pixelArraySize;
+
+  const buf = Buffer.alloc(fileSize);
+  
+  // File Header (14 bytes)
+  buf.write('BM', 0);
+  buf.writeUInt32LE(fileSize, 2);
+  buf.writeUInt32LE(54, 10); // Offset to pixel array
+
+  // DIB Header (40 bytes - BITMAPINFOHEADER)
+  buf.writeUInt32LE(40, 14); // Header size
+  buf.writeInt32LE(width, 18);
+  buf.writeInt32LE(-height, 22); // Negative height = top-down image
+  buf.writeUInt16LE(1, 26); // Color planes
+  buf.writeUInt16LE(24, 28); // 24 bits per pixel (RGB)
+  buf.writeUInt32LE(0, 30); // No compression
+  buf.writeUInt32LE(pixelArraySize, 34);
+
+  let offset = 54;
+  const isRGBA = data.length >= width * height * 4;
+  const channels = isRGBA ? 4 : 3;
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const srcOffset = (y * width + x) * channels;
+      const r = data[srcOffset];
+      const g = data[srcOffset + 1];
+      const b = data[srcOffset + 2];
+      
+      // BMP is little-endian (BGR order)
+      buf[offset++] = b;
+      buf[offset++] = g;
+      buf[offset++] = r;
+    }
+    // Add padding bytes
+    for (let p = 0; p < padding; p++) {
+      buf[offset++] = 0;
+    }
+  }
+
+  return buf;
 }

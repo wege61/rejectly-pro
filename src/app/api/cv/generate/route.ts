@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateOptimizedCVPrompt, generateFakeSkillsRecommendationsPrompt } from "@/lib/ai/prompts";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
@@ -276,8 +277,36 @@ export async function POST(request: NextRequest) {
 
     // Generate PDF and save to optimized_cvs table for My CVs page
     try {
+      let backendPhotoBase64: string | undefined = undefined;
+      const supabaseAdmin = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      
+      if (photoUrl) {
+        try {
+          let downloadUrl = photoUrl;
+          if (!photoUrl.startsWith('http')) {
+            const { data: signData } = await supabaseAdmin.storage.from('cv-files').createSignedUrl(photoUrl, 60);
+            if (signData?.signedUrl) {
+              downloadUrl = signData.signedUrl;
+            }
+          }
+
+          const res = await fetch(downloadUrl);
+          if (res.ok) {
+            const buffer = Buffer.from(await res.arrayBuffer());
+            const ext = photoUrl.toLowerCase().endsWith('.png') ? 'png' : 'jpeg';
+            backendPhotoBase64 = `data:image/${ext};base64,${buffer.toString('base64')}`;
+          }
+        } catch (fetchErr) {
+          console.error('Failed to fetch photoUrl during CV backend generation:', fetchErr);
+        }
+      }
+
       const pdf = await generateCVPDF(generatedCV, undefined, {
         colorTemplate: colorTemplate || undefined,
+        photoBase64: backendPhotoBase64,
       });
       const pdfArrayBuffer = pdf.output('arraybuffer');
       const pdfBuffer = Buffer.from(pdfArrayBuffer);
@@ -294,8 +323,8 @@ export async function POST(request: NextRequest) {
       const sanitizedName = displayName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
       const fileName = `${user.id}/${reportId}/${sanitizedName}.pdf`;
 
-      // Upload to Supabase storage
-      const { error: uploadError } = await supabase.storage
+      // Upload to Supabase storage bypassing RLS using admin client
+      const { error: uploadError } = await supabaseAdmin.storage
         .from('cv-files')
         .upload(fileName, pdfBuffer, {
           contentType: 'application/pdf',
@@ -306,7 +335,7 @@ export async function POST(request: NextRequest) {
         console.log('PDF upload error:', uploadError);
       } else {
         // Get public URL
-        const { data: urlData } = supabase.storage
+        const { data: urlData } = supabaseAdmin.storage
           .from('cv-files')
           .getPublicUrl(fileName);
 

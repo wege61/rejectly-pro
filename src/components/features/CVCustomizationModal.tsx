@@ -15,6 +15,9 @@ interface CVCustomizationModalProps {
   onConfirm: (options: CVCustomizationOptions) => void;
   onSkip: () => void;
   documentId?: string;
+  existingPhotoUrl?: string | null;
+  existingPhotoBase64?: string | null;
+  initialTemplate?: string;
 }
 
 // --- Styled Components ---
@@ -272,7 +275,7 @@ const SelectedBadge = styled.div<{ $color: string }>`
   }
 `;
 
-type PhotoChoice = "extracted" | "upload" | "none";
+type PhotoChoice = "existing" | "extracted" | "upload" | "none";
 
 export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
   isOpen,
@@ -280,6 +283,9 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
   onConfirm,
   onSkip,
   documentId,
+  existingPhotoUrl,
+  existingPhotoBase64,
+  initialTemplate,
 }) => {
   const [photoChoice, setPhotoChoice] = useState<PhotoChoice>("none");
   const [extractedPhoto, setExtractedPhoto] = useState<string | null>(null);
@@ -288,14 +294,18 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
   const [extractionDone, setExtractionDone] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("classic-blue");
 
-  // Reset state when modal opens
+  // Reset state when modal opens or existing photo data changes
   useEffect(() => {
     if (isOpen) {
-      setPhotoChoice("none");
+      if (existingPhotoBase64 || existingPhotoUrl) {
+        setPhotoChoice("existing");
+      } else if (photoChoice === "existing") {
+        setPhotoChoice("none");
+      }
       setExtractedPhoto(null);
       setUploadedPhoto(null);
       setExtractionDone(false);
-      setSelectedTemplate("classic-blue");
+      setSelectedTemplate(initialTemplate || "classic-blue");
 
       // Try to extract photo from PDF
       if (documentId) {
@@ -304,7 +314,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
         setExtractionDone(true);
       }
     }
-  }, [isOpen, documentId]);
+  }, [isOpen, documentId, existingPhotoBase64, existingPhotoUrl]);
 
   const extractPhoto = async (docId: string) => {
     setIsExtractingPhoto(true);
@@ -319,7 +329,9 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
         const result = await response.json();
         if (result.found && result.photoBase64) {
           setExtractedPhoto(result.photoBase64);
-          setPhotoChoice("extracted");
+          if (!existingPhotoUrl && !existingPhotoBase64) {
+            setPhotoChoice("extracted");
+          }
         }
       }
     } catch (error) {
@@ -353,6 +365,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
   });
 
   const getCurrentPhoto = (): string | null => {
+    if (photoChoice === "existing") return existingPhotoBase64 || existingPhotoUrl || null;
     if (photoChoice === "extracted") return extractedPhoto;
     if (photoChoice === "upload") return uploadedPhoto;
     return null;
@@ -401,6 +414,22 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
                 )}
 
                 <PhotoOptions>
+                  {(existingPhotoBase64 || existingPhotoUrl) && (
+                    <PhotoOption
+                      $isSelected={photoChoice === "existing"}
+                      onClick={() => setPhotoChoice("existing")}
+                    >
+                      <input
+                        type="radio"
+                        name="photoChoice"
+                        checked={photoChoice === "existing"}
+                        onChange={() => setPhotoChoice("existing")}
+                      />
+                      <RadioCircle $isSelected={photoChoice === "existing"} />
+                      <OptionLabel>Use Current Photo</OptionLabel>
+                    </PhotoOption>
+                  )}
+
                   {extractedPhoto && (
                     <PhotoOption
                       $isSelected={photoChoice === "extracted"}
@@ -413,7 +442,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
                         onChange={() => setPhotoChoice("extracted")}
                       />
                       <RadioCircle $isSelected={photoChoice === "extracted"} />
-                      <OptionLabel>Use This Photo</OptionLabel>
+                      <OptionLabel>Use Photo from Original CV</OptionLabel>
                     </PhotoOption>
                   )}
 

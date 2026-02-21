@@ -4452,27 +4452,33 @@ export default function ReportDetailPage() {
 
     setIsGeneratingCV(true);
     try {
-      // Upload photo to Supabase if provided
+      // Upload photo to Supabase if provided new base64, otherwise use existing URL
       let photoUrl: string | undefined;
       if (customization?.photoBase64) {
-        try {
-          // Convert base64 to blob for upload
-          const response = await fetch(customization.photoBase64);
-          const blob = await response.blob();
-          const formData = new FormData();
-          formData.append('photo', blob, 'cv-photo.png');
+        if (customization.photoBase64.startsWith('http')) {
+          // If it's already an existing URL, just use it
+          photoUrl = customization.photoBase64;
+          console.log('Using existing photo URL for CV:', photoUrl);
+        } else {
+          try {
+            // Convert base64 to blob for upload
+            const response = await fetch(customization.photoBase64);
+            const blob = await response.blob();
+            const formData = new FormData();
+            formData.append('photo', blob, 'cv-photo.png');
 
-          const uploadResponse = await fetch('/api/cv/upload-photo', {
-            method: 'POST',
-            body: formData,
-          });
+            const uploadResponse = await fetch('/api/cv/upload-photo', {
+              method: 'POST',
+              body: formData,
+            });
 
-          if (uploadResponse.ok) {
-            const uploadResult = await uploadResponse.json();
-            photoUrl = uploadResult.url;
+            if (uploadResponse.ok) {
+              const uploadResult = await uploadResponse.json();
+              photoUrl = uploadResult.url;
+            }
+          } catch (uploadError) {
+            console.error('Photo upload failed:', uploadError);
           }
-        } catch (uploadError) {
-          console.error('Photo upload failed:', uploadError);
         }
       }
 
@@ -4518,9 +4524,19 @@ export default function ReportDetailPage() {
           // Generate PDF on client and save to optimized_cvs via API
           if (updatedData.generated_cv) {
             try {
+              let finalPhotoBase64 = customization?.photoBase64;
+              
+              // If the photo is a URL (from existing photo), we must fetch it as base64 for jsPDF
+              if (finalPhotoBase64 && finalPhotoBase64.startsWith('http')) {
+                const fetched = await fetchPhotoAsBase64(finalPhotoBase64);
+                if (fetched) {
+                  finalPhotoBase64 = fetched;
+                }
+              }
+
               const pdfOptions = {
                 colorTemplate: customization?.colorTemplateKey || updatedData.generated_cv.colorTemplate,
-                photoBase64: customization?.photoBase64 || undefined,
+                photoBase64: finalPhotoBase64 || undefined,
               };
               const pdf = await generateCVPDF(updatedData.generated_cv, undefined, pdfOptions);
               const pdfBlob = pdf.output('blob');

@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import path from "path";
 // @ts-ignore - Ignore missing types for legacy build
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+
+// Force Vercel to include the worker in the Serverless bundle
+import "pdfjs-dist/legacy/build/pdf.worker.mjs";
+
+// Tell pdfjs to use the included worker's absolute path
+pdfjsLib.GlobalWorkerOptions.workerSrc = path.join(process.cwd(), "node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs");
 
 // Polyfill for Node.js environments if needed
 if (typeof Promise.withResolvers === "undefined") {
@@ -100,11 +107,10 @@ export async function POST(request: NextRequest) {
     // Parse PDF using pdfjs-dist to find properly encoded images
     console.log("[extract-photo] Parsing PDF with pdfjs-dist...");
     try {
-      const standardFontDataUrl = 'node_modules/pdfjs-dist/standard_fonts/';
       const loadingTask = pdfjsLib.getDocument({
         data: new Uint8Array(pdfBytes),
-        standardFontDataUrl,
         disableFontFace: true,
+        isEvalSupported: false,
       });
       const pdfDoc = await loadingTask.promise;
       

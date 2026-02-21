@@ -5,9 +5,6 @@ import path from "path";
 // @ts-ignore - Ignore missing types for legacy build
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 
-// Force Vercel to include the worker in the Serverless bundle
-import "pdfjs-dist/legacy/build/pdf.worker.mjs";
-
 // Tell pdfjs to use the included worker's absolute path
 pdfjsLib.GlobalWorkerOptions.workerSrc = path.join(process.cwd(), "node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs");
 

@@ -30,6 +30,9 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'styled-components'],
   },
   serverExternalPackages: ['pdfjs-dist'],
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'],
+  },
   poweredByHeader: false,
 };
 

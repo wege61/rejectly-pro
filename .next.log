@@ -265,3 +265,25 @@ Access status: {
   syscall: 'open',
   path: '/Users/alp179/Downloads/rejectly-pro/.next/static/development/_buildManifest.js.tmp.k6hoe41p9f'
 }
+ ✓ Compiled in 1566ms
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to /var/folders/tb/0391rbpn4lsb6jdrcw6365vm0000gn/T/next-panic-d899a7fce7d36664cfb48907296715dc.log.
+
+To help make Turbopack better, report this error by ]8;;https://github.com/vercel/next.js/discussions/new?category=turbopack-error-report&title=Turbopack%20Error%3A%20Next.js%20package%20not%20found&body=Turbopack%20version%3A%20%60911504000%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0ANext.js%20package%20not%20found%0A%0ADebug%20info%3A%0A-%20Execution%20of%20subscribe_issues_and_diags_operation%20failed%0A-%20Execution%20of%20endpoint_server_changed_operation%20failed%0A-%20Execution%20of%20pick_endpoint%20failed%0A-%20Execution%20of%20entrypoints_without_collectibles_operation%20failed%0A-%20Execution%20of%20Project%3A%3Aentrypoints%20failed%0A-%20Execution%20of%20AppProject%3A%3Aroutes%20failed%0A-%20Execution%20of%20directory_tree_to_entrypoints_internal%20failed%0A-%20Execution%20of%20get_next_package%20failed%0A-%20Next.js%20package%20not%20found%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace\clicking here.]8;;\
+-----
+
+Error [TurbopackInternalError]: Next.js package not found
+
+Debug info:
+- Execution of get_entrypoints_with_issues_operation failed
+- Execution of EntrypointsOperation::new failed
+- Execution of Project::entrypoints failed
+- Execution of AppProject::routes failed
+- Execution of directory_tree_to_entrypoints_internal failed
+- Execution of get_next_package failed
+- Next.js package not found
+    at <unknown> (TurbopackInternalError: Next.js package not found) {
+  location: undefined
+}
+[?25h

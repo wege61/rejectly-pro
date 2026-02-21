@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import path from "path";
 // @ts-ignore - Ignore missing types for legacy build
-const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 
 // Polyfill for Node.js environments if needed
 if (typeof Promise.withResolvers === "undefined") {
@@ -101,14 +100,11 @@ export async function POST(request: NextRequest) {
     // Parse PDF using pdfjs-dist to find properly encoded images
     console.log("[extract-photo] Parsing PDF with pdfjs-dist...");
     try {
-      // Use absolute fs path instead of require.resolve() because Next.js Turbopack 
-      // aggressively intercepts require.resolve() and ruins the path with virtual [externals] tags.
-      pdfjsLib.GlobalWorkerOptions.workerSrc = path.join(process.cwd(), "node_modules", "pdfjs-dist", "legacy", "build", "pdf.worker.js");
-
+      const standardFontDataUrl = 'node_modules/pdfjs-dist/standard_fonts/';
       const loadingTask = pdfjsLib.getDocument({
         data: new Uint8Array(pdfBytes),
+        standardFontDataUrl,
         disableFontFace: true,
-        isEvalSupported: false,
       });
       const pdfDoc = await loadingTask.promise;
       
@@ -134,23 +130,19 @@ export async function POST(request: NextRequest) {
                   : await new Promise((resolve) => page.objs.get(objId, resolve));
               }
               if (imgData && imgData.data && imgData.width && imgData.height) {
+                // Filter sizes: CV photos can be very high res (e.g. 2000x2000 = 4M area)
+                // Filter out very tiny icons (< 80px) and extreme panoramas/banners
                 const area = imgData.width * imgData.height;
                 const minS = Math.min(imgData.width, imgData.height);
                 const maxS = Math.max(imgData.width, imgData.height);
                 const ratio = maxS / minS;
                 
-                console.log(`[extract-photo] Detected Object Dimensions: ${imgData.width}x${imgData.height} (Area: ${area})`);
-
-                // VASTLY RELAXED FILTER: Accept almost any image that isn't a 1x1 dot or a 1000x5 line.
-                // Down to 1000 area, up to 12M, and a very forgiving ratio up to 8.0
-                if (area > 1000 && area < 12000000 && ratio < 8.0) {
+                // Allow up to 12M area and ratio up to 4 (in case they have a portrait photo)
+                if (area > 5000 && area < 12000000 && ratio < 4.0) {
                   if (area > maxArea) {
                     maxArea = area;
                     bestImage = { width: imgData.width, height: imgData.height, data: imgData.data };
-                    console.log("[extract-photo] ✅ Accepted as candidate photo!");
                   }
-                } else {
-                  console.log(`[extract-photo] ❌ Rejected: Area or Ratio out of bounds (Ratio: ${ratio}).`);
                 }
               }
             } catch (imgErr) {

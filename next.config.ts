@@ -29,6 +29,9 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'styled-components'],
   },
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./node_modules/pdfjs-dist/**/*'],
+  },
   serverExternalPackages: ['pdfjs-dist'],
   poweredByHeader: false,
 };

@@ -4,6 +4,8 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import path from "path";
 // @ts-ignore - Ignore missing types for legacy build
 const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
+// Force fake worker initialization on the main Node thread, completely bypassing workerSrc file routing bugs
+require("pdfjs-dist/legacy/build/pdf.worker.js");
 
 // Polyfill for Node.js environments if needed
 if (typeof Promise.withResolvers === "undefined") {
@@ -101,10 +103,6 @@ export async function POST(request: NextRequest) {
     // Parse PDF using pdfjs-dist to find properly encoded images
     console.log("[extract-photo] Parsing PDF with pdfjs-dist...");
     try {
-      // Use absolute fs path instead of require.resolve() because Next.js Turbopack 
-      // aggressively intercepts require.resolve() and ruins the path with virtual [externals] tags.
-      pdfjsLib.GlobalWorkerOptions.workerSrc = path.join(process.cwd(), "node_modules", "pdfjs-dist", "legacy", "build", "pdf.worker.js");
-
       const loadingTask = pdfjsLib.getDocument({
         data: new Uint8Array(pdfBytes),
         disableFontFace: true,

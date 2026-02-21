@@ -21,7 +21,6 @@
     "motion": "^12.23.25",
     "next": "^15.5.9",
     "openai": "^6.5.0",
-    "pdf-parse": "^2.4.5",
     "pdf-parse-fork": "^1.2.0",
     "pdf2json": "^4.0.0",
     "pdfjs-dist": "^3.11.174",
@@ -48,5 +47,8 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.5",
     "typescript": "^5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": []
   }
 }

@@ -10,7 +10,7 @@ AI-powered CV & job posting match analysis - "Why was I rejected?"
 - pnpm (`npm install -g pnpm`)
 - Supabase account
 - OpenAI API key.
-- Stripe account
+- Stripe accountt
 
 ### Installation
 

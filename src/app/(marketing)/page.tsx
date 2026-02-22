@@ -7,6 +7,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ROUTES } from "@/lib/constants";
 import { Footer } from "@/components/ui/Footer";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
+import { AnimatedATSScanner } from "@/components/marketing/AnimatedATSScanner";
 import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
 import { ProblemBentoGrid } from "@/components/marketing/ProblemBentoGrid";
 import { LampContainer } from "@/components/ui/LampContainer";
@@ -86,7 +87,7 @@ const StarIcon = () => (
 );
 
 const ArrowRightIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -95,6 +96,7 @@ const ArrowRightIcon = () => (
     />
   </svg>
 );
+
 
 const DocumentTextIcon = () => (
   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -218,6 +220,9 @@ const Container = styled.div`
   background-color: var(--bg-color);
   color: var(--text-color);
   overflow-x: clip;
+  @media (max-width: 1024px) {
+    padding-top: 60px;
+  }
 `;
 
 // ==================== HERO SECTION ====================
@@ -228,16 +233,52 @@ const HeroSection = styled.section`
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-color: var(--bg-color);
 
   @media (max-width: 768px) {
     min-height: auto;
   }
 `;
 
-const HeroHighlightWrapper = styled(HeroHighlight)`
+const AppleHeroBackground = styled.div`
   min-height: 100vh;
+  width: 100%;
   padding: 80px 24px 60px;
+  position: relative;
+  overflow: hidden;
+
+  /* Massive, diffused ambient light */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    left: 40%;
+    width: 100vw;
+    height: 100vw;
+    background: radial-gradient(circle, rgba(53, 162, 159, 0.12) 0%, rgba(53, 162, 159, 0.05) 30%, transparent 60%);
+    filter: blur(100px);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  /* Secondary subtle warm light for depth */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    right: -10%;
+    width: 80vw;
+    height: 80vw;
+    background: radial-gradient(circle, rgba(238, 90, 90, 0.06) 0%, transparent 50%);
+    filter: blur(120px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 
   @media (max-width: 768px) {
     min-height: auto;
@@ -249,11 +290,40 @@ const HeroHighlightWrapper = styled(HeroHighlight)`
 const HeroContent = styled.div`
   position: relative;
   z-index: 1;
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 64px;
+  align-items: center;
   text-align: center;
-  animation: ${fadeIn} 0.6s ease-out;
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: 1.1fr 0.9fr;
+    text-align: left;
+  }
 `;
+
+const HeroTextColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: ${fadeIn} 0.6s ease-out;
+
+  @media (min-width: 1024px) {
+    align-items: flex-start;
+  }
+`;
+
+const HeroVisualColumn = styled.div`
+  display: none;
+  
+  @media (min-width: 1024px) {
+    display: block;
+    animation: ${fadeIn} 0.6s ease-out 0.3s backwards;
+  }
+`;
+
 
 const TrustBadge = styled.div`
   display: inline-flex;
@@ -279,13 +349,19 @@ const TrustBadge = styled.div`
 `;
 
 const HeroTitle = styled.h1`
-  font-size: 64px;
-  font-weight: 900;
-  margin-bottom: 20px;
-  line-height: 1.1;
-  animation: ${fadeIn} 0.6s ease-out 0.1s backwards;
+  font-size: 76px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+  background: linear-gradient(180deg, #FFFFFF 0%, #A1A1AA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ${fadeIn} 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  
   @media (max-width: 768px) {
-    font-size: 36px;
+    font-size: 48px;
   }
 `;
 
@@ -297,6 +373,11 @@ const HeroSubtitle = styled.p`
   max-width: 700px;
   margin-left: auto;
   margin-right: auto;
+  
+  @media (min-width: 1024px) {
+    margin-left: 0;
+    margin-right: 0;
+  }
   line-height: 1.6;
   animation: ${fadeIn} 0.6s ease-out 0.2s backwards;
 
@@ -342,21 +423,29 @@ const PrimaryButton = styled.a`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--landing-button);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+    rgba(238, 90, 90, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: #FFFFFF;
   padding: 18px 40px;
   border-radius: 9999px;
   font-weight: 700;
   font-size: 18px;
-  transition: all 0.3s ease;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 8px 24px rgba(255, 122, 115, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 8px 32px rgba(238, 90, 90, 0.35);
 
   &:hover {
-    background: #FF6A64;
-    transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(255, 122, 115, 0.4);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 100%),
+      rgba(238, 90, 90, 0.92);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.65),
+      0 8px 32px rgba(238, 90, 90, 0.5);
   }
 
   svg {
@@ -377,44 +466,24 @@ const SecondaryButton = styled.a`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #0B666A;
+  background: rgba(150, 150, 150, 0.08);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-color);
   padding: 18px 32px;
   border-radius: 9999px;
   font-weight: 600;
   font-size: 16px;
-  transition: all 0.3s ease;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   cursor: pointer;
   text-decoration: none;
-
-  [data-theme="dark"] & {
-    color: #FFFFFF;
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    color: #FFFFFF;
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-
-  [data-theme="light"] & {
-    color: #0B666A;
-    border-color: rgba(11, 102, 106, 0.2);
-  }
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-
-    [data-theme="dark"] & {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.4);
-    }
-
-    [data-theme="light"] & {
-      background: rgba(11, 102, 106, 0.05);
-      border-color: rgba(11, 102, 106, 0.3);
-    }
+    background: rgba(150, 150, 150, 0.16);
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 0, 0, 0.1);
   }
 
   svg {
@@ -433,6 +502,10 @@ const TrustIndicators = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  
+  @media (min-width: 1024px) {
+    justify-content: flex-start;
+  }
   gap: 40px;
   margin-bottom: 48px;
   animation: ${fadeIn} 0.6s ease-out 0.4s backwards
@@ -747,15 +820,18 @@ const LoadSampleButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: transparent;
-  border: 1px solid var(--border-color);
+  background: rgba(150, 150, 150, 0.08);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--text-color);
-  padding: 16px 32px;
+  padding: 16px 28px;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: ${({ theme }) => theme.radius.lg};
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 9999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
   min-width: 180px;
 
   svg {
@@ -764,9 +840,9 @@ const LoadSampleButton = styled.button`
   }
 
   &:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(var(--primary-500-rgb), 0.05);
+    background: rgba(150, 150, 150, 0.16);
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -952,21 +1028,26 @@ const AnalyzeButton = styled.button<{ $isLoading?: boolean }>`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--landing-button);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+    rgba(238, 90, 90, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: white;
   padding: 16px 32px;
-  border: none;
-  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 9999px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   opacity: ${({ $isLoading }) => ($isLoading ? 0.7 : 1)};
   min-width: 180px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(238, 90, 90, 0.35);
 
   &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(var(--primary-500-rgb), 0.4);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 100%),
+      rgba(238, 90, 90, 0.92);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 4px 20px rgba(238, 90, 90, 0.5);
   }
 
   &:disabled {
@@ -1176,28 +1257,40 @@ const FeatureGrid = styled.div`
 const FeatureCard = styled.div`
   padding: 40px;
   text-align: center;
-  background: var(--bg-alt);
+  background: rgba(150, 150, 150, 0.08);
+  backdrop-filter: blur(50px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 20px 50px rgba(0, 0, 0, 0.15);
   border-radius: ${({ theme }) => theme.radius.xl};
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 25px 60px rgba(0, 0, 0, 0.2);
+  }
 
   @media (max-width: 767px) {
     padding: 32px 24px;
   }
 `;
 
-const FeatureIcon = styled.div`
+const FeatureIC = styled.div`
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background: var(--primary-500);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5), 0 8px 16px rgba(0, 0, 0, 0.1);
 
   svg {
     width: 28px;
     height: 28px;
-    color: white;
+    color: var(--text-color);
   }
 `;
 
@@ -1220,9 +1313,12 @@ const FeatureHighlight = styled.span`
   font-size: 13px;
   font-weight: 600;
   color: var(--primary-500);
-  background: rgba(var(--primary-500-rgb), 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   padding: 6px 12px;
   border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
 `;
 
 // ==================== TESTIMONIALS - STYLED COMPONENTS ====================
@@ -1243,15 +1339,17 @@ const TestimonialGrid = styled.div`
 `;
 
 const TestimonialCard = styled.div`
-  background: var(--bg-alt);
-  border-radius: ${({ theme }) => theme.radius.xl};
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
   padding: 32px;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: flex;
   flex-direction: column;
   gap: 20px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  outline: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.2);
 
   @media (min-width: 768px) and (max-width: 850px) {
     gap: 16px;
@@ -1259,9 +1357,10 @@ const TestimonialCard = styled.div`
   }
 
   &:hover {
-    border-color: var(--primary-color);
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
     transform: translateY(-4px);
-    box-shadow: ${({ theme }) => theme.shadow.lg};
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 12px 32px rgba(0, 0, 0, 0.4);
   }
 `;
 
@@ -1273,13 +1372,14 @@ const TestimonialHeader = styled.div`
 `;
 
 const TestimonialAvatar = styled.div`
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  border: 2px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   overflow: hidden;
   position: relative;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 `;
 
 const TestimonialAuthor = styled.div`
@@ -1332,16 +1432,17 @@ const TestimonialText = styled.p`
   font-size: 15px;
   font-style: italic;
   position: relative;
+  opacity: 0.9;
 
   &:before {
     content: '"';
-    font-size: 48px;
-    color: var(--primary-color);
-    opacity: 0.3;
+    font-size: 40px;
+    color: rgba(255, 255, 255, 0.1);
     position: absolute;
-    top: -10px;
-    left: -10px;
+    top: -12px;
+    left: -12px;
     font-family: Georgia, serif;
+    pointer-events: none;
   }
 `;
 
@@ -1349,9 +1450,10 @@ const TestimonialHighlight = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(var(--success-rgb), 0.1);
-  border: 1px solid var(--success);
-  color: var(--success);
+  background: rgba(34, 197, 94, 0.08); /* Tailwind green-500 matching */
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+
   padding: 8px 16px;
   border-radius: 9999px;
   font-size: 13px;
@@ -1451,33 +1553,43 @@ const PricingCTAButton = styled.a<{ $primary?: boolean }>`
   justify-content: center;
   gap: 10px;
   padding: 16px 28px;
-  border-radius: 10px;
+  border-radius: 9999px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   margin-bottom: 32px;
   text-decoration: none;
 
   ${({ $primary }) =>
     $primary
       ? `
-    background: var(--accent);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+      rgba(238, 90, 90, 0.82);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     color: white;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(238, 90, 90, 0.35);
 
     &:hover {
-      opacity: 0.9;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 100%),
+        rgba(238, 90, 90, 0.92);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 4px 20px rgba(238, 90, 90, 0.5);
     }
   `
       : `
-    background: transparent;
+    background: rgba(150, 150, 150, 0.08);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
     color: var(--text-color);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
 
     &:hover {
-      background: var(--bg-color);
-      border-color: var(--text-tertiary);
+      background: rgba(150, 150, 150, 0.16);
+      border-color: rgba(255, 255, 255, 0.28);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 0, 0, 0.1);
     }
   `}
 
@@ -1486,6 +1598,7 @@ const PricingCTAButton = styled.a<{ $primary?: boolean }>`
     height: 18px;
   }
 `;
+
 
 const PricingFeatureList = styled.div`
   display: flex;
@@ -1529,14 +1642,14 @@ const PricingFeatureRowHighlight = styled.div`
   align-items: center;
   gap: 12px;
   font-size: 15px;
-  color: var(--primary-500);
+  color: var(--accent);
   font-weight: 500;
 
   svg {
     flex-shrink: 0;
     width: 20px;
     height: 20px;
-    color: var(--primary-500);
+    color: var(--accent);
   }
 `;
 
@@ -1746,18 +1859,22 @@ const FAQButton = styled.a`
   align-items: center;
   gap: 8px;
   padding: 14px 32px;
-  background: var(--primary-500);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+    var(--primary-500);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: white;
   font-size: 16px;
   font-weight: 600;
-  border-radius: 12px;
+  border-radius: 9999px;
   text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(var(--primary-500-rgb), 0.2);
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(var(--primary-500-rgb), 0.3);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(var(--primary-500-rgb), 0.3);
+    filter: brightness(1.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 4px 20px rgba(var(--primary-500-rgb), 0.45);
   }
 
   @media (max-width: 768px) {
@@ -1765,6 +1882,7 @@ const FAQButton = styled.a`
     font-size: 15px;
   }
 `;
+
 
 const LoadingState = styled.div`
   text-align: center;
@@ -2191,138 +2309,225 @@ const TimelineHighlight = styled.span`
   font-weight: 600;
 `;
 
-// ==================== VALUE STACK (Enhanced Pricing) ====================
-const ValueStackHeader = styled.div`
-  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.05) 0%, rgba(var(--primary-500-rgb), 0.05) 100%);
-  border: 1px solid var(--primary-500);
-  border-radius: ${({ theme }) => theme.radius.xl};
-  padding: 32px;
-  margin-bottom: 48px;
+// ==================== PROVOCATION SECTION (The True Cost) ====================
+const ProvocationSection = styled.div`
+  margin: 60px 0 100px;
+  width: 100%;
+`;
+
+const ProvocationHeader = styled.div`
   text-align: center;
+  margin-bottom: 64px;
 
-  @media (max-width: 768px) {
-    padding: 24px;
+  .eyebrow {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: #ff6b6b;
+    margin-bottom: 16px;
+    display: inline-block;
   }
-`;
 
-const ValueStackTitle = styled.h3`
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 24px;
-  color: var(--text-color);
+  h3 {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--text-color);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 
-  @media (max-width: 768px) {
+    @media (max-width: 768px) {
+      font-size: 36px;
+    }
+  }
+
+  p {
     font-size: 20px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 640px;
+    margin: 0 auto;
+
+    @media (max-width: 768px) {
+      font-size: 18px;
+    }
   }
 `;
 
-const ValueStackList = styled.div`
+const ContrastGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
-  text-align: left;
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
 
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
   }
 `;
 
-const ValueStackItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
-  border-radius: ${({ theme }) => theme.radius.md};
-
-  svg {
-    width: 24px;
-    height: 24px;
-    color: var(--success);
-    flex-shrink: 0;
-  }
-`;
-
-const ValueStackItemText = styled.div`
-  flex: 1;
-
-  .feature-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 4px;
-  }
-
-  .feature-value {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--accent);
-  }
-`;
-
-const ValueStackTotal = styled.div`
+const BaseColumn = styled.div`
+  border-radius: 24px;
+  padding: 48px 40px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px;
-  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.1) 0%, rgba(var(--primary-500-rgb), 0.1) 100%);
-  border: 2px solid var(--accent);
-  border-radius: ${({ theme }) => theme.radius.lg};
+  position: relative;
+  overflow: hidden;
 
-  @media (min-width: 640px) {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+  @media (max-width: 768px) {
+    padding: 32px 24px;
   }
 `;
 
-const ValueStackTotalItem = styled.div<{ $emphasized?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+const OldWayColumn = styled(BaseColumn)`
+  background: rgba(150, 150, 150, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  opacity: 0.8;
 
-  .label {
-    font-size: 14px;
-    color: var(--text-secondary);
+  .title {
+    font-size: 16px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    color: var(--text-tertiary);
     font-weight: 600;
+    margin-bottom: 24px;
   }
 
-  .amount {
-    font-size: ${({ $emphasized }) => ($emphasized ? '48px' : '32px')};
-    font-weight: 900;
-    color: ${({ $emphasized }) => ($emphasized ? 'var(--accent)' : 'var(--text-color)')};
+  .price {
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    letter-spacing: -0.04em;
     line-height: 1;
-
-    ${({ $emphasized }) =>
-      $emphasized &&
-      `
-      background: linear-gradient(135deg, var(--landing) 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    `}
+    margin-bottom: 32px;
+    text-decoration: line-through;
+    opacity: 0.5;
 
     span {
       font-size: 24px;
-      color: var(--text-secondary);
-    }
-
-    @media (max-width: 640px) {
-      font-size: ${({ $emphasized }) => ($emphasized ? '40px' : '28px')};
+      font-weight: 600;
+      letter-spacing: normal;
     }
   }
 
-  .savings {
-    font-size: 16px;
-    color: var(--success);
-    font-weight: 700;
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      color: var(--text-tertiary);
+
+      svg {
+        width: 20px;
+        height: 20px;
+        color: rgba(255, 255, 255, 0.2);
+        flex-shrink: 0;
+      }
+    }
   }
 `;
 
+const RejectlyColumn = styled(BaseColumn)`
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, rgba(var(--primary-500-rgb), 0.05) 100%);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 24px 48px rgba(var(--accent-rgb), 0.15);
+
+  .glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), 0.15) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .title {
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    font-weight: 800;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .price {
+    font-size: 80px;
+    font-weight: 800;
+    color: var(--text-color);
+    letter-spacing: -0.05em;
+    line-height: 1;
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 4px 24px rgba(var(--accent-rgb), 0.4);
+
+    span {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: normal;
+      text-shadow: none;
+    }
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 18px;
+      color: var(--text-color);
+      font-weight: 500;
+      line-height: 1.4;
+
+      svg {
+        width: 24px;
+        height: 24px;
+        color: var(--accent);
+        flex-shrink: 0;
+        margin-top: -2px;
+      }
+    }
+  }
+`;
+
+const ProvocativeCTA = styled.div`
+  text-align: center;
+  margin-top: 64px;
+  
+  p {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: -0.02em;
+  }
+`;
 
 // ==================== TIMELINE COMPONENT ====================
 interface TimelineEntryData {
@@ -2571,103 +2776,103 @@ export default function Page() {
   const featureCards: Card[] = [
     {
       src: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=800&auto=format&fit=crop",
-      title: "AI Resume Analysis",
-      category: "Smart Insights",
+      title: "X-Ray Vision for Your Resume",
+      category: "See the Unseen",
       content: (
         <div>
-          <p>See exactly what&apos;s wrong with your resume. Our AI analyzes your resume against the job description and reveals:</p>
+          <p>See exactly why you're getting rejected. Our AI analyzes your resume against the job description and reveals:</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Missing keywords that ATS systems are looking for</li>
-            <li>Formatting issues that hurt readability</li>
-            <li>Weak action verbs and how to strengthen them</li>
-            <li>Quantifiable achievements you should highlight</li>
+            <li>The exact missing keywords killing your ATS score</li>
+            <li>Formatting errors that trigger auto-rejections</li>
+            <li>Weak action verbs that make you sound junior</li>
+            <li>The quantifiable metrics employers are actually looking for</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Get instant, actionable feedback in seconds—not hours.</p>
+          <p style={{ marginTop: '16px' }}>Stop guessing. Get the hiring manager's perspective in seconds.</p>
         </div>
       ),
     },
     {
       src: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800&auto=format&fit=crop",
-      title: "Smart Job Matching",
+      title: "Sniper-Targeted Job Matching",
       category: "Find Your Fit",
       content: (
         <div>
-          <p>Stop applying blindly. Our AI finds jobs where your skills actually match what employers are looking for.</p>
+          <p>Stop applying blindly and praying for a response. Our AI finds jobs where you have an unfair advantage.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Match score for every job posting</li>
-            <li>Skills gap analysis and recommendations</li>
-            <li>Salary insights based on your experience</li>
+            <li>Hard metric match score for every job posting</li>
+            <li>Brutal skills gap analysis (know what you're missing)</li>
+            <li>Salary insights based on your actual market value</li>
             <li>Company culture compatibility indicators</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Apply smarter, not harder. Focus on roles where you&apos;ll succeed.</p>
+          <p style={{ marginTop: '16px' }}>Apply smarter. Only fight battles you can win.</p>
         </div>
       ),
     },
     {
       src: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=800&auto=format&fit=crop",
-      title: "Cover Letter Generator",
-      category: "One Click",
+      title: "1-Click Tailored Cover Letters",
+      category: "Stop Staring at Blank Pages",
       content: (
         <div>
-          <p>One click. Personalized letter. Tailored to the job description and your unique experience.</p>
+          <p>The days of generic &quot;To whom it may concern&quot; letters are over. Generate hyper-personalized letters instantly.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Professionally written in seconds</li>
-            <li>Matches the job requirements perfectly</li>
+            <li>Professionally written in 30 seconds</li>
+            <li>Matches the specific job requirements perfectly</li>
             <li>Highlights your most relevant achievements</li>
-            <li>Multiple tone options (formal, creative, casual)</li>
+            <li>Multiple tone options (formal, creative, confident)</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Never stare at a blank page again.</p>
+          <p style={{ marginTop: '16px' }}>Make them feel like you wrote it just for them.</p>
         </div>
       ),
     },
     {
       src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
-      title: "ATS-Optimized Resume Builder",
-      category: "Built to Pass",
+      title: "Robot-Proof Formatting",
+      category: "Beat the Filters",
       content: (
         <div>
-          <p>Start fresh with an ATS-optimized resume. Clean formatting, right keywords, professional structure.</p>
+          <p>Beautiful resumes get rejected if robots can't read them. We use structures engineered to pass the ATS.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Templates designed for ATS systems</li>
-            <li>Automatic keyword optimization</li>
-            <li>Professional formatting that works everywhere</li>
-            <li>Export to PDF, Word, or plain text</li>
+            <li>Templates rigorously tested against major ATS systems</li>
+            <li>Automatic, context-aware keyword optimization</li>
+            <li>Flawless parsing by recruiting software</li>
+            <li>Export to PDF, Word, or plain text exactly as needed</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Built from the ground up to get past the robots.</p>
+          <p style={{ marginTop: '16px' }}>Built from the ground up to slip past the robot gatekeepers.</p>
         </div>
       ),
     },
     {
       src: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
-      title: "Interview Preparation",
-      category: "Be Ready",
+      title: "Interview Preparation Simulator",
+      category: "Dominate the Room",
       content: (
         <div>
-          <p>Walk into every interview with confidence. Our AI prepares you with:</p>
+          <p>Don&apos;t freeze when it matters most. Walk into every interview knowing the answers before they ask the questions.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Common questions for your specific role</li>
-            <li>Company-specific talking points</li>
-            <li>STAR method response frameworks</li>
-            <li>Questions to ask your interviewer</li>
+            <li>Predictive questions for your specific target role</li>
+            <li>Company-specific talking points and red flags</li>
+            <li>STAR method response frameworks built for your background</li>
+            <li>High-leverage questions to ask your interviewer</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Be the most prepared candidate in the room.</p>
+          <p style={{ marginTop: '16px' }}>Turn interviews from interrogations into conversations.</p>
         </div>
       ),
     },
     {
       src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
-      title: "Application Tracker",
-      category: "Stay Organized",
+      title: "The Application War Room",
+      category: "Command Center",
       content: (
         <div>
-          <p>Keep track of every application in one place. Never lose an opportunity.</p>
+          <p>Keep your entire job search arsenal in one focused dashboard. Never drop the ball on a follow-up again.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Automatic status tracking</li>
-            <li>Follow-up reminders</li>
-            <li>Response rate analytics</li>
-            <li>Interview scheduling integration</li>
+            <li>Automated status tracking pipeline</li>
+            <li>Aggressive follow-up reminders</li>
+            <li>Hard data on your response rate and funnel conversion</li>
+            <li>Centralized document management for every role</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Your job search command center.</p>
+          <p style={{ marginTop: '16px' }}>Treat your job search like a high-stakes sales pipeline.</p>
         </div>
       ),
     },
@@ -2974,70 +3179,52 @@ export default function Page() {
       <Container>
       {/* HERO SECTION */}
       <HeroSection>
-        <HeroHighlightWrapper>
-        <HeroContent>
-          
+        <AppleHeroBackground>
+                <HeroContent>
+          <HeroTextColumn>
+            <HeroTitle>
+              Your Resume is Invisible. Let&apos;s Fix That.
+            </HeroTitle>
 
-          <HeroTitle>
-            Optimize Your Resume for <Highlight>Job Postings</Highlight>
-          </HeroTitle>
+            <HeroSubtitle>
+              75% of resumes never reach a human. Train our AI on your target job description and get a <strong>mathematically perfect, ATS-beating resume</strong> in 30 seconds.
+            </HeroSubtitle>
 
-          <HeroSubtitle>
-            Use AI to <strong>identify missing skills</strong>, improve your
-            resume, and get <strong>73% more interview invitations</strong>
-          </HeroSubtitle>
+            <ButtonGroup>
+              <PrimaryButton href={ROUTES.AUTH.SIGNUP}>
+                Analyze for Free
+              </PrimaryButton>
+              <SecondaryButton href={ROUTES.PUBLIC.HOW_IT_WORKS}>
+                How It Works
+                <ArrowRightIcon />
+              </SecondaryButton>
+            </ButtonGroup>
+            
+            <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '-24px', marginBottom: '40px', textAlign: 'center', letterSpacing: '0.2px' }}>
+              No credit card required &bull; Get results in 30s
+            </div>
 
-          <ButtonGroup>
-            <PrimaryButton href={ROUTES.AUTH.SIGNUP}>
-              
-              Analyze for Free
-            </PrimaryButton>
-            <SecondaryButton href={ROUTES.PUBLIC.HOW_IT_WORKS}>
-              How It Works
-              <ArrowRightIcon />
-            </SecondaryButton>
-          </ButtonGroup>
+            <TrustIndicators>
+              <TrustItem>
+                <div className="number">500+</div>
+                <div className="label">Careers Transformed</div>
+              </TrustItem>
+              <TrustItem>
+                <div className="number">10,000+</div>
+                <div className="label">ATS Filters Bypassed</div>
+              </TrustItem>
+              <TrustItem>
+                <div className="number">73%</div>
+                <div className="label">Higher Interview Rate</div>
+              </TrustItem>
+            </TrustIndicators>
+          </HeroTextColumn>
 
-          <TrustIndicators>
-            <TrustItem>
-              <div className="number">500+</div>
-              <div className="label">Active Users</div>
-            </TrustItem>
-            <TrustItem>
-              <div className="number">1,200+</div>
-              <div className="label">Analyses Completed</div>
-            </TrustItem>
-            <TrustItem>
-              <div className="number">73%</div>
-              <div className="label">Average Improvement</div>
-            </TrustItem>
-          </TrustIndicators>
-
-          <SocialProof>
-            <AvatarStack>
-              <AvatarWrapper $isFirst>
-                <Image src="https://i.pravatar.cc/150?img=1" alt="Software Engineer who beat ATS systems with Rejectly AI resume optimizer" fill sizes="44px" style={{ objectFit: "cover" }} />
-              </AvatarWrapper>
-              <AvatarWrapper>
-                <Image src="https://i.pravatar.cc/150?img=2" alt="Product Manager who achieved career transformation using Rejectly ATS optimization" fill sizes="44px" style={{ objectFit: "cover" }} />
-              </AvatarWrapper>
-              <AvatarWrapper>
-                <Image src="https://i.pravatar.cc/150?img=3" alt="Data Scientist who landed dream job with Rejectly AI-powered resume analysis" fill sizes="44px" style={{ objectFit: "cover" }} />
-              </AvatarWrapper>
-              <AvatarWrapper>
-                <Image src="https://i.pravatar.cc/150?img=4" alt="UX Designer who improved interview success rate with Rejectly resume optimizer" fill sizes="44px" style={{ objectFit: "cover" }} />
-              </AvatarWrapper>
-              <AvatarWrapper>
-                <Image src="https://i.pravatar.cc/150?img=5" alt="Marketing Professional who got 5x more interviews using Rejectly ATS-friendly resumes" fill sizes="44px" style={{ objectFit: "cover" }} />
-              </AvatarWrapper>
-            </AvatarStack>
-            <SocialProofText>
-              <StarIcon />
-              <strong>4.8/5</strong> (127 reviews)
-            </SocialProofText>
-          </SocialProof>
+          <HeroVisualColumn>
+            <AnimatedATSScanner />
+          </HeroVisualColumn>
         </HeroContent>
-        </HeroHighlightWrapper>
+        </AppleHeroBackground>
       </HeroSection>
 
       <Divider />
@@ -3054,10 +3241,10 @@ export default function Page() {
             <SectionHeader>
               <SectionTitle style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
 
-                Try it now - Free
+                Scan Your Resume. See Why You&apos;re Failing.
               </SectionTitle>
               <SectionSubtitle>
-                Paste your resume and job description, get instant AI feedback
+                Is your resume ATS-ready? Paste your text below and let the AI find your fatal flaws.
               </SectionSubtitle>
             </SectionHeader>
 
@@ -3353,22 +3540,24 @@ export default function Page() {
               )}
 
               <CTASection>
-                <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <TargetIcon />
-                  Want the Full Analysis?
-                </h3>
-                <p>
-                  Sign up for free, save your report, and perfect your resume
-                  with Pro features!
-                </p>
-                <CTAButtons>
-                  <CTAButton as="a" href="/signup" $variant="primary">
-                    Sign Up Free
-                  </CTAButton>
-                  <CTAButton as="a" href="/login" $variant="secondary">
-                    Log In
-                  </CTAButton>
-                </CTAButtons>
+                <div style={{ background: 'rgba(238, 90, 90, 0.1)', border: '1px solid rgba(238, 90, 90, 0.3)', padding: '40px 32px', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 20px 40px rgba(238, 90, 90, 0.15)' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#ff6b6b', fontSize: '28px', margin: 0 }}>
+                    <LockIcon />
+                    Unlock Your Fatal Flaws for $2
+                  </h3>
+                  <p style={{ fontSize: '18px', color: 'var(--text-color)', fontWeight: 500, margin: 0, textAlign: 'center' }}>
+                    You are making critical mistakes that guarantee your rejection. <br/>
+                    Don't lose a $100k+ job because you didn't know the rules.
+                  </p>
+                  <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-secondary)', textAlign: 'center' }}>
+                    Get the exact missing keywords, robot-proof formatting, and instant AI rewrites.
+                  </p>
+                  <CTAButtons style={{ marginTop: '16px', width: '100%', justifyContent: 'center' }}>
+                    <CTAButton as="a" href="/signup" $variant="primary" style={{ width: '100%', maxWidth: '320px', fontSize: '18px', padding: '16px' }}>
+                      Reveal My Mistakes Now
+                    </CTAButton>
+                  </CTAButtons>
+                </div>
               </CTASection>
             </ResultsCard>
           )}
@@ -3376,90 +3565,6 @@ export default function Page() {
           </DemoSection>
         </LampContainer>
       </DemoSectionWrapper>
-
-      <Divider />
-
-      {/* FEATURES */}
-      <Section id="features">
-        <SectionHeader>
-          <SectionTitle>Six powerful tools. One goal.</SectionTitle>
-          <SectionSubtitle>
-            Everything works together to get you hired.
-          </SectionSubtitle>
-        </SectionHeader>
-
-        <Carousel
-          items={featureCards.map((card, index) => (
-            <AppleCard key={card.title} card={card} index={index} layout />
-          ))}
-        />
-      </Section>
-
-      <Divider />
-
-      {/* TIMELINE SECTION */}
-      <TimelineSection>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
-          <SectionHeader>
-            <SectionTitle>A clearer path forward</SectionTitle>
-            <SectionSubtitle>
-              What changes when your resume finally works for you
-            </SectionSubtitle>
-          </SectionHeader>
-        </div>
-
-        <Timeline
-          data={[
-            {
-              period: "Day 1",
-              headline: "Your resume becomes visible",
-              text: (
-                <>
-                  AI reveals <TimelineHighlight>exactly why</TimelineHighlight> you were getting rejected.
-                  In just 15 minutes, you have an ATS-optimized resume with the right keywords,
-                  perfect formatting, and language that both robots and humans love.
-                </>
-              ),
-              metadata: "Optimized for modern ATS systems · Setup takes under 15 minutes",
-            },
-            {
-              period: "Week 1",
-              headline: "Recruiters start noticing",
-              text: (
-                <>
-                  Your resume passes automated filters and reaches real decision-makers.<br/>
-You’re no longer applying broadly — <TimelineHighlight>you’re applying precisely.</TimelineHighlight>
-                </>
-              ),
-              metadata: "Higher response rate · Better role alignment",
-            },
-            {
-              period: "Month 1",
-              headline: "You gain leverage",
-              text: (
-                <>
-                  Interviews turn into offers.<br/>
-Not one — but multiple conversations happening at the same time.<br/>
-For the first time, you’re choosing, not waiting.
-                </>
-              ),
-              metadata: "Multiple offers · Negotiation confidence",
-            },
-            {
-              period: "Year 1",
-              headline: "Your trajectory changes",
-              text: (
-                <>
-                  Promotions feel attainable.<br/>
-Your confidence compounds.<br/>
-You understand how to position yourself — for any role that comes next.
-                </>
-              ),
-              metadata: "Long-term earning growth · Career momentum",
-            },
-          ]}
-        />
-      </TimelineSection>
 
       <Divider />
 
@@ -3563,6 +3668,71 @@ You understand how to position yourself — for any role that comes next.
 
       <Divider />
 
+      {/* FEATURES */}
+      <section id="features" style={{ width: "100vw", position: "relative", left: "50%", right: "50%", marginLeft: "-50vw", marginRight: "-50vw", padding: "100px 0", overflow: "hidden" }}>
+        {/* Animated Background Orbs for Liquid Glass Effect */}
+        <div style={{
+          position: "absolute",
+          top: "-10%",
+          left: "-10%",
+          width: "50vw",
+          height: "50vw",
+          background: "radial-gradient(circle, rgba(94, 187, 240, 0.4) 0%, rgba(94, 187, 240, 0) 70%)",
+          filter: "blur(80px)",
+          zIndex: -1,
+          animation: "float 15s ease-in-out infinite alternate"
+        }} />
+        <div style={{
+           position: "absolute",
+           bottom: "-20%",
+           right: "-10%",
+           width: "60vw",
+           height: "60vw",
+           background: "radial-gradient(circle, rgba(238, 90, 90, 0.3) 0%, rgba(238, 90, 90, 0) 70%)",
+           filter: "blur(100px)",
+           zIndex: -1,
+           animation: "float 20s ease-in-out infinite alternate-reverse"
+        }} />
+        <div style={{
+           position: "absolute",
+           top: "30%",
+           left: "30%",
+           width: "40vw",
+           height: "40vw",
+           background: "radial-gradient(circle, rgba(147, 112, 219, 0.25) 0%, rgba(147, 112, 219, 0) 70%)",
+           filter: "blur(90px)",
+           zIndex: -1,
+           animation: "pulse 12s ease-in-out infinite alternate"
+        }} />
+
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 5%) scale(1.1); }
+            100% { transform: translate(-5%, -5%) scale(0.9); }
+          }
+          @keyframes pulse {
+            0% { opacity: 0.6; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1.05); }
+          }
+        `}} />
+
+        <SectionHeader style={{ maxWidth: "1200px", margin: "0 auto 64px auto", padding: "0 24px", position: "relative", zIndex: 2 }}>
+          <SectionTitle>Six powerful tools. One goal.</SectionTitle>
+          <SectionSubtitle>
+            Everything works together to get you hired.
+          </SectionSubtitle>
+        </SectionHeader>
+
+        <Carousel
+          items={featureCards.map((card, index) => (
+            <AppleCard key={card.title} card={card} index={index} layout />
+          ))}
+        />
+      </section>
+
+      <Divider />
+
       {/* PRICING - SIMPLIFIED */}
       <Section id="pricing">
         <SectionHeader>
@@ -3572,51 +3742,61 @@ You understand how to position yourself — for any role that comes next.
           </SectionSubtitle>
         </SectionHeader>
 
-        {/* VALUE STACK */}
-        <ValueStackHeader>
-          <ValueStackTitle>Everything You Get in Each Analysis</ValueStackTitle>
-          <ValueStackList>
-            <ValueStackItem>
-              <CheckIcon />
-              <ValueStackItemText>
-                <div className="feature-name">Professional Resume Writer</div>
-                <div className="feature-value">$75 per resume</div>
-              </ValueStackItemText>
-            </ValueStackItem>
-            <ValueStackItem>
-              <CheckIcon />
-              <ValueStackItemText>
-                <div className="feature-name">Career Coach Consultation</div>
-                <div className="feature-value">$120/hour</div>
-              </ValueStackItemText>
-            </ValueStackItem>
-            <ValueStackItem>
-              <CheckIcon />
-              <ValueStackItemText>
-                <div className="feature-name">ATS Optimization Service</div>
-                <div className="feature-value">$45 per resume</div>
-              </ValueStackItemText>
-            </ValueStackItem>
-            <ValueStackItem>
-              <CheckIcon />
-              <ValueStackItemText>
-                <div className="feature-name">Custom Cover Letter</div>
-                <div className="feature-value">$35 per letter</div>
-              </ValueStackItemText>
-            </ValueStackItem>
-          </ValueStackList>
-          <ValueStackTotal>
-            <ValueStackTotalItem>
-              <div className="label">If You Hired Humans</div>
-              <div className="amount">$275<span>+</span></div>
-            </ValueStackTotalItem>
-            <ValueStackTotalItem $emphasized>
-              <div className="label">With Rejectly.pro</div>
-              <div className="amount">$2</div>
-              <div className="savings">Save 99% • AI does it in 30 seconds</div>
-            </ValueStackTotalItem>
-          </ValueStackTotal>
-        </ValueStackHeader>
+        {/* THE TRUE COST (PROVOCATIVE SALES SECTION) */}
+        <ProvocationSection>
+          <ProvocationHeader>
+            <span className="eyebrow">The True Cost</span>
+            <h3>Don't lose a $100k+ job over a $2 mistake.</h3>
+            <p>75% of resumes are discarded by ATS robots before a human ever sees them. Relying on generic templates or guessing keywords is killing your career trajectory.</p>
+          </ProvocationHeader>
+
+          <ContrastGrid>
+            {/* The Old Way */}
+            <OldWayColumn>
+              <div className="title">The Old Way</div>
+              <div className="price">$250+<span>/avg</span></div>
+              <ul>
+                <li>
+                  <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  Hire a "career coach" who uses same AI tools
+                </li>
+                <li>
+                  <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  Wait 7 days for a generic, manual rewrite
+                </li>
+                <li>
+                  <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  Still fail the specific ATS keyword scan
+                </li>
+              </ul>
+            </OldWayColumn>
+
+            {/* The Rejectly Way */}
+            <RejectlyColumn>
+              <div className="glow" />
+              <div className="title">With Rejectly.pro</div>
+              <div className="price">$2<span>/analysis</span></div>
+              <ul>
+                <li>
+                  <CheckIcon />
+                  AI specifically trained to bypass ATS filters
+                </li>
+                <li>
+                  <CheckIcon />
+                  Expert-level rewriting delivered in 30 seconds
+                </li>
+                <li>
+                  <CheckIcon />
+                  Bullet points tailored to the exact job description
+                </li>
+              </ul>
+            </RejectlyColumn>
+          </ContrastGrid>
+
+          <ProvocativeCTA>
+            <p>Stop bringing a knife to a robot fight.</p>
+          </ProvocativeCTA>
+        </ProvocationSection>
 
         <PricingGrid>
           {/* Single Plan */}

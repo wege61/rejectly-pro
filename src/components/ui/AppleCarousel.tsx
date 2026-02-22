@@ -20,7 +20,7 @@ type Card = {
 };
 
 interface CarouselProps {
-  items: JSX.Element[];
+  items: React.ReactNode[];
   initialScroll?: number;
 }
 
@@ -156,52 +156,57 @@ const ModalOverlay = styled(motion.div)`
   width: 100%;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(12px);
-  z-index: 50;
+  z-index: 1100;
 `;
 
 const ModalContainer = styled.div`
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 1100;
   height: 100vh;
   overflow: auto;
 `;
 
 const ModalContent = styled(motion.div)`
   position: relative;
-  z-index: 60;
-  max-width: 1024px;
-  margin: 40px auto;
+  z-index: 1110;
+  width: 90%;
+  max-width: 800px;
+  margin: 64px auto;
   height: fit-content;
-  background: var(--bg-alt);
-  border-radius: 24px;
-  padding: 16px;
+  background: rgba(150, 150, 150, 0.08);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border-radius: 32px;
+  padding: 32px;
   font-family: inherit;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 24px 64px rgba(0, 0, 0, 0.2);
 
   @media (min-width: 768px) {
-    padding: 40px;
+    padding: 56px;
   }
 `;
 
 const ModalCloseButton = styled.button`
-  position: sticky;
-  top: 16px;
-  right: 0;
-  margin-left: auto;
+  position: absolute;
+  top: 24px;
+  right: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--text-color);
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  z-index: 1120;
 
   &:hover {
-    opacity: 0.8;
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.9);
   }
 
   svg {
@@ -209,12 +214,17 @@ const ModalCloseButton = styled.button`
     height: 20px;
     color: var(--bg-color);
   }
+
+  @media (min-width: 768px) {
+    top: 32px;
+    right: 32px;
+  }
 `;
 
 const ModalCategory = styled(motion.p)`
   font-size: 14px;
   font-weight: 500;
-  color: var(--primary-500);
+  color: var(--accent);
 
   @media (min-width: 768px) {
     font-size: 16px;
@@ -233,10 +243,15 @@ const ModalTitle = styled(motion.p)`
 `;
 
 const ModalBody = styled.div`
-  padding: 40px 0;
+  padding: 32px 0 0;
   color: var(--text-secondary);
   font-size: 16px;
   line-height: 1.7;
+
+  @media (min-width: 768px) {
+    padding: 48px 0 0;
+    font-size: 17px;
+  }
 `;
 
 // Card Styles

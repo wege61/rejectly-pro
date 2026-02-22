@@ -6,11 +6,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Spinner } from "@/components/ui/Spinner";
 
 const Main = styled.main`
-  padding-top: 80px; /* Space for fixed navbar */
-
-  @media (max-width: 768px) {
-    padding-top: 72px;
-  }
+  /* padding removed to allow Hero backgrounds to reach the top edge */
 `;
 
 export default function MarketingLayout({

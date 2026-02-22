@@ -150,32 +150,44 @@ const CTAButton = styled.button<{ $primary?: boolean }>`
   justify-content: center;
   gap: 10px;
   padding: 16px 28px;
-  border-radius: 10px;
+  border-radius: 9999px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   margin-bottom: 32px;
+  text-decoration: none;
+  border: none;
 
   ${({ $primary }) =>
     $primary
       ? `
-    background: var(--accent);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+      rgba(238, 90, 90, 0.82);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     color: white;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(238, 90, 90, 0.35);
 
     &:hover {
-      opacity: 0.9;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 100%),
+        rgba(238, 90, 90, 0.92);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 4px 20px rgba(238, 90, 90, 0.5);
     }
   `
       : `
-    background: transparent;
+    background: rgba(150, 150, 150, 0.08);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
     color: var(--text-color);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
 
     &:hover {
-      background: var(--bg-color);
-      border-color: var(--text-tertiary);
+      background: rgba(150, 150, 150, 0.16);
+      border-color: rgba(255, 255, 255, 0.28);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 0, 0, 0.1);
     }
   `}
 
@@ -227,14 +239,14 @@ const FeatureRowHighlight = styled.div`
   align-items: center;
   gap: 12px;
   font-size: 15px;
-  color: var(--primary-500);
+  color: var(--accent);
   font-weight: 500;
 
   svg {
     flex-shrink: 0;
     width: 20px;
     height: 20px;
-    color: var(--primary-500);
+    color: var(--accent);
   }
 `;
 
@@ -274,200 +286,121 @@ const SectionSubtitle = styled.p`
   }
 `;
 
-// New Comparison Layout - pricing38 style
-const ComparisonLayout = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  max-width: 1100px;
+// Feature Comparison Table Styles
+const ComparisonTableWrapper = styled.div`
+  max-width: 1000px;
   margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-color);
+`;
 
-  @media (max-width: 968px) {
-    grid-template-columns: 1fr;
-    gap: 48px;
+const ComparisonHeaderRow = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1.5fr;
+  padding: 32px 24px;
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1.5fr 1fr 1fr;
+    padding: 24px 16px;
+    gap: 8px;
   }
 `;
 
-const InfoColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
-  padding-top: 16px;
-
-  @media (max-width: 968px) {
-    order: 2;
-  }
-`;
-
-const InfoSection = styled.div``;
-
-const InfoLabel = styled.p`
-  font-size: 11px;
+const ComparisonColTitleEmpty = styled.div`
+  font-size: 16px;
   font-weight: 600;
-  color: var(--primary-500);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin: 0 0 16px;
-`;
-
-const InfoTitle = styled.h3`
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-color);
-  margin: 0 0 12px;
-  line-height: 1.3;
-`;
-
-const InfoText = styled.p`
-  font-size: 15px;
   color: var(--text-secondary);
-  line-height: 1.7;
-  margin: 0;
 `;
 
-const CardsColumn = styled.div`
+const ComparisonColHeader = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-
-  @media (max-width: 968px) {
-    order: 1;
-  }
 `;
 
-const CompactCard = styled.div<{ $selected?: boolean }>`
-  position: relative;
-  background: var(--bg-alt);
-  border: 2px solid ${({ $selected }) => ($selected ? "var(--primary-500)" : "var(--border-color)")};
-  border-radius: 16px;
-  padding: 24px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-
-  ${({ $selected }) =>
-    $selected &&
-    `
-    box-shadow: 0 4px 20px rgba(var(--primary-500-rgb), 0.15);
-  `}
-
-  &:hover {
-    border-color: var(--primary-500);
-  }
-`;
-
-const CardHeader = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 16px;
-`;
-
-const CardInfo = styled.div`
-  flex: 1;
-`;
-
-const CardName = styled.h4`
-  font-size: 18px;
+const ComparisonColTitle = styled.h3`
+  font-size: 24px;
   font-weight: 700;
   color: var(--text-color);
-  margin: 0 0 4px;
-`;
-
-const CardDescription = styled.p`
-  font-size: 14px;
-  color: var(--text-secondary);
   margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
 `;
 
-const CardPrice = styled.div`
-  text-align: right;
+const ComparisonRow = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1.5fr;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  align-items: center;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1.5fr 1fr 1fr;
+    padding: 16px;
+    gap: 8px;
+  }
 `;
 
-const CardPriceValue = styled.span`
-  font-size: 28px;
-  font-weight: 700;
+const ComparisonFeature = styled.div`
+  font-size: 15px;
+  font-weight: 500;
   color: var(--text-color);
-`;
 
-const CardPricePeriod = styled.span`
-  font-size: 14px;
-  color: var(--text-secondary);
-`;
-
-const SelectIndicator = styled.div<{ $selected?: boolean }>`
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid ${({ $selected }) => ($selected ? "var(--primary-500)" : "var(--border-color)")};
-  background: ${({ $selected }) => ($selected ? "var(--primary-500)" : "transparent")};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-
-  svg {
-    width: 14px;
-    height: 14px;
-    color: white;
-    opacity: ${({ $selected }) => ($selected ? 1 : 0)};
+  @media (max-width: 768px) {
+    font-size: 13px;
   }
 `;
 
-const CardFeatures = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  margin-bottom: 20px;
-`;
-
-const CardFeature = styled.span`
+const ComparisonValue = styled.div<{ $isPro?: boolean, $isCross?: boolean }>`
+  font-size: 15px;
+  color: ${({ $isPro, $isCross }) => 
+    $isCross ? "var(--text-tertiary)" : 
+    $isPro ? "var(--text-color)" : "var(--text-secondary)"};
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--text-secondary);
+  gap: 10px;
 
   svg {
-    width: 14px;
-    height: 14px;
-    color: var(--primary-500);
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
+    color: ${({ $isPro, $isCross }) => 
+      $isCross ? "var(--text-tertiary)" : 
+      $isPro ? "var(--accent)" : "var(--text-secondary)"};
+  }
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+    gap: 6px;
+    
+    svg {
+      width: 16px;
+      height: 16px;
+    }
   }
 `;
 
-const CardButton = styled.button<{ $primary?: boolean }>`
-  width: 100%;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 14px;
+const ComparisonMessage = styled.p`
+  text-align: center;
+  margin-top: 40px;
+  font-size: 20px;
+  color: var(--text-color);
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
 
-  ${({ $primary }) =>
-    $primary
-      ? `
-    background: var(--primary-500);
-    color: white;
-
-    &:hover {
-      background: var(--primary-600);
-    }
-  `
-      : `
-    background: var(--bg-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-
-    &:hover {
-      background: var(--bg-alt);
-      border-color: var(--primary-500);
-    }
-  `}
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 `;
 
 const FAQSection = styled.section`
@@ -571,6 +504,12 @@ const AnswerText = styled.p`
 const CheckIcon = () => (
   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+  </svg>
+);
+
+const CrossMark = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
   </svg>
 );
 
@@ -866,116 +805,75 @@ export default function PricingPage() {
 
         <ComparisonSection>
           <SectionHeader>
-            <SectionTitle>Choose Your Plan</SectionTitle>
+            <SectionTitle>Compare Features</SectionTitle>
             <SectionSubtitle>
-              Flexible options for every job seeker
+              See exactly what you get with each plan
             </SectionSubtitle>
           </SectionHeader>
 
-          <ComparisonLayout>
-            <InfoColumn>
-              <InfoSection>
-                <InfoLabel>Resume Analysis</InfoLabel>
-                <InfoTitle>AI-Powered Insights</InfoTitle>
-                <InfoText>
-                  Get detailed match scores, keyword analysis, and ATS compatibility checks.
-                  Our AI compares your resume against job descriptions to identify gaps and opportunities.
-                </InfoText>
-              </InfoSection>
+          <ComparisonTableWrapper>
+            <ComparisonHeaderRow>
+              <ComparisonColTitleEmpty>Feature</ComparisonColTitleEmpty>
+              <ComparisonColHeader>
+                <ComparisonColTitle>Free</ComparisonColTitle>
+              </ComparisonColHeader>
+              <ComparisonColHeader>
+                <ComparisonColTitle>Pro <span style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text-secondary)' }}>(1 credit)</span></ComparisonColTitle>
+              </ComparisonColHeader>
+            </ComparisonHeaderRow>
 
-              <InfoSection>
-                <InfoLabel>Smart Optimization</InfoLabel>
-                <InfoTitle>Tailored Improvements</InfoTitle>
-                <InfoText>
-                  Receive professionally rewritten bullet points, role-specific recommendations,
-                  and an AI-optimized version of your resume ready for download.
-                </InfoText>
-              </InfoSection>
+            <ComparisonRow>
+              <ComparisonFeature>Job Match Analysis</ComparisonFeature>
+              <ComparisonValue><CheckIcon /> Basic score & summary</ComparisonValue>
+              <ComparisonValue $isPro><CheckIcon /> Full analysis + AI-optimized resume</ComparisonValue>
+            </ComparisonRow>
 
-              <InfoSection>
-                <InfoLabel>Support</InfoLabel>
-                <InfoTitle>Here When You Need Us</InfoTitle>
-                <InfoText>
-                  All plans include email support. Pro subscribers get priority response times
-                  for any questions about their analyses or the platform.
-                </InfoText>
-              </InfoSection>
-            </InfoColumn>
+            <ComparisonRow>
+              <ComparisonFeature>ATS Optimizer</ComparisonFeature>
+              <ComparisonValue><CheckIcon /> Score & basic checks</ComparisonValue>
+              <ComparisonValue $isPro><CheckIcon /> Full report + optimized resume</ComparisonValue>
+            </ComparisonRow>
 
-            <CardsColumn>
-              {/* Single Card */}
-              <CompactCard onClick={() => router.push("/signup")}>
-                <SelectIndicator>
-                  <CheckIcon />
-                </SelectIndicator>
-                <CardHeader>
-                  <CardInfo>
-                    <CardName>Single</CardName>
-                    <CardDescription>Try it out with 1 analysis</CardDescription>
-                  </CardInfo>
-                  <CardPrice>
-                    <CardPriceValue>$2</CardPriceValue>
-                    <CardPricePeriod> one-time</CardPricePeriod>
-                  </CardPrice>
-                </CardHeader>
-                <CardFeatures>
-                  <CardFeature><CheckIcon />1 Pro analysis</CardFeature>
-                  <CardFeature><CheckIcon />Match insights</CardFeature>
-                  <CardFeature><CheckIcon />AI-optimized resume</CardFeature>
-                  <CardFeature><CheckIcon />PDF download</CardFeature>
-                </CardFeatures>
-                <CardButton>Get Started</CardButton>
-              </CompactCard>
+            <ComparisonRow>
+              <ComparisonFeature>Cover Letter Generator</ComparisonFeature>
+              <ComparisonValue $isCross><CrossMark /></ComparisonValue>
+              <ComparisonValue $isPro><CheckIcon /></ComparisonValue>
+            </ComparisonRow>
 
-              {/* Starter Card - Selected/Recommended */}
-              <CompactCard $selected onClick={() => router.push("/signup")}>
-                <SelectIndicator $selected>
-                  <CheckIcon />
-                </SelectIndicator>
-                <CardHeader>
-                  <CardInfo>
-                    <CardName>Starter</CardName>
-                    <CardDescription>Best value — $0.70 per analysis</CardDescription>
-                  </CardInfo>
-                  <CardPrice>
-                    <CardPriceValue>$7</CardPriceValue>
-                    <CardPricePeriod> one-time</CardPricePeriod>
-                  </CardPrice>
-                </CardHeader>
-                <CardFeatures>
-                  <CardFeature><CheckIcon />10 Pro analyses</CardFeature>
-                  <CardFeature><CheckIcon />Match insights</CardFeature>
-                  <CardFeature><CheckIcon />AI-optimized resume</CardFeature>
-                  <CardFeature><CheckIcon />PDF download</CardFeature>
-                </CardFeatures>
-                <CardButton $primary>Get Started — Save 65%</CardButton>
-              </CompactCard>
+            <ComparisonRow>
+              <ComparisonFeature>Missing Keywords</ComparisonFeature>
+              <ComparisonValue><CheckIcon /></ComparisonValue>
+              <ComparisonValue $isPro><CheckIcon /></ComparisonValue>
+            </ComparisonRow>
 
-              {/* Pro Card */}
-              <CompactCard onClick={() => router.push("/signup")}>
-                <SelectIndicator>
-                  <CheckIcon />
-                </SelectIndicator>
-                <CardHeader>
-                  <CardInfo>
-                    <CardName>Pro</CardName>
-                    <CardDescription>Unlimited for power users</CardDescription>
-                  </CardInfo>
-                  <CardPrice>
-                    <CardPriceValue>$12</CardPriceValue>
-                    <CardPricePeriod>/month</CardPricePeriod>
-                  </CardPrice>
-                </CardHeader>
-                <CardFeatures>
-                  <CardFeature><CheckIcon />Unlimited analyses</CardFeature>
-                  <CardFeature><CheckIcon />All features included</CardFeature>
-                  <CardFeature><CheckIcon />Priority support</CardFeature>
-                  <CardFeature><CheckIcon />Cancel anytime</CardFeature>
-                </CardFeatures>
-                <CardButton>Subscribe to Pro</CardButton>
-              </CompactCard>
-            </CardsColumn>
-          </ComparisonLayout>
+            <ComparisonRow>
+              <ComparisonFeature>ATS Compatibility Score</ComparisonFeature>
+              <ComparisonValue><CheckIcon /></ComparisonValue>
+              <ComparisonValue $isPro><CheckIcon /></ComparisonValue>
+            </ComparisonRow>
+
+            <ComparisonRow>
+              <ComparisonFeature>Professional Bullet Points</ComparisonFeature>
+              <ComparisonValue $isCross><CrossMark /></ComparisonValue>
+              <ComparisonValue $isPro><CheckIcon /></ComparisonValue>
+            </ComparisonRow>
+
+            <ComparisonRow>
+              <ComparisonFeature>Alternative Role Suggestions</ComparisonFeature>
+              <ComparisonValue $isCross><CrossMark /></ComparisonValue>
+              <ComparisonValue $isPro><CheckIcon /></ComparisonValue>
+            </ComparisonRow>
+
+            <ComparisonRow>
+              <ComparisonFeature>Detailed Problem Fixes</ComparisonFeature>
+              <ComparisonValue $isCross><CrossMark /></ComparisonValue>
+              <ComparisonValue $isPro><CheckIcon /></ComparisonValue>
+            </ComparisonRow>
+          </ComparisonTableWrapper>
+
+          <ComparisonMessage>
+            Start for free, land the job with Pro.
+          </ComparisonMessage>
         </ComparisonSection>
 
         <FAQSection>

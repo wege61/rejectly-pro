@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
@@ -49,21 +49,35 @@ const Header = styled.header`
 `;
 
 const NavContainer = styled.nav`
+  position: relative;
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 24px;
-  background: var(--bg-alt);
   border-radius: 9999px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: rgba(150, 150, 150, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    z-index: -1;
+  }
 
   @media (max-width: 768px) {
     padding: 10px 16px;
-    border-radius: 16px;
+    border-radius: 32px;
+    &::before {
+      border-radius: 32px;
+    }
   }
 `;
 
@@ -137,13 +151,18 @@ const DropdownContainer = styled.div<{ $isActive: boolean }>`
 `;
 
 const DropdownContent = styled.div`
-  background: var(--bg-alt);
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-  animation: ${fadeIn} 0.2s ease-out;
+  background: rgba(150, 150, 150, 0.08); /* Exact match to NavContainer */
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.3), 
+    0 24px 64px rgba(0, 0, 0, 0.15);
+  animation: ${fadeIn} 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  
+  /* Fix for Safari/MacOS backdrop-filter clipping bug when transform is present */
+  transform: translateZ(0);
 `;
 
 const DropdownInner = styled.div`
@@ -190,16 +209,21 @@ const CTAButton = styled.a`
   font-size: 14px;
   font-weight: 600;
   color: white;
-  background: var(--landing-button);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+    rgba(238, 90, 90, 0.82);
   padding: 8px 20px;
   border-radius: 9999px;
   text-decoration: none;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(238, 90, 90, 0.35);
 
   &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 100%),
+      rgba(238, 90, 90, 0.92);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 4px 20px rgba(238, 90, 90, 0.5);
   }
 `;
 
@@ -255,15 +279,16 @@ const MobileMenu = styled.div<{ $isOpen: boolean }>`
     top: 80px;
     left: 16px;
     right: 16px;
-    background: var(--bg-alt);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
+    background: rgba(150, 150, 150, 0.08);
+    backdrop-filter: blur(50px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
     padding: 20px;
     flex-direction: column;
     gap: 8px;
     z-index: 999;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-    animation: ${slideDown} 0.2s ease-out;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 20px 50px rgba(0, 0, 0, 0.2);
+    animation: ${slideDown} 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 `;
 
@@ -304,15 +329,22 @@ const MobileCTAButton = styled.a`
   font-size: 15px;
   font-weight: 600;
   color: white;
-  background: var(--landing-button);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+    rgba(238, 90, 90, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   padding: 14px 20px;
-  border-radius: 12px;
+  border-radius: 16px;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   margin-top: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(238, 90, 90, 0.35);
 
   &:hover {
-    opacity: 0.9;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 100%),
+      rgba(238, 90, 90, 0.92);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 4px 20px rgba(238, 90, 90, 0.5);
   }
 `;
 
@@ -320,31 +352,36 @@ const MobileCTAButton = styled.a`
 const ProductItemWrapper = styled.a`
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 12px;
+  gap: 16px;
+  padding: 14px;
+  border-radius: 16px;
   text-decoration: none;
-  transition: background 0.2s ease;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 
   &:hover {
-    background: var(--surface-color);
+    background: rgba(150, 150, 150, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 `;
 
 const ProductItemIcon = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--landing-button) 0%, #ee5a5a 100%);
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(150, 150, 150, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
   svg {
     width: 20px;
     height: 20px;
-    color: white;
+    color: var(--text-color);
   }
 `;
 
@@ -359,14 +396,15 @@ const ProductItemTitle = styled.h4`
   font-weight: 600;
   color: var(--text-color);
   margin: 0;
+  letter-spacing: -0.01em;
 `;
 
 const ProductItemDescription = styled.p`
-  font-size: 12px;
-  color: var(--text-muted);
+  font-size: 13px;
+  color: var(--text-secondary);
   margin: 0;
-  max-width: 200px;
-  line-height: 1.4;
+  max-width: 260px;
+  line-height: 1.5;
 `;
 
 // Icons
@@ -388,37 +426,122 @@ const CloseIcon = () => (
   </svg>
 );
 
-const ScanIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-  </svg>
-);
-
-const SparklesIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-  </svg>
-);
-
+{/* SF Symbols-inspired: target — Job Match & Optimize */}
 const ChartIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="12" cy="12" r="5" />
+    <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
   </svg>
 );
 
-// Dropdown Grid
-const DropdownGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
+{/* SF Symbols-inspired: slider.horizontal.3 — ATS Optimizer */}
+const ScanIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+    <line x1="3" y1="6" x2="21" y2="6" strokeLinecap="round" />
+    <line x1="3" y1="12" x2="21" y2="12" strokeLinecap="round" />
+    <line x1="3" y1="18" x2="21" y2="18" strokeLinecap="round" />
+    <circle cx="8" cy="6" r="2" fill="var(--bg-color, white)" />
+    <circle cx="16" cy="12" r="2" fill="var(--bg-color, white)" />
+    <circle cx="10" cy="18" r="2" fill="var(--bg-color, white)" />
+  </svg>
+);
+
+{/* SF Symbols-inspired: pencil.and.list — Cover Letters */}
+const SparklesIcon = () => (
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.1 2.1 0 112.97 2.97L8.5 17.81l-4 1 1-4 11.362-11.323z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 20h16" />
+  </svg>
+);
+
+// Dropdown Layout
+const DropdownContainerBox = styled.div`
+  display: flex;
+  gap: 16px;
+  min-width: 600px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    min-width: unset;
+  }
+`;
+
+const DropdownMainSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   gap: 4px;
-  min-width: 280px;
+`;
+
+const DropdownSideSection = styled.div`
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  padding-left: 16px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-left: 0;
+    padding-top: 16px;
+  }
+`;
+
+const SectionTitle = styled.h3`
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin: 4px 0 8px 14px;
+`;
+
+const SecondaryItemWrapper = styled.a`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  text-decoration: none;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  &:hover {
+    background: rgba(150, 150, 150, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+`;
+
+const SecondaryItemTitle = styled.h4`
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+  letter-spacing: -0.01em;
+`;
+
+const SecondaryItemDescription = styled.p`
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
 `;
 
 // Main Navbar Component
 export function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { user, loading } = useAuth();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -437,29 +560,44 @@ export function Navbar() {
               <DropdownContainer $isActive={activeDropdown === "features"}>
                 <DropdownContent>
                   <DropdownInner>
-                    <DropdownGrid>
-                      <ProductItemWrapper href={ROUTES.PUBLIC.HOW_IT_WORKS}>
-                        <ProductItemIcon><ScanIcon /></ProductItemIcon>
-                        <ProductItemContent>
-                          <ProductItemTitle>ATS Scanner</ProductItemTitle>
-                          <ProductItemDescription>Analyze your resume against ATS systems</ProductItemDescription>
-                        </ProductItemContent>
-                      </ProductItemWrapper>
-                      <ProductItemWrapper href={ROUTES.PUBLIC.HOW_IT_WORKS}>
-                        <ProductItemIcon><SparklesIcon /></ProductItemIcon>
-                        <ProductItemContent>
-                          <ProductItemTitle>AI Optimization</ProductItemTitle>
-                          <ProductItemDescription>Get AI-powered suggestions to improve</ProductItemDescription>
-                        </ProductItemContent>
-                      </ProductItemWrapper>
-                      <ProductItemWrapper href={ROUTES.PUBLIC.HOW_IT_WORKS}>
-                        <ProductItemIcon><ChartIcon /></ProductItemIcon>
-                        <ProductItemContent>
-                          <ProductItemTitle>Score Analysis</ProductItemTitle>
-                          <ProductItemDescription>Detailed breakdown of your resume score</ProductItemDescription>
-                        </ProductItemContent>
-                      </ProductItemWrapper>
-                    </DropdownGrid>
+                    <DropdownContainerBox>
+                      <DropdownMainSection>
+                        <SectionTitle>Main Tools</SectionTitle>
+                        <ProductItemWrapper href={ROUTES.APP.REPORTS}>
+                          <ProductItemIcon><ChartIcon /></ProductItemIcon>
+                          <ProductItemContent>
+                            <ProductItemTitle>Job Match & Optimize</ProductItemTitle>
+                            <ProductItemDescription>Analyze how well your resume matches a job posting and generate a targeted version to boost your chances.</ProductItemDescription>
+                          </ProductItemContent>
+                        </ProductItemWrapper>
+                        <ProductItemWrapper href={ROUTES.APP.ATS_OPTIMIZER}>
+                          <ProductItemIcon><ScanIcon /></ProductItemIcon>
+                          <ProductItemContent>
+                            <ProductItemTitle>ATS Optimizer</ProductItemTitle>
+                            <ProductItemDescription>Upload your resume to check ATS compatibility and get an optimized version.</ProductItemDescription>
+                          </ProductItemContent>
+                        </ProductItemWrapper>
+                        <ProductItemWrapper href={ROUTES.APP.COVER_LETTERS}>
+                          <ProductItemIcon><SparklesIcon /></ProductItemIcon>
+                          <ProductItemContent>
+                            <ProductItemTitle>Cover Letters</ProductItemTitle>
+                            <ProductItemDescription>Generate AI-powered cover letters from your reports and manage your applications.</ProductItemDescription>
+                          </ProductItemContent>
+                        </ProductItemWrapper>
+                      </DropdownMainSection>
+
+                      <DropdownSideSection>
+                        <SectionTitle>Additional Features</SectionTitle>
+                        <SecondaryItemWrapper href={ROUTES.APP.REPORTS}>
+                          <SecondaryItemTitle>Role Recommendation</SecondaryItemTitle>
+                          <SecondaryItemDescription>Get alternative role ideas based on your resume analysis automatically during job matching.</SecondaryItemDescription>
+                        </SecondaryItemWrapper>
+                        <SecondaryItemWrapper href={ROUTES.APP.ATS_OPTIMIZER}>
+                          <SecondaryItemTitle>Resume Customization</SecondaryItemTitle>
+                          <SecondaryItemDescription>Customize color palettes and add your photo to the AI-generated optimized resumes.</SecondaryItemDescription>
+                        </SecondaryItemWrapper>
+                      </DropdownSideSection>
+                    </DropdownContainerBox>
                   </DropdownInner>
                 </DropdownContent>
               </DropdownContainer>
@@ -475,9 +613,12 @@ export function Navbar() {
 
           <RightSection>
             <ThemeToggleWrapper>
-              <ThemeToggle />
+              {isMounted ? <ThemeToggle /> : <div style={{ width: 48, height: 26 }} />}
             </ThemeToggleWrapper>
-            {user ? (
+            
+            {!isMounted || loading ? (
+                 <div style={{ width: 100, height: 36 }} /> // Placeholder to prevent shifting
+            ) : user ? (
               <CTAButton href={ROUTES.APP.DASHBOARD}>Dashboard</CTAButton>
             ) : (
               <>
@@ -513,9 +654,11 @@ export function Navbar() {
         </MobileMenuItem>
         <MobileDivider />
         <MobileThemeWrapper>
-          <ThemeToggle />
+          {isMounted ? <ThemeToggle /> : <div style={{ height: 26 }} />}
         </MobileThemeWrapper>
-        {user ? (
+        {!isMounted || loading ? (
+            <div style={{ height: '50px' }} />
+        ) : user ? (
           <MobileCTAButton href={ROUTES.APP.DASHBOARD} onClick={closeMobileMenu}>
             Go to Dashboard
           </MobileCTAButton>

@@ -160,43 +160,48 @@ const AnswerText = styled.p`
 `;
 
 const CTABox = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(var(--primary-500-rgb), 0.08) 0%,
-    rgba(var(--primary-700-rgb), 0.08) 100%
-  );
-  border: 1px solid var(--primary-200);
-  border-radius: 16px;
-  padding: 32px;
-  margin-top: 64px;
+  background: rgba(150, 150, 150, 0.05);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.12);
+  border-radius: 24px;
+  padding: 48px;
+  margin-top: 80px;
   text-align: center;
-
-  h3 {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: var(--text-color);
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   p {
     font-size: 16px;
     color: var(--text-secondary);
-    margin-bottom: 20px;
+    margin-bottom: 28px;
+    max-width: 480px;
+    line-height: 1.6;
   }
 
   a {
-    display: inline-block;
-    background: var(--primary-500);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+      var(--primary-500);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(var(--primary-500-rgb), 0.3);
     color: white;
-    padding: 14px 28px;
-    border-radius: 20px;
+    padding: 14px 32px;
+    border-radius: 9999px;
+    font-size: 16px;
     font-weight: 600;
     text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
 
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(var(--accent-rgb), 0.3);
+      filter: brightness(1.1);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 4px 20px rgba(var(--primary-500-rgb), 0.45);
     }
   }
 

@@ -115,21 +115,24 @@ const PrimaryButton = styled.a`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  background: var(--primary-500);
-  padding: 14px 24px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+    var(--primary-500);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  padding: 14px 28px;
   font-size: 15px;
   font-weight: 600;
   color: white;
   text-decoration: none;
-  box-shadow: 0 4px 12px rgba(53, 162, 159, 0.3);
-  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(var(--primary-500-rgb), 0.3);
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
 
   &:hover {
-    background: var(--primary-700);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(53, 162, 159, 0.4);
+    filter: brightness(1.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 4px 20px rgba(var(--primary-500-rgb), 0.45);
   }
 
   &:focus-visible {
@@ -148,9 +151,21 @@ const SecondaryButton = styled.a`
   text-decoration: none;
   transition: all 0.2s ease;
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  position: relative;
 
-  &:hover {
-    color: var(--primary-500);
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background: currentColor;
+    transition: width 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  &:hover::after {
+    width: 100%;
   }
 
   span {
@@ -216,17 +231,17 @@ export function SecondaryCTA() {
 
           <ContentSection>
             <Title>
-              Stop getting rejected. Start getting interviews.
+              Your competitors have already optimized their resumes.
             </Title>
             <Description>
-              Join 500+ professionals who transformed their job search with AI-powered resume optimization. Get past ATS filters and land more interviews in just 30 seconds.
+              Stop leaving your career to chance. Get the same unfair AI advantage that thousands of professionals are using to secure $100k+ roles right now.
             </Description>
             <ButtonGroup>
               <PrimaryButton href={ROUTES.AUTH.SIGNUP}>
-                Get started
+                Scan My Resume for $2
               </PrimaryButton>
-              <SecondaryButton href="#features">
-                Learn more
+              <SecondaryButton href={ROUTES.PUBLIC.PRICING}>
+                View Plans
                 <span aria-hidden="true">→</span>
               </SecondaryButton>
             </ButtonGroup>

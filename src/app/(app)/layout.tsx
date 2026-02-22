@@ -706,17 +706,6 @@ const navSections = [
     ],
   },
   {
-    label: "My Data",
-    items: [
-      { label: "Resumes", href: ROUTES.APP.CV, icon: <ResumeIcon /> },
-      {
-        label: "Job Postings",
-        href: ROUTES.APP.JOBS,
-        icon: <JobPostingsIcon />,
-      },
-    ],
-  },
-  {
     label: "Tools",
     items: [
       { label: "Job Match", href: ROUTES.APP.REPORTS, icon: <JobMatchIcon /> },
@@ -729,6 +718,17 @@ const navSections = [
         label: "Cover Letters",
         href: ROUTES.APP.COVER_LETTERS,
         icon: <CoverLetterIcon />,
+      },
+    ],
+  },
+  {
+    label: "My Data",
+    items: [
+      { label: "Resumes", href: ROUTES.APP.CV, icon: <ResumeIcon /> },
+      {
+        label: "Job Postings",
+        href: ROUTES.APP.JOBS,
+        icon: <JobPostingsIcon />,
       },
     ],
   },

@@ -25,16 +25,20 @@ const BentoGridItemWrapper = styled.div`
   justify-content: space-between;
   padding: 24px;
   border-radius: 24px;
-  background: var(--bg-color);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 4px 16px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   min-height: 280px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  outline: 1px solid rgba(0, 0, 0, 0.05);
 
   &:hover {
-   
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.25), 0 12px 32px rgba(0, 0, 0, 0.3);
+    transform: translateY(-4px);
   }
 
   &.md-col-span-2 {

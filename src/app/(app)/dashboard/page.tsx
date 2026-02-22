@@ -1079,6 +1079,7 @@ const Container = styled.div`
   padding-left: ${({ theme }) => theme.spacing["2xl"]};
   padding-right: ${({ theme }) => theme.spacing["2xl"]};
   padding-bottom: 100px; /* Space for FAB */
+  overflow-x: hidden;
 
   &::before {
     content: '';

@@ -47,7 +47,7 @@ export default function AnalyzePage() {
 
   const handleWizardClose = () => {
     setIsWizardOpen(false);
-    router.push(ROUTES.APP.DASHBOARD);
+    router.replace(ROUTES.APP.DASHBOARD);
   };
 
   const handleWizardComplete = () => {

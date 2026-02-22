@@ -8,6 +8,11 @@ const pulse = keyframes`
   50% { opacity: 0.5; }
 `;
 
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
 const checkmark = keyframes`
   0% { transform: scale(0); }
   50% { transform: scale(1.2); }
@@ -19,8 +24,10 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   padding: ${({ theme }) => theme.spacing['2xl']};
-  max-width: 400px;
+  width: 100%;
+  max-width: 440px;
   margin: 0 auto;
+  animation: ${fadeIn} 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 `;
 
 const Title = styled.h3`
@@ -43,21 +50,31 @@ const StepItem = styled.div<{ $status: 'pending' | 'active' | 'completed' }>`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.lg};
   background: ${({ $status, theme }) =>
     $status === 'completed'
-      ? 'rgba(16, 185, 129, 0.1)'
+      ? 'rgba(16, 185, 129, 0.05)'
       : $status === 'active'
-      ? 'var(--primary-50)'
-      : theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid ${({ $status }) =>
+      ? `rgba(${theme.colors.primary}, 0.08)`
+      : 'rgba(255, 255, 255, 0.02)'};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  border: 1px solid ${({ $status, theme }) =>
     $status === 'completed'
-      ? 'rgba(16, 185, 129, 0.3)'
+      ? 'rgba(16, 185, 129, 0.2)'
       : $status === 'active'
-      ? 'var(--primary-200)'
-      : 'transparent'};
-  transition: all 0.3s ease;
+      ? `rgba(${theme.colors.primary}, 0.3)`
+      : 'rgba(255, 255, 255, 0.05)'};
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+
+  ${({ $status, theme }) =>
+    $status === 'active' &&
+    css`
+      box-shadow: 0 0 20px -5px ${theme.colors.primary}40;
+      transform: translateY(-2px);
+    `}
 
   ${({ $status }) =>
     $status === 'active' &&
@@ -74,12 +91,12 @@ const StepIndicator = styled.div<{ $status: 'pending' | 'active' | 'completed' }
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: ${({ $status }) =>
+  background: ${({ $status, theme }) =>
     $status === 'completed'
-      ? 'var(--success)'
+      ? theme.colors.success
       : $status === 'active'
-      ? 'var(--accent)'
-      : '#e5e7eb'};
+      ? theme.colors.primary
+      : theme.colors.surface};
   color: ${({ $status }) => ($status === 'pending' ? '#9ca3af' : 'white')};
   font-size: 14px;
   font-weight: 600;
@@ -97,14 +114,15 @@ const StepContent = styled.div`
 `;
 
 const StepLabel = styled.div<{ $status: 'pending' | 'active' | 'completed' }>`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
   font-weight: ${({ $status }) => ($status === 'active' ? '600' : '500')};
   color: ${({ $status, theme }) =>
     $status === 'completed'
-      ? 'var(--success)'
+      ? theme.colors.success
       : $status === 'active'
-      ? theme.colors.textPrimary
+      ? theme.colors.primary
       : theme.colors.textSecondary};
+  transition: color 0.3s ease;
 `;
 
 const StepDescription = styled.div`
@@ -115,19 +133,20 @@ const StepDescription = styled.div`
 
 const ProgressBar = styled.div`
   width: 100%;
-  height: 4px;
-  background: ${({ theme }) => theme.colors.border};
-  border-radius: 2px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
   overflow: hidden;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
 const ProgressFill = styled.div<{ $progress: number }>`
   height: 100%;
   width: ${({ $progress }) => $progress}%;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--success) 100%);
-  border-radius: 2px;
-  transition: width 0.5s ease;
+  background: linear-gradient(90deg, ${({ theme }) => theme.colors.primary} 0%, ${({ theme }) => theme.colors.success} 100%);
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px ${({ theme }) => theme.colors.primary}80;
 `;
 
 const TimeEstimate = styled.div`

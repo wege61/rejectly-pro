@@ -8,6 +8,7 @@ import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 import { WelcomeModal } from "@/components/ui/WelcomeModal";
+import { OnboardingWizard } from "@/components/ui/OnboardingWizard";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
@@ -1432,7 +1433,7 @@ const RecentCoverLetterBackground = ({ content }: RecentCoverLetterBackgroundPro
 };
 
 // Floating Action Button (FAB)
-const FAB = styled.button<{ $showHint?: boolean }>`
+const FAB = styled.button<{ $showHint?: boolean; $hidden?: boolean }>`
   position: fixed;
   bottom: ${({ theme }) => theme.spacing["2xl"]};
   right: ${({ theme }) => theme.spacing["2xl"]};
@@ -1449,6 +1450,8 @@ const FAB = styled.button<{ $showHint?: boolean }>`
   transition: all ${({ theme }) => theme.transitions.normal};
   z-index: 10010;
   border: none;
+  opacity: ${({ $hidden }) => ($hidden ? 0 : 1)};
+  pointer-events: ${({ $hidden }) => ($hidden ? "none" : "auto")};
 
   ${({ $showHint }) => $showHint && css`
     box-shadow:
@@ -1715,6 +1718,8 @@ export default function DashboardPage() {
   const [recentCoverLetters, setRecentCoverLetters] = useState<CoverLetter[]>([]);
   const [jobTitlesMap, setJobTitlesMap] = useState<Record<string, string>>({});
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [wizardTriggerRect, setWizardTriggerRect] = useState<DOMRect | null>(null);
   const [showFABHint, setShowFABHint] = useState(false);
   const [fabHintCompleted, setFabHintCompleted] = useState(false);
 
@@ -1778,7 +1783,11 @@ export default function DashboardPage() {
     }
   };
 
-  const handleFABClick = async () => {
+  const handleFABClick = async (e: React.MouseEvent) => {
+    // Capture the button's position before opening the wizard
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    setWizardTriggerRect(rect);
+
     // Mark FAB hint as completed when user clicks FAB
     if (showFABHint && !fabHintCompleted && user) {
       try {
@@ -1795,8 +1804,8 @@ export default function DashboardPage() {
       }
     }
 
-    // Navigate to analyze page
-    router.push(ROUTES.APP.ANALYZE);
+    // Open wizard directly without page navigation
+    setIsWizardOpen(true);
   };
 
   const handleDismissFABHint = async () => {
@@ -1941,6 +1950,13 @@ export default function DashboardPage() {
         isOpen={showWelcomeModal}
         onClose={() => setShowWelcomeModal(false)}
         onComplete={handleWelcomeComplete}
+      />
+
+      <OnboardingWizard
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+        onComplete={() => setIsWizardOpen(false)}
+        triggerRect={wizardTriggerRect}
       />
 
       <Container>
@@ -2089,7 +2105,7 @@ export default function DashboardPage() {
                 description="Create your first analysis to see results here."
                 action={{
                   label: "Create Analysis",
-                  onClick: () => router.push(ROUTES.APP.ANALYZE),
+                  onClick: () => setIsWizardOpen(true),
                 }}
               />
             </Card>
@@ -2185,7 +2201,7 @@ export default function DashboardPage() {
         </>
       )}
 
-      <FAB onClick={handleFABClick} $showHint={showFABHint}>
+      <FAB onClick={handleFABClick} $showHint={showFABHint} $hidden={isWizardOpen}>
         <FABTooltip $autoShow={showFABHint}>
           New Analysis
         </FABTooltip>

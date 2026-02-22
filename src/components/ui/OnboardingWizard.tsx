@@ -9,6 +9,27 @@ import { AnalysisProgress } from "./AnalysisProgress";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/contexts/ToastContext";
+import { motion, AnimatePresence } from "framer-motion";
+
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 400 : -400,
+    opacity: 0,
+    position: "absolute" as const,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+    position: "relative" as const,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? 400 : -400,
+    opacity: 0,
+    position: "absolute" as const,
+  }),
+};
 
 // Icons
 const DocumentIcon = () => (
@@ -129,22 +150,56 @@ const CloseIcon = () => (
   </svg>
 );
 
-const WizardContainer = styled.div`
-  height: 80vh;
-  min-height: 500px;
-  max-height: 900px;
+const EyeIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+    />
+  </svg>
+);
+
+const WizardContainer = styled.div<{ $isPreview?: boolean }>`
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: ${({ $isPreview }) => $isPreview ? '85vh' : '480px'};
+  width: 100%;
+  padding: 24px;
+  position: relative;
   overflow: hidden;
-  margin-top: -${({ theme }) => theme.spacing.md};
+
+  @media (max-width: 640px) {
+    height: 100%;
+    min-height: auto;
+    border-radius: inherit;
+    padding: 24px 20px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
+  }
 `;
 
 const WizardHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  flex-shrink: 0;
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
+  
+  @media (max-width: 640px) {
+    top: 20px;
+    right: 20px;
+  }
 `;
 
 const ProgressBar = styled.div`
@@ -156,22 +211,23 @@ const ProgressBar = styled.div`
 `;
 
 const WizardCloseButton = styled.button`
-  width: 32px;
-  height: 32px;
-  border-radius: ${({ theme }) => theme.radius.md};
+  width: 40px;
+  height: 40px;
+  border-radius: ${({ theme }) => theme.radius.full};
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  background: transparent;
-  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.fast};
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.surfaceHover};
-    color: ${({ theme }) => theme.colors.textPrimary};
+    background-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
   }
 
   svg {
@@ -190,7 +246,7 @@ const ProgressFill = styled.div<{ $progress: number }>`
 
 const StepHeader = styled.div`
   text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
   flex-shrink: 0;
 `;
 
@@ -208,43 +264,33 @@ const StepDescription = styled.p`
 
 const StepContent = styled.div`
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: ${({ theme }) => theme.spacing.sm};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  display: flex;
+  flex-direction: column;
 
-  /* Custom scrollbar styling */
+  /* Hidden scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.colors.background};
-    border-radius: ${({ theme }) => theme.radius.full};
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.border};
-    border-radius: ${({ theme }) => theme.radius.full};
-
-    &:hover {
-      background: ${({ theme }) => theme.colors.borderHover};
-    }
+    display: none;
   }
 `;
 
 const UploadArea = styled.div<{ $isDragging: boolean }>`
   border: 2px dashed ${({ theme, $isDragging }) =>
-    $isDragging ? theme.colors.primary : theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => `${theme.spacing["3xl"]} ${theme.spacing.xl}`};
+    $isDragging ? theme.colors.primary : 'rgba(255, 255, 255, 0.15)'};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  padding: ${({ theme }) => `${theme.spacing["2xl"]} ${theme.spacing.xl}`};
   text-align: center;
   background-color: ${({ theme, $isDragging }) =>
-    $isDragging ? theme.colors.primaryLight : theme.colors.background};
+    $isDragging ? 'rgba(var(--primary-rgb), 0.15)' : 'rgba(255, 255, 255, 0.03)'};
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-  min-height: 240px;
-  height: 100%;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 280px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -252,9 +298,54 @@ const UploadArea = styled.div<{ $isDragging: boolean }>`
 
   &:hover {
     border-color: ${({ theme }) => theme.colors.primary};
-    background-color: ${({ theme }) => theme.colors.primaryLight};
+    background-color: rgba(var(--primary-rgb), 0.08);
     transform: translateY(-2px);
+    box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
+
+  @media (max-width: 640px) {
+    min-height: 200px;
+    padding: ${({ theme }) => theme.spacing.xl};
+  }
+`;
+
+const SegmentControl = styled.div`
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: ${({ theme }) => theme.radius.lg};
+  padding: 4px;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+`;
+
+const SegmentButton = styled.button<{ $active?: boolean }>`
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: ${({ $active }) => $active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
+  color: ${({ $active, theme }) => $active ? theme.colors.textPrimary : theme.colors.textSecondary};
+  font-weight: ${({ $active }) => $active ? 600 : 500};
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  cursor: pointer;
+  box-shadow: ${({ $active }) => $active ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  
+  &:hover {
+    color: ${({ theme }) => theme.colors.textPrimary};
+  }
+`;
+
+const SlideContainer = styled(motion.div)`
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 `;
 
 const UploadIcon = styled.div`
@@ -361,75 +452,6 @@ const EditablePreview = styled.textarea`
   }
 `;
 
-const ResultSummary = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => `${theme.spacing["2xl"]} ${theme.spacing.xl}`};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const ResultScore = styled.div`
-  font-size: 80px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  animation: ${({ theme }) => theme.animations.scaleIn} 0.5s ease;
-  line-height: 1;
-`;
-
-const ResultDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-  margin-top: ${({ theme }) => theme.spacing.xl};
-  text-align: left;
-`;
-
-const ResultItem = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background-color: ${({ theme }) => theme.colors.surface};
-  transition: all ${({ theme }) => theme.transitions.normal};
-  
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.borderHover};
-    box-shadow: ${({ theme }) => theme.shadow.md};
-  }
-`;
-
-const KeywordList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: ${({ theme }) => theme.spacing.sm} 0 0 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${({ theme }) => theme.spacing.xs};
-`;
-
-const KeywordTag = styled.li`
-  display: inline-flex;
-  align-items: center;
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
-  background-color: ${({ theme }) => theme.colors.primaryLight};
-  color: ${({ theme }) => theme.colors.primary};
-  border: 1px solid ${({ theme }) => theme.colors.primary}33;
-  border-radius: ${({ theme }) => theme.radius.full};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  transition: all ${({ theme }) => theme.transitions.fast};
-  
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.primary};
-    color: white;
-    transform: translateY(-1px);
-  }
-`;
 
 const WizardActions = styled.div`
   display: flex;
@@ -437,9 +459,22 @@ const WizardActions = styled.div`
   justify-content: space-between;
   gap: ${({ theme }) => theme.spacing.md};
   padding-top: ${({ theme }) => theme.spacing.lg};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
   margin-top: 0;
+
+  & > button {
+    min-width: 140px;
+  }
+
+  @media (max-width: 640px) {
+    gap: ${({ theme }) => theme.spacing.sm};
+    
+    & > button {
+      min-width: 0;
+      flex: 1;
+    }
+  }
 `;
 
 const SelectionList = styled.div`
@@ -453,44 +488,40 @@ const CompactJobList = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.sm};
-  max-height: 400px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding-right: ${({ theme }) => theme.spacing.xs};
+  padding-bottom: ${({ theme }) => theme.spacing.md};
 
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.colors.background};
-    border-radius: ${({ theme }) => theme.radius.full};
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.border};
-    border-radius: ${({ theme }) => theme.radius.full};
-
-    &:hover {
-      background: ${({ theme }) => theme.colors.borderHover};
-    }
+    display: none;
   }
 `;
 
 const CompactJobCard = styled.div<{ $selected?: boolean }>`
   padding: ${({ theme }) => theme.spacing.md};
-  border: 2px solid ${({ theme, $selected }) =>
-    $selected ? theme.colors.primary : theme.colors.border};
+  border: 1px solid ${({ theme, $selected }) =>
+    $selected ? theme.colors.primary : 'rgba(255, 255, 255, 0.12)'};
   border-radius: ${({ theme }) => theme.radius.lg};
   background-color: ${({ theme, $selected }) =>
-    $selected ? theme.colors.primaryLight : theme.colors.surface};
+    $selected ? 'rgba(var(--primary-rgb), 0.15)' : 'rgba(255, 255, 255, 0.04)'};
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  box-shadow: ${({ $selected }) => 
+    $selected ? '0 8px 24px -8px rgba(var(--primary-rgb), 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)' : '0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08)'};
 
   &:hover {
     border-color: ${({ theme }) => theme.colors.primary};
-    background-color: ${({ theme }) => theme.colors.primaryLight};
-    transform: translateX(4px);
+    background-color: rgba(var(--primary-rgb), 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -10px rgba(var(--primary-rgb), 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
   ${({ $selected, theme }) => $selected && `
@@ -525,33 +556,6 @@ const CompactJobMeta = styled.p`
   color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
-const SuccessBox = styled.div`
-  padding: ${({ theme }) => theme.spacing["2xl"]};
-  border: 2px solid ${({ theme }) => theme.colors.success};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.successLight};
-  text-align: center;
-  animation: ${({ theme }) => theme.animations.scaleIn} 0.3s ease;
-`;
-
-const SuccessIcon = styled.div`
-  font-size: 64px;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  animation: ${({ theme }) => theme.animations.bounce} 0.6s ease;
-`;
-
-const SuccessTitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-`;
-
-const SuccessSubtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-`;
-
 const ReplaceButton = styled(Button)`
   margin-top: ${({ theme }) => theme.spacing.md};
 `;
@@ -563,43 +567,90 @@ const CVOptionWrapper = styled.div`
 `;
 
 const ExistingCVCard = styled.div`
-  padding: ${({ theme }) => theme.spacing.xl};
-  border: 2px solid ${({ theme }) => theme.colors.primary};
+  padding: ${({ theme }) => theme.spacing.md};
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: ${({ theme }) => theme.radius.lg};
-  background: ${({ theme }) => theme.colors.primaryLight};
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-  height: 100%;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primaryHover};
+    border-color: ${({ theme }) => theme.colors.primary};
+    background: rgba(var(--primary-rgb), 0.08);
     transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.shadow.lg};
+    box-shadow: 0 12px 28px -10px rgba(var(--primary-rgb), 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 `;
 
 const CVIcon = styled.div`
-  font-size: 48px;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: ${({ theme }) => theme.radius.md};
+  background: rgba(var(--primary-rgb), 0.15);
+  color: ${({ theme }) => theme.colors.primary};
+  flex-shrink: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const CVTextContent = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 const CVTitle = styled.h4`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  text-align: center;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const CVSubtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
   color: ${({ theme }) => theme.colors.textSecondary};
-  text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const PreviewButton = styled.button`
+  background: transparent;
+  border: none;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: ${({ theme }) => theme.colors.textPrimary};
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 `;
 
 const ButtonGroup = styled.div`
@@ -682,7 +733,7 @@ const CardSubtitle = styled.div`
 
 const LoadingContainer = styled.div`
   text-align: center;
-  padding: ${({ theme }) => `${theme.spacing["3xl"]} 0`};
+  padding: 0;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -709,62 +760,6 @@ const UploadHint = styled.p`
   margin-top: ${({ theme }) => theme.spacing.xs};
 `;
 
-const ResultScoreLabel = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-`;
-
-const ResultHeading = styled.h4`
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-`;
-
-const ResultText = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-`;
-
-const SelectionCard = styled.div<{ $selected: boolean }>`
-  padding: ${({ theme }) => theme.spacing.lg};
-  border: 2px solid ${({ theme, $selected }) =>
-    $selected ? theme.colors.primary : theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  background-color: ${({ theme, $selected }) =>
-    $selected ? theme.colors.primaryLight : theme.colors.surface};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-  position: relative;
-  overflow: hidden;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    background-color: ${({ theme }) => theme.colors.primaryLight};
-    transform: translateX(4px);
-  }
-  
-  ${({ $selected, theme }) => $selected && `
-    &::before {
-      content: '✓';
-      position: absolute;
-      top: ${theme.spacing.sm};
-      right: ${theme.spacing.sm};
-      width: 24px;
-      height: 24px;
-      background: ${theme.colors.primary};
-      color: white;
-      border-radius: ${theme.radius.full};
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: ${theme.typography.fontSize.sm};
-      font-weight: ${theme.typography.fontWeight.bold};
-    }
-  `}
-`;
 
 // Type definitions
 interface DocumentType {
@@ -774,6 +769,7 @@ interface DocumentType {
   user_id?: string;
   type?: string;
   created_at?: string;
+  file_url?: string;
 }
 
 interface AnalysisResultType {
@@ -787,18 +783,28 @@ interface OnboardingWizardProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete: () => void;
+  triggerRect?: DOMRect | null;
 }
 
 const WIZARD_STORAGE_KEY = "rejectly_wizard_state";
+
+type TabState = "new" | "existing";
 
 export function OnboardingWizard({
   isOpen,
   onClose,
   onComplete,
+  triggerRect,
 }: OnboardingWizardProps) {
   const router = useRouter();
   const toast = useToast();
   const [currentStep, setCurrentStep] = useState(1);
+  const [direction, setDirection] = useState(1);
+
+  const changeStep = (newStep: number) => {
+    setDirection(newStep > currentStep ? 1 : -1);
+    setCurrentStep(newStep);
+  };
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [hasExistingCV, setHasExistingCV] = useState(false);
@@ -813,6 +819,10 @@ export function OnboardingWizard({
   const [jobDetails, setJobDetails] = useState("");
   const [savedJob, setSavedJob] = useState<DocumentType | null>(null);
 
+  // Segment Types
+  const [activeCvTab, setActiveCvTab] = useState<TabState>("new");
+  const [activeJobTab, setActiveJobTab] = useState<TabState>("new");
+
   // Step 3: Analysis
   const [selectedCV, setSelectedCV] = useState<string | null>(null);
   const [selectedJob, setSelectedJob] = useState<string | null>(null);
@@ -823,8 +833,12 @@ export function OnboardingWizard({
   // Step 4: Result Summary
   const [analysisResult, setAnalysisResult] = useState<AnalysisResultType | null>(null);
 
-  // Total steps is always 4
-  const totalSteps = 4;
+  // Preview State
+  const [previewDocument, setPreviewDocument] = useState<{ title: string, url: string, isPdf: boolean } | null>(null);
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+
+  // Total steps is 2 (CV -> Job -> Analysis Loader -> Redirect)
+  const totalSteps = 2;
   const progress = (currentStep / totalSteps) * 100;
 
   // Reset wizard state when modal first opens (unless continuing from saved state)
@@ -833,7 +847,7 @@ export function OnboardingWizard({
       const savedState = localStorage.getItem(WIZARD_STORAGE_KEY);
       if (!savedState) {
         // Fresh start - reset everything
-        setCurrentStep(1);
+        changeStep(1);
         setIsLoading(false);
         setIsDragging(false);
       }
@@ -848,7 +862,7 @@ export function OnboardingWizard({
       // Reset to step 1 when modal opens (unless we have saved state)
       const savedState = localStorage.getItem(WIZARD_STORAGE_KEY);
       if (!savedState) {
-        setCurrentStep(1);
+        changeStep(1);
       }
 
       try {
@@ -871,8 +885,10 @@ export function OnboardingWizard({
           setHasExistingCV(true);
           setUploadedCV(cvData);
           setCvText(cvData.text || "");
+          setActiveCvTab("existing");
         } else {
           setHasExistingCV(false);
+          setActiveCvTab("new");
         }
 
         // Check for existing Job
@@ -887,8 +903,10 @@ export function OnboardingWizard({
 
         if (jobData) {
           setHasExistingJob(true);
+          setActiveJobTab("existing");
         } else {
           setHasExistingJob(false);
+          setActiveJobTab("new");
         }
       } catch (error) {
         console.error("Failed to check existing documents:", error);
@@ -1020,8 +1038,16 @@ export function OnboardingWizard({
       }
 
       setUploadedCV(result.document);
+      setSelectedCV(result.document.id);
       setCvText(result.document.text || "");
+      setHasExistingCV(true);
+      setActiveCvTab("existing"); // Automatically switch to the "Saved Resumes" view
       toast.success("Resume uploaded successfully!");
+      
+      // Auto-advance for refined Apple-style UX flow
+      setTimeout(() => {
+        changeStep(2);
+      }, 1200);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Upload failed";
@@ -1054,7 +1080,7 @@ export function OnboardingWizard({
   const handleJobSubmit = async () => {
     if (!jobTitle || !jobDetails) {
       toast.error("Please fill in all fields");
-      return;
+      return null;
     }
 
     setIsLoading(true);
@@ -1082,10 +1108,12 @@ export function OnboardingWizard({
 
       setSavedJob(data);
       toast.success("Job posting added!");
+      return data.id;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to add job";
       toast.error(errorMessage);
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -1133,8 +1161,10 @@ export function OnboardingWizard({
   };
 
   // Step 3: Create analysis
-  const handleCreateAnalysis = async () => {
-    if (!selectedCV || !selectedJob) {
+  const handleCreateAnalysis = async (overrideJobId?: string) => {
+    const currentJobId = overrideJobId || selectedJob;
+
+    if (!selectedCV || !currentJobId) {
       toast.error("Please select a resume and a job posting");
       return;
     }
@@ -1161,7 +1191,7 @@ export function OnboardingWizard({
         },
         body: JSON.stringify({
           cvId: selectedCV,
-          jobIds: [selectedJob],
+          jobIds: [currentJobId],
         }),
       });
 
@@ -1175,21 +1205,16 @@ export function OnboardingWizard({
       setAnalysisProgressStep(3);
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Save analysis result and move to step 4
-      setAnalysisResult({
-        id: result.report.id,
-        fitScore: result.report.fitScore,
-        summary: result.report.summary,
-        missingKeywords: result.report.missingKeywords || [],
-      });
-
+      // Redirect immediately to the report page
       toast.success("Analysis complete!");
-      setCurrentStep(4);
+      handleComplete();
+      router.push(`/reports/${result.report.id}`);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to create analysis";
       toast.error(errorMessage);
-    } finally {
+      // Revert to form view on error so user isn't stuck loading
+      changeStep(2);
       setIsLoading(false);
       setAnalysisProgressStep(0);
     }
@@ -1199,37 +1224,116 @@ export function OnboardingWizard({
     switch (currentStep) {
       case 1:
         return (
-          <>
+          <SlideContainer
+            key="step1"
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          >
             <StepHeader>
-              <StepTitle><DocumentIcon /> Upload Your Resume</StepTitle>
+              <StepTitle><DocumentIcon /> Select Resume</StepTitle>
               <StepDescription>
-                {uploadedCV && !isLoading
-                  ? "Great! Your resume is ready. You can proceed to the next step or upload a different one."
-                  : hasExistingCV
-                    ? "Use your existing resume or upload a new one"
-                    : "Upload your resume in PDF or DOCX format"
+                {hasExistingCV
+                  ? "Upload a new PDF/DOCX or use a previously saved resume"
+                  : "Upload your resume in PDF or DOCX format"
                 }
               </StepDescription>
             </StepHeader>
+
             <StepContent>
-              {hasExistingCV && uploadedCV && !isLoading ? (
-                <CVOptionsContainer>
-                  <CVOptionWrapper>
-                    <ExistingCVCard onClick={() => {
-                      // User clicked to use existing CV, just continue
-                      setCurrentStep(2);
-                    }}>
-                      <CVIcon><DocumentIcon /></CVIcon>
-                      <CVTitle>{uploadedCV.title}</CVTitle>
-                      <CVSubtitle>
-                        {cvText.length} characters • Click to use this resume
-                      </CVSubtitle>
-                    </ExistingCVCard>
-                  </CVOptionWrapper>
+              {hasExistingCV && (
+                <SegmentControl>
+                  <SegmentButton
+                    $active={activeCvTab === "new"}
+                    onClick={() => setActiveCvTab("new")}
+                  >
+                    Upload New
+                  </SegmentButton>
+                  <SegmentButton
+                    $active={activeCvTab === "existing"}
+                    onClick={() => setActiveCvTab("existing")}
+                  >
+                    Saved Resumes
+                  </SegmentButton>
+                </SegmentControl>
+              )}
 
-                  <DividerText>or</DividerText>
-
-                  <CVOptionWrapper>
+              <AnimatePresence mode="popLayout" initial={false}>
+                {activeCvTab === "existing" && hasExistingCV ? (
+                  <motion.div
+                    key="existing-cv"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ flex: 1, width: "100%", position: "relative", display: "flex", flexDirection: "column" }}
+                  >
+                    <CompactJobList>
+                      {uploadedCV && (
+                        <ExistingCVCard
+                          onClick={() => {
+                            setSelectedCV(uploadedCV.id);
+                            changeStep(2);
+                          }}
+                          style={{ borderColor: selectedCV === uploadedCV.id ? 'var(--primary)' : undefined }}
+                        >
+                          <CVIcon><DocumentIcon /></CVIcon>
+                          <CVTextContent>
+                            <CVTitle>{uploadedCV.title}</CVTitle>
+                            <CVSubtitle>
+                              {cvText.length} characters • Just uploaded
+                            </CVSubtitle>
+                          </CVTextContent>
+                          <PreviewButton
+                            onClick={(e) => handleOpenPreview(uploadedCV, e)}
+                            title="Preview Resume"
+                            disabled={isPreviewLoading}
+                          >
+                            {isPreviewLoading ? <Spinner size="sm" /> : <EyeIcon />}
+                          </PreviewButton>
+                        </ExistingCVCard>
+                      )}
+                      
+                      {cvList.filter(cv => cv.id !== uploadedCV?.id).map((cv) => (
+                        <ExistingCVCard
+                          key={cv.id}
+                          onClick={() => {
+                            setSelectedCV(cv.id);
+                            changeStep(2);
+                          }}
+                          style={{
+                            borderColor: selectedCV === cv.id ? 'var(--primary)' : undefined,
+                            background: selectedCV === cv.id ? 'rgba(var(--primary-rgb), 0.08)' : undefined
+                          }}
+                        >
+                          <CVIcon><DocumentIcon /></CVIcon>
+                          <CVTextContent>
+                            <CVTitle>{cv.title}</CVTitle>
+                            <CVSubtitle>Saved Resume</CVSubtitle>
+                          </CVTextContent>
+                          <PreviewButton
+                            onClick={(e) => handleOpenPreview(cv, e)}
+                            title="Preview Resume"
+                            disabled={isPreviewLoading}
+                          >
+                            {isPreviewLoading ? <Spinner size="sm" /> : <EyeIcon />}
+                          </PreviewButton>
+                        </ExistingCVCard>
+                      ))}
+                    </CompactJobList>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="new-cv"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ flex: 1, width: "100%", position: "relative", display: "flex", flexDirection: "column" }}
+                  >
                     <UploadArea
                       $isDragging={isDragging}
                       onDrop={handleDrop}
@@ -1239,7 +1343,7 @@ export function OnboardingWizard({
                     >
                       <UploadIcon><UploadArrowIcon /></UploadIcon>
                       <UploadText>
-                        <strong>Upload a new resume</strong>
+                        <strong>Click to upload</strong> or drag and drop
                       </UploadText>
                       <UploadHint>
                         PDF or DOCX (max 5MB)
@@ -1255,80 +1359,93 @@ export function OnboardingWizard({
                         }}
                       />
                     </UploadArea>
-                  </CVOptionWrapper>
-                </CVOptionsContainer>
-              ) : uploadedCV ? (
-                <>
-                  <SuccessBox>
-                    <SuccessIcon>✓</SuccessIcon>
-                    <SuccessTitle>{uploadedCV.title}</SuccessTitle>
-                    <SuccessSubtitle>
-                      Resume uploaded successfully
-                    </SuccessSubtitle>
-                  </SuccessBox>
-
-                  {cvText && (
-                    <PreviewPanel>
-                      <PreviewSection>
-                        <PreviewTitle>Resume Content Preview</PreviewTitle>
-                        <EditablePreview
-                          value={cvText}
-                          onChange={(e) => setCvText(e.target.value)}
-                          placeholder="Edit your resume text here..."
-                        />
-                        <CharCount>{cvText.length} characters</CharCount>
-                      </PreviewSection>
-                    </PreviewPanel>
-                  )}
-                </>
-              ) : (
-                <UploadArea
-                  $isDragging={isDragging}
-                  onDrop={handleDrop}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onClick={() => document.getElementById("wizard-cv-upload")?.click()}
-                >
-                  <UploadIcon><UploadArrowIcon /></UploadIcon>
-                  <UploadText>
-                    <strong>Click to upload</strong> or drag and drop
-                  </UploadText>
-                  <UploadHint>
-                    PDF or DOCX (max 5MB)
-                  </UploadHint>
-                  <input
-                    id="wizard-cv-upload"
-                    type="file"
-                    accept=".pdf,.docx"
-                    style={{ display: "none" }}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleFileSelect(file);
-                    }}
-                  />
-                </UploadArea>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </StepContent>
-          </>
+          </SlideContainer>
         );
 
       case 2:
         return (
-          <>
+          <SlideContainer
+            key="step2"
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          >
             <StepHeader>
               <StepTitle><BriefcaseIcon /> Add Job Posting</StepTitle>
               <StepDescription>
                 {hasExistingJob
-                  ? "Add a new job posting or use an existing one"
+                  ? "Paste a new job description or use an existing one"
                   : "Paste the job description you want to apply to"
                 }
               </StepDescription>
             </StepHeader>
-            <StepContent>
-              {hasExistingJob ? (
-                <CVOptionsContainer>
-                  <CVOptionWrapper>
-                    <JobForm>
+
+            <StepContent style={{ display: 'flex', flexDirection: 'column' }}>
+              {hasExistingJob && (
+                <SegmentControl>
+                  <SegmentButton
+                    $active={activeJobTab === "new"}
+                    onClick={() => setActiveJobTab("new")}
+                  >
+                    Paste New
+                  </SegmentButton>
+                  <SegmentButton
+                    $active={activeJobTab === "existing"}
+                    onClick={() => setActiveJobTab("existing")}
+                  >
+                    Saved Jobs
+                  </SegmentButton>
+                </SegmentControl>
+              )}
+
+              <AnimatePresence mode="popLayout" initial={false}>
+                {activeJobTab === "existing" && hasExistingJob ? (
+                  <motion.div
+                    key="existing-job"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ flex: 1, width: '100%', position: 'relative', display: 'flex', flexDirection: 'column' }}
+                  >
+                    <CompactJobList>
+                      {jobList.map((job) => (
+                        <CompactJobCard
+                          key={job.id}
+                          $selected={savedJob?.id === job.id}
+                          onClick={() => {
+                            setSavedJob(job);
+                            setSelectedJob(job.id);
+                            // Refined one-tap instantly triggers analysis
+                            changeStep(3);
+                            handleCreateAnalysis(job.id);
+                          }}
+                        >
+                          <CompactJobTitle>{job.title}</CompactJobTitle>
+                          <CompactJobMeta>
+                            {job.text?.length || 0} characters
+                          </CompactJobMeta>
+                        </CompactJobCard>
+                      ))}
+                    </CompactJobList>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="new-job"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ flex: 1, width: '100%', position: 'relative', display: 'flex', flexDirection: 'column' }}
+                  >
+                    <JobForm style={{ flex: 1 }}>
                       <div>
                         <FormLabel>Job Title</FormLabel>
                         <Input
@@ -1338,272 +1455,189 @@ export function OnboardingWizard({
                           onChange={(e) => setJobTitle(e.target.value)}
                         />
                       </div>
-                      <div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <FormLabel>Job Description</FormLabel>
                         <Textarea
-                          placeholder="Paste the full job description here..."
+                          placeholder="Paste the full job description here (requirements, responsibilities, qualifications, etc.)..."
                           value={jobDetails}
                           onChange={(e) => setJobDetails(e.target.value)}
-                          style={{ minHeight: "200px" }}
+                          style={{ flex: 1, minHeight: hasExistingJob ? "160px" : "240px", resize: 'none' }}
                         />
                         <CharCount>
-                          {jobDetails.length} characters
+                          {jobDetails.length} characters · {jobDetails.split('\n').length} lines
                         </CharCount>
                       </div>
                     </JobForm>
-                  </CVOptionWrapper>
-
-                  <DividerText>or</DividerText>
-
-                  <CVOptionWrapper>
-                    <div>
-                      <SectionHeading>Select Existing Job</SectionHeading>
-                      <CompactJobList>
-                        {jobList.map((job) => (
-                          <CompactJobCard
-                            key={job.id}
-                            $selected={savedJob?.id === job.id}
-                            onClick={() => {
-                              setSavedJob(job);
-                              setSelectedJob(job.id);
-                            }}
-                          >
-                            <CompactJobTitle>{job.title}</CompactJobTitle>
-                            <CompactJobMeta>
-                              {job.text?.length || 0} characters
-                            </CompactJobMeta>
-                          </CompactJobCard>
-                        ))}
-                      </CompactJobList>
-                    </div>
-                  </CVOptionWrapper>
-                </CVOptionsContainer>
-              ) : (
-                <JobForm>
-                  <div>
-                    <FormLabel>Job Title</FormLabel>
-                    <Input
-                      type="text"
-                      placeholder="e.g. Senior Frontend Developer"
-                      value={jobTitle}
-                      onChange={(e) => setJobTitle(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <FormLabel>Job Description</FormLabel>
-                    <Textarea
-                      placeholder="Paste the full job description here (requirements, responsibilities, qualifications, etc.)..."
-                      value={jobDetails}
-                      onChange={(e) => setJobDetails(e.target.value)}
-                      style={{ minHeight: "300px" }}
-                    />
-                    <CharCount>
-                      {jobDetails.length} characters · {jobDetails.split('\n').length} lines
-                    </CharCount>
-                  </div>
-                </JobForm>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </StepContent>
-          </>
+
+            {/* Always-visible footer — anchored at bottom of SlideContainer */}
+            <WizardActions>
+              <Button variant="ghost" onClick={() => changeStep(1)}>
+                ← Previous
+              </Button>
+              {activeJobTab === "new" && (
+                <Button
+                  variant="primary"
+                  onClick={async () => {
+                    let finalJobId = selectedJob;
+                    const newJobId = await handleJobSubmit();
+                    if (newJobId) {
+                      finalJobId = newJobId;
+                      setSelectedJob(newJobId);
+                    } else {
+                      return;
+                    }
+                    if (finalJobId) {
+                      changeStep(3);
+                      handleCreateAnalysis(finalJobId);
+                    }
+                  }}
+                  disabled={!jobTitle || !jobDetails}
+                >
+                  Save & Analyze <TargetIcon />
+                </Button>
+              )}
+            </WizardActions>
+          </SlideContainer>
         );
 
       case 3:
-        return (
-          <>
-            <StepHeader>
-              <StepTitle><TargetIcon /> Create Analysis</StepTitle>
-              <StepDescription>
-                Review your selections and generate your match report
-              </StepDescription>
-            </StepHeader>
-            <StepContent>
-              <SelectionList>
-                <div>
-                  <SectionHeading>Selected Resume</SectionHeading>
-                  {cvList.map((cv) => (
-                    <SelectionCard
-                      key={cv.id}
-                      $selected={selectedCV === cv.id}
-                      onClick={() => setSelectedCV(cv.id)}
-                    >
-                      <CardTitle>{cv.title}</CardTitle>
-                      <CardSubtitle>
-                        {cv.text?.length || 0} characters
-                      </CardSubtitle>
-                    </SelectionCard>
-                  ))}
-                </div>
-                <div>
-                  <SectionHeading>Select Job Posting</SectionHeading>
-                  {jobList.map((job) => (
-                    <SelectionCard
-                      key={job.id}
-                      $selected={selectedJob === job.id}
-                      onClick={() => setSelectedJob(job.id)}
-                    >
-                      <CardTitle>{job.title}</CardTitle>
-                      <CardSubtitle>
-                        {job.text?.length || 0} characters
-                      </CardSubtitle>
-                    </SelectionCard>
-                  ))}
-                </div>
-              </SelectionList>
-            </StepContent>
-          </>
-        );
+        if (isLoading && analysisProgressStep > 0) {
+          return (
+            <SlideContainer
+              key="step3-loading"
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <LoadingContainer>
+                <AnalysisProgress
+                  currentStep={analysisProgressStep - 1}
+                  title="Analyzing your match"
+                />
+              </LoadingContainer>
+            </SlideContainer>
+          );
+        }
 
-      case 4:
-        return (
-          <>
-            <StepHeader>
-              <StepTitle><SparklesIcon /> Analysis Complete!</StepTitle>
-              <StepDescription>
-                Here&apos;s your resume match summary
-              </StepDescription>
-            </StepHeader>
-            <StepContent>
-              {analysisResult && (
-                <ResultSummary>
-                  <ResultScore>{analysisResult.fitScore}%</ResultScore>
-                  <ResultScoreLabel>Match Score</ResultScoreLabel>
+        if (isLoading) {
+          return (
+            <LoadingContainer>
+              <Spinner size="lg" />
+              <LoadingTitle>Initializing Analysis...</LoadingTitle>
+              <LoadingSubtitle>Preparing documents</LoadingSubtitle>
+            </LoadingContainer>
+          );
+        }
 
-                  <ResultDetails>
-                    <ResultItem>
-                      <ResultHeading>Summary</ResultHeading>
-                      <ResultText>
-                        {analysisResult.summary}
-                      </ResultText>
-                    </ResultItem>
-
-                    {analysisResult.missingKeywords && analysisResult.missingKeywords.length > 0 && (
-                      <ResultItem>
-                        <ResultHeading>
-                          Missing Keywords ({analysisResult.missingKeywords.length})
-                        </ResultHeading>
-                        <KeywordList>
-                          {analysisResult.missingKeywords.map((keyword, index) => (
-                            <KeywordTag key={index}>{keyword}</KeywordTag>
-                          ))}
-                        </KeywordList>
-                      </ResultItem>
-                    )}
-                  </ResultDetails>
-                </ResultSummary>
-              )}
-            </StepContent>
-          </>
-        );
-
+        return null;
       default:
         return null;
     }
   };
 
+  const handleOpenPreview = async (doc: DocumentType, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsPreviewLoading(true);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      let downloadUrl = doc.file_url;
+
+      // Ensure we have a valid URL path
+      if (!downloadUrl) {
+         downloadUrl = `${user.id}/${doc.id}`;
+      }
+
+      // Instead of relying on client-side storage policies, ask our backend for a signed url
+      const res = await fetch(`/api/cv/preview?id=${doc.id}`);
+      if (!res.ok) {
+        throw new Error("Failed to get secure preview link");
+      }
+      
+      const { url } = await res.json();
+      if (!url) throw new Error("URL missing in response");
+
+      setPreviewDocument({
+        title: doc.title,
+        url: url,
+        isPdf: doc.title.toLowerCase().endsWith('.pdf')
+      });
+    } catch (error) {
+      console.error("Preview error:", error);
+      toast.error("Could not load document preview");
+    } finally {
+      setIsPreviewLoading(false);
+    }
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="lg" showCloseButton={false}>
-      <Modal.Body>
-        <WizardContainer>
+    <Modal isOpen={isOpen} onClose={handleClose} size={previewDocument ? "lg" : "md"} showCloseButton={false} triggerRect={triggerRect}>
+      <Modal.Body style={{ padding: 0, display: "flex", flex: 1 }}>
+        <WizardContainer $isPreview={!!previewDocument}>
           <WizardHeader>
-            <ProgressBar>
-              <ProgressFill $progress={progress} />
-            </ProgressBar>
             <WizardCloseButton onClick={handleClose} aria-label="Close">
               <CloseIcon />
             </WizardCloseButton>
           </WizardHeader>
 
-          {isLoading ? (
-            <LoadingContainer>
-              <AnalysisProgress
-                currentStep={analysisProgressStep}
-                title="Analyzing"
-                showTimeEstimate
-              />
-            </LoadingContainer>
-          ) : (
-            <>
+          <div style={{ flex: 1, position: "relative", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            <AnimatePresence mode="popLayout" initial={false} custom={direction}>
               {renderStepContent()}
+            </AnimatePresence>
 
-              <WizardActions>
-              {/* Previous Button */}
-              {currentStep < 4 && (
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    if (currentStep > 1) {
-                      // Clear the current step's state when going back
-                      if (currentStep === 2) {
-                        // Going back from step 2 to step 1
-                        setSavedJob(null);
-                        setJobTitle("");
-                        setJobDetails("");
-                        setSelectedJob(null);
-                      } else if (currentStep === 3) {
-                        // Going back from step 3 to step 2
-                        setSelectedCV(null);
-                        setSelectedJob(null);
-                      } else if (currentStep === 4) {
-                        // Going back from step 4 to step 3
-                        setAnalysisResult(null);
-                      }
-                      setCurrentStep(currentStep - 1);
-                    } else {
-                      handleClose();
-                    }
+            <AnimatePresence>
+              {previewDocument && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    zIndex: 50,
+                    background: "rgba(20,20,20,0.95)",
+                    backdropFilter: "blur(20px)",
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
-                  {currentStep === 1 ? "Cancel" : "← Previous"}
-                </Button>
+                  <div style={{ padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+                    <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      Preview: {previewDocument.title}
+                    </h3>
+                    <Button variant="ghost" size="sm" onClick={() => setPreviewDocument(null)}>
+                      Close
+                    </Button>
+                  </div>
+                  <div style={{ flex: 1, background: "white" }}>
+                    {previewDocument.isPdf ? (
+                       <iframe
+                         src={`${previewDocument.url}#toolbar=0&navpanes=0`}
+                         style={{ width: "100%", height: "100%", border: "none" }}
+                         title="PDF Preview"
+                       />
+                    ) : (
+                       <iframe
+                         src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(previewDocument.url)}`}
+                         style={{ width: "100%", height: "100%", border: "none" }}
+                         title="DOCX Preview"
+                       />
+                    )}
+                  </div>
+                </motion.div>
               )}
-
-              {/* Next/Action Buttons */}
-              {currentStep === 1 && uploadedCV && (
-                <Button onClick={() => setCurrentStep(2)}>
-                  Next Step →
-                </Button>
-              )}
-
-              {currentStep === 2 && (
-                <Button
-                  onClick={async () => {
-                    if (!savedJob) {
-                      // Only submit new job if user hasn't selected an existing one
-                      await handleJobSubmit();
-                    }
-                    if (savedJob || jobTitle) {
-                      setCurrentStep(3);
-                      fetchDataForAnalysis();
-                    }
-                  }}
-                  disabled={!savedJob && (!jobTitle || !jobDetails)}
-                >
-                  {savedJob ? "Next Step →" : "Save & Continue →"}
-                </Button>
-              )}
-
-              {currentStep === 3 && (
-                <Button
-                  onClick={handleCreateAnalysis}
-                  disabled={!selectedCV || !selectedJob}
-                >
-                  Generate Analysis <TargetIcon />
-                </Button>
-              )}
-
-              {currentStep === 4 && analysisResult && (
-                <Button
-                  onClick={() => {
-                    handleComplete();
-                    router.push(`/reports/${analysisResult.id}`);
-                  }}
-                >
-                  View Full Report →
-                </Button>
-              )}
-            </WizardActions>
-          </>
-        )}
+            </AnimatePresence>
+          </div>
         </WizardContainer>
       </Modal.Body>
     </Modal>

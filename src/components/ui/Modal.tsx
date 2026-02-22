@@ -1,8 +1,9 @@
 "use client";
 
-import styled, { css, keyframes } from "styled-components";
+import styled, { css } from "styled-components";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ModalProps {
   isOpen: boolean;
@@ -14,43 +15,25 @@ interface ModalProps {
   showCloseButton?: boolean;
   closeOnBackdropClick?: boolean;
   closeOnEscape?: boolean;
+  /** Position rect of the element that triggered the modal (e.g. FAB), used for origin animation */
+  triggerRect?: DOMRect | null;
 }
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`;
+// ─── Styled Components ───────────────────────────────────────────────────────
 
-const slideUp = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
-const Backdrop = styled.div<{ $isOpen: boolean }>`
+const Backdrop = styled(motion.div)`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: ${({ theme }) => theme.zIndex.modalBackdrop};
   padding: ${({ theme }) => theme.spacing.lg};
-  animation: ${fadeIn} 0.3s ease-out;
-  overflow-y: auto;
 
   @media (max-width: 640px) {
     padding: 0;
@@ -58,49 +41,48 @@ const Backdrop = styled.div<{ $isOpen: boolean }>`
   }
 `;
 
-const ModalContainer = styled.div<{ $size: string }>`
-  background-color: rgba(10, 10, 10, 0.65);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 32px;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(0, 0, 0, 0.2) inset;
+const ModalContainer = styled(motion.div)<{ $size: string }>`
+  background-color: rgba(10, 10, 10, 0.45);
+  backdrop-filter: blur(60px) saturate(220%);
+  -webkit-backdrop-filter: blur(60px) saturate(220%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 36px;
+  box-shadow:
+    0 40px 80px -20px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
   width: 100%;
   max-height: 90vh;
   margin: auto;
   display: flex;
   flex-direction: column;
-  animation: ${slideUp} 0.5s cubic-bezier(0.19, 1, 0.22, 1);
   z-index: ${({ theme }) => theme.zIndex.modal};
+  overflow: hidden;
 
   ${({ $size }) => {
     switch ($size) {
       case "sm":
-        return css`
-          max-width: 400px;
-        `;
+        return css`max-width: 400px;`;
       case "lg":
-        return css`
-          max-width: 800px;
-        `;
+        return css`max-width: 800px;`;
       case "xl":
-        return css`
-          max-width: 1200px;
-        `;
-      default: // md
-        return css`
-          max-width: 600px;
-        `;
+        return css`max-width: 1200px;`;
+      default:
+        return css`max-width: 600px;`;
     }
   }}
 
   @media (max-width: 640px) {
     max-width: 100%;
-    max-height: 100vh;
+    width: 100%;
+    height: calc(100dvh - 16px);
+    max-height: calc(100dvh - 16px);
     margin: 0;
+    margin-top: auto;
     border-radius: 32px 32px 0 0;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: env(safe-area-inset-bottom, 20px);
   }
 `;
 
@@ -113,7 +95,8 @@ const ModalHeader = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 
   @media (max-width: 640px) {
-    padding: 20px 20px 14px;
+    padding: 0 20px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 `;
 
@@ -169,12 +152,22 @@ const CloseButton = styled.button`
 `;
 
 const ModalBody = styled.div`
-  padding: 0 24px 24px;
+  padding: 0;
   overflow-y: auto;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @media (max-width: 640px) {
-    padding: 0 20px 20px;
+    padding: 0;
   }
 `;
 
@@ -213,6 +206,62 @@ const CloseIcon = () => (
   </svg>
 );
 
+// ─── Framer Motion Variants ───────────────────────────────────────────────────
+
+const backdropVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.25, ease: "easeOut" as const } },
+  exit: { opacity: 0, transition: { duration: 0.2, ease: "easeIn" as const } },
+};
+
+// Factory that builds modal variants with a specific transform origin
+const makeModalVariants = () => ({
+  hidden: {
+    opacity: 0,
+    scale: 0.1,
+    filter: "blur(8px)",
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: {
+      type: "spring" as const,
+      stiffness: 350,
+      damping: 28,
+      mass: 0.8,
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.08,
+    filter: "blur(8px)",
+    transition: {
+      duration: 0.22,
+      ease: [0.4, 0, 1, 1] as [number, number, number, number],
+    },
+  },
+});
+
+const modalVariants = makeModalVariants();
+
+// Mobile: slides up from bottom like a native iOS sheet
+const mobileModalVariants = {
+  hidden: { opacity: 0, y: "100%" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 300, damping: 32, mass: 0.9 },
+  },
+  exit: {
+    opacity: 0,
+    y: "100%",
+    transition: { duration: 0.22, ease: [0.4, 0, 1, 1] as [number, number, number, number] },
+  },
+};
+
+// ─── Component ───────────────────────────────────────────────────────────────
+
 export const Modal: React.FC<ModalProps> & {
   Body: typeof ModalBody;
   Footer: typeof ModalFooter;
@@ -226,8 +275,9 @@ export const Modal: React.FC<ModalProps> & {
   showCloseButton = true,
   closeOnBackdropClick = true,
   closeOnEscape = true,
+  triggerRect = null,
 }) => {
-  // ESC tuşu ile kapatma ve scroll engelleme
+  // ESC key + scroll lock
   useEffect(() => {
     let scrollY = 0;
 
@@ -240,8 +290,6 @@ export const Modal: React.FC<ModalProps> & {
     if (isOpen) {
       scrollY = window.scrollY;
       document.addEventListener("keydown", handleEscape);
-
-      // Body scroll'u engelle - pozisyonu koru
       document.body.style.position = "fixed";
       document.body.style.top = `-${scrollY}px`;
       document.body.style.left = "0";
@@ -253,7 +301,8 @@ export const Modal: React.FC<ModalProps> & {
       document.removeEventListener("keydown", handleEscape);
 
       if (document.body.style.position === "fixed") {
-        const savedScrollY = parseInt(document.body.style.top || "0", 10) * -1;
+        const savedScrollY =
+          parseInt(document.body.style.top || "0", 10) * -1;
         document.body.style.position = "";
         document.body.style.top = "";
         document.body.style.left = "";
@@ -264,39 +313,75 @@ export const Modal: React.FC<ModalProps> & {
     };
   }, [isOpen, onClose, closeOnEscape]);
 
-  if (!isOpen) return null;
-
-  // Backdrop'a tıklayınca kapatma
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && closeOnBackdropClick && onClose) {
       onClose();
     }
   };
 
+  // Detect mobile for variant selection
+  const isMobile =
+    typeof window !== "undefined" && window.innerWidth <= 640;
+
+  // Compute transformOrigin from trigger element rect (FAB position)
+  const transformOrigin: string = (() => {
+    if (!triggerRect || typeof window === "undefined") return "center center";
+    const fabCenterX = triggerRect.left + triggerRect.width / 2;
+    const fabCenterY = triggerRect.top + triggerRect.height / 2;
+    
+    // ModalContainer is perfectly centered in the viewport.
+    // transformOrigin is relative to the element (50% 50% = center).
+    // We want the origin to be exactly at the FAB's screen coordinates.
+    // So we offset by the difference between the FAB center and the viewport center.
+    const offsetX = fabCenterX - window.innerWidth / 2;
+    const offsetY = fabCenterY - window.innerHeight / 2;
+    
+    return `calc(50% + ${offsetX}px) calc(50% + ${offsetY}px)`;
+  })();
+
   const modalContent = (
-    <Backdrop $isOpen={isOpen} onClick={handleBackdropClick}>
-      <ModalContainer $size={size} onClick={(e) => e.stopPropagation()}>
-        {(title || description || showCloseButton) && (
-          <ModalHeader>
-            <ModalHeaderContent>
-              {title && <ModalTitle>{title}</ModalTitle>}
-              {description && (
-                <ModalDescription>{description}</ModalDescription>
-              )}
-            </ModalHeaderContent>
-            {showCloseButton && onClose && (
-              <CloseButton onClick={onClose} aria-label="Close modal">
-                <CloseIcon />
-              </CloseButton>
+    <AnimatePresence mode="wait">
+      {isOpen && (
+        <Backdrop
+          key="modal-backdrop"
+          variants={backdropVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          onClick={handleBackdropClick}
+        >
+          <ModalContainer
+            $size={size}
+            variants={isMobile ? mobileModalVariants : modalVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            style={!isMobile ? { transformOrigin } : undefined}
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            {(title || description || showCloseButton) && (
+              <ModalHeader>
+                <ModalHeaderContent>
+                  {title && <ModalTitle>{title}</ModalTitle>}
+                  {description && (
+                    <ModalDescription>{description}</ModalDescription>
+                  )}
+                </ModalHeaderContent>
+                {showCloseButton && onClose && (
+                  <CloseButton onClick={onClose} aria-label="Close modal">
+                    <CloseIcon />
+                  </CloseButton>
+                )}
+              </ModalHeader>
             )}
-          </ModalHeader>
-        )}
-        {children}
-      </ModalContainer>
-    </Backdrop>
+            {children}
+          </ModalContainer>
+        </Backdrop>
+      )}
+    </AnimatePresence>
   );
 
-  // Portal kullanarak body'e render et
   return typeof document !== "undefined"
     ? createPortal(modalContent, document.body)
     : null;

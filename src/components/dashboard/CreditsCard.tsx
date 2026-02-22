@@ -10,15 +10,15 @@ type CreditVariant = 'pro' | 'empty' | 'low' | 'medium' | 'high';
 const getBackgroundColor = (variant: CreditVariant): string => {
   switch (variant) {
     case 'pro':
-      return 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
+      return 'linear-gradient(135deg, rgba(5, 150, 105, 0.6) 0%, rgba(16, 185, 129, 0.2) 100%)';
     case 'empty':
-      return 'linear-gradient(135deg, #F97316 0%, #FB923C 100%)';
+      return 'linear-gradient(135deg, rgba(249, 115, 22, 0.6) 0%, rgba(251, 146, 60, 0.2) 100%)';
     case 'low':
-      return 'linear-gradient(135deg, #EAB308 0%, #FACC15 100%)';
+      return 'linear-gradient(135deg, rgba(234, 179, 8, 0.6) 0%, rgba(250, 204, 21, 0.2) 100%)';
     case 'medium':
-      return 'linear-gradient(135deg, #2A57A0 0%, #3B82F6 100%)';
+      return 'linear-gradient(135deg, rgba(42, 87, 160, 0.6) 0%, rgba(59, 130, 246, 0.2) 100%)';
     case 'high':
-      return 'linear-gradient(135deg, #35A29F 0%, #5EEAD4 100%)';
+      return 'linear-gradient(135deg, rgba(53, 162, 159, 0.6) 0%, rgba(94, 234, 212, 0.2) 100%)';
   }
 };
 
@@ -30,108 +30,89 @@ const getCreditVariant = (credits: number): CreditVariant => {
 };
 
 const CardWrapper = styled.div<{ $variant: CreditVariant }>`
-  display: flex;
-  flex-direction: column;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  min-width: 300px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 100px; /* Pill shape */
+  padding: 6px 6px 6px 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background: ${({ $variant }) => getBackgroundColor($variant)};
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
-  @media (max-width: 1060px) {
-     min-width: 200px;}
-
-    @media (max-width: 560px) {
-    min-width: 140px;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
-
 `;
 
 const CardContent = styled.div`
-  padding: 12px 16px;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-
-  @media (max-width: 640px) {
-    padding: 10px 14px;
-  }
-
-  @media (max-width: 400px) {
-    padding: 8px 10px;
-  }
+  align-items: center;
+  gap: 12px;
 `;
 
 const IconWrapper = styled.div`
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 2px;
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   svg {
     width: 20px;
     height: 20px;
   }
+`;
+
+const ValueText = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+`;
+
+const TitleText = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: -0.01em;
+  margin-right: 8px;
 
   @media (max-width: 640px) {
-    svg {
-      width: 18px;
-      height: 18px;
+    display: none;
+  }
+`;
+
+const ActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  padding: 8px 16px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.02);
+  }
+
+  @media (max-width: 640px) {
+    padding: 8px;
+    span {
+      display: none;
     }
   }
 `;
 
-const ValueText = styled.div`
-  font-size: 26px;
-  font-weight: 700;
-  color: white;
-  line-height: 1;
-
-  @media (max-width: 640px) {
-    font-size: 22px;
-  }
-`;
-
-const TitleText = styled.div`
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-
-  @media (max-width: 640px) {
-    font-size: 11px;
-  }
-`;
-
-const BottomBar = styled.button`
-  width: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.95);
-  }
-
-  &:hover svg {
-    transform: translateX(4px);
-  }
-
-  @media (max-width: 640px) {
-    padding: 8px 14px;
-  }
-`;
-
-const BottomBarText = styled.span`
-  font-size: 13px;
-  font-weight: 500;
-  color: white;
-
-  @media (max-width: 640px) {
-    font-size: 11px;
-  }
+const ActionButtonText = styled.span`
+  margin-right: 4px;
 `;
 
 const ArrowIcon = styled.div`
@@ -213,17 +194,13 @@ export function CreditsCard() {
           {isPro ? 'Pro' : userCredits.credits}
         </ValueText>
         <TitleText>
-          {isPro ? 'Unlimited Access' : 'Credits Left'}
+          {isPro ? 'Unlimited' : 'Credits'}
         </TitleText>
       </CardContent>
-      <BottomBar onClick={() => router.push(ROUTES.APP.BILLING)}>
-        <BottomBarText>
-          {isPro ? 'Manage subscription' : 'Get more credits'}
-        </BottomBarText>
-        <ArrowIcon>
-          <ArrowRightIcon />
-        </ArrowIcon>
-      </BottomBar>
+      <ActionButton onClick={() => router.push(ROUTES.APP.BILLING)}>
+        <ActionButtonText>{isPro ? 'Manage' : 'Get More'}</ActionButtonText>
+        <ArrowRightIcon />
+      </ActionButton>
     </CardWrapper>
   );
 }

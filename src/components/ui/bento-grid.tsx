@@ -39,7 +39,7 @@ const ArrowRightIcon = () => (
 const BentoGridWrapper = styled.div`
   display: grid;
   width: 100%;
-  gap: 16px;
+  gap: 24px;
   grid-template-columns: 1fr;
   grid-auto-rows: auto;
 
@@ -82,10 +82,12 @@ const BentoCardWrapper = styled.div<BentoCardWrapperProps>`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 16px;
-  background: var(--bg-alt);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Default single column on mobile */
   grid-column: span 1;
@@ -114,18 +116,19 @@ const BentoCardWrapper = styled.div<BentoCardWrapperProps>`
   }
 
   /* Light styles */
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
   /* Dark styles */
   @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
   &:hover .bento-icon {
@@ -184,26 +187,40 @@ const ContentInner = styled.div`
 
 const StyledIcon = styled.div`
   transform-origin: left;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   color: var(--accent);
-  margin-bottom: 8px;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 
   svg {
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
   }
 
   @media (max-width: 640px) {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    margin-bottom: 12px;
     svg {
-      width: 28px;
-      height: 28px;
+      width: 22px;
+      height: 22px;
     }
   }
 `;
 
 const ValueText = styled.span`
-  font-size: 48px;
+  font-size: 56px;
   font-weight: 700;
+  letter-spacing: -0.05em;
   color: var(--accent);
   line-height: 1;
   margin-bottom: 4px;
@@ -218,9 +235,10 @@ const ValueText = styled.span`
 `;
 
 const TitleText = styled.h3`
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  color: var(--text-color);
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.95);
   margin-top: 4px;
 
   @media (max-width: 640px) {
@@ -230,8 +248,9 @@ const TitleText = styled.h3`
 
 const DescriptionText = styled.p`
   max-width: 32rem;
-  color: var(--text-secondary);
-  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 15px;
+  letter-spacing: -0.01em;
   line-height: 1.4;
 `;
 

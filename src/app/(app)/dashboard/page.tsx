@@ -760,23 +760,26 @@ const RecentReportCard = styled.div`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 16px;
-  background: var(--bg-alt);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 200px;
 
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
   @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
   &:hover .report-content {
@@ -1061,7 +1064,7 @@ const RecentReportCardBackground = ({ keywords, summary }: RecentReportCardBackg
 const RecentReportsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 16px;
+  gap: 24px;
 
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
@@ -1069,11 +1072,26 @@ const RecentReportsGrid = styled.div`
 `;
 
 const Container = styled.div`
+  position: relative;
+  padding-top: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing["2xl"]};
+  padding-left: ${({ theme }) => theme.spacing["2xl"]};
+  padding-right: ${({ theme }) => theme.spacing["2xl"]};
   padding-bottom: 100px; /* Space for FAB */
 
+  &::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: -20%;
+    width: 140%;
+    height: 800px;
+    background: radial-gradient(circle at 20% 30%, rgba(94, 234, 212, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
   
   @media (max-width: 450px) {
     padding: ${({ theme }) => theme.spacing["lg"]};
@@ -1086,45 +1104,72 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
-
-`;
-
-const CreditsCardWrapper = styled.div`
-
-`;
-
-const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  gap: 24px;
+  margin-bottom: 24px;
 
   @media (max-width: 768px) {
-    order: 1;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
   }
 `;
 
-const TitleElements = styled.div``;
+const CreditsCardWrapper = styled.div`
+  flex-shrink: 0;
+  transform-origin: right top;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    transform-origin: center top;
+    
+    > div {
+      width: 100%;
+    }
+  }
+`;
+
+const Title = styled.h1`
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.1;
+
+  @media (max-width: 768px) {
+    order: 1;
+    font-size: 28px;
+  }
+`;
+
+const TitleElements = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+`;
 
 const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-top: 4px;
 
   @media (max-width: 768px) {
     order: 3;
+    font-size: 14px;
   }
 `;
 
 const BentoGridContainer = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+  margin-bottom: 80px;
 
   @media (max-width: 768px) {
-    margin-bottom: ${({ theme }) => theme.spacing.lg};
+    margin-bottom: 48px;
   }
 `;
 
 const Section = styled.section`
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+  margin-bottom: 80px;
 `;
 
 const SectionHeader = styled.div`
@@ -1135,8 +1180,10 @@ const SectionHeader = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.9);
 `;
 
 const ReportsList = styled.div`
@@ -1177,23 +1224,26 @@ const RecentCoverLetterCard = styled.div<{ $tone: string }>`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 12px;
-  background: var(--bg-alt);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 160px;
 
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 8px 16px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
   @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -15px 60px -15px rgba(255, 255, 255, 0.1) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
   &:hover .recent-letter-content {

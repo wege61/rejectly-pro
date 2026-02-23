@@ -1488,36 +1488,61 @@ const RecentCoverLetterBackground = ({ content }: RecentCoverLetterBackgroundPro
   );
 };
 
-// Floating Action Button (FAB)
+// Floating Action Button — Apple Liquid Glass edition
 const FAB = styled.button<{ $showHint?: boolean; $hidden?: boolean }>`
   position: fixed;
   bottom: ${({ theme }) => theme.spacing["2xl"]};
   right: ${({ theme }) => theme.spacing["2xl"]};
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   border-radius: ${({ theme }) => theme.radius.full};
-  background: var(--accent);
+
+  /* Liquid Glass: red-tinted transparent with strong blur */
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.0) 100%
+  ), rgba(238, 90, 90, 0.55);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+
+  /* Specular top highlight — light entry point */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 8px 32px rgba(238, 90, 90, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px var(--accent-shadow);
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.normal};
   z-index: 90;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   opacity: ${({ $hidden }) => ($hidden ? 0 : 1)};
   pointer-events: ${({ $hidden }) => ($hidden ? "none" : "auto")};
 
   ${({ $showHint }) => $showHint && css`
     box-shadow:
-      0 8px 24px var(--accent-shadow),
-      0 0 0 4px rgba(255, 255, 255, 0.3);
+      inset 0 1px 0 rgba(255, 255, 255, 0.45),
+      0 8px 32px rgba(238, 90, 90, 0.6),
+      0 0 0 4px rgba(238, 90, 90, 0.2),
+      0 0 0 8px rgba(238, 90, 90, 0.08);
   `}
 
   &:hover {
-    transform: scale(1.1) translateY(-2px);
-    box-shadow: 0 12px 32px var(--accent-shadow);
+    transform: scale(1.08) translateY(-3px);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.26) 0%,
+      rgba(255, 255, 255, 0.0) 100%
+    ), rgba(238, 90, 90, 0.72);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      0 16px 48px rgba(238, 90, 90, 0.55),
+      0 4px 16px rgba(0, 0, 0, 0.35);
   }
 
   &:active {
@@ -1525,8 +1550,9 @@ const FAB = styled.button<{ $showHint?: boolean; $hidden?: boolean }>`
   }
 
   svg {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
   }
 `;
 

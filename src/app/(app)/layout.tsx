@@ -49,7 +49,7 @@ const AppShell = styled.div`
   position: relative;
 `;
 
-// ─── Mobile Top Bar ──────────────────────────────────────────────────────────
+// ─── Mobile Top Bar (floating pill — matches marketing Navbar) ────────────────
 
 const MobileTopBar = styled.header`
   display: none;
@@ -57,22 +57,41 @@ const MobileTopBar = styled.header`
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
   z-index: 100;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-
-  /* True Apple frosted glass — transparent enough to show bg */
-  background: rgba(8, 8, 8, 0.55);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  /* Specular top highlight */
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  /* Outer wrapper gives the padding so pill floats */
+  padding: 12px 16px;
+  pointer-events: none; /* let clicks pass through to overlay */
 
   @media (max-width: 1024px) {
-    display: flex;
+    display: block;
+  }
+`;
+
+/* The floating pill itself — mirrors NavContainer from Navbar.tsx */
+const MobileNavPill = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  pointer-events: all; /* re-enable clicks on pill */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  /* Exact same glass recipe as NavContainer */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: rgba(14, 14, 18, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.18),
+      0 8px 32px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    z-index: -1;
   }
 `;
 
@@ -90,26 +109,25 @@ const HamburgerButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  /* Fully transparent — pure glass border only */
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
+  /* Transparent — sits on the pill, very minimal */
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.8);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.22);
     color: rgba(255, 255, 255, 0.95);
   }
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 `;
 
@@ -144,7 +162,7 @@ const MobileFloatingPanel = styled.div<{ $visible: boolean; $closing: boolean }>
     display: flex;
     flex-direction: column;
     position: fixed;
-    top: 72px;
+    top: 70px;
     left: 10px;
     right: 10px;
     z-index: 200;
@@ -702,7 +720,7 @@ const PageMain = styled.main<{ $animating?: boolean }>`
   animation: ${({ $animating }) => ($animating ? pageIn : "none")} 0.3s ease;
 
   @media (max-width: 1024px) {
-    padding-top: 60px;
+    padding-top: 70px;
     height: 100vh;
   }
 `;
@@ -939,10 +957,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <AppShell id="app-layout">
       {/* ── Mobile top bar ── */}
       <MobileTopBar>
-        <MobileLogo>Rejectly.pro</MobileLogo>
-        <HamburgerButton onClick={isMobileOpen ? closeMobile : openMobile} aria-label="Toggle menu">
-          {isMobileOpen ? <CloseIcon /> : <MenuIcon />}
-        </HamburgerButton>
+        <MobileNavPill>
+          <MobileLogo>Rejectly.pro</MobileLogo>
+          <HamburgerButton onClick={isMobileOpen ? closeMobile : openMobile} aria-label="Toggle menu">
+            {isMobileOpen ? <CloseIcon /> : <MenuIcon />}
+          </HamburgerButton>
+        </MobileNavPill>
       </MobileTopBar>
 
       {/* ── Mobile overlay (dim bg) ── */}

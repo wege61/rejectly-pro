@@ -43,7 +43,8 @@ const pageIn = keyframes`
 const AppShell = styled.div`
   display: flex;
   min-height: 100vh;
-  background: #0a0a0a;
+  background: #0c0c0e;
+  position: relative;
 `;
 
 // ─── Mobile Top Bar ──────────────────────────────────────────────────────────
@@ -119,9 +120,9 @@ const MobileOverlay = styled.div<{ $visible: boolean; $closing: boolean }>`
     display: block;
     position: fixed;
     inset: 0;
-    z-index: 150;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(6px);
+    z-index: 149;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
     cursor: pointer;
 
     opacity: ${({ $visible }) => ($visible ? 1 : 0)};
@@ -130,6 +131,132 @@ const MobileOverlay = styled.div<{ $visible: boolean; $closing: boolean }>`
       $closing ? fadeOut : $visible ? fadeIn : "none"}
       0.25s ease-in-out;
   }
+`;
+
+// ─── Mobile Floating Panel (replaces full-screen drawer) ─────────────────────
+
+const MobileFloatingPanel = styled.div<{ $visible: boolean; $closing: boolean }>`
+  display: none;
+
+  @media (max-width: 1024px) {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    z-index: 200;
+    border-radius: 20px;
+    overflow: hidden;
+
+    /* Liquid Glass panel */
+    background: rgba(20, 20, 24, 0.85);
+    backdrop-filter: blur(50px) saturate(200%);
+    -webkit-backdrop-filter: blur(50px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.6),
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+    /* Specular top highlight */
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20%;
+      right: 20%;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+    pointer-events: ${({ $visible }) => ($visible ? "all" : "none")};
+    transform: ${({ $visible }) =>
+      $visible ? "translateY(0) scale(1)" : "translateY(-12px) scale(0.97)"};
+    transform-origin: top center;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+`;
+
+const MobilePanelNav = styled.div`
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+const MobilePanelSection = styled.div`
+  margin-bottom: 4px;
+`;
+
+const MobilePanelLabel = styled.div`
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  padding: 10px 12px 4px;
+`;
+
+const MobilePanelItem = styled.a<{ $active: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: ${({ $active }) => ($active ? 600 : 500)};
+  color: ${({ $active }) =>
+    $active ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.55)"};
+  background: ${({ $active }) =>
+    $active ? "rgba(255,255,255,0.1)" : "transparent"};
+  text-decoration: none;
+  transition: all 0.18s ease;
+  cursor: pointer;
+
+  ${({ $active }) =>
+    $active &&
+    css`
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 8px rgba(0,0,0,0.3);
+    `}
+
+  &:hover {
+    background: ${({ $active }) =>
+      $active ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.06)"};
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  svg { width: 18px; height: 18px; flex-shrink: 0; opacity: ${({ $active }) => ($active ? 0.9 : 0.5)}; }
+`;
+
+const MobilePanelDivider = styled.div`
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 4px 12px;
+`;
+
+const MobilePanelFooter = styled.div`
+  padding: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+`;
+
+const MobilePanelProfileRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 `;
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
@@ -145,11 +272,20 @@ const Sidebar = styled.aside<{ $isOpen?: boolean; $isClosing?: boolean }>`
   overflow: hidden;
   z-index: 10;
 
+  /* ── Float panel: Apple-style inset with radius ── */
+  margin: 10px 0 10px 10px;
+  height: calc(100vh - 20px);
+  border-radius: 18px;
+  overflow: hidden;
+
   /* Apple Liquid Glass core */
-  background: rgba(14, 14, 16, 0.72);
+  background: rgba(22, 22, 26, 0.78);
   backdrop-filter: blur(60px) saturate(200%);
   -webkit-backdrop-filter: blur(60px) saturate(200%);
-  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
 
   /* ── Specular light refraction ─── */
   /* Top highlight — light hits the glass from above */
@@ -182,9 +318,8 @@ const Sidebar = styled.aside<{ $isOpen?: boolean; $isClosing?: boolean }>`
     width: 1px;
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.2) 0%,
-      rgba(255, 255, 255, 0.06) 30%,
-      rgba(255, 255, 255, 0.03) 70%,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
       rgba(255, 255, 255, 0.0) 100%
     );
     pointer-events: none;
@@ -192,17 +327,8 @@ const Sidebar = styled.aside<{ $isOpen?: boolean; $isClosing?: boolean }>`
   }
 
   @media (max-width: 1024px) {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    z-index: 200;
-    width: 280px;
-    transform: translateX(${({ $isOpen }) => ($isOpen ? "0" : "-100%")});
-    animation: ${({ $isOpen, $isClosing }) =>
-        $isClosing ? slideOutToLeft : $isOpen ? slideInFromLeft : "none"}
-      0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform;
+    /* On mobile, hide the desktop sidebar completely */
+    display: none;
   }
 `;
 
@@ -747,19 +873,51 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </HamburgerButton>
       </MobileTopBar>
 
-      {/* ── Mobile overlay ── */}
+      {/* ── Mobile overlay (dim bg) ── */}
       <MobileOverlay
         $visible={isMobileOpen}
         $closing={isClosing}
         onClick={closeMobile}
       />
 
-      {/* ── Sidebar ── */}
-      <Sidebar $isOpen={isMobileOpen} $isClosing={isClosing}>
+      {/* ── Mobile floating glass panel ── */}
+      <MobileFloatingPanel $visible={isMobileOpen} $closing={isClosing}>
+        <MobilePanelNav>
+          {navSections.map(section => (
+            <MobilePanelSection key={section.label}>
+              <MobilePanelLabel>{section.label}</MobilePanelLabel>
+              {section.items.map(item => (
+                <MobilePanelItem
+                  key={item.href}
+                  href={item.href}
+                  $active={pathname === item.href}
+                  onClick={closeMobile}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </MobilePanelItem>
+              ))}
+            </MobilePanelSection>
+          ))}
+        </MobilePanelNav>
+        <MobilePanelDivider />
+        <MobilePanelFooter>
+          <MobilePanelProfileRow>
+            <Avatar>{getInitials(user.user_metadata?.name, user.email)}</Avatar>
+            <ProfileMeta>
+              <ProfileName>{user.user_metadata?.name || "User"}</ProfileName>
+              <ProfileEmail>{user.email}</ProfileEmail>
+            </ProfileMeta>
+          </MobilePanelProfileRow>
+        </MobilePanelFooter>
+      </MobileFloatingPanel>
+
+      {/* ── Desktop Sidebar ── */}
+      <Sidebar>
         <SidebarContent />
       </Sidebar>
 
-      {/* ── Profile dropdown ── */}
+      {/* ── Profile dropdown (desktop) ── */}
       <ProfileDropdown $open={isProfileOpen} ref={dropdownRef}>
         <DropdownItem href={ROUTES.APP.BILLING} onClick={handleNavClick}>
           <BillingIcon /> Billing

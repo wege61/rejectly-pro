@@ -760,26 +760,20 @@ const RecentReportCard = styled.div`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(40px) saturate(150%);
-  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(40px) saturate(160%);
+  -webkit-backdrop-filter: blur(40px) saturate(160%);
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 200px;
-
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 
   &:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-5px) scale(1.015);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.16);
   }
 
   &:hover .report-content {
@@ -792,13 +786,7 @@ const RecentReportCard = styled.div`
   }
 
   &:hover .report-overlay {
-    background: rgba(0, 0, 0, 0.03);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover .report-overlay {
-      background: rgba(255, 255, 255, 0.05);
-    }
+    background: rgba(255, 255, 255, 0.03);
   }
 
   @media (max-width: 1024px) {
@@ -1175,11 +1163,13 @@ const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: rgba(255, 255, 255, 0.9);
@@ -1194,14 +1184,40 @@ const ReportsList = styled.div`
 const ViewAllLink = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: ${({ theme }) => theme.spacing.lg};
+  margin-top: 24px;
+`;
 
-  button {
-    transition: all ${({ theme }) => theme.transitions.normal};
+const ViewAllGlassButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
-    &:hover {
-      transform: translateY(-2px);
-    }
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    color: white;
+  }
+
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover svg {
+    transform: translateX(3px);
   }
 `;
 
@@ -1223,25 +1239,19 @@ const RecentCoverLetterCard = styled.div<{ $tone: string }>`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(40px) saturate(150%);
-  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(40px) saturate(160%);
+  -webkit-backdrop-filter: blur(40px) saturate(160%);
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  min-height: 160px;
-
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
+  min-height: 170px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 
   &:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-5px) scale(1.015);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.15);
   }
 
@@ -1255,13 +1265,7 @@ const RecentCoverLetterCard = styled.div<{ $tone: string }>`
   }
 
   &:hover .recent-letter-overlay {
-    background: rgba(0, 0, 0, 0.03);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover .recent-letter-overlay {
-      background: rgba(255, 255, 255, 0.05);
-    }
+    background: rgba(255, 255, 255, 0.03);
   }
 
   @media (max-width: 1024px) {
@@ -1332,9 +1336,10 @@ const RecentCoverLetterContentInner = styled.div`
 `;
 
 const RecentCoverLetterTitle = styled.h3`
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--text-color);
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.95);
   margin-top: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1342,10 +1347,11 @@ const RecentCoverLetterTitle = styled.h3`
 `;
 
 const RecentCoverLetterMeta = styled.p`
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 12px;
   line-height: 1.4;
-  margin-top: 2px;
+  margin-top: 3px;
+  letter-spacing: -0.01em;
 `;
 
 const RecentCoverLetterCTAContainer = styled.div`
@@ -1450,11 +1456,12 @@ const ArrowRightIconLetter = () => (
 
 const RecentCoverLettersGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
 
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 `;
 
@@ -2129,13 +2136,10 @@ export default function DashboardPage() {
               ))}
             </RecentCoverLettersGrid>
             <ViewAllLink>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
-              >
-                View All Cover Letters →
-              </Button>
+              <ViewAllGlassButton onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}>
+                View All Cover Letters
+                <ArrowRightIconLetter />
+              </ViewAllGlassButton>
             </ViewAllLink>
           </Section>
         )}
@@ -2217,13 +2221,10 @@ export default function DashboardPage() {
                 })}
               </RecentReportsGrid>
               <ViewAllLink>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => router.push(ROUTES.APP.REPORTS)}
-                >
-                  View All Reports {'\u2192'}
-                </Button>
+                <ViewAllGlassButton onClick={() => router.push(ROUTES.APP.REPORTS)}>
+                  View All Reports
+                  <ArrowRightIconLetter />
+                </ViewAllGlassButton>
               </ViewAllLink>
             </>
           )}

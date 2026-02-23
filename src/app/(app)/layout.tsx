@@ -151,52 +151,58 @@ const MobileFloatingPanel = styled.div<{ $visible: boolean; $closing: boolean }>
     border-radius: 22px;
     overflow: hidden;
 
-    /* Apple-grade Liquid Glass — very transparent, mega blur */
-    background: rgba(18, 18, 22, 0.55);
-    backdrop-filter: blur(70px) saturate(220%) brightness(1.1);
-    -webkit-backdrop-filter: blur(70px) saturate(220%) brightness(1.1);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    /*
+     * True Apple Liquid Glass —
+     * Very low opacity + extreme blur = objects behind bleed through
+     * brightness(1.15) lightens the blur, making refracted colors pop
+     * saturate(300%) amplifies those background colors
+     * contrast(1.04) sharpens the "lens" feel
+     */
+    background: rgba(10, 10, 14, 0.28);
+    backdrop-filter: blur(80px) saturate(300%) brightness(1.15) contrast(1.04);
+    -webkit-backdrop-filter: blur(80px) saturate(300%) brightness(1.15) contrast(1.04);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     box-shadow:
-      0 32px 80px rgba(0, 0, 0, 0.65),
-      0 8px 24px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.18),
-      inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+      0 32px 80px rgba(0, 0, 0, 0.5),
+      0 8px 24px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.07);
 
-    /* Specular streak across the top edge */
+    /* Specular streak — concentrated bright line at very top (light entry point) */
     &::before {
       content: '';
       position: absolute;
       top: 0;
-      left: 10%;
-      right: 10%;
+      left: 8%;
+      right: 8%;
       height: 1px;
       background: linear-gradient(
         90deg,
         transparent 0%,
-        rgba(255, 255, 255, 0.5) 45%,
-        rgba(255, 255, 255, 0.7) 55%,
-        rgba(255, 255, 255, 0.5) 70%,
+        rgba(255, 255, 255, 0.45) 35%,
+        rgba(255, 255, 255, 0.75) 50%,
+        rgba(255, 255, 255, 0.45) 65%,
         transparent 100%
       );
       pointer-events: none;
-      z-index: 1;
+      z-index: 2;
     }
 
-    /* Diagonal glass sheen */
+    /* Diagonal glass sheen — simulates environmental light bouncing through */
     &::after {
       content: '';
       position: absolute;
       inset: 0;
       background: linear-gradient(
         135deg,
-        rgba(255, 255, 255, 0.05) 0%,
-        transparent 40%,
-        transparent 60%,
-        rgba(255, 255, 255, 0.02) 100%
+        rgba(255, 255, 255, 0.07) 0%,
+        rgba(255, 255, 255, 0.02) 25%,
+        transparent 55%,
+        rgba(255, 255, 255, 0.015) 100%
       );
       pointer-events: none;
       border-radius: 22px;
-      z-index: 0;
+      z-index: 1;
     }
 
     opacity: ${({ $visible }) => ($visible ? 1 : 0)};
@@ -268,17 +274,29 @@ const MobilePanelDivider = styled.div`
 
 const MobilePanelFooter = styled.div`
   padding: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 `;
 
-const MobilePanelProfileRow = styled.div`
+/* Clickable profile row — matches desktop ProfileButton feel */
+const MobilePanelProfileRow = styled.button<{ $open?: boolean }>`
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
   padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: ${({ $open }) =>
+    $open ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.05)"};
+  border: 1px solid ${({ $open }) =>
+    $open ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.07)"};
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: left;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
 `;
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
@@ -599,11 +617,18 @@ const ProfileDropdown = styled.div<{ $open: boolean }>`
   transform-origin: left bottom;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 
+  /* Mobile: float below the profile row inside the panel */
   @media (max-width: 1024px) {
-    left: 16px;
-    right: auto;
-    bottom: 90px;
-    width: 260px;
+    position: fixed;
+    bottom: auto;
+    top: auto;
+    /* Will be overridden by JS via inline style if needed —
+       statically position at reasonable offset from viewport bottom */
+    left: 10px;
+    right: 10px;
+    width: auto;
+    bottom: 20px;
+    transform-origin: center bottom;
   }
 `;
 
@@ -806,7 +831,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [isClosing, setIsClosing]           = useState(false);
   const [isAnimating, setIsAnimating]       = useState(false);
   const [isProfileOpen, setIsProfileOpen]   = useState(false);
-  const profileRef   = useRef<HTMLDivElement>(null);
+  const profileRef   = useRef<HTMLElement>(null);
   const dropdownRef  = useRef<HTMLDivElement>(null);
 
   // Page transition
@@ -892,7 +917,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </SidebarScrollable>
 
       {/* Profile card */}
-      <SidebarBottom ref={profileRef}>
+      <SidebarBottom ref={profileRef as React.RefObject<HTMLDivElement>}>
         <ProfileButton
           $open={isProfileOpen}
           onClick={() => setIsProfileOpen(v => !v)}
@@ -949,12 +974,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </MobilePanelNav>
         <MobilePanelDivider />
         <MobilePanelFooter>
-          <MobilePanelProfileRow>
+          <MobilePanelProfileRow
+            $open={isProfileOpen}
+            onClick={() => setIsProfileOpen(v => !v)}
+            ref={profileRef as React.RefObject<HTMLButtonElement>}
+          >
             <Avatar>{getInitials(user.user_metadata?.name, user.email)}</Avatar>
             <ProfileMeta>
               <ProfileName>{user.user_metadata?.name || "User"}</ProfileName>
               <ProfileEmail>{user.email}</ProfileEmail>
             </ProfileMeta>
+            <ChevronIcon $open={isProfileOpen} style={{ marginLeft: "auto" }}>
+              <ChevronUpDown />
+            </ChevronIcon>
           </MobilePanelProfileRow>
         </MobilePanelFooter>
       </MobileFloatingPanel>

@@ -1110,21 +1110,19 @@ const Header = styled.div`
 
   @media (max-width: 768px) {
     flex-direction: column;
-    align-items: stretch;
-    gap: 24px;
+    align-items: flex-start;
+    gap: 16px;
   }
 `;
 
 const CreditsCardWrapper = styled.div`
   flex-shrink: 0;
-  transform-origin: right top;
 
   @media (max-width: 768px) {
-    width: 100%;
-    transform-origin: center top;
+    width: auto;
     
     > div {
-      width: 100%;
+      width: auto;
     }
   }
 `;

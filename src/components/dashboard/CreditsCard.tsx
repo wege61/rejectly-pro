@@ -45,12 +45,20 @@ const CardWrapper = styled.div<{ $variant: CreditVariant }>`
     transform: translateY(-2px);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
+
+  @media (max-width: 640px) {
+    padding: 6px 6px 6px 16px;
+  }
 `;
 
 const CardContent = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
 `;
 
 const IconWrapper = styled.div`
@@ -80,7 +88,8 @@ const TitleText = styled.div`
   margin-right: 8px;
 
   @media (max-width: 640px) {
-    display: none;
+    font-size: 12px;
+    margin-right: 4px;
   }
 `;
 
@@ -104,9 +113,12 @@ const ActionButton = styled.button`
   }
 
   @media (max-width: 640px) {
-    padding: 8px;
-    span {
-      display: none;
+    padding: 6px 12px;
+    font-size: 12px;
+    
+    svg {
+      width: 16px;
+      height: 16px;
     }
   }
 `;
@@ -135,9 +147,9 @@ const ArrowIcon = styled.div`
 `;
 
 const SkeletonWrapper = styled.div`
-  min-width: 180px;
-  height: 100px;
-  border-radius: 16px;
+  min-width: 160px;
+  height: 48px;
+  border-radius: 100px;
   background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
   animation: pulse 1.5s ease-in-out infinite;
 
@@ -147,8 +159,8 @@ const SkeletonWrapper = styled.div`
   }
 
   @media (max-width: 640px) {
-    min-width: 160px;
-    height: 90px;
+    min-width: 140px;
+    height: 44px;
   }
 `;
 

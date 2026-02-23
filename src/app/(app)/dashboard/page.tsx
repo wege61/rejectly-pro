@@ -1109,9 +1109,8 @@ const Header = styled.div`
   margin-bottom: 24px;
 
   @media (max-width: 768px) {
-    flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 12px;
   }
 `;
 
@@ -1135,8 +1134,8 @@ const Title = styled.h1`
   line-height: 1.1;
 
   @media (max-width: 768px) {
-    order: 1;
-    font-size: 28px;
+    font-size: 24px;
+    margin-bottom: 4px;
   }
 `;
 
@@ -1144,6 +1143,7 @@ const TitleElements = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 `;
 
 const Subtitle = styled.p`

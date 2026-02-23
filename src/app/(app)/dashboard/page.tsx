@@ -1500,18 +1500,17 @@ const FAB = styled.button<{ $showHint?: boolean; $hidden?: boolean }>`
   /* Liquid Glass: red-tinted transparent with strong blur */
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.22) 0%,
     rgba(255, 255, 255, 0.0) 100%
-  ), rgba(238, 90, 90, 0.55);
-  backdrop-filter: blur(30px) saturate(200%);
-  -webkit-backdrop-filter: blur(30px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  ), rgba(220, 60, 60, 0.38);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 
   /* Specular top highlight — light entry point */
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    0 8px 32px rgba(238, 90, 90, 0.45),
-    0 2px 8px rgba(0, 0, 0, 0.3);
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.55),
+    0 8px 32px rgba(220, 60, 60, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.25);
 
   color: white;
   display: flex;

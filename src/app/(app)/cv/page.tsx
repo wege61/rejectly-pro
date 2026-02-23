@@ -177,15 +177,20 @@ type CVItem =
 const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px 28px 120px;
+  padding: 36px 28px 120px;
 
   @media (max-width: 768px) {
-    padding: 80px 16px 120px;
+    /* Floating pill nav is ~60px — just enough clearance */
+    padding: 70px 16px 120px;
   }
 `;
 
 const Header = styled.div`
-  margin-bottom: 16px;
+  margin-bottom: 32px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 20px;
+  }
 `;
 
 const HeaderTop = styled.div`
@@ -193,11 +198,12 @@ const HeaderTop = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   gap: 24px;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
 
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+    margin-bottom: 14px;
   }
 `;
 

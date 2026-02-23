@@ -7,6 +7,7 @@ import { ROUTES } from "@/lib/constants";
 import { signOut } from "@/lib/auth";
 import { Spinner } from "@/components/ui/Spinner";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { CreditsProvider } from "@/contexts/CreditsContext";
 import { CreditWarningBanner } from "@/components/credits";
@@ -406,6 +407,8 @@ const SidebarLogo = styled.div`
   background-clip: text;
   padding: 4px 10px;
   margin-bottom: 4px;
+  text-decoration: none;
+  cursor: pointer;
 `;
 
 const SidebarScrollable = styled.div`
@@ -911,7 +914,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <>
       {/* Logo */}
       <SidebarTop>
-        <SidebarLogo>Rejectly.pro</SidebarLogo>
+        <SidebarLogo as={Link} href="/">Rejectly.pro</SidebarLogo>
       </SidebarTop>
 
       {/* Nav groups */}
@@ -958,7 +961,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* ── Mobile top bar ── */}
       <MobileTopBar>
         <MobileNavPill>
-          <MobileLogo>Rejectly.pro</MobileLogo>
+          <MobileLogo as={Link} href="/">Rejectly.pro</MobileLogo>
           <HamburgerButton onClick={isMobileOpen ? closeMobile : openMobile} aria-label="Toggle menu">
             {isMobileOpen ? <CloseIcon /> : <MenuIcon />}
           </HamburgerButton>

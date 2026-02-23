@@ -11,48 +11,60 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { CreditsProvider } from "@/contexts/CreditsContext";
 import { CreditWarningBanner } from "@/components/credits";
 
-// Animations
+// ─── Animations ─────────────────────────────────────────────────────────────
+
 const fadeIn = keyframes`
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 `;
 
 const fadeOut = keyframes`
   from { opacity: 1; }
-  to { opacity: 0; }
+  to   { opacity: 0; }
 `;
 
-const slideIn = keyframes`
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
+const slideInFromLeft = keyframes`
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
 `;
 
-const slideOut = keyframes`
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
+const slideOutToLeft = keyframes`
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(-100%); opacity: 0; }
 `;
 
+const pageIn = keyframes`
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+`;
 
-const Container = styled.div`
+// ─── Layout Shell ────────────────────────────────────────────────────────────
+
+const AppShell = styled.div`
   display: flex;
   min-height: 100vh;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background: #0a0a0a;
 `;
 
-// Mobile Navigation Header
-const MobileHeader = styled.header`
+// ─── Mobile Top Bar ──────────────────────────────────────────────────────────
+
+const MobileTopBar = styled.header`
   display: none;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  padding: 0 8px 0 16px;
+  height: 60px;
+  z-index: 100;
   align-items: center;
   justify-content: space-between;
-  z-index: 100;
+  padding: 0 16px;
+
+  /* Frosted glass */
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 
   @media (max-width: 1024px) {
     display: flex;
@@ -60,44 +72,42 @@ const MobileHeader = styled.header`
 `;
 
 const MobileLogo = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 `;
 
-const MenuButton = styled.button`
+const HamburgerButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
-  border-radius: 8px;
-  background: transparent;
-  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
   cursor: pointer;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: rgba(255, 255, 255, 0.85);
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.surfaceHover};
-    color: ${({ theme }) => theme.colors.textSecondary};
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--primary-500);
-    outline-offset: 2px;
+    background: rgba(255, 255, 255, 0.12);
   }
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
   }
 `;
 
-// Modal Overlay
-const ModalOverlay = styled.div<{ $isOpen: boolean; $isClosing: boolean }>`
+// ─── Mobile Overlay ──────────────────────────────────────────────────────────
+
+const MobileOverlay = styled.div<{ $visible: boolean; $closing: boolean }>`
   display: none;
 
   @media (max-width: 1024px) {
@@ -105,61 +115,34 @@ const ModalOverlay = styled.div<{ $isOpen: boolean; $isClosing: boolean }>`
     position: fixed;
     inset: 0;
     z-index: 150;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
     cursor: pointer;
-    padding-right: 64px;
 
-    opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
-    pointer-events: ${({ $isOpen }) => ($isOpen ? "all" : "none")};
-    animation: ${({ $isOpen, $isClosing }) =>
-      $isClosing ? fadeOut : $isOpen ? fadeIn : "none"}
-      0.3s ease-in-out;
+    opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+    pointer-events: ${({ $visible }) => ($visible ? "all" : "none")};
+    animation: ${({ $visible, $closing }) =>
+      $closing ? fadeOut : $visible ? fadeIn : "none"}
+      0.25s ease-in-out;
   }
 `;
 
-const ModalCloseButton = styled.button`
-  position: fixed;
-  top: 12px;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-  border-radius: 8px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.7);
-  transition: all 0.2s ease;
-  z-index: 200;
+// ─── Sidebar ─────────────────────────────────────────────────────────────────
 
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--primary-500);
-    outline-offset: 2px;
-  }
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-`;
-
-// Sidebar
 const Sidebar = styled.aside<{ $isOpen?: boolean; $isClosing?: boolean }>`
-  width: 312px;
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-right: 1px solid ${({ theme }) => theme.colors.border};
+  width: 220px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   position: sticky;
   top: 0;
   height: 100vh;
+
+  /* Liquid Glass */
+  background: rgba(18, 18, 18, 0.75);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
 
   @media (max-width: 1024px) {
     position: fixed;
@@ -167,774 +150,558 @@ const Sidebar = styled.aside<{ $isOpen?: boolean; $isClosing?: boolean }>`
     left: 0;
     bottom: 0;
     z-index: 200;
+    width: 280px;
     transform: translateX(${({ $isOpen }) => ($isOpen ? "0" : "-100%")});
     animation: ${({ $isOpen, $isClosing }) =>
-        $isClosing ? slideOut : $isOpen ? slideIn : "none"}
-      0.3s ease-in-out;
+        $isClosing ? slideOutToLeft : $isOpen ? slideInFromLeft : "none"}
+      0.3s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform;
   }
 `;
 
-const SidebarHeader = styled.div`
-  padding: 24px 24px 20px;
+// ─── Sidebar Inner Sections ──────────────────────────────────────────────────
+
+const SidebarTop = styled.div`
+  padding: 20px 16px 12px;
 `;
 
-const Logo = styled.div`
-  font-size: 20px;
+const SidebarLogo = styled.div`
+  font-size: 18px;
   font-weight: 700;
-  background: linear-gradient(
-    135deg,
-    var(--primary-500) 0%,
-    var(--primary-700) 100%
-  );
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  padding: 4px 8px;
 `;
 
-const SidebarContent = styled.div`
+const SidebarScrollable = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 0 16px;
+  padding: 4px 10px;
+
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
 `;
 
-const Nav = styled.nav`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+const NavGroup = styled.div`
+  margin-bottom: 6px;
 `;
 
-
-const NavSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--checkbox);
-
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const NavSectionLabel = styled.span`
-  font-size: 14px;
+const NavGroupLabel = styled.div`
+  font-size: 11px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textTertiary};
-  padding: 8px 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+  padding: 10px 10px 4px;
 `;
 
-const NavSectionItems = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const NavLink = styled.a<{ $active: boolean }>`
+const NavItem = styled.a<{ $active: boolean }>`
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  color: ${({ theme, $active }) =>
-    $active ? "var(--primary-600)" : theme.colors.textSecondary};
-  background-color: ${({ $active }) =>
-    $active ? "var(--primary-50)" : "transparent"};
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 9px;
   font-size: 14px;
   font-weight: ${({ $active }) => ($active ? 600 : 500)};
-  transition: all 0.15s ease;
+  letter-spacing: -0.01em;
+  color: ${({ $active }) =>
+    $active ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.5)"};
+  background: ${({ $active }) =>
+    $active ? "rgba(255,255,255,0.1)" : "transparent"};
   text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
 
-  &:hover {
-    background-color: ${({ $active }) =>
-      $active ? "var(--primary-50)" : "rgba(0, 0, 0, 0.04)"};
-    color: ${({ theme, $active }) =>
-      $active ? "var(--primary-600)" : theme.colors.textPrimary};
-  }
-
+  /* Active glow */
   ${({ $active }) =>
     $active &&
     css`
-      &::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 3px;
-        height: 20px;
-        background-color: var(--primary-600);
-        border-radius: 0 2px 2px 0;
-      }
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 1px 8px rgba(0, 0, 0, 0.3);
     `}
 
+  &:hover {
+    background: ${({ $active }) =>
+      $active ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.06)"};
+    color: ${({ $active }) =>
+      $active ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.8)"};
+  }
+
   svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
+    opacity: ${({ $active }) => ($active ? 1 : 0.6)};
   }
 `;
 
-// Profile Card & Dropdown
-const SidebarFooter = styled.div`
-  padding: 16px;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
-  position: relative;
+// ─── Sidebar Footer / Profile ────────────────────────────────────────────────
+
+const SidebarBottom = styled.div`
+  padding: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 `;
 
-const ProfileCard = styled.button<{ $isOpen: boolean }>`
+const ProfileButton = styled.button<{ $open: boolean }>`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  background: ${({ $isOpen, theme }) =>
-    $isOpen ? theme.colors.surfaceHover : "transparent"};
-  border: 1px solid ${({ $isOpen, theme }) =>
-    $isOpen ? theme.colors.border : "transparent"};
+  padding: 10px;
+  border-radius: 12px;
+  background: ${({ $open }) =>
+    $open ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.04)"};
+  border: 1px solid ${({ $open }) =>
+    $open ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.06)"};
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: all 0.2s ease;
   text-align: left;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.surfaceHover};
-    border-color: ${({ theme }) => theme.colors.border};
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--primary-500);
-    outline-offset: 2px;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 `;
 
 const Avatar = styled.div`
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: var(--checkbox);
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
   flex-shrink: 0;
+  letter-spacing: -0.02em;
 `;
 
-const ProfileInfo = styled.div`
+const ProfileMeta = styled.div`
   flex: 1;
   min-width: 0;
 `;
 
 const ProfileName = styled.div`
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: 2px;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const ProfileEmail = styled.div`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textTertiary};
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  margin-top: 1px;
 `;
 
-const ChevronWrapper = styled.div<{ $isOpen: boolean }>`
-  color: ${({ theme }) => theme.colors.textTertiary};
+const ChevronIcon = styled.div<{ $open: boolean }>`
+  color: rgba(255, 255, 255, 0.3);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: transform 0.2s ease;
+  transform: ${({ $open }) => ($open ? "rotate(180deg)" : "rotate(0deg)")};
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
   }
 `;
 
-const DropdownMenu = styled.div<{ $isOpen: boolean }>`
-  position: fixed;
-  bottom: 16px;
-  left: 320px;
-  width: 240px;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.14),
-    0 4px 8px -2px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  z-index: 300;
-  transform-origin: left bottom;
-  padding: 6px 0;
+// ─── Profile Dropdown ────────────────────────────────────────────────────────
 
-  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
-  visibility: ${({ $isOpen }) => ($isOpen ? "visible" : "hidden")};
-  transform: ${({ $isOpen }) => ($isOpen ? "scale(1) translateX(0)" : "scale(0.95) translateX(-8px)")};
-  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    visibility 0.2s;
+const ProfileDropdown = styled.div<{ $open: boolean }>`
+  position: fixed;
+  bottom: 80px;
+  left: 230px;
+  width: 220px;
+  z-index: 300;
+
+  background: rgba(28, 28, 30, 0.92);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 6px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  opacity: ${({ $open }) => ($open ? 1 : 0)};
+  visibility: ${({ $open }) => ($open ? "visible" : "hidden")};
+  transform: ${({ $open }) =>
+    $open ? "scale(1) translateY(0)" : "scale(0.95) translateY(4px)"};
+  transform-origin: left bottom;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
   @media (max-width: 1024px) {
-    position: fixed;
     left: 16px;
     right: auto;
-    bottom: 100px;
-    width: 280px;
-    transform-origin: left bottom;
+    bottom: 90px;
+    width: 260px;
   }
 `;
 
 const DropdownItem = styled.a`
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 14px;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
   font-weight: 500;
+  letter-spacing: -0.01em;
   text-decoration: none;
-  transition: background 0.15s ease, color 0.15s ease;
   cursor: pointer;
+  transition: all 0.15s ease;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.surfaceHover};
-    color: ${({ theme }) => theme.colors.textPrimary};
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.95);
   }
 
-  svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
+  svg { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.7; }
+`;
+
+const DropdownSignOut = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: #ff453a;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+
+  &:hover { background: rgba(255, 59, 48, 0.1); }
+
+  svg { width: 17px; height: 17px; flex-shrink: 0; }
 `;
 
 const DropdownDivider = styled.div`
   height: 1px;
-  background: ${({ theme }) => theme.colors.border};
-  margin: 6px 0;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 4px 0;
 `;
 
 const ThemeRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
-`;
-
-const ThemeRowLabel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 14px;
+  padding: 9px 12px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
   font-weight: 500;
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
+  letter-spacing: -0.01em;
 `;
 
-const SignOutButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 10px 16px;
-  background: transparent;
-  border: none;
-  color: #dc2626;
-  font-size: 14px;
-  font-weight: 500;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.15s ease;
+// ─── Main Content Area ────────────────────────────────────────────────────────
 
-  &:hover {
-    background: rgba(220, 38, 38, 0.08);
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
-`;
-
-const Main = styled.main<{ $isAnimating?: boolean }>`
+const PageMain = styled.main<{ $animating?: boolean }>`
   flex: 1;
   overflow-y: auto;
-  animation: ${({ $isAnimating }) => ($isAnimating ? fadeIn : "none")} 0.3s ease;
+  animation: ${({ $animating }) => ($animating ? pageIn : "none")} 0.3s ease;
 
   @media (max-width: 1024px) {
-    margin-top: 64px;
+    margin-top: 60px;
   }
 `;
 
-const LoadingContainer = styled.div`
+const LoadingScreen = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  background: #0a0a0a;
 `;
 
-// Icons
+// ─── Icons ───────────────────────────────────────────────────────────────────
+
 const DashboardIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
   </svg>
 );
 
 const ResumeIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
   </svg>
 );
 
 const JobPostingsIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
   </svg>
 );
 
 const JobMatchIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
   </svg>
 );
 
 const ATSIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
   </svg>
 );
 
 const CoverLetterIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
   </svg>
 );
 
 const BillingIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
   </svg>
 );
 
 const SettingsIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-    />
-  </svg>
-);
-
-const MenuIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-    />
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M6 18L18 6M6 6l12 12"
-    />
-  </svg>
-);
-
-const ChevronUpDownIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
-    />
-  </svg>
-);
-
-const ThemeIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
   </svg>
 );
 
 const LogOutIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
   </svg>
 );
 
-// Navigation sections (Account section removed)
+const ThemeIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+  </svg>
+);
+
+const MenuIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
+const ChevronUpDown = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+  </svg>
+);
+
+// ─── Nav Structure ────────────────────────────────────────────────────────────
+
 const navSections = [
   {
     label: "Overview",
     items: [
-      {
-        label: "Dashboard",
-        href: ROUTES.APP.DASHBOARD,
-        icon: <DashboardIcon />,
-      },
-    ],
-  },
-  {
-    label: "Tools",
-    items: [
-      { label: "Job Match", href: ROUTES.APP.REPORTS, icon: <JobMatchIcon /> },
-      {
-        label: "ATS Optimizer",
-        href: ROUTES.APP.ATS_OPTIMIZER,
-        icon: <ATSIcon />,
-      },
-      {
-        label: "Cover Letters",
-        href: ROUTES.APP.COVER_LETTERS,
-        icon: <CoverLetterIcon />,
-      },
+      { label: "Dashboard", href: ROUTES.APP.DASHBOARD, icon: <DashboardIcon /> },
     ],
   },
   {
     label: "My Data",
     items: [
-      { label: "Resumes", href: ROUTES.APP.CV, icon: <ResumeIcon /> },
-      {
-        label: "Job Postings",
-        href: ROUTES.APP.JOBS,
-        icon: <JobPostingsIcon />,
-      },
+      { label: "Resumes",      href: ROUTES.APP.CV,   icon: <ResumeIcon /> },
+      { label: "Job Postings", href: ROUTES.APP.JOBS, icon: <JobPostingsIcon /> },
+    ],
+  },
+  {
+    label: "Tools",
+    items: [
+      { label: "Job Match",     href: ROUTES.APP.REPORTS,        icon: <JobMatchIcon /> },
+      { label: "ATS Optimizer", href: ROUTES.APP.ATS_OPTIMIZER,  icon: <ATSIcon /> },
+      { label: "Cover Letters", href: ROUTES.APP.COVER_LETTERS,  icon: <CoverLetterIcon /> },
     ],
   },
 ];
 
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth(ROUTES.AUTH.LOGIN);
   const pathname = usePathname();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const profileCardRef = useRef<HTMLDivElement>(null);
-  const dropdownMenuRef = useRef<HTMLDivElement>(null);
+  const [isMobileOpen, setIsMobileOpen]     = useState(false);
+  const [isClosing, setIsClosing]           = useState(false);
+  const [isAnimating, setIsAnimating]       = useState(false);
+  const [isProfileOpen, setIsProfileOpen]   = useState(false);
+  const profileRef   = useRef<HTMLDivElement>(null);
+  const dropdownRef  = useRef<HTMLDivElement>(null);
 
+  // Page transition
   useEffect(() => {
     setIsAnimating(true);
-    const timer = setTimeout(() => setIsAnimating(false), 300);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setIsAnimating(false), 300);
+    return () => clearTimeout(t);
   }, [pathname]);
 
-  // Lock body scroll when mobile menu is open
+  // Scroll lock on mobile
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isMobileMenuOpen]);
+    document.body.style.overflow = isMobileOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [isMobileOpen]);
 
-  // Close profile menu when clicking outside
+  // Close profile dropdown on outside click
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      const isOutsideProfileCard = profileCardRef.current && !profileCardRef.current.contains(target);
-      const isOutsideDropdown = dropdownMenuRef.current && !dropdownMenuRef.current.contains(target);
-
-      if (isOutsideProfileCard && isOutsideDropdown) {
-        setIsProfileMenuOpen(false);
+    const handler = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (
+        profileRef.current && !profileRef.current.contains(t) &&
+        dropdownRef.current && !dropdownRef.current.contains(t)
+      ) {
+        setIsProfileOpen(false);
       }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  if (loading) {
-    return (
-      <LoadingContainer>
-        <Spinner size="xl" />
-      </LoadingContainer>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
-
-  const openMobileMenu = () => {
-    setIsClosing(false);
-    setIsMobileMenuOpen(true);
-  };
-
-  const closeMobileMenu = () => {
+  const openMobile  = () => { setIsClosing(false); setIsMobileOpen(true); };
+  const closeMobile = () => {
     setIsClosing(true);
-    setTimeout(() => {
-      setIsMobileMenuOpen(false);
-      setIsClosing(false);
-    }, 300);
+    setTimeout(() => { setIsMobileOpen(false); setIsClosing(false); }, 280);
   };
 
   const handleNavClick = () => {
-    if (isMobileMenuOpen) {
-      closeMobileMenu();
-    }
-    setIsProfileMenuOpen(false);
+    if (isMobileOpen) closeMobile();
+    setIsProfileOpen(false);
   };
 
-  const getInitials = (name: string | undefined, email: string | undefined) => {
-    if (name) {
-      return name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    if (email) {
-      return email[0].toUpperCase();
-    }
+  const getInitials = (name?: string, email?: string) => {
+    if (name) return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+    if (email) return email[0].toUpperCase();
     return "U";
   };
 
-  const SidebarNavigation = () => (
+  if (loading) {
+    return (
+      <LoadingScreen>
+        <Spinner size="xl" />
+      </LoadingScreen>
+    );
+  }
+
+  if (!user) return null;
+
+  const SidebarContent = () => (
     <>
-      <SidebarHeader>
-        <Logo>Rejectly.pro</Logo>
-      </SidebarHeader>
+      {/* Logo */}
+      <SidebarTop>
+        <SidebarLogo>Rejectly.pro</SidebarLogo>
+      </SidebarTop>
 
-      <SidebarContent>
-        <Nav>
-          {navSections.map((section) => (
-            <NavSection key={section.label}>
-              <NavSectionLabel>{section.label}</NavSectionLabel>
-              <NavSectionItems>
-                {section.items.map((item) => (
-                  <NavLink
-                    key={item.href}
-                    href={item.href}
-                    $active={pathname === item.href}
-                    onClick={handleNavClick}
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </NavLink>
-                ))}
-              </NavSectionItems>
-            </NavSection>
-          ))}
-        </Nav>
-      </SidebarContent>
+      {/* Nav groups */}
+      <SidebarScrollable>
+        {navSections.map(section => (
+          <NavGroup key={section.label}>
+            <NavGroupLabel>{section.label}</NavGroupLabel>
+            {section.items.map(item => (
+              <NavItem
+                key={item.href}
+                href={item.href}
+                $active={pathname === item.href}
+                onClick={handleNavClick}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </NavItem>
+            ))}
+          </NavGroup>
+        ))}
+      </SidebarScrollable>
 
-      <SidebarFooter ref={profileCardRef}>
-        <ProfileCard
-          $isOpen={isProfileMenuOpen}
-          onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+      {/* Profile card */}
+      <SidebarBottom ref={profileRef}>
+        <ProfileButton
+          $open={isProfileOpen}
+          onClick={() => setIsProfileOpen(v => !v)}
         >
-          <Avatar>
-            {getInitials(user.user_metadata?.name, user.email)}
-          </Avatar>
-          <ProfileInfo>
+          <Avatar>{getInitials(user.user_metadata?.name, user.email)}</Avatar>
+          <ProfileMeta>
             <ProfileName>{user.user_metadata?.name || "User"}</ProfileName>
             <ProfileEmail>{user.email}</ProfileEmail>
-          </ProfileInfo>
-          <ChevronWrapper $isOpen={isProfileMenuOpen}>
-            <ChevronUpDownIcon />
-          </ChevronWrapper>
-        </ProfileCard>
-      </SidebarFooter>
+          </ProfileMeta>
+          <ChevronIcon $open={isProfileOpen}>
+            <ChevronUpDown />
+          </ChevronIcon>
+        </ProfileButton>
+      </SidebarBottom>
     </>
   );
 
   return (
-    <Container id="app-layout">
-      {/* Mobile Header */}
-      <MobileHeader>
+    <AppShell id="app-layout">
+      {/* ── Mobile top bar ── */}
+      <MobileTopBar>
         <MobileLogo>Rejectly.pro</MobileLogo>
-        <MenuButton onClick={openMobileMenu} aria-label="Open navigation menu">
-          <MenuIcon />
-        </MenuButton>
-      </MobileHeader>
+        <HamburgerButton onClick={isMobileOpen ? closeMobile : openMobile} aria-label="Toggle menu">
+          {isMobileOpen ? <CloseIcon /> : <MenuIcon />}
+        </HamburgerButton>
+      </MobileTopBar>
 
-      {/* Mobile Overlay */}
-      <ModalOverlay
-        $isOpen={isMobileMenuOpen}
-        $isClosing={isClosing}
-        onClick={closeMobileMenu}
-      >
-        <ModalCloseButton
-          onClick={closeMobileMenu}
-          aria-label="Close navigation menu"
-        >
-          <CloseIcon />
-        </ModalCloseButton>
-      </ModalOverlay>
+      {/* ── Mobile overlay ── */}
+      <MobileOverlay
+        $visible={isMobileOpen}
+        $closing={isClosing}
+        onClick={closeMobile}
+      />
 
-      {/* Sidebar */}
-      <Sidebar $isOpen={isMobileMenuOpen} $isClosing={isClosing}>
-        <SidebarNavigation />
+      {/* ── Sidebar ── */}
+      <Sidebar $isOpen={isMobileOpen} $isClosing={isClosing}>
+        <SidebarContent />
       </Sidebar>
 
-      {/* Profile Dropdown Menu */}
-      <DropdownMenu $isOpen={isProfileMenuOpen} ref={dropdownMenuRef}>
+      {/* ── Profile dropdown ── */}
+      <ProfileDropdown $open={isProfileOpen} ref={dropdownRef}>
         <DropdownItem href={ROUTES.APP.BILLING} onClick={handleNavClick}>
-          <BillingIcon />
-          Billing
+          <BillingIcon /> Billing
         </DropdownItem>
         <DropdownItem href={ROUTES.APP.SETTINGS} onClick={handleNavClick}>
-          <SettingsIcon />
-          Settings
+          <SettingsIcon /> Settings
         </DropdownItem>
         <DropdownDivider />
         <ThemeRow>
-          <ThemeRowLabel>
-            <ThemeIcon />
-            Theme
-          </ThemeRowLabel>
+          <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <ThemeIcon /> Theme
+          </span>
           <ThemeToggle />
         </ThemeRow>
         <DropdownDivider />
-        <SignOutButton onClick={() => signOut()}>
-          <LogOutIcon />
-          Sign out
-        </SignOutButton>
-      </DropdownMenu>
+        <DropdownSignOut onClick={() => signOut()}>
+          <LogOutIcon /> Sign out
+        </DropdownSignOut>
+      </ProfileDropdown>
 
-      {/* Main Content */}
-      <Main $isAnimating={isAnimating}>
+      {/* ── Main ── */}
+      <PageMain $animating={isAnimating}>
         <CreditsProvider>
           <CreditWarningBanner />
           {children}
         </CreditsProvider>
-      </Main>
-    </Container>
+      </PageMain>
+    </AppShell>
   );
 }

@@ -177,11 +177,10 @@ type CVItem =
 const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 36px 28px;
-  padding-bottom: 120px;
+  padding: 16px 28px 120px;
 
   @media (max-width: 768px) {
-    padding: 84px 16px 120px;
+    padding: 80px 16px 120px;
   }
 `;
 

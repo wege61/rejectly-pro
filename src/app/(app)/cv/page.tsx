@@ -177,12 +177,11 @@ type CVItem =
 const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 24px;
-  padding-bottom: 100px;
+  padding: 36px 28px;
+  padding-bottom: 120px;
 
   @media (max-width: 768px) {
-    padding: 24px 16px;
-    padding-bottom: 100px;
+    padding: 84px 16px 120px;
   }
 `;
 
@@ -208,29 +207,58 @@ const HeaderContent = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 700;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.97);
   margin-bottom: 8px;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
 
   @media (max-width: 768px) {
-    font-size: 24px;
+    font-size: 26px;
   }
 `;
 
 const Subtitle = styled.p`
   font-size: 15px;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.4);
   line-height: 1.6;
   max-width: 500px;
+  letter-spacing: -0.01em;
 `;
 
-// Content Section
+// Content Section — Liquid Glass container
 const ContentSection = styled.div`
-  background: var(--bg-primary);
-  border-radius: 20px;
+  position: relative;
+  border-radius: 24px;
   overflow: hidden;
+
+  /* Liquid Glass */
+  background: rgba(18, 18, 22, 0.55);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  /* Specular top streak */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
 `;
 
 const ContentHeader = styled.div`
@@ -273,19 +301,26 @@ const CVGrid = styled.div`
 // Tab Navigation
 type CVTabType = 'original' | 'ats-optimized' | 'job-matched';
 
+/* Tab bar — floating pill matching marketing NavContainer */
 const TabContainer = styled.div`
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  gap: 8px;
+  gap: 2px;
   padding: 4px;
-  border-radius: 10px;
-  background: ${({ theme }) => theme.colors.border};
+  border-radius: 9999px;
+
+  /* Liquid Glass pill */
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
   @media (max-width: 768px) {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    border-radius: 14px;
 
     &::-webkit-scrollbar {
       display: none;
@@ -298,43 +333,54 @@ const TabButton = styled.button<{ $active: boolean }>`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  gap: 8px;
-  padding: 6px 12px;
+  gap: 7px;
+  padding: 7px 14px;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: ${({ $active }) => ($active ? 600 : 500)};
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
-  background: ${({ $active, theme }) => $active ? theme.colors.surface : 'transparent'};
-  color: ${({ $active, theme }) => $active ? theme.colors.textPrimary : theme.colors.textSecondary};
+  letter-spacing: -0.01em;
+
+  background: ${({ $active }) =>
+    $active
+      ? 'rgba(255,255,255,0.14)'
+      : 'transparent'};
+  color: ${({ $active }) =>
+    $active ? 'rgba(255,255,255,0.97)' : 'rgba(255,255,255,0.45)'};
+
+  /* Active: specular inner shine */
+  box-shadow: ${({ $active }) =>
+    $active
+      ? 'inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 8px rgba(0,0,0,0.3)'
+      : 'none'};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.textPrimary};
+    color: rgba(255, 255, 255, 0.85);
+    background: ${({ $active }) =>
+      $active ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.07)'};
   }
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
     flex-shrink: 0;
-    color: ${({ $active, theme }) => $active ? 'var(--accent)' : theme.colors.textSecondary};
-    transition: color 0.15s ease;
+    opacity: ${({ $active }) => ($active ? 1 : 0.55)};
+    transition: opacity 0.15s ease;
   }
 
   &:hover svg {
-    color: var(--accent);
+    opacity: 0.9;
   }
 
   @media (max-width: 600px) {
-    padding: 6px 10px;
+    padding: 6px 11px;
     font-size: 13px;
-    gap: 6px;
+    gap: 5px;
 
-    svg {
-      width: 14px;
-      height: 14px;
-    }
+    svg { width: 13px; height: 13px; }
   }
 `;
 
@@ -346,10 +392,12 @@ const TabCount = styled.span<{ $active: boolean }>`
   height: 18px;
   padding: 0 5px;
   border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 600;
-  background: ${({ $active, theme }) => $active ? 'var(--accent)' : theme.colors.border};
-  color: ${({ $active, theme }) => $active ? 'white' : theme.colors.textSecondary};
+  font-size: 10.5px;
+  font-weight: 700;
+  background: ${({ $active }) =>
+    $active ? 'var(--accent)' : 'rgba(255,255,255,0.1)'};
+  color: ${({ $active }) =>
+    $active ? 'white' : 'rgba(255,255,255,0.45)'};
 
   @media (max-width: 600px) {
     min-width: 16px;
@@ -442,25 +490,27 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 16px;
-  background: var(--bg-alt);
+  border-radius: 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   height: 200px;
 
-  /* Light styles */
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
-
-  /* Dark styles */
-  ${({ theme }) => theme.colors.background === '#151517' && `
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  `}
+  /* Liquid Glass card */
+  background: rgba(22, 22, 28, 0.6);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px) scale(1.01);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.5),
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16);
   }
 
   &:hover .cv-content {
@@ -472,22 +522,8 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
     opacity: 1;
   }
 
-  &:hover .cv-overlay {
-    background: rgba(0, 0, 0, 0.03);
-  }
-
-  &:hover .cv-icon {
-    transform: scale(0.85);
-  }
-
-  ${({ theme }) => theme.colors.background === '#151517' && `
-    &:hover .cv-overlay {
-      background: rgba(255, 255, 255, 0.05);
-    }
-  `}
-
   @media (max-width: 1024px) {
-  height: 220px;
+    height: 220px;
     &:hover .cv-content {
       transform: none;
     }
@@ -837,11 +873,59 @@ const ArrowRightIcon = () => (
   </svg>
 );
 
-const UploadButton = styled(Button)`
-  display: flex;
+/* Upload Resume — Liquid Glass pill button */
+const UploadButton = styled.button`
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+
+  /* Liquid Glass red tint (matches FAB) */
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.0) 100%
+  ), rgba(220, 60, 60, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: white;
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.5),
+    0 6px 24px rgba(220, 60, 60, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+  }
+
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.0) 100%
+    ), rgba(230, 70, 70, 0.72);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.6),
+      0 12px 36px rgba(220, 60, 60, 0.5),
+      0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
 
   @media (max-width: 768px) {
     width: 100%;

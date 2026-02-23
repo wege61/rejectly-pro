@@ -58,13 +58,15 @@ const MobileTopBar = styled.header`
   z-index: 100;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 20px;
 
-  /* Frosted glass */
-  background: rgba(10, 10, 10, 0.7);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  /* True Apple frosted glass — transparent enough to show bg */
+  background: rgba(8, 8, 8, 0.55);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  /* Specular top highlight */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
   @media (max-width: 1024px) {
     display: flex;
@@ -85,18 +87,21 @@ const HamburgerButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  /* Fully transparent — pure glass border only */
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.85);
-  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.75);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.95);
   }
 
   svg {
@@ -137,12 +142,54 @@ const Sidebar = styled.aside<{ $isOpen?: boolean; $isClosing?: boolean }>`
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow: hidden;
+  z-index: 10;
 
-  /* Liquid Glass */
-  background: rgba(18, 18, 18, 0.75);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  /* Apple Liquid Glass core */
+  background: rgba(14, 14, 16, 0.72);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+
+  /* ── Specular light refraction ─── */
+  /* Top highlight — light hits the glass from above */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 60%,
+      rgba(255, 255, 255, 0.25) 80%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Right-edge refraction — light exits through the glass face */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.06) 30%,
+      rgba(255, 255, 255, 0.03) 70%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
 
   @media (max-width: 1024px) {
     position: fixed;
@@ -162,7 +209,7 @@ const Sidebar = styled.aside<{ $isOpen?: boolean; $isClosing?: boolean }>`
 // ─── Sidebar Inner Sections ──────────────────────────────────────────────────
 
 const SidebarTop = styled.div`
-  padding: 20px 16px 12px;
+  padding: 28px 18px 16px;
 `;
 
 const SidebarLogo = styled.div`
@@ -173,13 +220,15 @@ const SidebarLogo = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  padding: 4px 8px;
+  padding: 4px 10px;
+  margin-bottom: 4px;
 `;
 
 const SidebarScrollable = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 4px 10px;
+  /* Apple-style generous negative space — content breathes */
+  padding: 0 10px;
 
   /* Hide scrollbar */
   scrollbar-width: none;
@@ -187,64 +236,100 @@ const SidebarScrollable = styled.div`
 `;
 
 const NavGroup = styled.div`
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 `;
 
 const NavGroupLabel = styled.div`
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.3);
-  padding: 10px 10px 4px;
+  color: rgba(255, 255, 255, 0.28);
+  /* Apple-level negative space: generous top gap before each group */
+  padding: 18px 12px 6px;
 `;
 
 const NavItem = styled.a<{ $active: boolean }>`
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
-  border-radius: 9px;
+  /* Apple-style generous item padding — lots of breathing room */
+  padding: 9px 12px;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: ${({ $active }) => ($active ? 600 : 500)};
   letter-spacing: -0.01em;
   color: ${({ $active }) =>
-    $active ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.5)"};
+    $active ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.48)"};
   background: ${({ $active }) =>
-    $active ? "rgba(255,255,255,0.1)" : "transparent"};
+    $active ? "rgba(255,255,255,0.11)" : "transparent"};
   text-decoration: none;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  overflow: hidden;
 
-  /* Active glow */
+  /* Active: specular top highlight on the item itself */
   ${({ $active }) =>
     $active &&
     css`
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
-        0 1px 8px rgba(0, 0, 0, 0.3);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        0 2px 12px rgba(0, 0, 0, 0.35);
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.06) 0%,
+          transparent 60%
+        );
+        pointer-events: none;
+      }
     `}
 
   &:hover {
     background: ${({ $active }) =>
-      $active ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.06)"};
+      $active ? "rgba(255,255,255,0.11)" : "rgba(255,255,255,0.05)"};
     color: ${({ $active }) =>
-      $active ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.8)"};
+      $active ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.75)"};
   }
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 17px;
+    height: 17px;
     flex-shrink: 0;
-    opacity: ${({ $active }) => ($active ? 1 : 0.6)};
+    opacity: ${({ $active }) => ($active ? 0.9 : 0.5)};
   }
 `;
 
 // ─── Sidebar Footer / Profile ────────────────────────────────────────────────
 
 const SidebarBottom = styled.div`
-  padding: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px;
+  /* Specular hairline separator */
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  position: relative;
+
+  /* Subtle inner glow at the top of footer */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 16px;
+    right: 16px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.12) 40%,
+      rgba(255, 255, 255, 0.12) 60%,
+      transparent
+    );
+    pointer-events: none;
+  }
 `;
 
 const ProfileButton = styled.button<{ $open: boolean }>`

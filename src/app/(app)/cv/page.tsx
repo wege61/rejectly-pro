@@ -185,7 +185,7 @@ const PageContainer = styled.div`
 `;
 
 const Header = styled.div`
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 `;
 
 const HeaderTop = styled.div`
@@ -193,7 +193,7 @@ const HeaderTop = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   gap: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 
   @media (max-width: 768px) {
     flex-direction: column;

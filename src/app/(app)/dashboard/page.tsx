@@ -1504,7 +1504,7 @@ const FAB = styled.button<{ $showHint?: boolean; $hidden?: boolean }>`
   box-shadow: 0 8px 24px var(--accent-shadow);
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.normal};
-  z-index: 10010;
+  z-index: 90;
   border: none;
   opacity: ${({ $hidden }) => ($hidden ? 0 : 1)};
   pointer-events: ${({ $hidden }) => ($hidden ? "none" : "auto")};

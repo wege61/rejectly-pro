@@ -42,7 +42,9 @@ const pageIn = keyframes`
 
 const AppShell = styled.div`
   display: flex;
-  min-height: 100vh;
+  /* Lock viewport — sidebar stays fixed, only main content scrolls */
+  height: 100vh;
+  overflow: hidden;
   background: #0c0c0e;
   position: relative;
 `;
@@ -143,47 +145,67 @@ const MobileFloatingPanel = styled.div<{ $visible: boolean; $closing: boolean }>
     flex-direction: column;
     position: fixed;
     top: 72px;
-    left: 12px;
-    right: 12px;
+    left: 10px;
+    right: 10px;
     z-index: 200;
-    border-radius: 20px;
+    border-radius: 22px;
     overflow: hidden;
 
-    /* Liquid Glass panel */
-    background: rgba(20, 20, 24, 0.85);
-    backdrop-filter: blur(50px) saturate(200%);
-    -webkit-backdrop-filter: blur(50px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Apple-grade Liquid Glass — very transparent, mega blur */
+    background: rgba(18, 18, 22, 0.55);
+    backdrop-filter: blur(70px) saturate(220%) brightness(1.1);
+    -webkit-backdrop-filter: blur(70px) saturate(220%) brightness(1.1);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     box-shadow:
-      0 20px 60px rgba(0, 0, 0, 0.6),
-      0 4px 16px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      0 32px 80px rgba(0, 0, 0, 0.65),
+      0 8px 24px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
 
-    /* Specular top highlight */
+    /* Specular streak across the top edge */
     &::before {
       content: '';
       position: absolute;
       top: 0;
-      left: 20%;
-      right: 20%;
+      left: 10%;
+      right: 10%;
       height: 1px;
       background: linear-gradient(
         90deg,
-        transparent,
-        rgba(255, 255, 255, 0.4) 50%,
-        transparent
+        transparent 0%,
+        rgba(255, 255, 255, 0.5) 45%,
+        rgba(255, 255, 255, 0.7) 55%,
+        rgba(255, 255, 255, 0.5) 70%,
+        transparent 100%
       );
       pointer-events: none;
       z-index: 1;
     }
 
+    /* Diagonal glass sheen */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        transparent 40%,
+        transparent 60%,
+        rgba(255, 255, 255, 0.02) 100%
+      );
+      pointer-events: none;
+      border-radius: 22px;
+      z-index: 0;
+    }
+
     opacity: ${({ $visible }) => ($visible ? 1 : 0)};
     pointer-events: ${({ $visible }) => ($visible ? "all" : "none")};
     transform: ${({ $visible }) =>
-      $visible ? "translateY(0) scale(1)" : "translateY(-12px) scale(0.97)"};
+      $visible ? "translateY(0) scale(1)" : "translateY(-16px) scale(0.96)"};
     transform-origin: top center;
-    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
 `;
 
@@ -535,24 +557,47 @@ const ChevronIcon = styled.div<{ $open: boolean }>`
 const ProfileDropdown = styled.div<{ $open: boolean }>`
   position: fixed;
   bottom: 80px;
-  left: 230px;
-  width: 220px;
+  left: 232px;
+  width: 230px;
   z-index: 300;
 
-  background: rgba(28, 28, 30, 0.92);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  /* Liquid Glass treatment */
+  background: rgba(18, 18, 22, 0.6);
+  backdrop-filter: blur(60px) saturate(220%) brightness(1.1);
+  -webkit-backdrop-filter: blur(60px) saturate(220%) brightness(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
   padding: 6px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.6),
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+
+  /* Specular top edge */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent
+    );
+    pointer-events: none;
+    border-radius: 18px 18px 0 0;
+  }
 
   opacity: ${({ $open }) => ($open ? 1 : 0)};
   visibility: ${({ $open }) => ($open ? "visible" : "hidden")};
   transform: ${({ $open }) =>
-    $open ? "scale(1) translateY(0)" : "scale(0.95) translateY(4px)"};
+    $open ? "scale(1) translateY(0)" : "scale(0.95) translateY(6px)"};
   transform-origin: left bottom;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 
   @media (max-width: 1024px) {
     left: 16px;
@@ -627,11 +672,13 @@ const ThemeRow = styled.div`
 
 const PageMain = styled.main<{ $animating?: boolean }>`
   flex: 1;
+  height: 100vh;
   overflow-y: auto;
   animation: ${({ $animating }) => ($animating ? pageIn : "none")} 0.3s ease;
 
   @media (max-width: 1024px) {
-    margin-top: 60px;
+    padding-top: 60px;
+    height: 100vh;
   }
 `;
 

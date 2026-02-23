@@ -878,64 +878,75 @@ const ArrowRightIcon = () => (
   </svg>
 );
 
-/* Upload Resume — Liquid Glass pill button */
-const UploadButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 11px 22px;
+/* ── CV Page FAB — Liquid Glass, matches dashboard FAB ── */
+const CVFAB = styled.button<{ $uploading?: boolean }>`
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 60px;
+  height: 60px;
   border-radius: 9999px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  cursor: pointer;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  white-space: nowrap;
+  z-index: 90;
 
-  /* Liquid Glass red tint (matches FAB) */
+  /* Liquid Glass red tint */
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.22) 0%,
     rgba(255, 255, 255, 0.0) 100%
-  ), rgba(220, 60, 60, 0.55);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  ), rgba(220, 60, 60, 0.38);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  box-shadow:
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.5),
-    0 6px 24px rgba(220, 60, 60, 0.4),
-    0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 
-  svg {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
-  }
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.55),
+    0 8px 32px rgba(220, 60, 60, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.25);
 
   &:hover {
-    transform: translateY(-2px) scale(1.02);
+    transform: scale(1.08) translateY(-3px);
     background: linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.3) 0%,
       rgba(255, 255, 255, 0.0) 100%
-    ), rgba(230, 70, 70, 0.72);
+    ), rgba(230, 70, 70, 0.58);
     box-shadow:
-      inset 0 1.5px 0 rgba(255, 255, 255, 0.6),
-      0 12px 36px rgba(220, 60, 60, 0.5),
-      0 4px 12px rgba(0, 0, 0, 0.25);
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.65),
+      0 16px 48px rgba(220, 60, 60, 0.55),
+      0 4px 16px rgba(0, 0, 0, 0.3);
   }
 
   &:active {
-    transform: scale(0.97);
+    transform: scale(0.96);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  svg {
+    width: 26px;
+    height: 26px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
   }
 
   @media (max-width: 768px) {
-    width: 100%;
+    bottom: 24px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
   }
 `;
+
+
 
 const CVPreviewDrawer = styled.div<{ $isOpen: boolean }>`
   position: fixed;
@@ -1663,17 +1674,6 @@ export default function CVPage() {
                 Manage your resumes and track optimized versions across different job applications.
               </Subtitle>
             </HeaderContent>
-            <UploadButton onClick={handleUploadClick} disabled={isUploading}>
-              {isUploading ? (
-                <>
-                  <Spinner size="sm" /> Uploading...
-                </>
-              ) : (
-                <>
-                  <UploadIcon /> Upload Resume
-                </>
-              )}
-            </UploadButton>
           </HeaderTop>
 
         </Header>
@@ -2061,6 +2061,14 @@ export default function CVPage() {
           </Button>
         </Modal.Footer>
       </Modal>
+      {/* ── Upload FAB ── */}
+      <CVFAB
+        onClick={handleUploadClick}
+        disabled={isUploading}
+        title="Upload Resume"
+      >
+        {isUploading ? <Spinner size="sm" /> : <UploadIcon />}
+      </CVFAB>
     </PageContainer>
   );
 }

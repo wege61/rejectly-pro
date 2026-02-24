@@ -111,13 +111,10 @@ const CheckCircleIcon = () => (
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing["2xl"]};
-  padding-bottom: 100px; /* Space for FAB */
+  padding: 36px ${({ theme }) => theme.spacing["2xl"]} 120px;
 
-  
-  @media (max-width: 450px) {
-    padding: ${({ theme }) => theme.spacing["lg"]};
-    padding-top: 24px;
+  @media (max-width: 768px) {
+    padding: 70px 16px 120px;
   }
 `;
 
@@ -161,47 +158,85 @@ const ColumnHeader = styled.div`
 `;
 
 const Header = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+  margin-bottom: ${({ theme }) => theme.spacing["xl"]};
 `;
 
 const TitleElements = styled.div``;
 
 const Title = styled.h1`
- font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  font-size: 34px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.97);
+  margin-bottom: 8px;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
 
   @media (max-width: 768px) {
-    order: 1;
+    font-size: 26px;
   }
 `;
 
-const CreditsCardWrapper = styled.div``;
+const CreditsCardWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
 
 const Description = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  max-width: 580px;
+`;
 
-  @media (max-width: 768px) {
-    order: 3;
+/* ── Liquid Glass column section wrapper (same pattern as Reports/ATS) ── */
+const ContentSection = styled.div`
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(18, 18, 22, 0.55);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35) 50%, transparent);
+    pointer-events: none;
+    z-index: 1;
   }
 `;
 
+const ContentHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+`;
+
+const ContentBody = styled.div`
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
 
 const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: -0.02em;
 `;
 
 const SectionDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
 `;
 
 const Grid = styled.div`
@@ -233,48 +268,35 @@ const MiniReportCard = styled.div<{ $isPremium: boolean }>`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 12px;
-  background: var(--bg-alt);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 140px;
 
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 8px 16px rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -15px 60px -15px rgba(255, 255, 255, 0.1) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+  /* Liquid Glass card */
+  background: rgba(30, 30, 40, 0.78);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 2px 1px rgba(255, 255, 255, 0.06) inset,
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.4);
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 2px 1px rgba(255, 255, 255, 0.08) inset,
+      0 16px 48px rgba(0, 0, 0, 0.65),
+      0 4px 16px rgba(0, 0, 0, 0.45);
   }
 
-  &:hover .mini-report-content {
-    transform: translateY(-24px);
-  }
-
-  &:hover .mini-report-cta {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  &:hover .mini-report-overlay {
-    background: rgba(0, 0, 0, 0.03);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover .mini-report-overlay {
-      background: rgba(255, 255, 255, 0.05);
-    }
-  }
+  &:hover .mini-report-content { transform: translateY(-24px); }
+  &:hover .mini-report-cta { transform: translateY(0); opacity: 1; }
 
   @media (max-width: 1024px) {
-    &:hover .mini-report-content {
-      transform: none;
-    }
+    &:hover .mini-report-content { transform: none; }
   }
 `;
 
@@ -369,6 +391,7 @@ const MiniReportCTAContainer = styled.div`
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
+  background: linear-gradient(to top, rgba(30, 30, 40, 0.95) 60%, transparent);
 
   @media (max-width: 768px) {
     transform: translateY(0);
@@ -523,48 +546,35 @@ const CoverLetterCard = styled.div<{ $tone: string }>`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 12px;
-  background: var(--bg-alt);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 160px;
 
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 8px 16px rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -15px 60px -15px rgba(255, 255, 255, 0.1) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+  /* Liquid Glass card */
+  background: rgba(30, 30, 40, 0.78);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 2px 1px rgba(255, 255, 255, 0.06) inset,
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.4);
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 2px 1px rgba(255, 255, 255, 0.08) inset,
+      0 16px 48px rgba(0, 0, 0, 0.65),
+      0 4px 16px rgba(0, 0, 0, 0.45);
   }
 
-  &:hover .letter-content {
-    transform: translateY(-28px);
-  }
-
-  &:hover .letter-cta {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  &:hover .letter-overlay {
-    background: rgba(0, 0, 0, 0.03);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover .letter-overlay {
-      background: rgba(255, 255, 255, 0.05);
-    }
-  }
+  &:hover .letter-content { transform: translateY(-28px); }
+  &:hover .letter-cta { transform: translateY(0); opacity: 1; }
 
   @media (max-width: 1024px) {
-    &:hover .letter-content {
-      transform: none;
-    }
+    &:hover .letter-content { transform: none; }
   }
 `;
 
@@ -572,34 +582,37 @@ const CoverLetterToneBadge = styled.div<{ $tone: string }>`
   position: absolute;
   top: 10px;
   right: 12px;
+  /* Liquid Glass pill */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   background: ${({ $tone }) => {
     switch ($tone) {
-      case 'professional':
-        return 'rgba(59, 130, 246, 0.15)';
-      case 'friendly':
-        return 'rgba(16, 185, 129, 0.15)';
-      case 'formal':
-        return 'rgba(139, 92, 246, 0.15)';
-      default:
-        return 'rgba(107, 114, 128, 0.15)';
+      case 'professional': return 'rgba(59, 130, 246, 0.12)';
+      case 'friendly':     return 'rgba(16, 185, 129, 0.12)';
+      case 'formal':       return 'rgba(139, 92, 246, 0.12)';
+      default:             return 'rgba(107, 114, 128, 0.12)';
+    }
+  }};
+  border: 1px solid ${({ $tone }) => {
+    switch ($tone) {
+      case 'professional': return 'rgba(59, 130, 246, 0.25)';
+      case 'friendly':     return 'rgba(16, 185, 129, 0.25)';
+      case 'formal':       return 'rgba(139, 92, 246, 0.25)';
+      default:             return 'rgba(107, 114, 128, 0.25)';
     }
   }};
   color: ${({ $tone }) => {
     switch ($tone) {
-      case 'professional':
-        return '#3b82f6';
-      case 'friendly':
-        return 'var(--success)';
-      case 'formal':
-        return '#8b5cf6';
-      default:
-        return '#6b7280';
+      case 'professional': return '#60a5fa';
+      case 'friendly':     return '#34d399';
+      case 'formal':       return '#a78bfa';
+      default:             return '#9ca3af';
     }
   }};
   padding: 4px 10px;
   font-size: 10px;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 9999px;
   z-index: 10;
   text-transform: capitalize;
 `;
@@ -672,6 +685,7 @@ const CoverLetterCTAContainer = styled.div`
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
+  background: linear-gradient(to top, rgba(30, 30, 40, 0.95) 60%, transparent);
 
   @media (max-width: 768px) {
     transform: translateY(0);
@@ -1144,14 +1158,14 @@ export default function CoverLettersPage() {
 
       <TwoColumnLayout>
         {/* Left Column - Reports (30%) */}
-        <Column>
-          <ColumnHeader>
-            <SectionTitle>Reports</SectionTitle>
-            <SectionDescription>
-              Select a report to generate a cover letter
-            </SectionDescription>
-          </ColumnHeader>
-
+        <ContentSection>
+          <ContentHeader>
+            <div>
+              <SectionTitle>Reports</SectionTitle>
+              <SectionDescription>Select a report to generate a cover letter</SectionDescription>
+            </div>
+          </ContentHeader>
+          <ContentBody>
           {reports.length === 0 ? (
             <Card variant="bordered">
               <EmptyState
@@ -1211,20 +1225,21 @@ export default function CoverLettersPage() {
               })}
             </Grid>
           )}
-        </Column>
+          </ContentBody>
+        </ContentSection>
 
         {/* Divider */}
         <ColumnDivider />
 
         {/* Right Column - Generated Cover Letters (70%) */}
-        <Column>
-          <ColumnHeader>
-            <SectionTitle>Your Cover Letters</SectionTitle>
-            <SectionDescription>
-              Click to view and edit
-            </SectionDescription>
-          </ColumnHeader>
-
+        <ContentSection>
+          <ContentHeader>
+            <div>
+              <SectionTitle>Your Cover Letters</SectionTitle>
+              <SectionDescription>Click to view and edit</SectionDescription>
+            </div>
+          </ContentHeader>
+          <ContentBody>
           {coverLetters.length === 0 ? (
             <Card variant="bordered">
               <EmptyState
@@ -1297,7 +1312,8 @@ export default function CoverLettersPage() {
               ))}
             </Grid>
           )}
-        </Column>
+          </ContentBody>
+        </ContentSection>
       </TwoColumnLayout>
 
       {/* View Cover Letter Modal */}

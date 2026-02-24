@@ -28,8 +28,9 @@ let openSheetsCount = 0;
 const Overlay = styled.div<{ $isOpen: boolean }>`
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
   z-index: ${({ theme }) => theme.zIndex.modalBackdrop};
   opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   transition: opacity ${ANIMATION_DURATION}ms ease-in-out;
@@ -38,12 +39,21 @@ const Overlay = styled.div<{ $isOpen: boolean }>`
 const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: boolean }>`
   position: fixed;
   z-index: ${({ theme }) => theme.zIndex.modal};
-  background-color: ${({ theme }) => theme.colors.backgroundAlt2};
-  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
+
+  /* Liquid Glass */
+  background:
+    linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%),
+    rgba(12, 12, 18, 0.88);
+  backdrop-filter: blur(48px) saturate(180%);
+  -webkit-backdrop-filter: blur(48px) saturate(180%);
+  box-shadow:
+    -12px 0 60px rgba(0, 0, 0, 0.6),
+    inset 1px 0 0 rgba(255, 255, 255, 0.08);
+
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: transform ${ANIMATION_DURATION}ms ease-in-out;
+  transition: transform ${ANIMATION_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Position and transform based on side */
   ${({ $side, $isOpen }) => {
@@ -53,7 +63,7 @@ const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: bo
           top: 0;
           left: 0;
           bottom: 0;
-          border-right: 1px solid var(--border-color, rgba(255,255,255,0.1));
+          border-right: 1px solid rgba(255,255,255,0.08);
           transform: translateX(${$isOpen ? "0" : "-100%"});
         `;
       case "top":
@@ -61,7 +71,7 @@ const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: bo
           top: 0;
           left: 0;
           right: 0;
-          border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.1));
+          border-bottom: 1px solid rgba(255,255,255,0.08);
           transform: translateY(${$isOpen ? "0" : "-100%"});
         `;
       case "bottom":
@@ -69,7 +79,7 @@ const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: bo
           bottom: 0;
           left: 0;
           right: 0;
-          border-top: 1px solid theme.colors.border; 
+          border-top: 1px solid rgba(255,255,255,0.08);
           transform: translateY(${$isOpen ? "0" : "100%"});
         `;
       default: // right
@@ -77,9 +87,17 @@ const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: bo
           top: 0;
           right: 0;
           bottom: 0;
-          border-left: 1px solid theme.colors.border; 
-          border-radius: 8px;
+          border-left: 1px solid rgba(255,255,255,0.08);
           transform: translateX(${$isOpen ? "0" : "100%"});
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 20%; right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25) 50%, transparent);
+            pointer-events: none;
+            z-index: 1;
+          }
         `;
     }
   }}
@@ -90,25 +108,25 @@ const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: bo
       switch ($size) {
         case "sm":
           return `
-            width: 320px;
-            @media (max-width: 400px) { width: 85%; }
+            width: 340px;
+            @media (max-width: 400px) { width: 90%; }
           `;
         case "lg":
           return `
-            width: 420px;
-            @media (max-width: 560px) { width: 85%; }
+            width: 480px;
+            @media (max-width: 560px) { width: 90%; }
           `;
         case "xl":
           return `
-            width: 540px;
-            @media (max-width: 620px) { width: 85%; }
+            width: 620px;
+            @media (max-width: 720px) { width: 90%; }
           `;
         case "full":
           return `width: 100%;`;
         default:
           return `
-            width: 400px;
-            @media (max-width: 480px) { width: 85%; }
+            width: 440px;
+            @media (max-width: 480px) { width: 90%; }
           `;
       }
     } else {
@@ -138,13 +156,14 @@ const SheetContainer = styled.div<{ $side: SheetSide; $size: string; $isOpen: bo
 `;
 
 const SheetHeader = styled.div`
-  padding: 20px 24px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 20px 24px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: ${({ theme }) => theme.spacing.md};
   flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.02);
 `;
 
 const SheetHeaderContent = styled.div`
@@ -156,44 +175,44 @@ const SheetHeaderContent = styled.div`
 `;
 
 const SheetTitle = styled.h2`
-  font-size: 15px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
   line-height: 1.3;
   margin: 0;
+  letter-spacing: -0.02em;
 `;
 
 const SheetDescription = styled.p`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.35);
   line-height: 1.4;
   margin: 0;
+  letter-spacing: -0.01em;
 `;
 
 const CloseButton = styled.button`
   width: 32px;
   height: 32px;
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: rgba(255,255,255,0.45);
   transition: all 150ms ease;
   flex-shrink: 0;
-  background: transparent;
-  border: none;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
   cursor: pointer;
-  opacity: 0.6;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.surfaceHover};
-    color: ${({ theme }) => theme.colors.textPrimary};
-    opacity: 1;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.9);
   }
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
   }
 `;
 

@@ -249,12 +249,83 @@ const SectionDescription = styled.p`
 /* ── Report filter tab strip (horizontal SCROLL) ── */
 const ReportFilterStrip = styled.div`
   display: flex;
+  align-items: flex-start;
   gap: 10px;
   overflow-x: auto;
   padding-bottom: 6px;
   margin-bottom: 28px;
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
+`;
+
+/* "All Reports" hub tab — visually distinct from individual report tabs */
+const AllReportsTab = styled.button<{ $isActive: boolean }>`
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 80px;
+  height: 80px;
+  border-radius: 22px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* distinct: soft white glass pill */
+  background: ${({ $isActive }) => $isActive
+    ? 'rgba(255,255,255,0.18)'
+    : 'rgba(255,255,255,0.06)'};
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid ${({ $isActive }) => $isActive
+    ? 'rgba(255,255,255,0.40)'
+    : 'rgba(255,255,255,0.12)'};
+  box-shadow: ${({ $isActive }) => $isActive
+    ? '0 4px 20px rgba(255,255,255,0.10), inset 0 1px 0 rgba(255,255,255,0.5)'
+    : '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)'};
+
+  &:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.14);
+    border-color: rgba(255,255,255,0.28);
+  }
+
+  /* Grid icon svg inside */
+  svg {
+    width: 22px;
+    height: 22px;
+    color: ${({ $isActive }) => $isActive ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.50)'};
+    transition: color 0.2s ease;
+  }
+`;
+
+const AllReportsLabel = styled.span<{ $isActive: boolean }>`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${({ $isActive }) => $isActive ? 'rgba(255,255,255,0.90)' : 'rgba(255,255,255,0.35)'};
+  transition: color 0.2s ease;
+`;
+
+const AllReportsCount = styled.span`
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  background: var(--accent);
+  border: 2px solid rgba(12, 12, 18, 0.9);
+  font-size: 9px;
+  font-weight: 800;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ReportFilterTab = styled.button<{ $isActive: boolean; $hasLetters: boolean }>`
@@ -1403,20 +1474,21 @@ export default function CoverLettersPage() {
       {/* ── Report tab strip ── */}
       {reports.length > 0 && (
         <ReportFilterStrip>
-          {/* "All" tab */}
-          <ReportFilterTab
+          {/* "All" hub tab — visually distinct */}
+          <AllReportsTab
             $isActive={!filterReportId}
-            $hasLetters={coverLetters.length > 0}
             onClick={() => setFilterReportId(null)}
+            title={`All ${reports.length} reports · ${coverLetters.length} total letters`}
           >
-            <ReportTabTop>
-              <ReportTabScore $category="excellent">{reports.length}</ReportTabScore>
-              <ReportTabLetterCount $count={coverLetters.length}>
-                {coverLetters.length > 0 ? `${coverLetters.length} letters` : 'No letters'}
-              </ReportTabLetterCount>
-            </ReportTabTop>
-            <ReportTabTitle>All Reports</ReportTabTitle>
-          </ReportFilterTab>
+            {coverLetters.length > 0 && <AllReportsCount>{coverLetters.length}</AllReportsCount>}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+            </svg>
+            <AllReportsLabel $isActive={!filterReportId}>All</AllReportsLabel>
+          </AllReportsTab>
 
           {/* One tab per report */}
           {reports.map((report) => {

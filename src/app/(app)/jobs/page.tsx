@@ -192,8 +192,9 @@ const JobCardBackgroundWrapper = styled.div`
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
+  /* Fade bottom like CV cards — preview is at top-right */
+  mask-image: linear-gradient(to top, transparent 35%, #000 100%);
+  -webkit-mask-image: linear-gradient(to top, transparent 35%, #000 100%);
 `;
 
 const KeywordCloud = styled.div`
@@ -272,8 +273,7 @@ const FloatingIcon = styled.div<{ $delay: number; $position: 'topRight' | 'botto
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: ${floatAnimation} 4s ease-in-out infinite;
-  animation-delay: ${({ $delay }) => $delay}s;
+  /* animation removed — static icon only */
   z-index: 3;
 
   svg {
@@ -282,6 +282,65 @@ const FloatingIcon = styled.div<{ $delay: number; $position: 'topRight' | 'botto
     color: var(--accent);
     opacity: 0.6;
   }
+`;
+
+/* ── CV-style document preview frame for job cards ── */
+const JobPreviewContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+
+  @media (max-width: 640px) {
+    width: 120px;
+    right: 8px;
+  }
+`;
+
+const JobPreviewCard = styled.div<{ $delay: number }>`
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+  animation: ${fadeInUp} 0.5s ease-out forwards;
+  animation-delay: ${({ $delay }) => $delay}s;
+  opacity: 0;
+  filter: blur(0.4px);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+`;
+
+const JobPreviewSection = styled.div`
+  margin-bottom: 6px;
+  &:last-child { margin-bottom: 0; }
+`;
+
+const JobPreviewSectionTitle = styled.div`
+  font-size: 7px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+`;
+
+const JobPreviewLine = styled.div<{ $width?: string }>`
+  height: 4px;
+  width: ${({ $width }) => $width || '100%'};
+  background: linear-gradient(
+    90deg,
+    rgba(var(--accent-rgb), 0.15) 0%,
+    rgba(var(--accent-rgb), 0.25) 50%,
+    rgba(var(--accent-rgb), 0.15) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 2px;
+  margin-bottom: 3px;
+  &:last-child { margin-bottom: 0; }
 `;
 
 // Helper function to extract keywords from text
@@ -326,12 +385,38 @@ const JobCardBackgroundComponent = ({ text }: JobCardBackgroundProps) => {
 
   return (
     <JobCardBackgroundWrapper>
-      <FloatingIcon $delay={0} $position="topRight">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
-        </svg>
-      </FloatingIcon>
-      <KeywordCloud>
+      {/* Document preview frame — top right, same style as CV cards */}
+      <JobPreviewContainer>
+        <JobPreviewCard $delay={0}>
+          <JobPreviewSection>
+            <JobPreviewSectionTitle>Requirements</JobPreviewSectionTitle>
+            <JobPreviewLine $width="80%" />
+            <JobPreviewLine $width="60%" />
+          </JobPreviewSection>
+          <JobPreviewSection>
+            <JobPreviewSectionTitle>Responsibilities</JobPreviewSectionTitle>
+            <JobPreviewLine />
+            <JobPreviewLine $width="90%" />
+            <JobPreviewLine $width="70%" />
+          </JobPreviewSection>
+        </JobPreviewCard>
+
+        <JobPreviewCard $delay={0.15}>
+          <JobPreviewSection>
+            <JobPreviewSectionTitle>Skills</JobPreviewSectionTitle>
+            <JobPreviewLine $width="85%" />
+            <JobPreviewLine $width="65%" />
+          </JobPreviewSection>
+          <JobPreviewSection>
+            <JobPreviewSectionTitle>Experience</JobPreviewSectionTitle>
+            <JobPreviewLine $width="95%" />
+            <JobPreviewLine $width="55%" />
+          </JobPreviewSection>
+        </JobPreviewCard>
+      </JobPreviewContainer>
+
+      {/* Keyword cloud — left side, pushed right so it doesn't overlap frame */}
+      <KeywordCloud style={{ right: '160px' }}>
         {keywords.map((keyword, idx) => (
           <KeywordBadge
             key={idx}
@@ -342,11 +427,12 @@ const JobCardBackgroundComponent = ({ text }: JobCardBackgroundProps) => {
           </KeywordBadge>
         ))}
       </KeywordCloud>
-      <TextScrollContainer>
+
+      <TextScrollContainer style={{ right: '160px' }}>
         <ScrollingTextTrack>
           {[...lines, ...lines].map((line, idx) => (
             <ScrollingTextLine key={idx} $delay={idx * 0.05}>
-              {line.trim().slice(0, 80)}...
+              {line.trim().slice(0, 60)}...
             </ScrollingTextLine>
           ))}
         </ScrollingTextTrack>

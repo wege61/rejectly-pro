@@ -50,35 +50,38 @@ const ArrowRightIcon = () => (
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing["2xl"]};
+  padding: 36px ${({ theme }) => theme.spacing["2xl"]} 120px;
 
-
-  @media (max-width: 450px) {
-    padding: ${({ theme }) => theme.spacing["lg"]};
-    padding-top: 32px;
+  @media (max-width: 768px) {
+    padding: 70px 16px 120px;
   }
 `;
 
 const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+  margin-bottom: ${({ theme }) => theme.spacing["xl"]};
 `;
 
 const HeaderContent = styled.div``;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  font-size: 34px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.97);
+  margin-bottom: 8px;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+
+  @media (max-width: 768px) {
+    font-size: 26px;
+  }
 `;
 
 const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  @media (max-width: 410px) {
-    margin-right: 10px;
-  }
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  max-width: 580px;
 `;
 
 const ReportsGrid = styled.div`
@@ -110,28 +113,40 @@ const CategoryBadge = styled.span<{ $variant: 'excellent' | 'good' | 'fair' | 'p
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 5px 14px;
+  border-radius: 9999px;
   font-size: 13px;
   font-weight: 600;
+
+  /* Liquid Glass pill */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
   ${({ $variant }) => {
     switch ($variant) {
       case 'excellent':
         return `
           color: var(--primary-500);
+          background: rgba(var(--primary-rgb, 99,210,178), 0.1);
+          border: 1px solid rgba(var(--primary-rgb, 99,210,178), 0.2);
         `;
       case 'good':
         return `
-          color: #2A57A0;
+          color: #60a5fa;
+          background: rgba(96,165,250, 0.1);
+          border: 1px solid rgba(96,165,250, 0.2);
         `;
       case 'fair':
         return `
-          color: #EAB308;
+          color: #fbbf24;
+          background: rgba(251,191,36, 0.1);
+          border: 1px solid rgba(251,191,36, 0.2);
         `;
       case 'poor':
         return `
-          color: #F97316;
+          color: #fb923c;
+          background: rgba(249,115,22, 0.1);
+          border: 1px solid rgba(249,115,22, 0.2);
         `;
     }
   }}
@@ -148,25 +163,28 @@ const ReportCard = styled.div`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 16px;
-  background: var(--bg-alt);
+  border-radius: 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 200px;
 
-  /* Subtle depth through shadows */
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
+  /* Liquid Glass card — stronger contrast */
+  background: rgba(30, 30, 40, 0.78);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 2px 1px rgba(255, 255, 255, 0.06) inset,
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.4);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px) scale(1.01);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 2px 1px rgba(255, 255, 255, 0.08) inset,
+      0 20px 56px rgba(0, 0, 0, 0.65),
+      0 6px 20px rgba(0, 0, 0, 0.45);
   }
 
   &:hover .report-content {
@@ -176,16 +194,6 @@ const ReportCard = styled.div`
   &:hover .report-cta {
     transform: translateY(0);
     opacity: 1;
-  }
-
-  &:hover .report-overlay {
-    background: rgba(0, 0, 0, 0.03);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover .report-overlay {
-      background: rgba(255, 255, 255, 0.05);
-    }
   }
 
   @media (max-width: 1024px) {
@@ -198,14 +206,15 @@ const ReportCard = styled.div`
 const FakeItBanner = styled.div`
   position: absolute;
   top: 12px;
-  right: 12px;
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
+  left: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.75);
   padding: 4px 10px;
   font-size: 11px;
   font-weight: 500;
-  border-radius: 6px;
+  border-radius: 9999px;
   z-index: 10;
   display: flex;
   align-items: center;
@@ -342,6 +351,7 @@ const CTAContainer = styled.div`
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
+  background: linear-gradient(to top, rgba(30, 30, 40, 0.95) 60%, transparent);
 
   @media (max-width: 768px) {
     padding: 0;
@@ -428,8 +438,9 @@ const ReportCardBackgroundWrapper = styled.div`
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 100%);
+  /* Fade bottom — preview frame is at top-right */
+  mask-image: linear-gradient(to top, transparent 35%, #000 100%);
+  -webkit-mask-image: linear-gradient(to top, transparent 35%, #000 100%);
 `;
 
 const KeywordContainer = styled.div`
@@ -489,14 +500,104 @@ interface ReportCardBackgroundProps {
   summary?: string;
 }
 
+/* ── Document preview frame (same as CV + Jobs cards) ── */
+const ReportPreviewContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+
+  @media (max-width: 640px) {
+    width: 120px;
+    right: 8px;
+  }
+`;
+
+const ReportPreviewCard = styled.div<{ $delay: number }>`
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+  animation: ${fadeInUp} 0.5s ease-out forwards;
+  animation-delay: ${({ $delay }) => $delay}s;
+  opacity: 0;
+  filter: blur(0.4px);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+`;
+
+const ReportPreviewSection = styled.div`
+  margin-bottom: 6px;
+  &:last-child { margin-bottom: 0; }
+`;
+
+const ReportPreviewSectionTitle = styled.div`
+  font-size: 7px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+`;
+
+const ReportPreviewLine = styled.div<{ $width?: string }>`
+  height: 4px;
+  width: ${({ $width }) => $width || '100%'};
+  background: linear-gradient(
+    90deg,
+    rgba(var(--accent-rgb), 0.15) 0%,
+    rgba(var(--accent-rgb), 0.25) 50%,
+    rgba(var(--accent-rgb), 0.15) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 2px;
+  margin-bottom: 3px;
+  &:last-child { margin-bottom: 0; }
+`;
+
 const ReportCardBackground = ({ keywords, summary }: ReportCardBackgroundProps) => {
   const displayKeywords = keywords?.slice(0, 5) || [];
   const summaryText = summary || '';
 
   return (
     <ReportCardBackgroundWrapper>
+      {/* Document preview frame — top right */}
+      <ReportPreviewContainer>
+        <ReportPreviewCard $delay={0}>
+          <ReportPreviewSection>
+            <ReportPreviewSectionTitle>Match Score</ReportPreviewSectionTitle>
+            <ReportPreviewLine $width="85%" />
+            <ReportPreviewLine $width="60%" />
+          </ReportPreviewSection>
+          <ReportPreviewSection>
+            <ReportPreviewSectionTitle>Keywords</ReportPreviewSectionTitle>
+            <ReportPreviewLine />
+            <ReportPreviewLine $width="75%" />
+            <ReportPreviewLine $width="50%" />
+          </ReportPreviewSection>
+        </ReportPreviewCard>
+
+        <ReportPreviewCard $delay={0.15}>
+          <ReportPreviewSection>
+            <ReportPreviewSectionTitle>Skills</ReportPreviewSectionTitle>
+            <ReportPreviewLine $width="90%" />
+            <ReportPreviewLine $width="65%" />
+          </ReportPreviewSection>
+          <ReportPreviewSection>
+            <ReportPreviewSectionTitle>Experience</ReportPreviewSectionTitle>
+            <ReportPreviewLine $width="80%" />
+            <ReportPreviewLine $width="55%" />
+          </ReportPreviewSection>
+        </ReportPreviewCard>
+      </ReportPreviewContainer>
+
+      {/* Keyword badges — left side */}
       {displayKeywords.length > 0 && (
-        <KeywordContainer>
+        <KeywordContainer style={{ right: '160px' }}>
           {displayKeywords.map((keyword, idx) => (
             <KeywordBadge key={idx} $delay={idx * 0.1}>
               {keyword}
@@ -504,8 +605,9 @@ const ReportCardBackground = ({ keywords, summary }: ReportCardBackgroundProps) 
           ))}
         </KeywordContainer>
       )}
+
       {summaryText && (
-        <SummaryScrollContainer>
+        <SummaryScrollContainer style={{ right: '160px' }}>
           <SummaryText>
             {summaryText}
             <SummaryTextDuplicate>
@@ -520,34 +622,58 @@ const ReportCardBackground = ({ keywords, summary }: ReportCardBackgroundProps) 
 
 const FAB = styled.button`
   position: fixed;
-  bottom: ${({ theme }) => theme.spacing["2xl"]};
-  right: ${({ theme }) => theme.spacing["2xl"]};
-  width: 64px;
-  height: 64px;
-  border-radius: ${({ theme }) => theme.radius.full};
-  background: var(--accent);
+  bottom: 32px;
+  right: 32px;
+  width: 60px;
+  height: 60px;
+  border-radius: 9999px;
+  z-index: 90;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.0) 100%
+  ), rgba(220, 60, 60, 0.38);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px var(--accent-shadow);
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
-  z-index: 10010;
-  border: none;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.55),
+    0 8px 32px rgba(220, 60, 60, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.25);
 
   &:hover {
-    transform: scale(1.1) translateY(-2px);
-    box-shadow: 0 12px 32px var(--accent-shadow);
+    transform: scale(1.08) translateY(-3px);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.0) 100%
+    ), rgba(230, 70, 70, 0.58);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.65),
+      0 16px 48px rgba(220, 60, 60, 0.55),
+      0 4px 16px rgba(0, 0, 0, 0.3);
   }
 
-  &:active {
-    transform: scale(0.95);
-  }
+  &:active { transform: scale(0.96); }
 
   svg {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+
+  @media (max-width: 768px) {
+    bottom: 24px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
   }
 `;
 

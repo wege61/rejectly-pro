@@ -38,31 +38,37 @@ const DeleteIcon = () => (
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing["2xl"]};
+  padding: 36px ${({ theme }) => theme.spacing["2xl"]} 120px;
 
-  @media (max-width: 450px) {
-    padding: ${({ theme }) => theme.spacing["lg"]};
-    padding-top: 32px;
+  @media (max-width: 768px) {
+    padding: 70px 16px 120px;
   }
 `;
 
 const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+  margin-bottom: ${({ theme }) => theme.spacing["xl"]};
 `;
 
 const HeaderContent = styled.div``;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  font-size: 34px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.97);
+  margin-bottom: 8px;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+
+  @media (max-width: 768px) {
+    font-size: 26px;
+  }
 `;
 
 const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
 `;
 
 const JobsList = styled.div`
@@ -127,22 +133,25 @@ const JobCardWrapper = styled(motion.div)`
 const JobCardInner = styled.div`
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
-  background: var(--bg-alt);
-  transition: all 0.3s ease;
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Subtle depth through shadows */
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+  /* Liquid Glass card */
+  background: rgba(22, 22, 28, 0.6);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px) scale(1.01);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.5),
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16);
   }
 
   &:hover .job-content {
@@ -152,16 +161,6 @@ const JobCardInner = styled.div`
   &:hover .job-cta {
     transform: translateY(0);
     opacity: 1;
-  }
-
-  &:hover .job-overlay {
-    background: rgba(0, 0, 0, 0.03);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover .job-overlay {
-      background: rgba(255, 255, 255, 0.05);
-    }
   }
 
   @media (max-width: 1024px) {
@@ -404,7 +403,7 @@ const CTAContainer = styled.div`
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
-  background: linear-gradient(to top, var(--bg-alt) 60%, transparent);
+  background: linear-gradient(to top, rgba(22, 22, 28, 0.95) 60%, transparent);
   gap: 8px;
 
   @media (max-width: 768px) {
@@ -444,6 +443,72 @@ const ActionButton = styled.button<{ $variant?: 'danger' }>`
     }
   `}
 `;
+
+/* ── Jobs FAB — Liquid Glass, matches dashboard FAB ── */
+const JobFAB = styled.button`
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 60px;
+  height: 60px;
+  border-radius: 9999px;
+  z-index: 90;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.0) 100%
+  ), rgba(220, 60, 60, 0.38);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.55),
+    0 8px 32px rgba(220, 60, 60, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.25);
+
+  &:hover {
+    transform: scale(1.08) translateY(-3px);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.0) 100%
+    ), rgba(230, 70, 70, 0.58);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.65),
+      0 16px 48px rgba(220, 60, 60, 0.55),
+      0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active { transform: scale(0.96); }
+
+  svg {
+    width: 26px;
+    height: 26px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+
+  @media (max-width: 768px) {
+    bottom: 24px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+  }
+`;
+
+const PlusIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
 
 // Backdrop
 const Backdrop = styled(motion.div)`
@@ -738,7 +803,6 @@ export default function JobsPage() {
           <Title>Job Postings</Title>
           <Subtitle>Manage job postings to compare with your resume</Subtitle>
         </HeaderContent>
-        <Button onClick={openAddModal}>Add Job Posting</Button>
       </Header>
 
       <LayoutGroup>
@@ -1022,6 +1086,11 @@ export default function JobsPage() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* ── Add Job FAB ── */}
+      <JobFAB onClick={openAddModal} title="Add Job Posting">
+        <PlusIcon />
+      </JobFAB>
     </Container>
   );
 }

@@ -500,22 +500,23 @@ const CVCard = styled.div<{ $isOptimized?: boolean }>`
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   height: 200px;
 
-  /* Liquid Glass card */
-  background: rgba(22, 22, 28, 0.6);
+  /* Liquid Glass card — stronger contrast */
+  background: rgba(30, 30, 40, 0.78);
   backdrop-filter: blur(30px) saturate(160%);
   -webkit-backdrop-filter: blur(30px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 2px 1px rgba(255, 255, 255, 0.06) inset,
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.4);
 
   &:hover {
     transform: translateY(-5px) scale(1.01);
-    border-color: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.22);
     box-shadow:
-      0 16px 48px rgba(0, 0, 0, 0.5),
-      0 4px 16px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      0 2px 1px rgba(255, 255, 255, 0.08) inset,
+      0 20px 56px rgba(0, 0, 0, 0.65),
+      0 6px 20px rgba(0, 0, 0, 0.45);
   }
 
   &:hover .cv-content {

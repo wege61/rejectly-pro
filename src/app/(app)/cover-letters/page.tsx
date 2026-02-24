@@ -246,54 +246,166 @@ const SectionDescription = styled.p`
   color: rgba(255, 255, 255, 0.35);
 `;
 
-/* Report list — single column */
-const Grid = styled.div`
+/* ── Report filter tab strip (horizontal SCROLL) ── */
+const ReportFilterStrip = styled.div`
   display: flex;
-  flex-direction: column;
   gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 28px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
 `;
 
-/* Cover letter list — 2-col grid */
-const LetterGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+const ReportFilterTab = styled.button<{ $isActive: boolean; $hasLetters: boolean }>`
+  flex-shrink: 0;
+  min-width: 180px;
+  max-width: 220px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
 
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
+  background: ${({ $isActive }) => $isActive
+    ? 'rgba(var(--accent-rgb), 0.13)'
+    : 'rgba(30, 30, 40, 0.72)'};
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid ${({ $isActive }) => $isActive
+    ? 'rgba(var(--accent-rgb), 0.40)'
+    : 'rgba(255,255,255,0.10)'};
+  box-shadow:
+    0 2px 1px rgba(255,255,255,0.05) inset,
+    0 6px 24px rgba(0,0,0,0.45);
+
+  /* Specular top line when active */
+  ${({ $isActive }) => $isActive && `
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 15%; right: 15%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45) 50%, transparent);
+    }
+  `}
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,255,255,0.20);
+    box-shadow:
+      0 2px 1px rgba(255,255,255,0.07) inset,
+      0 12px 36px rgba(0,0,0,0.55);
   }
 `;
 
-/* Badge showing # of letters for a report */
-const LetterCountBadge = styled.span<{ $count: number }>`
-  position: absolute;
-  top: 10px;
-  left: 10px;
+const ReportTabTop = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+`;
+
+const ReportTabScore = styled.span<{ $category: 'excellent' | 'good' | 'needsWork' }>`
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  color: ${({ $category }) => {
+    switch ($category) {
+      case 'excellent': return 'var(--primary-500)';
+      case 'good':      return '#3b82f6';
+      case 'needsWork': return '#f97316';
+    }
+  }};
+  &::after { content: '%'; font-size: 12px; margin-left: 1px; opacity: 0.7; }
+`;
+
+const ReportTabLetterCount = styled.span<{ $count: number }>`
   font-size: 9px;
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 9999px;
-  z-index: 10;
   letter-spacing: 0.03em;
   background: ${({ $count }) => $count > 0
     ? 'rgba(16, 185, 129, 0.18)'
-    : 'rgba(255,255,255,0.06)'};
+    : 'rgba(255,255,255,0.05)'};
   border: 1px solid ${({ $count }) => $count > 0
     ? 'rgba(16, 185, 129, 0.35)'
-    : 'rgba(255,255,255,0.10)'};
-  color: ${({ $count }) => $count > 0 ? '#34d399' : 'rgba(255,255,255,0.3)'};
+    : 'rgba(255,255,255,0.08)'};
+  color: ${({ $count }) => $count > 0 ? '#34d399' : 'rgba(255,255,255,0.25)'};
 `;
 
-/* Active-report filter bar above letter column */
+const ReportTabTitle = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.80);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+`;
+
+const ReportTabGenerateBtn = styled.div`
+  margin-top: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  opacity: 0.75;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: uppercase;
+`;
+
+/* ── Cover letter grid: 3 columns desktop ── */
+const LetterGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+/* Source report tag on letter cards */
+const LetterSourceTag = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+  &::before {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.5;
+  }
+`;
+
+/* Filter active bar */
 const FilterBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-radius: 10px;
-  background: rgba(var(--accent-rgb), 0.08);
-  border: 1px solid rgba(var(--accent-rgb), 0.2);
+  background: rgba(var(--accent-rgb), 0.07);
+  border: 1px solid rgba(var(--accent-rgb), 0.18);
   font-size: 12px;
   color: var(--accent);
   font-weight: 500;
@@ -305,28 +417,59 @@ const FilterClearButton = styled.button`
   cursor: pointer;
   color: rgba(255,255,255,0.4);
   font-size: 11px;
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: 6px;
   transition: all 0.15s ease;
-  &:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.06); }
+  &:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.07); }
 `;
 
-/* Subtle always-visible generate hint at bottom of report card */
-const ReportGenerateHint = styled.div`
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--accent);
-  opacity: 0.55;
-  pointer-events: none;
+/* FAB for generate new */
+const FAB = styled.button`
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 60px;
+  height: 60px;
+  border-radius: 9999px;
+  z-index: 90;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.22) 0%,
+    rgba(255,255,255,0.0) 100%
+  ), rgba(var(--accent-rgb), 0.38);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
   display: flex;
   align-items: center;
-  gap: 3px;
-  text-transform: uppercase;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 32px rgba(var(--accent-rgb), 0.4),
+    0 2px 8px rgba(0,0,0,0.25);
+  &:hover {
+    transform: scale(1.08) translateY(-3px);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.65),
+      0 16px 48px rgba(var(--accent-rgb), 0.5),
+      0 4px 16px rgba(0,0,0,0.3);
+  }
+  &:active { transform: scale(0.96); }
+  svg { width: 26px; height: 26px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); }
+  @media (max-width: 768px) {
+    bottom: 24px; right: 20px; width: 56px; height: 56px;
+  }
 `;
+
+const PlusIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
 
 // Mini Report Card Animations (matching reports page style)
 const floatAnimationMini = keyframes`
@@ -636,7 +779,7 @@ const CoverLetterCard = styled.div<{ $tone: string }>`
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  min-height: 160px;
+  min-height: 210px;
 
   /* Liquid Glass card */
   background: rgba(30, 30, 40, 0.78);
@@ -1257,110 +1400,94 @@ export default function CoverLettersPage() {
         </CreditsCardWrapper>
       </Header>
 
-      <TwoColumnLayout>
-        {/* Left Column - Reports (30%) */}
-        <ContentSection>
-          <ContentHeader>
-            <div>
-              <SectionTitle>Reports</SectionTitle>
-              <SectionDescription>Click to generate a cover letter</SectionDescription>
-            </div>
-          </ContentHeader>
-          <ContentBody>
-          {reports.length === 0 ? (
-            <Card variant="bordered">
-              <EmptyState
-                icon={<EmptyState.DocumentIcon />}
-                title="No reports yet"
-                description="Create your first analysis to start generating cover letters."
-                action={{
-                  label: "Create Analysis",
-                  onClick: () => window.location.href = "/analyze",
-                }}
-              />
-            </Card>
-          ) : (
-            <Grid>
-              {reports.map((report) => {
-                const getScoreCategory = (score: number) => {
-                  if (score >= 70) return 'excellent';
-                  if (score >= 41) return 'good';
-                  return 'needsWork';
-                };
-                const letterCount = getCoverLetterCount(report.id);
-                const isActive = filterReportId === report.id;
+      {/* ── Report tab strip ── */}
+      {reports.length > 0 && (
+        <ReportFilterStrip>
+          {/* "All" tab */}
+          <ReportFilterTab
+            $isActive={!filterReportId}
+            $hasLetters={coverLetters.length > 0}
+            onClick={() => setFilterReportId(null)}
+          >
+            <ReportTabTop>
+              <ReportTabScore $category="excellent">{reports.length}</ReportTabScore>
+              <ReportTabLetterCount $count={coverLetters.length}>
+                {coverLetters.length > 0 ? `${coverLetters.length} letters` : 'No letters'}
+              </ReportTabLetterCount>
+            </ReportTabTop>
+            <ReportTabTitle>All Reports</ReportTabTitle>
+          </ReportFilterTab>
 
-                return (
-                  <MiniReportCard
-                    key={report.id}
-                    $isPremium={report.is_premium}
-                    $isActive={isActive}
-                    $hasLetters={letterCount > 0}
-                    onClick={() => handleReportClick(report.id)}
+          {/* One tab per report */}
+          {reports.map((report) => {
+            const getScoreCategory = (score: number) => {
+              if (score >= 70) return 'excellent' as const;
+              if (score >= 41) return 'good' as const;
+              return 'needsWork' as const;
+            };
+            const letterCount = getCoverLetterCount(report.id);
+            const isActive = filterReportId === report.id;
+
+            return (
+              <ReportFilterTab
+                key={report.id}
+                $isActive={isActive}
+                $hasLetters={letterCount > 0}
+                onClick={() => setFilterReportId(isActive ? null : report.id)}
+              >
+                <ReportTabTop>
+                  <ReportTabScore $category={getScoreCategory(report.fit_score)}>
+                    {report.fit_score}
+                  </ReportTabScore>
+                  <ReportTabLetterCount $count={letterCount}>
+                    {letterCount > 0 ? `${letterCount} ✓` : 'No letters'}
+                  </ReportTabLetterCount>
+                </ReportTabTop>
+                <ReportTabTitle>{report.job?.title || 'Job Analysis'}</ReportTabTitle>
+                {isActive && (
+                  <ReportTabGenerateBtn
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleReportClick(report.id);
+                    }}
                   >
-                    <MiniReportCardBackground cvTitle={report.cv?.title} />
+                    ✦ Generate new letter →
+                  </ReportTabGenerateBtn>
+                )}
+              </ReportFilterTab>
+            );
+          })}
+        </ReportFilterStrip>
+      )}
 
-                    {/* Letter count badge — top left */}
-                    <LetterCountBadge $count={letterCount}>
-                      {letterCount > 0 ? `${letterCount} letter${letterCount > 1 ? 's' : ''}` : 'No letters'}
-                    </LetterCountBadge>
-
-                    {report.is_premium && <MiniReportProBadge>PRO</MiniReportProBadge>}
-
-                    <MiniReportCardContent>
-                      <MiniReportContentInner className="mini-report-content">
-                        <MiniReportScoreDisplay>
-                          <MiniReportScoreValue $category={getScoreCategory(report.fit_score)}>
-                            {report.fit_score}
-                          </MiniReportScoreValue>
-                        </MiniReportScoreDisplay>
-                        <MiniReportTitle>
-                          {report.job?.title || "Job Analysis"}
-                        </MiniReportTitle>
-                        <MiniReportMeta>
-                          {formatDate(report.created_at)}
-                        </MiniReportMeta>
-                      </MiniReportContentInner>
-
-                      <MiniReportCTAContainer className="mini-report-cta">
-                        <MiniReportCTALink>
-                          Generate Letter
-                          <ArrowRightIconMini />
-                        </MiniReportCTALink>
-                      </MiniReportCTAContainer>
-                    </MiniReportCardContent>
-
-                    {/* Always-visible generate hint */}
-                    <ReportGenerateHint>✦ Generate</ReportGenerateHint>
-
-                    <MiniReportOverlay className="mini-report-overlay" />
-                  </MiniReportCard>
-                );
-              })}
-            </Grid>
+      {/* ── Letters section (full width) ── */}
+      <ContentSection>
+        <ContentHeader>
+          <div>
+            <SectionTitle>
+              {filterReport
+                ? `Letters — ${filterReport.job?.title || 'Report'}`
+                : 'Your Cover Letters'}
+            </SectionTitle>
+            <SectionDescription>
+              {filterReport
+                ? `${filteredCoverLetters.length} letter${filteredCoverLetters.length !== 1 ? 's' : ''} · Click a tab above to switch report`
+                : `${coverLetters.length} total · click a report tab to filter`}
+            </SectionDescription>
+          </div>
+          {filterReport && (
+            <FilterClearButton onClick={() => setFilterReportId(null)}>
+              Show all ×
+            </FilterClearButton>
           )}
-          </ContentBody>
-        </ContentSection>
+        </ContentHeader>
+        <ContentBody>
 
-        {/* Right Column - Generated Cover Letters */}
-        <ContentSection>
-          <ContentHeader>
-            <div>
-              <SectionTitle>
-                {filterReport ? `Letters for "${filterReport.job?.title || 'Report'}"` : 'Your Cover Letters'}
-              </SectionTitle>
-              <SectionDescription>
-                {filterReport ? `${filteredCoverLetters.length} letter${filteredCoverLetters.length !== 1 ? 's' : ''}` : 'Click to view and edit'}
-              </SectionDescription>
-            </div>
-          </ContentHeader>
-          <ContentBody>
-
-          {/* Active filter pill */}
+          {/* Active filter bar */}
           {filterReport && (
             <FilterBar>
-              <span>✦ Showing letters for <strong>{filterReport.job?.title || 'this report'}</strong></span>
-              <FilterClearButton onClick={() => setFilterReportId(null)}>Show all ×</FilterClearButton>
+              <span>✦ Filtered by <strong>{filterReport.job?.title || 'Report'}</strong> · {filterReport.fit_score}% fit score</span>
+              <FilterClearButton onClick={() => setFilterReportId(null)}>Clear ×</FilterClearButton>
             </FilterBar>
           )}
 
@@ -1368,80 +1495,104 @@ export default function CoverLettersPage() {
             <Card variant="bordered">
               <EmptyState
                 icon={<EmptyState.DocumentIcon />}
-                title={filterReport ? "No letters for this report yet" : "No cover letters yet"}
-                description={filterReport
-                  ? "Click \"Generate Letter\" on the selected report to create one."
-                  : "Click on a report to generate your first cover letter."
+                title={filterReport ? `No letters for "${filterReport.job?.title || 'this report'}" yet` : 'No cover letters yet'}
+                description={
+                  filterReport
+                    ? 'Use the "✦ Generate new letter →" button in the tab above to create one.'
+                    : 'Click on a report tab above to select a report and generate your first cover letter.'
                 }
               />
             </Card>
           ) : (
             <LetterGrid>
-              {filteredCoverLetters.map((letter) => (
-                <CoverLetterCard
-                  key={letter.id}
-                  $tone={letter.tone}
-                  onClick={() => handleCardClick(letter)}
-                >
-                  <CoverLetterBackground content={letter.content} />
-                  <CoverLetterToneBadge $tone={letter.tone}>
-                    {getToneLabel(letter.tone)}
-                  </CoverLetterToneBadge>
+              {filteredCoverLetters.map((letter) => {
+                const sourceReport = reports.find(r => r.id === letter.report_id);
+                return (
+                  <CoverLetterCard
+                    key={letter.id}
+                    $tone={letter.tone}
+                    onClick={() => handleCardClick(letter)}
+                  >
+                    <CoverLetterBackground content={letter.content} />
+                    <CoverLetterToneBadge $tone={letter.tone}>
+                      {getToneLabel(letter.tone)}
+                    </CoverLetterToneBadge>
 
-                  <CoverLetterCardContent>
-                    <CoverLetterContentInner className="letter-content">
-                      <CoverLetterTitle>
-                        {letter.job?.title || "Cover Letter"}
-                      </CoverLetterTitle>
-                      <CoverLetterMeta>
-                        {formatDate(letter.created_at)}
-                      </CoverLetterMeta>
-                      <CoverLetterMetaRow>
-                        <CoverLetterMetaItem>
-                          {getWordCount(letter.content)} words
-                        </CoverLetterMetaItem>
-                        <CoverLetterMetaItem>
-                          {getLanguageLabel(letter.language)}
-                        </CoverLetterMetaItem>
-                      </CoverLetterMetaRow>
-                    </CoverLetterContentInner>
+                    <CoverLetterCardContent>
+                      <CoverLetterContentInner className="letter-content">
+                        {/* Source report link */}
+                        {sourceReport && (
+                          <LetterSourceTag>
+                            {sourceReport.job?.title || 'Report'} · {sourceReport.fit_score}% fit
+                          </LetterSourceTag>
+                        )}
+                        <CoverLetterTitle>
+                          {letter.job?.title || 'Cover Letter'}
+                        </CoverLetterTitle>
+                        <CoverLetterMeta>
+                          {formatDate(letter.created_at)}
+                        </CoverLetterMeta>
+                        <CoverLetterMetaRow>
+                          <CoverLetterMetaItem>
+                            {getWordCount(letter.content)} words
+                          </CoverLetterMetaItem>
+                          <CoverLetterMetaItem>
+                            {getLanguageLabel(letter.language)}
+                          </CoverLetterMetaItem>
+                        </CoverLetterMetaRow>
+                      </CoverLetterContentInner>
 
-                    <CoverLetterCTAContainer className="letter-cta" onClick={(e) => e.stopPropagation()}>
-                      <CoverLetterCTALink onClick={() => handleCardClick(letter)}>
-                        View & Edit
-                        <ArrowRightIconLetter />
-                      </CoverLetterCTALink>
-                      <CoverLetterActions>
-                        <CoverLetterActionButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(letter.content);
-                            toast.success("Copied to clipboard!");
-                          }}
-                        >
-                          <CopyIcon /> Copy
-                        </CoverLetterActionButton>
-                        <CoverLetterActionButton
-                          $variant="danger"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteClick(letter.id);
-                          }}
-                        >
-                          <DeleteIcon />
-                        </CoverLetterActionButton>
-                      </CoverLetterActions>
-                    </CoverLetterCTAContainer>
-                  </CoverLetterCardContent>
+                      <CoverLetterCTAContainer className="letter-cta" onClick={(e) => e.stopPropagation()}>
+                        <CoverLetterCTALink onClick={() => handleCardClick(letter)}>
+                          View & Edit
+                          <ArrowRightIconLetter />
+                        </CoverLetterCTALink>
+                        <CoverLetterActions>
+                          <CoverLetterActionButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(letter.content);
+                              toast.success('Copied to clipboard!');
+                            }}
+                          >
+                            <CopyIcon /> Copy
+                          </CoverLetterActionButton>
+                          <CoverLetterActionButton
+                            $variant="danger"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(letter.id);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </CoverLetterActionButton>
+                        </CoverLetterActions>
+                      </CoverLetterCTAContainer>
+                    </CoverLetterCardContent>
 
-                  <CoverLetterOverlay className="letter-overlay" />
-                </CoverLetterCard>
-              ))}
+                    <CoverLetterOverlay className="letter-overlay" />
+                  </CoverLetterCard>
+                );
+              })}
             </LetterGrid>
           )}
-          </ContentBody>
-        </ContentSection>
-      </TwoColumnLayout>
+        </ContentBody>
+      </ContentSection>
+
+      {/* FAB — generate new cover letter */}
+      <FAB
+        onClick={() => {
+          if (filterReportId) {
+            handleReportClick(filterReportId);
+          } else {
+            // Open generator — user will pick a report inside
+            setIsGeneratorOpen(true);
+          }
+        }}
+      >
+        <PlusIcon />
+      </FAB>
+
 
       {/* View Cover Letter Modal */}
       {selectedLetter && (

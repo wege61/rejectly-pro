@@ -2050,7 +2050,11 @@ export default function DashboardATSOptimizerPage() {
               />
             </Card>
           ) : (
-            <OptimizedCVGrid>
+            <HistorySection>
+              <HistorySectionHeader>
+                <HistoryTitle>Optimization History</HistoryTitle>
+              </HistorySectionHeader>
+              <HistoryGrid>
               {optimizedHistory.map((cv) => (
                 <OptimizedCVCard key={cv.id} onClick={() => handleHistoryCardClick(cv)}>
                   <CardContent>
@@ -2088,7 +2092,8 @@ export default function DashboardATSOptimizerPage() {
                   <Overlay className="cv-overlay" />
                 </OptimizedCVCard>
               ))}
-            </OptimizedCVGrid>
+              </HistoryGrid>
+            </HistorySection>
           )}
 
           {/* FAB for Upload */}

@@ -109,6 +109,137 @@ const CategoryHeader = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
+/* ── Liquid Glass content wrapper (same as CV page) ── */
+const ContentSection = styled.div`
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(18, 18, 22, 0.55);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35) 50%, transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
+`;
+
+const ContentHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+  }
+`;
+
+const ContentBody = styled.div`
+  padding: 24px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+`;
+
+/* Floating pill tab bar — identical to CV page */
+type ReportTabType = 'all' | 'excellent' | 'good' | 'fair' | 'poor';
+
+const TabContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  @media (max-width: 768px) {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 14px;
+    &::-webkit-scrollbar { display: none; }
+  }
+`;
+
+const TabButton = styled.button<{ $active: boolean }>`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 7px;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: ${({ $active }) => ($active ? 600 : 500)};
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  background: ${({ $active }) => $active ? 'rgba(255,255,255,0.14)' : 'transparent'};
+  color: ${({ $active }) => $active ? 'rgba(255,255,255,0.97)' : 'rgba(255,255,255,0.45)'};
+  box-shadow: ${({ $active }) => $active
+    ? 'inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 8px rgba(0,0,0,0.3)'
+    : 'none'};
+
+  &:hover {
+    color: rgba(255,255,255,0.85);
+    background: ${({ $active }) => $active ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.07)'};
+  }
+
+  @media (max-width: 600px) {
+    padding: 6px 11px;
+    font-size: 13px;
+    gap: 5px;
+  }
+`;
+
+const TabCount = styled.span<{ $active: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  background: ${({ $active }) => $active ? 'var(--accent)' : 'rgba(255,255,255,0.1)'};
+  color: ${({ $active }) => $active ? 'white' : 'rgba(255,255,255,0.45)'};
+
+  @media (max-width: 600px) {
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
+  }
+`;
+
+const TabEmptyState = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  font-size: 15px;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+`;
+
 const CategoryBadge = styled.span<{ $variant: 'excellent' | 'good' | 'fair' | 'poor' }>`
   display: inline-flex;
   align-items: center;
@@ -714,6 +845,7 @@ export default function ReportsPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [reportToDelete, setReportToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [activeTab, setActiveTab] = useState<ReportTabType>('all');
   const { user } = useAuth();
   const router = useRouter();
   const toast = useToast();
@@ -824,135 +956,138 @@ export default function ReportsPage() {
           />
         </Card>
       ) : (
-        <>
-          {(() => {
-            const getDisplayScore = (r: Report) => r.optimized_score ?? r.fit_score;
-            const excellent = reports.filter((r) => getDisplayScore(r) >= 85);
-            const good = reports.filter((r) => getDisplayScore(r) >= 70 && getDisplayScore(r) < 85);
-            const fair = reports.filter((r) => getDisplayScore(r) >= 50 && getDisplayScore(r) < 70);
-            const poor = reports.filter((r) => getDisplayScore(r) < 50);
+        <ContentSection>
+          {/* ── Tab bar ── */}
+          <ContentHeader>
+            <TabContainer>
+              <TabButton $active={activeTab === 'all'} onClick={() => setActiveTab('all')}>
+                All
+                <TabCount $active={activeTab === 'all'}>{reports.length}</TabCount>
+              </TabButton>
 
-            const renderReportCard = (report: Report) => {
-              const jobTitles = report.job_ids
-                ?.map((id) => jobTitlesMap[id])
-                .filter(Boolean)
-                .join(" • ");
+              {reports.filter(r => (r.optimized_score ?? r.fit_score) >= 85).length > 0 && (
+                <TabButton $active={activeTab === 'excellent'} onClick={() => setActiveTab('excellent')}>
+                  Excellent
+                  <TabCount $active={activeTab === 'excellent'}>
+                    {reports.filter(r => (r.optimized_score ?? r.fit_score) >= 85).length}
+                  </TabCount>
+                </TabButton>
+              )}
+
+              {reports.filter(r => { const s = r.optimized_score ?? r.fit_score; return s >= 70 && s < 85; }).length > 0 && (
+                <TabButton $active={activeTab === 'good'} onClick={() => setActiveTab('good')}>
+                  Good
+                  <TabCount $active={activeTab === 'good'}>
+                    {reports.filter(r => { const s = r.optimized_score ?? r.fit_score; return s >= 70 && s < 85; }).length}
+                  </TabCount>
+                </TabButton>
+              )}
+
+              {reports.filter(r => { const s = r.optimized_score ?? r.fit_score; return s >= 50 && s < 70; }).length > 0 && (
+                <TabButton $active={activeTab === 'fair'} onClick={() => setActiveTab('fair')}>
+                  Fair
+                  <TabCount $active={activeTab === 'fair'}>
+                    {reports.filter(r => { const s = r.optimized_score ?? r.fit_score; return s >= 50 && s < 70; }).length}
+                  </TabCount>
+                </TabButton>
+              )}
+
+              {reports.filter(r => (r.optimized_score ?? r.fit_score) < 50).length > 0 && (
+                <TabButton $active={activeTab === 'poor'} onClick={() => setActiveTab('poor')}>
+                  Poor
+                  <TabCount $active={activeTab === 'poor'}>
+                    {reports.filter(r => (r.optimized_score ?? r.fit_score) < 50).length}
+                  </TabCount>
+                </TabButton>
+              )}
+            </TabContainer>
+          </ContentHeader>
+
+          {/* ── Filtered grid ── */}
+          <ContentBody>
+            {(() => {
+              const getDisplayScore = (r: Report) => r.optimized_score ?? r.fit_score;
+              const filtered =
+                activeTab === 'all'       ? reports
+                : activeTab === 'excellent' ? reports.filter(r => getDisplayScore(r) >= 85)
+                : activeTab === 'good'     ? reports.filter(r => { const s = getDisplayScore(r); return s >= 70 && s < 85; })
+                : activeTab === 'fair'     ? reports.filter(r => { const s = getDisplayScore(r); return s >= 50 && s < 70; })
+                :                           reports.filter(r => getDisplayScore(r) < 50);
+
+              if (filtered.length === 0) {
+                return <TabEmptyState>No {activeTab} reports yet.</TabEmptyState>;
+              }
 
               return (
-                <ReportCard
-                  key={report.id}
-                  onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}
-                >
-                  <ReportCardBackground
-                    keywords={report.keywords?.missing}
-                    summary={report.summary_free}
-                  />
-                  {report.fake_it_mode && <FakeItBanner>🎭 Fake It</FakeItBanner>}
+                <ReportsGrid>
+                  {filtered.map(report => {
+                    const jobTitles = report.job_ids
+                      ?.map(id => jobTitlesMap[id])
+                      .filter(Boolean)
+                      .join(' • ');
+                    const s = getDisplayScore(report);
+                    const cat = s >= 85 ? 'excellent' : s >= 70 ? 'good' : s >= 50 ? 'fair' : 'poor';
 
-                  <CardContent>
-                    <ContentInner className="report-content">
-                      <ScoreDisplay>
-                        {report.optimized_score != null && report.optimized_score !== report.fit_score && (
-                          <OriginalScore>{report.fit_score}%</OriginalScore>
-                        )}
-                        <ScoreValue $category={(() => { const s = report.optimized_score ?? report.fit_score; return s >= 85 ? 'excellent' : s >= 70 ? 'good' : s >= 50 ? 'fair' : 'poor'; })()}>{report.optimized_score ?? report.fit_score}</ScoreValue>
-                      </ScoreDisplay>
-                      <ReportTitle>
-                        {jobTitles || "CV Analysis Report"}
-                      </ReportTitle>
-                      <ReportMeta>
-                        {new Date(report.created_at).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </ReportMeta>
-                      <MetaRow>
-                        <MetaItem>
-                          {report.keywords?.missing?.length || 0} missing keywords
-                        </MetaItem>
-                        <MetaItemProOrFree $isPro={report.pro}>
-                          {report.pro ? "Pro" : "Free"}
-                        </MetaItemProOrFree>
-                      </MetaRow>
-                    </ContentInner>
+                    return (
+                      <ReportCard
+                        key={report.id}
+                        onClick={() => router.push(ROUTES.APP.REPORT_DETAIL(report.id))}
+                      >
+                        <ReportCardBackground
+                          keywords={report.keywords?.missing}
+                          summary={report.summary_free}
+                        />
+                        {report.fake_it_mode && <FakeItBanner>🎭 Fake It</FakeItBanner>}
 
-                    <CTAContainer className="report-cta" onClick={(e) => e.stopPropagation()}>
-                      <CTALink>
-                        View Details
-                        <ArrowRightIcon />
-                      </CTALink>
-                      <CardActions>
-                        <ActionButton
-                          $variant="danger"
-                          onClick={(e) => handleDeleteClick(report.id, e)}
-                        >
-                          <DeleteIcon />
-                        </ActionButton>
-                      </CardActions>
-                    </CTAContainer>
-                  </CardContent>
+                        <CardContent>
+                          <ContentInner className="report-content">
+                            <ScoreDisplay>
+                              {report.optimized_score != null && report.optimized_score !== report.fit_score && (
+                                <OriginalScore>{report.fit_score}%</OriginalScore>
+                              )}
+                              <ScoreValue $category={cat}>{s}</ScoreValue>
+                            </ScoreDisplay>
+                            <ReportTitle>{jobTitles || 'CV Analysis Report'}</ReportTitle>
+                            <ReportMeta>
+                              {new Date(report.created_at).toLocaleDateString('en-US', {
+                                year: 'numeric', month: 'long', day: 'numeric',
+                              })}
+                            </ReportMeta>
+                            <MetaRow>
+                              <MetaItem>{report.keywords?.missing?.length || 0} missing keywords</MetaItem>
+                              <MetaItemProOrFree $isPro={report.pro}>
+                                {report.pro ? 'Pro' : 'Free'}
+                              </MetaItemProOrFree>
+                            </MetaRow>
+                          </ContentInner>
 
-                  <Overlay className="report-overlay" />
-                </ReportCard>
+                          <CTAContainer className="report-cta" onClick={e => e.stopPropagation()}>
+                            <CTALink>
+                              View Details
+                              <ArrowRightIcon />
+                            </CTALink>
+                            <CardActions>
+                              <ActionButton
+                                $variant="danger"
+                                onClick={e => handleDeleteClick(report.id, e)}
+                              >
+                                <DeleteIcon />
+                              </ActionButton>
+                            </CardActions>
+                          </CTAContainer>
+                        </CardContent>
+
+                        <Overlay className="report-overlay" />
+                      </ReportCard>
+                    );
+                  })}
+                </ReportsGrid>
               );
-            };
-
-            return (
-              <>
-                {excellent.length > 0 && (
-                  <CategorySection>
-                    <CategoryHeader>
-                      <CategoryBadge $variant="excellent">Excellent</CategoryBadge>
-                      <CategoryCount>{excellent.length} report{excellent.length > 1 ? 's' : ''}</CategoryCount>
-                    </CategoryHeader>
-                    <ReportsGrid>
-                      {excellent.map(renderReportCard)}
-                    </ReportsGrid>
-                  </CategorySection>
-                )}
-
-                {good.length > 0 && (
-                  <CategorySection>
-                    <CategoryHeader>
-                      <CategoryBadge $variant="good">Good</CategoryBadge>
-                      <CategoryCount>{good.length} report{good.length > 1 ? 's' : ''}</CategoryCount>
-                    </CategoryHeader>
-                    <ReportsGrid>
-                      {good.map(renderReportCard)}
-                    </ReportsGrid>
-                  </CategorySection>
-                )}
-
-                {fair.length > 0 && (
-                  <CategorySection>
-                    <CategoryHeader>
-                      <CategoryBadge $variant="fair">Fair</CategoryBadge>
-                      <CategoryCount>{fair.length} report{fair.length > 1 ? 's' : ''}</CategoryCount>
-                    </CategoryHeader>
-                    <ReportsGrid>
-                      {fair.map(renderReportCard)}
-                    </ReportsGrid>
-                  </CategorySection>
-                )}
-
-                {poor.length > 0 && (
-                  <CategorySection>
-                    <CategoryHeader>
-                      <CategoryBadge $variant="poor">Poor</CategoryBadge>
-                      <CategoryCount>{poor.length} report{poor.length > 1 ? 's' : ''}</CategoryCount>
-                    </CategoryHeader>
-                    <ReportsGrid>
-                      {poor.map(renderReportCard)}
-                    </ReportsGrid>
-                  </CategorySection>
-                )}
-              </>
-            );
-          })()}
-        </>
+            })()}
+          </ContentBody>
+        </ContentSection>
       )}
-      
+
       <FAB onClick={() => router.push(ROUTES.APP.ANALYZE)}>
         <PlusIcon />
       </FAB>

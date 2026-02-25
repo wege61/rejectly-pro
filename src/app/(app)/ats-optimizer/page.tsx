@@ -1684,6 +1684,259 @@ const BackButton = styled.button`
   }
 `;
 
+/* ── Liquid Glass empty state (ATS Optimizer) ── */
+const floatOrbATS = keyframes`
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-16px) rotate(3deg); }
+  66%       { transform: translateY(8px) rotate(-2deg); }
+`;
+
+const ATSEmptyHero = styled.div`
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 36px 40px 44px;
+  text-align: center;
+
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(102, 126, 234, 0.12) 0%, transparent 70%),
+    rgba(16, 16, 22, 0.60);
+  backdrop-filter: blur(48px) saturate(180%);
+  -webkit-backdrop-filter: blur(48px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 32px 80px rgba(0,0,0,0.5);
+
+  @media (max-width: 768px) {
+    padding: 32px 20px 40px;
+  }
+`;
+
+const ATSOrbA = styled.div`
+  position: absolute;
+  width: 340px; height: 340px;
+  border-radius: 50%;
+  top: -70px; right: -50px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.14) 0%, transparent 70%);
+  animation: ${floatOrbATS} 9s ease-in-out infinite;
+  pointer-events: none;
+`;
+
+const ATSOrbB = styled.div`
+  position: absolute;
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  bottom: -50px; left: -30px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.10) 0%, transparent 70%);
+  animation: ${floatOrbATS} 12s ease-in-out infinite reverse;
+  pointer-events: none;
+`;
+
+const ATSHeroSpecular = styled.div`
+  position: absolute;
+  top: 0; left: 15%; right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.40) 50%, transparent);
+  pointer-events: none;
+`;
+
+const ATSHeroIconBadge = styled.div`
+  width: 80px; height: 80px;
+  border-radius: 24px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%),
+    rgba(102, 126, 234, 0.22);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 28px rgba(102, 126, 234, 0.32),
+    0 3px 10px rgba(0,0,0,0.35);
+
+  svg {
+    width: 36px; height: 36px;
+    color: rgba(255,255,255,0.92);
+    filter: drop-shadow(0 1px 4px rgba(102, 126, 234, 0.55));
+  }
+`;
+
+const ATSHeroTitle = styled.h2`
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 10px;
+  color: rgba(255,255,255,0.95);
+
+  @media (max-width: 768px) { font-size: 22px; }
+`;
+
+const ATSHeroSubtitle = styled.p`
+  font-size: 14px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.60;
+  max-width: 420px;
+  margin: 0 auto 24px;
+  letter-spacing: -0.01em;
+`;
+
+const ATSStepsRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+  max-width: 580px;
+  margin-bottom: 28px;
+  position: relative;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+`;
+
+const ATSStepConnector = styled.div`
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 100%);
+  margin-top: 22px;
+  @media (max-width: 640px) { display: none; }
+`;
+
+const ATSStep = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  width: 130px;
+
+  @media (max-width: 640px) {
+    width: 100%; max-width: 260px;
+    flex-direction: row; text-align: left;
+    align-items: center;
+  }
+`;
+
+const ATSStepNum = styled.div<{ $n: 1 | 2 | 3 }>`
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+
+  background: ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(16, 185, 129, 0.18)';
+      case 2: return 'rgba(102, 126, 234, 0.18)';
+      case 3: return 'rgba(139, 92, 246, 0.18)';
+    }
+  }};
+  border: 1px solid ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(16, 185, 129, 0.35)';
+      case 2: return 'rgba(102, 126, 234, 0.35)';
+      case 3: return 'rgba(139, 92, 246, 0.35)';
+    }
+  }};
+  color: ${({ $n }) => {
+    switch ($n) {
+      case 1: return '#34d399';
+      case 2: return '#818cf8';
+      case 3: return '#a78bfa';
+    }
+  }};
+`;
+
+const ATSStepText = styled.div`
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.48);
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+  text-align: center;
+  @media (max-width: 640px) { text-align: left; }
+`;
+
+const ATSCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  background: linear-gradient(
+    135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.0) 100%
+  ), rgba(102, 126, 234, 0.80);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 32px rgba(102, 126, 234, 0.45),
+    0 2px 8px rgba(0,0,0,0.3);
+
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.70),
+      0 16px 56px rgba(102, 126, 234, 0.55),
+      0 4px 16px rgba(0,0,0,0.35);
+  }
+  &:active { transform: scale(0.98); }
+  svg { width: 20px; height: 20px; flex-shrink: 0; }
+`;
+
+const ATSCTASecondary = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.60);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.22);
+  }
+`;
+
+const ATSCTARow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
 export default function DashboardATSOptimizerPage() {
   const [step, setStep] = useState<Step>("upload");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -2038,17 +2291,53 @@ export default function DashboardATSOptimizerPage() {
           {loadingHistory ? (
              <HistoryGridSkeleton />
           ) : optimizedHistory.length === 0 ? (
-            <Card variant="bordered">
-              <EmptyState
-                icon={<EmptyState.DocumentIcon />}
-                title="No optimized resumes yet"
-                description="Upload a CV to start optimizing for ATS systems."
-                action={{
-                  label: "Start Optimization",
-                  onClick: () => setIsUploadModalOpen(true),
-                }}
-              />
-            </Card>
+            <ATSEmptyHero>
+              <ATSOrbA />
+              <ATSOrbB />
+              <ATSHeroSpecular />
+
+              <ATSHeroIconBadge>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </ATSHeroIconBadge>
+
+              <ATSHeroTitle>Run your first ATS check</ATSHeroTitle>
+              <ATSHeroSubtitle>
+                Upload your CV and instantly see how well it passes Applicant Tracking Systems — then generate a fully optimized version.
+              </ATSHeroSubtitle>
+
+              <ATSStepsRow>
+                <ATSStep>
+                  <ATSStepNum $n={1}>1</ATSStepNum>
+                  <ATSStepText>Upload your CV in PDF or DOCX format</ATSStepText>
+                </ATSStep>
+                <ATSStepConnector />
+                <ATSStep>
+                  <ATSStepNum $n={2}>2</ATSStepNum>
+                  <ATSStepText>Get your ATS score across key categories</ATSStepText>
+                </ATSStep>
+                <ATSStepConnector />
+                <ATSStep>
+                  <ATSStepNum $n={3}>3</ATSStepNum>
+                  <ATSStepText>Download an ATS-optimized version of your CV</ATSStepText>
+                </ATSStep>
+              </ATSStepsRow>
+
+              <ATSCTARow>
+                <ATSCTAButton onClick={() => setIsUploadModalOpen(true)}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <polyline points="16 16 12 12 8 16"/>
+                    <line x1="12" y1="12" x2="12" y2="21"/>
+                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                  </svg>
+                  Start Optimization
+                </ATSCTAButton>
+                <ATSCTASecondary onClick={() => setIsUploadModalOpen(true)}>
+                  PDF or DOCX supported
+                </ATSCTASecondary>
+              </ATSCTARow>
+            </ATSEmptyHero>
           ) : (
             <HistorySection>
               <HistorySectionHeader>

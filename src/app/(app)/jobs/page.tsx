@@ -894,6 +894,265 @@ const CloseButton = styled(motion.button)`
   }
 `;
 
+/* ── Add Job Modal — Liquid Glass internals ── */
+const ModalIconBadge = styled.div`
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%),
+    rgba(102, 126, 234, 0.22);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.50),
+    0 6px 20px rgba(102, 126, 234, 0.28),
+    0 2px 8px rgba(0,0,0,0.30);
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: rgba(255,255,255,0.92);
+    filter: drop-shadow(0 1px 3px rgba(102, 126, 234, 0.50));
+  }
+`;
+
+const ModalHeaderInner = styled.div`
+  padding: 28px 28px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  @media (max-width: 640px) { padding: 24px 20px 0; }
+`;
+
+const ModalHeadTitle = styled.h2`
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: rgba(255,255,255,0.96);
+  margin: 0 0 4px;
+`;
+
+const ModalHeadSub = styled.p`
+  font-size: 13px;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: -0.01em;
+  margin: 0;
+`;
+
+const ModalCloseBtn = styled.button`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.50);
+  cursor: pointer;
+  transition: all 0.18s ease;
+
+  &:hover {
+    background: rgba(255,255,255,0.14);
+    color: rgba(255,255,255,0.85);
+  }
+  svg { width: 16px; height: 16px; }
+`;
+
+const InputModeToggle = styled.div`
+  display: flex;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 2px;
+  margin-bottom: 20px;
+`;
+
+const InputModeTab = styled.button<{ $active: boolean }>`
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: -0.01em;
+
+  background: ${({ $active }) => $active
+    ? 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)'
+    : 'transparent'};
+  color: ${({ $active }) => $active ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.40)'};
+  box-shadow: ${({ $active }) => $active
+    ? 'inset 0 1px 0 rgba(255,255,255,0.25), 0 2px 8px rgba(0,0,0,0.20)'
+    : 'none'};
+
+  &:hover {
+    color: ${({ $active }) => $active ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.65)'};
+  }
+`;
+
+const GlassInput = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+const GlassLabel = styled.label`
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.40);
+`;
+
+const GlassField = styled.input`
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.90);
+  outline: none;
+  transition: all 0.18s ease;
+  box-sizing: border-box;
+
+  &::placeholder { color: rgba(255,255,255,0.22); }
+
+  &:focus {
+    border-color: rgba(102, 126, 234, 0.55);
+    background: rgba(102, 126, 234, 0.08);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  }
+`;
+
+const GlassTextarea = styled.textarea`
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.90);
+  outline: none;
+  transition: all 0.18s ease;
+  resize: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  min-height: 160px;
+
+  &::placeholder { color: rgba(255,255,255,0.22); }
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
+  &:focus {
+    border-color: rgba(102, 126, 234, 0.55);
+    background: rgba(102, 126, 234, 0.08);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  }
+`;
+
+const GlassHelperText = styled.p`
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.25);
+  margin: 0;
+  letter-spacing: -0.01em;
+`;
+
+const ModalFormBody = styled.div`
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
+  @media (max-width: 640px) { padding: 20px; }
+`;
+
+const ModalGlassFooter = styled.div`
+  padding: 16px 28px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+
+  @media (max-width: 640px) {
+    padding: 14px 20px 20px;
+    flex-direction: column-reverse;
+    > button { width: 100%; }
+  }
+`;
+
+const ModalPrimaryBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: white;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+
+  background: linear-gradient(
+    135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 100%
+  ), rgba(102, 126, 234, 0.85);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 6px 24px rgba(102, 126, 234, 0.42),
+    0 2px 6px rgba(0,0,0,0.25);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.65),
+      0 12px 36px rgba(102, 126, 234, 0.52),
+      0 3px 10px rgba(0,0,0,0.28);
+  }
+  &:active { transform: scale(0.97); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+`;
+
+const ModalGhostBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.50);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: all 0.18s ease;
+
+  &:hover {
+    background: rgba(255,255,255,0.09);
+    color: rgba(255,255,255,0.80);
+    border-color: rgba(255,255,255,0.18);
+  }
+`;
+
 interface Job {
   id: string;
   user_id: string;
@@ -906,6 +1165,7 @@ interface Job {
 
 export default function JobsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inputMode, setInputMode] = useState<'url' | 'paste'>('paste');
   const [jobTitle, setJobTitle] = useState("");
   const [jobUrl, setJobUrl] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -1386,47 +1646,81 @@ export default function JobsPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        title="Add Job Posting"
-        description="Enter the job title and paste the full job description"
+        showCloseButton={false}
       >
-        <Modal.Body>
-          <FormGroup>
-            <Input
-              label="Job Title"
+        {/* Custom header */}
+        <div style={{ position: 'relative' }}>
+          <ModalHeaderInner>
+            <ModalIconBadge>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+              </svg>
+            </ModalIconBadge>
+            <ModalHeadTitle>Add Job Posting</ModalHeadTitle>
+            <ModalHeadSub>Paste a description or add a URL to extract automatically</ModalHeadSub>
+          </ModalHeaderInner>
+          <ModalCloseBtn onClick={closeModal} aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </ModalCloseBtn>
+        </div>
+
+        <ModalFormBody>
+          {/* Job Title */}
+          <GlassInput>
+            <GlassLabel>Job Title</GlassLabel>
+            <GlassField
+              type="text"
               placeholder="e.g. Senior Frontend Developer"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
-              required
-              fullWidth
             />
-            <Input
-              label="Job URL (Optional)"
-              type="url"
-              placeholder="https://..."
-              value={jobUrl}
-              onChange={(e) => setJobUrl(e.target.value)}
-              helperText="We'll extract the job description automatically"
-              fullWidth
-            />
-            <Textarea
-              label="Job Description"
-              placeholder="Paste the full job description here (requirements, responsibilities, qualifications, etc.)..."
-              value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              rows={12}
-              fullWidth
-              helperText={`${jobDescription.length} characters`}
-            />
-          </FormGroup>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="ghost" onClick={closeModal}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} isLoading={isLoading}>
-            Add Job
-          </Button>
-        </Modal.Footer>
+          </GlassInput>
+
+          {/* Input Mode Toggle */}
+          <InputModeToggle>
+            <InputModeTab $active={inputMode === 'paste'} onClick={() => setInputMode('paste')}>
+              Paste Description
+            </InputModeTab>
+            <InputModeTab $active={inputMode === 'url'} onClick={() => setInputMode('url')}>
+              Add URL
+            </InputModeTab>
+          </InputModeToggle>
+
+          {/* Conditional input */}
+          {inputMode === 'url' ? (
+            <GlassInput>
+              <GlassLabel>Job URL</GlassLabel>
+              <GlassField
+                type="url"
+                placeholder="https://linkedin.com/jobs/view/..."
+                value={jobUrl}
+                onChange={(e) => setJobUrl(e.target.value)}
+              />
+              <GlassHelperText>We’ll extract the job description automatically</GlassHelperText>
+            </GlassInput>
+          ) : (
+            <GlassInput>
+              <GlassLabel>Job Description</GlassLabel>
+              <GlassTextarea
+                placeholder="Paste the full job description here — requirements, responsibilities, qualifications..."
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                rows={10}
+              />
+              <GlassHelperText>{jobDescription.length.toLocaleString()} characters</GlassHelperText>
+            </GlassInput>
+          )}
+        </ModalFormBody>
+
+        <ModalGlassFooter>
+          <ModalGhostBtn onClick={closeModal}>Cancel</ModalGhostBtn>
+          <ModalPrimaryBtn onClick={handleSubmit} disabled={isLoading}>
+            {isLoading ? 'Adding...' : 'Add Job Posting'}
+          </ModalPrimaryBtn>
+        </ModalGlassFooter>
       </Modal>
 
       {/* Delete Confirmation Modal */}

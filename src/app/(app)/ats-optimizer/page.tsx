@@ -1937,6 +1937,320 @@ const ATSCTARow = styled.div`
   justify-content: center;
 `;
 
+/* ── ATS Upload Modal — Liquid Glass ── */
+const ATSModalHeaderInner = styled.div`
+  padding: 28px 28px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+
+  @media (max-width: 640px) { padding: 24px 20px 0; }
+`;
+
+const ATSModalIconBadge = styled.div`
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%),
+    rgba(102, 126, 234, 0.22);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.50),
+    0 6px 20px rgba(102, 126, 234, 0.28),
+    0 2px 8px rgba(0,0,0,0.30);
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: rgba(255,255,255,0.92);
+    filter: drop-shadow(0 1px 3px rgba(102, 126, 234, 0.50));
+  }
+`;
+
+const ATSModalHeadTitle = styled.h2`
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: rgba(255,255,255,0.96);
+  margin: 0 0 4px;
+`;
+
+const ATSModalHeadSub = styled.p`
+  font-size: 13px;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: -0.01em;
+  margin: 0;
+`;
+
+const ATSModalCloseBtn = styled.button`
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.50);
+  cursor: pointer;
+  transition: all 0.18s ease;
+
+  &:hover {
+    background: rgba(255,255,255,0.14);
+    color: rgba(255,255,255,0.85);
+  }
+  svg { width: 16px; height: 16px; }
+`;
+
+const ATSUploadBody = styled.div`
+  padding: 24px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (max-width: 640px) { padding: 20px; }
+`;
+
+const ATSDropZone = styled.div<{ $isDragOver: boolean; $hasFile: boolean }>`
+  position: relative;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: ${({ $hasFile }) => $hasFile ? '20px' : '40px 24px'};
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+
+  background: ${({ $isDragOver }) => $isDragOver
+    ? 'rgba(102, 126, 234, 0.14)'
+    : 'rgba(255,255,255,0.04)'};
+  border: 1.5px dashed ${({ $isDragOver }) => $isDragOver
+    ? 'rgba(102, 126, 234, 0.70)'
+    : 'rgba(255,255,255,0.14)'};
+
+  box-shadow: ${({ $isDragOver }) => $isDragOver
+    ? 'inset 0 0 0 1px rgba(102, 126, 234, 0.25), 0 0 32px rgba(102,126,234,0.12)'
+    : 'none'};
+
+  &:hover {
+    background: rgba(102, 126, 234, 0.07);
+    border-color: rgba(255,255,255,0.22);
+  }
+`;
+
+const ATSDropIconRing = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 100%),
+    rgba(102, 126, 234, 0.18);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.40),
+    0 4px 16px rgba(102, 126, 234, 0.22);
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: rgba(255,255,255,0.82);
+  }
+`;
+
+const ATSDropTitle = styled.p`
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.88);
+  letter-spacing: -0.02em;
+  margin: 0;
+`;
+
+const ATSDropSub = styled.p`
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.30);
+  margin: 0;
+  letter-spacing: -0.01em;
+`;
+
+const ATSFileChip = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(102, 126, 234, 0.12);
+  border: 1px solid rgba(102, 126, 234, 0.30);
+  width: 100%;
+`;
+
+const ATSFileChipName = styled.span`
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const ATSFileChipSize = styled.span`
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  flex-shrink: 0;
+`;
+
+const ATSFileChipClear = styled.button`
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+
+  &:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.80); }
+  svg { width: 12px; height: 12px; }
+`;
+
+const ATSDivider = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255,255,255,0.18);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+`;
+
+const ATSCVAccordion = styled.div`
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.09);
+  overflow: hidden;
+`;
+
+const ATSCVAccordionHeader = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.04);
+  border: none;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+  transition: all 0.18s ease;
+
+  &:hover { color: rgba(255,255,255,0.80); background: rgba(255,255,255,0.07); }
+
+  svg { width: 14px; height: 14px; transition: transform 0.22s ease; }
+`;
+
+const ATSCVList = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+  border-top: 1px solid rgba(255,255,255,0.06);
+`;
+
+const ATSCVItem = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(102, 126, 234, 0.08); }
+`;
+
+const ATSCVItemName = styled.span`
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.78);
+`;
+
+const ATSCVItemDate = styled.span`
+  font-size: 12px;
+  color: rgba(255,255,255,0.28);
+  flex-shrink: 0;
+`;
+
+const ATSUploadPrimaryBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: white;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+
+  background: linear-gradient(
+    135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 100%
+  ), rgba(102, 126, 234, 0.85);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 6px 24px rgba(102, 126, 234, 0.42),
+    0 2px 6px rgba(0,0,0,0.25);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.65),
+      0 12px 36px rgba(102, 126, 234, 0.52),
+      0 3px 10px rgba(0,0,0,0.28);
+  }
+  &:active { transform: scale(0.98); }
+  &:disabled { opacity: 0.40; cursor: not-allowed; }
+  svg { width: 18px; height: 18px; flex-shrink: 0; }
+`;
 export default function DashboardATSOptimizerPage() {
   const [step, setStep] = useState<Step>("upload");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -2465,58 +2779,127 @@ export default function DashboardATSOptimizerPage() {
         </>
       )}
 
-      {/* Upload Modal - Replaces inline file upload */}
-      <Modal 
-        isOpen={isUploadModalOpen} 
+      {/* Upload Modal */}
+      <Modal
+        isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
-        title="Start New Optimization"
+        showCloseButton={false}
         size="md"
       >
-        <Modal.Body>
-          <FileUpload
+        <ATSModalHeaderInner>
+          <ATSModalIconBadge>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </ATSModalIconBadge>
+          <ATSModalHeadTitle>Start New Optimization</ATSModalHeadTitle>
+          <ATSModalHeadSub>Upload a CV or select one you’ve already uploaded</ATSModalHeadSub>
+          <ATSModalCloseBtn onClick={() => setIsUploadModalOpen(false)} aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </ATSModalCloseBtn>
+        </ATSModalHeaderInner>
+
+        <ATSUploadBody>
+          {/* Drop Zone */}
+          <input
+            id="ats-file-input"
+            type="file"
             accept=".pdf,.docx"
-            onChange={(files) => {
-              if (files.length > 0) onDrop(files);
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) { setFile(file); onDrop([file]); }
             }}
           />
-           
-           {/* Existing CV Selection Logic inside Modal */}
-           <div style={{ marginTop: 24 }}>
-              <div 
-                style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', gap: 8, color: 'var(--text-secondary)' }}
-                onClick={() => setShowExistingCVs(!showExistingCVs)}
-              >
-                  <span>Select from uploaded resumes</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: showExistingCVs ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                    <path d="M19 9l-7 7-7-7" />
+          <ATSDropZone
+            $isDragOver={false}
+            $hasFile={!!_file}
+            onClick={() => document.getElementById('ats-file-input')?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              const file = e.dataTransfer.files?.[0];
+              if (file) { setFile(file); onDrop([file]); }
+            }}
+          >
+            {_file ? (
+              <ATSFileChip onClick={(e) => e.stopPropagation()}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ width: 16, height: 16, color: '#818cf8', flexShrink: 0 }}>
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                <ATSFileChipName>{_file.name}</ATSFileChipName>
+                <ATSFileChipSize>{(_file.size / (1024*1024)).toFixed(1)} MB</ATSFileChipSize>
+                <ATSFileChipClear onClick={(e) => { e.stopPropagation(); setFile(null); }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M18 6L6 18M6 6l12 12"/>
                   </svg>
-              </div>
+                </ATSFileChipClear>
+              </ATSFileChip>
+            ) : (
+              <>
+                <ATSDropIconRing>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                    <polyline points="16 16 12 12 8 16"/>
+                    <line x1="12" y1="12" x2="12" y2="21"/>
+                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                  </svg>
+                </ATSDropIconRing>
+                <ATSDropTitle>Drop your CV here</ATSDropTitle>
+                <ATSDropSub>PDF or DOCX · max 5 MB · click to browse</ATSDropSub>
+              </>
+            )}
+          </ATSDropZone>
 
-              {showExistingCVs && (
-                 <div style={{ marginTop: 12, display: 'grid', gap: 8, maxHeight: 300, overflowY: 'auto' }}>
-                    {loadingCVs ? <Spinner /> : existingCVs.map(cv => (
-                       <div 
-                          key={cv.id} 
-                          onClick={() => handleSelectExistingCV(cv)}
-                          style={{ 
-                            padding: 12, 
-                            border: '1px solid var(--border)', 
-                            borderRadius: 8, 
-                            cursor: 'pointer',
-                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            background: 'var(--bg-alt)'
-                          }}
-                       >
-                          <span style={{ fontWeight: 500 }}>{cv.title}</span>
-                          <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{formatDate(cv.created_at)}</span>
-                       </div>
-                    ))}
-                 </div>
-              )}
-           </div>
+          {/* Divider */}
+          <ATSDivider>or select from your uploads</ATSDivider>
 
-           {error && <ErrorMessage>{error}</ErrorMessage>}
-        </Modal.Body>
+          {/* Existing CV accordion */}
+          <ATSCVAccordion>
+            <ATSCVAccordionHeader onClick={() => setShowExistingCVs(!showExistingCVs)}>
+              <span>My uploaded resumes ({existingCVs.length})</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
+                style={{ transform: showExistingCVs ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                <path d="M19 9l-7 7-7-7"/>
+              </svg>
+            </ATSCVAccordionHeader>
+            {showExistingCVs && (
+              <ATSCVList>
+                {loadingCVs ? (
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '16px' }}>
+                    <Spinner />
+                  </div>
+                ) : existingCVs.length === 0 ? (
+                  <div style={{ padding: '16px', fontSize: '13px', color: 'rgba(255,255,255,0.28)', textAlign: 'center' }}>
+                    No uploaded resumes yet
+                  </div>
+                ) : existingCVs.map(cv => (
+                  <ATSCVItem key={cv.id} onClick={() => handleSelectExistingCV(cv)}>
+                    <ATSCVItemName>{cv.title}</ATSCVItemName>
+                    <ATSCVItemDate>{formatDate(cv.created_at)}</ATSCVItemDate>
+                  </ATSCVItem>
+                ))}
+              </ATSCVList>
+            )}
+          </ATSCVAccordion>
+
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+
+          {/* Start CTA */}
+          <ATSUploadPrimaryBtn
+            disabled={!_file}
+            onClick={() => {
+              if (_file) { setIsUploadModalOpen(false); }
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            {_file ? 'Start Optimization' : 'Select or upload a CV first'}
+          </ATSUploadPrimaryBtn>
+        </ATSUploadBody>
       </Modal>
 
       {/* Loading Modals */}

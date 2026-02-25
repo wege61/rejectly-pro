@@ -597,6 +597,260 @@ const PlusIcon = () => (
   </svg>
 );
 
+/* ── Liquid Glass empty state (Jobs) ── */
+const floatOrbJ = keyframes`
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-16px) rotate(3deg); }
+  66%       { transform: translateY(8px) rotate(-2deg); }
+`;
+
+const JobsEmptyHero = styled.div`
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 36px 40px 44px;
+  text-align: center;
+
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(102, 126, 234, 0.12) 0%, transparent 70%),
+    rgba(16, 16, 22, 0.60);
+  backdrop-filter: blur(48px) saturate(180%);
+  -webkit-backdrop-filter: blur(48px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 32px 80px rgba(0,0,0,0.5);
+
+  @media (max-width: 768px) {
+    padding: 32px 20px 40px;
+  }
+`;
+
+const JobsOrbA = styled.div`
+  position: absolute;
+  width: 340px; height: 340px;
+  border-radius: 50%;
+  top: -70px; right: -50px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.14) 0%, transparent 70%);
+  animation: ${floatOrbJ} 9s ease-in-out infinite;
+  pointer-events: none;
+`;
+
+const JobsOrbB = styled.div`
+  position: absolute;
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  bottom: -50px; left: -30px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.10) 0%, transparent 70%);
+  animation: ${floatOrbJ} 12s ease-in-out infinite reverse;
+  pointer-events: none;
+`;
+
+const JobsHeroSpecular = styled.div`
+  position: absolute;
+  top: 0; left: 15%; right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.40) 50%, transparent);
+  pointer-events: none;
+`;
+
+const JobsHeroIconBadge = styled.div`
+  width: 80px; height: 80px;
+  border-radius: 24px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%),
+    rgba(102, 126, 234, 0.22);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 28px rgba(102, 126, 234, 0.32),
+    0 3px 10px rgba(0,0,0,0.35);
+
+  svg {
+    width: 36px; height: 36px;
+    color: rgba(255,255,255,0.92);
+    filter: drop-shadow(0 1px 4px rgba(102, 126, 234, 0.55));
+  }
+`;
+
+const JobsHeroTitle = styled.h2`
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 10px;
+  color: rgba(255,255,255,0.95);
+
+  @media (max-width: 768px) { font-size: 22px; }
+`;
+
+const JobsHeroSubtitle = styled.p`
+  font-size: 14px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.60;
+  max-width: 420px;
+  margin: 0 auto 24px;
+  letter-spacing: -0.01em;
+`;
+
+const JobsStepsRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+  max-width: 580px;
+  margin-bottom: 28px;
+  position: relative;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+`;
+
+const JobsStepConnector = styled.div`
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 100%);
+  margin-top: 22px;
+  @media (max-width: 640px) { display: none; }
+`;
+
+const JobsStep = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  width: 130px;
+
+  @media (max-width: 640px) {
+    width: 100%; max-width: 260px;
+    flex-direction: row; text-align: left;
+    align-items: center;
+  }
+`;
+
+const JobsStepNum = styled.div<{ $n: 1 | 2 | 3 }>`
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+
+  background: ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(102, 126, 234, 0.18)';
+      case 2: return 'rgba(var(--accent-rgb), 0.18)';
+      case 3: return 'rgba(16, 185, 129, 0.18)';
+    }
+  }};
+  border: 1px solid ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(102, 126, 234, 0.35)';
+      case 2: return 'rgba(var(--accent-rgb), 0.35)';
+      case 3: return 'rgba(16, 185, 129, 0.35)';
+    }
+  }};
+  color: ${({ $n }) => {
+    switch ($n) {
+      case 1: return '#818cf8';
+      case 2: return 'var(--accent)';
+      case 3: return '#34d399';
+    }
+  }};
+`;
+
+const JobsStepText = styled.div`
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.48);
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+  text-align: center;
+  @media (max-width: 640px) { text-align: left; }
+`;
+
+const JobsCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  background: linear-gradient(
+    135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.0) 100%
+  ), rgba(102, 126, 234, 0.80);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 32px rgba(102, 126, 234, 0.45),
+    0 2px 8px rgba(0,0,0,0.3);
+
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.70),
+      0 16px 56px rgba(102, 126, 234, 0.55),
+      0 4px 16px rgba(0,0,0,0.35);
+  }
+  &:active { transform: scale(0.98); }
+  svg { width: 20px; height: 20px; flex-shrink: 0; }
+`;
+
+const JobsCTASecondary = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.60);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.22);
+  }
+`;
+
+const JobsCTARow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
 // Backdrop
 const Backdrop = styled(motion.div)`
   position: fixed;
@@ -1013,17 +1267,53 @@ export default function JobsPage() {
       </AnimatePresence>
 
       {jobs.length === 0 ? (
-        <Card variant="bordered">
-          <EmptyState
-            icon={<EmptyState.InboxIcon />}
-            title="No job postings yet"
-            description="Add job postings to analyze and compare with your resume."
-            action={{
-              label: "Add Job Posting",
-              onClick: openAddModal,
-            }}
-          />
-        </Card>
+        <JobsEmptyHero>
+          <JobsOrbA />
+          <JobsOrbB />
+          <JobsHeroSpecular />
+
+          <JobsHeroIconBadge>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+            </svg>
+          </JobsHeroIconBadge>
+
+          <JobsHeroTitle>Save your first job posting</JobsHeroTitle>
+          <JobsHeroSubtitle>
+            Paste a job description or add a URL — then run an AI match analysis against your CV to see how well you fit.
+          </JobsHeroSubtitle>
+
+          <JobsStepsRow>
+            <JobsStep>
+              <JobsStepNum $n={1}>1</JobsStepNum>
+              <JobsStepText>Add a job posting by URL or paste the description</JobsStepText>
+            </JobsStep>
+            <JobsStepConnector />
+            <JobsStep>
+              <JobsStepNum $n={2}>2</JobsStepNum>
+              <JobsStepText>Run a Job Match analysis against your CV</JobsStepText>
+            </JobsStep>
+            <JobsStepConnector />
+            <JobsStep>
+              <JobsStepNum $n={3}>3</JobsStepNum>
+              <JobsStepText>Get your score and an ATS-optimized CV</JobsStepText>
+            </JobsStep>
+          </JobsStepsRow>
+
+          <JobsCTARow>
+            <JobsCTAButton onClick={openAddModal}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add Job Posting
+            </JobsCTAButton>
+            <JobsCTASecondary onClick={() => window.open('https://www.linkedin.com/jobs/', '_blank')}>
+              Browse on LinkedIn
+            </JobsCTASecondary>
+          </JobsCTARow>
+        </JobsEmptyHero>
       ) : (
         <JobsList>
           {jobs.map((job) => (

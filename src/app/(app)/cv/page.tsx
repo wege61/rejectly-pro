@@ -755,47 +755,6 @@ const CVCTARow = styled.div`
   justify-content: center;
 `;
 
-const TabEmptyTitle = styled.h3`
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-color);
-  margin-bottom: 8px;
-`;
-
-const TabEmptyDescription = styled.p`
-  font-size: 14px;
-  color: var(--text-secondary);
-  max-width: 360px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-`;
-
-const TabEmptyAction = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: var(--accent);
-  color: white;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-  }
-
-  svg {
-    width: 18px;
-    height: 18px;
-    margin: 0;
-    opacity: 1;
-  }
-`;
 
 // Tab Icons
 const OriginalIcon = () => (

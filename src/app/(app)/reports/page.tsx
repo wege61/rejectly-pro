@@ -240,6 +240,313 @@ const TabEmptyState = styled.div`
   text-align: center;
 `;
 
+/* ── Liquid Glass empty state ── */
+const glowPulse = keyframes`
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%       { opacity: 0.55; transform: scale(1.06); }
+`;
+
+const floatOrb = keyframes`
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-18px) rotate(3deg); }
+  66%       { transform: translateY(8px) rotate(-2deg); }
+`;
+
+const shimmerSlide = keyframes`
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+`;
+
+const EmptyHero = styled.div`
+  position: relative;
+  min-height: 72vh;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 60px 40px 72px;
+  text-align: center;
+
+  /* Liquid Glass base */
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(var(--accent-rgb), 0.10) 0%, transparent 70%),
+    rgba(16, 16, 22, 0.60);
+  backdrop-filter: blur(48px) saturate(180%);
+  -webkit-backdrop-filter: blur(48px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 32px 80px rgba(0,0,0,0.5);
+
+  @media (max-width: 768px) {
+    padding: 40px 24px 52px;
+    min-height: 60vh;
+  }
+`;
+
+/* Floating ambient orbs inside the hero */
+const OrbA = styled.div`
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  top: -80px;
+  right: -60px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.14) 0%, transparent 70%);
+  animation: ${floatOrb} 9s ease-in-out infinite;
+  pointer-events: none;
+`;
+
+const OrbB = styled.div`
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  bottom: -60px;
+  left: -40px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.12) 0%, transparent 70%);
+  animation: ${floatOrb} 12s ease-in-out infinite reverse;
+  pointer-events: none;
+`;
+
+/* Top specular line */
+const HeroSpecular = styled.div`
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.40) 50%, transparent);
+  pointer-events: none;
+`;
+
+/* The central icon badge */
+const HeroIconBadge = styled.div`
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 28px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%),
+    rgba(var(--accent-rgb), 0.20);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 12px 40px rgba(var(--accent-rgb), 0.35),
+    0 4px 16px rgba(0,0,0,0.4);
+
+  animation: ${glowPulse} 4s ease-in-out infinite;
+
+  svg {
+    width: 44px;
+    height: 44px;
+    color: rgba(255,255,255,0.92);
+    filter: drop-shadow(0 2px 8px rgba(var(--accent-rgb), 0.6));
+  }
+
+  /* Shimmer sweep */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.22) 50%, transparent 65%);
+    animation: ${shimmerSlide} 3.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+`;
+
+const HeroTitle = styled.h2`
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 14px;
+  color: rgba(255,255,255,0.95);
+
+  @media (max-width: 768px) { font-size: 26px; }
+`;
+
+const HeroSubtitle = styled.p`
+  font-size: 15px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.65;
+  max-width: 440px;
+  margin: 0 auto 36px;
+  letter-spacing: -0.01em;
+`;
+
+/* 3-step how-it-works strip */
+const StepsRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+  max-width: 640px;
+  margin-bottom: 44px;
+  position: relative;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+`;
+
+const StepConnector = styled.div`
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 100%);
+  margin-top: 22px;
+  flex-shrink: 1;
+
+  @media (max-width: 640px) { display: none; }
+`;
+
+const Step = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  width: 130px;
+
+  @media (max-width: 640px) {
+    width: 100%;
+    max-width: 260px;
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+  }
+`;
+
+const StepNum = styled.div<{ $n: 1 | 2 | 3 }>`
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+
+  background: ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(var(--accent-rgb), 0.18)';
+      case 2: return 'rgba(102, 126, 234, 0.18)';
+      case 3: return 'rgba(16, 185, 129, 0.18)';
+    }
+  }};
+  border: 1px solid ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(var(--accent-rgb), 0.35)';
+      case 2: return 'rgba(102, 126, 234, 0.35)';
+      case 3: return 'rgba(16, 185, 129, 0.35)';
+    }
+  }};
+  color: ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'var(--accent)';
+      case 2: return '#818cf8';
+      case 3: return '#34d399';
+    }
+  }};
+`;
+
+const StepText = styled.div`
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.48);
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+  text-align: center;
+
+  @media (max-width: 640px) { text-align: left; }
+`;
+
+/* CTA button */
+const HeroCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.22) 0%,
+    rgba(255,255,255,0.0) 100%
+  ), rgba(var(--accent-rgb), 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 32px rgba(var(--accent-rgb), 0.45),
+    0 2px 8px rgba(0,0,0,0.3);
+
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.70),
+      0 16px 56px rgba(var(--accent-rgb), 0.55),
+      0 4px 16px rgba(0,0,0,0.35);
+  }
+
+  &:active { transform: scale(0.98); }
+
+  svg { width: 20px; height: 20px; flex-shrink: 0; }
+`;
+
+const HeroCTASecondary = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.60);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.22);
+  }
+`;
+
+const HeroCTARow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+
 const CategoryBadge = styled.span<{ $variant: 'excellent' | 'good' | 'fair' | 'poor' }>`
   display: inline-flex;
   align-items: center;
@@ -944,18 +1251,61 @@ export default function ReportsPage() {
       </Header>
 
       {reports.length === 0 ? (
-        <Card variant="bordered">
-          <EmptyState
-            icon={<EmptyState.FolderIcon />}
-            title="No reports yet"
-            description="Create your first analysis report by uploading your CV and adding job postings."
-            action={{
-              label: "Get Started",
-              onClick: () => router.push(ROUTES.APP.ANALYZE),
-            }}
-          />
-        </Card>
+        <EmptyHero>
+          {/* Ambient floating orbs */}
+          <OrbA />
+          <OrbB />
+          {/* Top specular line */}
+          <HeroSpecular />
+
+          {/* Central icon badge */}
+          <HeroIconBadge>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 17H7A5 5 0 0 1 7 7h2" />
+              <path d="M15 7h2a5 5 0 1 1 0 10h-2" />
+              <line x1="8" y1="12" x2="16" y2="12" />
+            </svg>
+          </HeroIconBadge>
+
+          <HeroTitle>Analyze your first job match</HeroTitle>
+          <HeroSubtitle>
+            Upload your CV, paste a job posting, and let AI score how well you match — then generate a tailored version that gets past ATS filters.
+          </HeroSubtitle>
+
+          {/* 3-step how it works */}
+          <StepsRow>
+            <Step>
+              <StepNum $n={1}>1</StepNum>
+              <StepText>Upload your CV or choose an existing one</StepText>
+            </Step>
+            <StepConnector />
+            <Step>
+              <StepNum $n={2}>2</StepNum>
+              <StepText>Paste a job posting or pick from saved jobs</StepText>
+            </Step>
+            <StepConnector />
+            <Step>
+              <StepNum $n={3}>3</StepNum>
+              <StepText>Get your AI match score & optimized CV</StepText>
+            </Step>
+          </StepsRow>
+
+          {/* CTAs */}
+          <HeroCTARow>
+            <HeroCTAButton onClick={() => router.push(ROUTES.APP.ANALYZE)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Start New Analysis
+            </HeroCTAButton>
+            <HeroCTASecondary onClick={() => router.push(ROUTES.APP.JOBS)}>
+              Browse job postings
+            </HeroCTASecondary>
+          </HeroCTARow>
+        </EmptyHero>
       ) : (
+
         <ContentSection>
           {/* ── Tab bar ── */}
           <ContentHeader>

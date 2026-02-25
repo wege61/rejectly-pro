@@ -428,6 +428,259 @@ const TabEmptyState = styled.div`
   }
 `;
 
+/* ── Liquid Glass empty state (CV / Resumes) ── */
+const floatOrbCV = keyframes`
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-16px) rotate(3deg); }
+  66%       { transform: translateY(8px) rotate(-2deg); }
+`;
+
+const CVEmptyHero = styled.div`
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 36px 40px 44px;
+  text-align: center;
+
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(16, 185, 129, 0.10) 0%, transparent 70%),
+    rgba(16, 16, 22, 0.60);
+  backdrop-filter: blur(48px) saturate(180%);
+  -webkit-backdrop-filter: blur(48px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 32px 80px rgba(0,0,0,0.5);
+
+  @media (max-width: 768px) {
+    padding: 32px 20px 40px;
+  }
+`;
+
+const CVOrbA = styled.div`
+  position: absolute;
+  width: 340px; height: 340px;
+  border-radius: 50%;
+  top: -70px; right: -50px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.14) 0%, transparent 70%);
+  animation: ${floatOrbCV} 9s ease-in-out infinite;
+  pointer-events: none;
+`;
+
+const CVOrbB = styled.div`
+  position: absolute;
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  bottom: -50px; left: -30px;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.10) 0%, transparent 70%);
+  animation: ${floatOrbCV} 12s ease-in-out infinite reverse;
+  pointer-events: none;
+`;
+
+const CVHeroSpecular = styled.div`
+  position: absolute;
+  top: 0; left: 15%; right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.40) 50%, transparent);
+  pointer-events: none;
+`;
+
+const CVHeroIconBadge = styled.div`
+  width: 80px; height: 80px;
+  border-radius: 24px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%),
+    rgba(16, 185, 129, 0.20);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 28px rgba(16, 185, 129, 0.30),
+    0 3px 10px rgba(0,0,0,0.35);
+
+  svg {
+    width: 36px; height: 36px;
+    color: rgba(255,255,255,0.92);
+    filter: drop-shadow(0 1px 4px rgba(16, 185, 129, 0.55));
+  }
+`;
+
+const CVHeroTitle = styled.h2`
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 10px;
+  color: rgba(255,255,255,0.95);
+
+  @media (max-width: 768px) { font-size: 22px; }
+`;
+
+const CVHeroSubtitle = styled.p`
+  font-size: 14px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.60;
+  max-width: 420px;
+  margin: 0 auto 24px;
+  letter-spacing: -0.01em;
+`;
+
+const CVStepsRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+  max-width: 580px;
+  margin-bottom: 28px;
+  position: relative;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+`;
+
+const CVStepConnector = styled.div`
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 100%);
+  margin-top: 22px;
+  @media (max-width: 640px) { display: none; }
+`;
+
+const CVStep = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  width: 130px;
+
+  @media (max-width: 640px) {
+    width: 100%; max-width: 260px;
+    flex-direction: row; text-align: left;
+    align-items: center;
+  }
+`;
+
+const CVStepNum = styled.div<{ $n: 1 | 2 | 3 }>`
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+
+  background: ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(16, 185, 129, 0.18)';
+      case 2: return 'rgba(102, 126, 234, 0.18)';
+      case 3: return 'rgba(var(--accent-rgb), 0.18)';
+    }
+  }};
+  border: 1px solid ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(16, 185, 129, 0.35)';
+      case 2: return 'rgba(102, 126, 234, 0.35)';
+      case 3: return 'rgba(var(--accent-rgb), 0.35)';
+    }
+  }};
+  color: ${({ $n }) => {
+    switch ($n) {
+      case 1: return '#34d399';
+      case 2: return '#818cf8';
+      case 3: return 'var(--accent)';
+    }
+  }};
+`;
+
+const CVStepText = styled.div`
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.48);
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+  text-align: center;
+  @media (max-width: 640px) { text-align: left; }
+`;
+
+const CVCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  background: linear-gradient(
+    135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.0) 100%
+  ), rgba(16, 185, 129, 0.75);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 32px rgba(16, 185, 129, 0.42),
+    0 2px 8px rgba(0,0,0,0.3);
+
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.70),
+      0 16px 56px rgba(16, 185, 129, 0.52),
+      0 4px 16px rgba(0,0,0,0.35);
+  }
+  &:active { transform: scale(0.98); }
+  svg { width: 20px; height: 20px; flex-shrink: 0; }
+`;
+
+const CVCTASecondary = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.60);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.22);
+  }
+`;
+
+const CVCTARow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
 const TabEmptyTitle = styled.h3`
   font-size: 18px;
   font-weight: 600;
@@ -1688,17 +1941,57 @@ export default function CVPage() {
         />
 
         {allCVs.length === 0 ? (
-          <Card variant="bordered">
-            <EmptyState
-              icon={<EmptyState.DocumentIcon />}
-              title="No resumes yet"
-              description="Upload your first resume to get started with job matching analysis and AI-powered optimization."
-              action={{
-                label: isUploading ? "Uploading..." : "Upload Your Resume",
-                onClick: handleUploadClick,
-              }}
-            />
-          </Card>
+          <CVEmptyHero>
+            <CVOrbA />
+            <CVOrbB />
+            <CVHeroSpecular />
+
+            <CVHeroIconBadge>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+            </CVHeroIconBadge>
+
+            <CVHeroTitle>Upload your first resume</CVHeroTitle>
+            <CVHeroSubtitle>
+              Your CV is the foundation — upload it once, then run job match analyses and ATS optimization across any job posting.
+            </CVHeroSubtitle>
+
+            <CVStepsRow>
+              <CVStep>
+                <CVStepNum $n={1}>1</CVStepNum>
+                <CVStepText>Upload your resume in PDF or DOCX format</CVStepText>
+              </CVStep>
+              <CVStepConnector />
+              <CVStep>
+                <CVStepNum $n={2}>2</CVStepNum>
+                <CVStepText>Run a Job Match to score your fit for any role</CVStepText>
+              </CVStep>
+              <CVStepConnector />
+              <CVStep>
+                <CVStepNum $n={3}>3</CVStepNum>
+                <CVStepText>Get an ATS-optimized version tailored to the job</CVStepText>
+              </CVStep>
+            </CVStepsRow>
+
+            <CVCTARow>
+              <CVCTAButton onClick={handleUploadClick} disabled={isUploading}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <polyline points="16 16 12 12 8 16"/>
+                  <line x1="12" y1="12" x2="12" y2="21"/>
+                  <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                </svg>
+                {isUploading ? 'Uploading...' : 'Upload Your Resume'}
+              </CVCTAButton>
+              <CVCTASecondary onClick={() => document.getElementById('cv-upload')?.click()}>
+                PDF or DOCX supported
+              </CVCTASecondary>
+            </CVCTARow>
+          </CVEmptyHero>
         ) : (
           <ContentSection>
             <ContentHeader>

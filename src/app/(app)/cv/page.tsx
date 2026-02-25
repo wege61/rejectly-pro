@@ -411,24 +411,98 @@ const TabCount = styled.span<{ $active: boolean }>`
   }
 `;
 
+/* ── Liquid Glass per-tab empty states ── */
 const TabEmptyState = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80px 24px;
+  padding: 56px 32px 64px;
   text-align: center;
+`;
+
+const TabEmptyIconBadge = styled.div<{ $color: string; $glow: string }>`
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 100%),
+    ${({ $color }) => $color};
+  border: 1px solid rgba(255,255,255,0.20);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.50),
+    0 6px 20px ${({ $glow }) => $glow},
+    0 2px 8px rgba(0,0,0,0.30);
 
   svg {
-    width: 56px;
-    height: 56px;
-    color: var(--text-tertiary);
-    margin-bottom: 20px;
-    opacity: 0.5;
+    width: 30px;
+    height: 30px;
+    color: rgba(255,255,255,0.90);
+    filter: drop-shadow(0 1px 3px ${({ $glow }) => $glow});
   }
 `;
 
-/* ── Liquid Glass empty state (CV / Resumes) ── */
+const TabEmptyTitle = styled.h3`
+  font-size: 17px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.90);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+`;
+
+const TabEmptyDescription = styled.p`
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.38);
+  max-width: 340px;
+  line-height: 1.65;
+  margin-bottom: 24px;
+  letter-spacing: -0.01em;
+`;
+
+const TabEmptyAction = styled.button<{ $accent: string; $shadow: string }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: white;
+  border: none;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+
+  background: linear-gradient(
+    135deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0) 100%
+  ), ${({ $accent }) => $accent};
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.50),
+    0 6px 20px ${({ $shadow }) => $shadow},
+    0 2px 6px rgba(0,0,0,0.25);
+
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.65),
+      0 12px 32px ${({ $shadow }) => $shadow},
+      0 3px 10px rgba(0,0,0,0.28);
+  }
+  &:active { transform: scale(0.97); }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    opacity: 1;
+  }
+`;
 const floatOrbCV = keyframes`
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   33%       { transform: translateY(-16px) rotate(3deg); }
@@ -2030,36 +2104,63 @@ export default function CVPage() {
                 <TabEmptyState>
                   {activeTab === 'original' && (
                     <>
-                      <OriginalIcon />
+                      <TabEmptyIconBadge
+                        $color="rgba(16, 185, 129, 0.22)"
+                        $glow="rgba(16, 185, 129, 0.35)"
+                      >
+                        <OriginalIcon />
+                      </TabEmptyIconBadge>
                       <TabEmptyTitle>No original CVs yet</TabEmptyTitle>
                       <TabEmptyDescription>
-                        Upload your resume to get started with job matching and ATS optimization.
+                        Upload your resume to start job matching and ATS optimization.
                       </TabEmptyDescription>
-                      <TabEmptyAction onClick={handleUploadClick}>
+                      <TabEmptyAction
+                        $accent="rgba(16, 185, 129, 0.75)"
+                        $shadow="rgba(16, 185, 129, 0.40)"
+                        onClick={handleUploadClick}
+                      >
                         <UploadIcon /> Upload Resume
                       </TabEmptyAction>
                     </>
                   )}
                   {activeTab === 'ats-optimized' && (
                     <>
-                      <ATSIcon2 />
+                      <TabEmptyIconBadge
+                        $color="rgba(102, 126, 234, 0.22)"
+                        $glow="rgba(102, 126, 234, 0.35)"
+                      >
+                        <ATSIcon2 />
+                      </TabEmptyIconBadge>
                       <TabEmptyTitle>No ATS optimized CVs</TabEmptyTitle>
                       <TabEmptyDescription>
                         Run an ATS check on your original CV and click "Optimize" to create an ATS-friendly version.
                       </TabEmptyDescription>
-                      <TabEmptyAction onClick={() => router.push('/ats-check')}>
+                      <TabEmptyAction
+                        $accent="rgba(102, 126, 234, 0.75)"
+                        $shadow="rgba(102, 126, 234, 0.40)"
+                        onClick={() => router.push('/ats-optimizer')}
+                      >
                         <ATSIcon2 /> Check ATS Score
                       </TabEmptyAction>
                     </>
                   )}
                   {activeTab === 'job-matched' && (
                     <>
-                      <JobIcon />
+                      <TabEmptyIconBadge
+                        $color="rgba(var(--accent-rgb), 0.22)"
+                        $glow="rgba(var(--accent-rgb), 0.35)"
+                      >
+                        <JobIcon />
+                      </TabEmptyIconBadge>
                       <TabEmptyTitle>No job matched CVs</TabEmptyTitle>
                       <TabEmptyDescription>
                         Generate a tailored CV from your job analysis reports to match specific positions.
                       </TabEmptyDescription>
-                      <TabEmptyAction onClick={() => router.push('/reports')}>
+                      <TabEmptyAction
+                        $accent="rgba(var(--accent-rgb), 0.75)"
+                        $shadow="rgba(var(--accent-rgb), 0.40)"
+                        onClick={() => router.push('/reports')}
+                      >
                         <JobIcon /> View Reports
                       </TabEmptyAction>
                     </>

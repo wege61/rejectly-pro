@@ -259,7 +259,6 @@ const shimmerSlide = keyframes`
 
 const EmptyHero = styled.div`
   position: relative;
-  min-height: 72vh;
   border-radius: 28px;
   overflow: hidden;
   display: flex;
@@ -267,7 +266,7 @@ const EmptyHero = styled.div`
   align-items: center;
   justify-content: center;
   gap: 0;
-  padding: 60px 40px 72px;
+  padding: 36px 40px 44px;
   text-align: center;
 
   /* Liquid Glass base */
@@ -282,8 +281,7 @@ const EmptyHero = styled.div`
     0 32px 80px rgba(0,0,0,0.5);
 
   @media (max-width: 768px) {
-    padding: 40px 24px 52px;
-    min-height: 60vh;
+    padding: 32px 20px 40px;
   }
 `;
 
@@ -326,10 +324,10 @@ const HeroSpecular = styled.div`
 /* The central icon badge */
 const HeroIconBadge = styled.div`
   position: relative;
-  width: 96px;
-  height: 96px;
-  border-radius: 28px;
-  margin-bottom: 28px;
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  margin-bottom: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -340,47 +338,34 @@ const HeroIconBadge = styled.div`
   border: 1px solid rgba(255,255,255,0.22);
   box-shadow:
     inset 0 1.5px 0 rgba(255,255,255,0.55),
-    0 12px 40px rgba(var(--accent-rgb), 0.35),
-    0 4px 16px rgba(0,0,0,0.4);
-
-  animation: ${glowPulse} 4s ease-in-out infinite;
+    0 8px 28px rgba(var(--accent-rgb), 0.30),
+    0 3px 10px rgba(0,0,0,0.35);
 
   svg {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     color: rgba(255,255,255,0.92);
-    filter: drop-shadow(0 2px 8px rgba(var(--accent-rgb), 0.6));
-  }
-
-  /* Shimmer sweep */
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 28px;
-    background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.22) 50%, transparent 65%);
-    animation: ${shimmerSlide} 3.5s ease-in-out infinite;
-    pointer-events: none;
+    filter: drop-shadow(0 1px 4px rgba(var(--accent-rgb), 0.5));
   }
 `;
 
 const HeroTitle = styled.h2`
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1.15;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   color: rgba(255,255,255,0.95);
 
-  @media (max-width: 768px) { font-size: 26px; }
+  @media (max-width: 768px) { font-size: 22px; }
 `;
 
 const HeroSubtitle = styled.p`
-  font-size: 15px;
+  font-size: 14px;
   color: rgba(255,255,255,0.42);
-  line-height: 1.65;
-  max-width: 440px;
-  margin: 0 auto 36px;
+  line-height: 1.60;
+  max-width: 420px;
+  margin: 0 auto 24px;
   letter-spacing: -0.01em;
 `;
 
@@ -390,14 +375,14 @@ const StepsRow = styled.div`
   align-items: flex-start;
   gap: 0;
   width: 100%;
-  max-width: 640px;
-  margin-bottom: 44px;
+  max-width: 580px;
+  margin-bottom: 28px;
   position: relative;
 
   @media (max-width: 640px) {
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
   }
 `;
 

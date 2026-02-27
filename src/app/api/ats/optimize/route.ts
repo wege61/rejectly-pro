@@ -24,8 +24,10 @@ interface OptimizeRequest {
       readability: { issues: { issue: string; fix?: string }[]; passes: string[] };
     };
     topIssues: { issue: string; suggestion: string; category: string }[];
-    quickWins: string[];
+     quickWins: string[];
   };
+  photoBase64?: string | null;
+  colorTemplateKey?: string | null;
 }
 
 export async function POST(request: NextRequest) {
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest) {
   try {
     // 1. Parse request
     const body: OptimizeRequest = await request.json();
-    const { cvText, atsResult } = body;
+    const { cvText, atsResult, photoBase64, colorTemplateKey } = body;
 
     if (!cvText || !atsResult) {
       return NextResponse.json(
@@ -108,7 +110,10 @@ export async function POST(request: NextRequest) {
 
     // 5. Generate PDF
     console.log("📄 Generating PDF...");
-    const pdfDoc = await generateCVPDF(optimizedCV);
+    const pdfDoc = await generateCVPDF(optimizedCV, undefined, {
+      colorTemplate: colorTemplateKey || undefined,
+      photoBase64: photoBase64 || undefined,
+    });
     const pdfBuffer = Buffer.from(pdfDoc.output("arraybuffer"));
 
     // 6. Upload PDF to storage using admin client (bypasses RLS)

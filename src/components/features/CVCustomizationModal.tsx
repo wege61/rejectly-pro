@@ -522,11 +522,16 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="ghost" onClick={onSkip}>
-          Skip
+        <Button variant="ghost" onClick={onSkip} style={{ color: 'var(--text-secondary)' }}>
+          Skip Customization
         </Button>
-        <Button variant="primary" onClick={handleConfirm}>
-          Continue
+        <Button variant="primary" onClick={handleConfirm} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          Save & Optimize
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <polyline points="16 16 12 12 8 16"/>
+            <line x1="12" y1="12" x2="12" y2="21"/>
+            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 0 1 0 3 16.3"/>
+          </svg>
         </Button>
       </Modal.Footer>
     </Modal>

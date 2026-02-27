@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
-import { Sheet } from "@/components/ui/Sheet";
+import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { LoadingModal } from "@/components/ui/LoadingModal";
 import { useToast } from "@/contexts/ToastContext";
@@ -80,19 +80,39 @@ const TemplateList = styled.div`
 const TemplateItem = styled.label<{ $selected: boolean }>`
   display: flex;
   align-items: flex-start;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: ${({ theme }) => theme.spacing.md};
   padding: ${({ theme }) => theme.spacing.md};
-  border-radius: ${({ theme }) => theme.radius.md};
-  border: 1px solid ${({ $selected, theme }) =>
-    $selected ? "var(--accent)" : theme.colors.border};
-  background: ${({ $selected }) =>
-    $selected ? "rgba(255, 255, 255, 0.2)" : "transparent"};
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* Liquid Glass Base */
+  background: ${({ $selected }) =>
+    $selected 
+      ? 'linear-gradient(135deg, rgba(var(--accent-rgb), 0.15), rgba(var(--accent-rgb), 0.05))' 
+      : 'rgba(255, 255, 255, 0.03)'};
+  border: 1px solid ${({ $selected }) =>
+    $selected ? 'rgba(var(--accent-rgb), 0.4)' : 'rgba(255, 255, 255, 0.06)'};
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  /* Subtle border glow and shadow for selected state */
+  box-shadow: ${({ $selected }) =>
+    $selected 
+      ? '0 8px 32px rgba(var(--accent-rgb), 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.2)' 
+      : 'inset 0 1px 1px rgba(255, 255, 255, 0.05)'};
 
   &:hover {
+    transform: translateY(-2px);
     background: ${({ $selected }) =>
-      $selected ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0.1)"};
+      $selected 
+        ? 'linear-gradient(135deg, rgba(var(--accent-rgb), 0.2), rgba(var(--accent-rgb), 0.08))' 
+        : 'rgba(255, 255, 255, 0.06)'};
+    border-color: ${({ $selected }) =>
+      $selected ? 'rgba(var(--accent-rgb), 0.6)' : 'rgba(255, 255, 255, 0.15)'};
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1);
   }
 `;
 
@@ -149,10 +169,38 @@ const SimpleOptionList = styled.div`
 
 const SimpleOptionItem = styled.label<{ $selected: boolean }>`
   display: flex;
-  align-items: flex-start;
-  gap: ${({ theme }) => theme.spacing.sm};
+  align-items: center;
+  gap: 12px;
   cursor: pointer;
-  padding: ${({ theme }) => theme.spacing.xs} 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* Liquid Glass Base */
+  background: ${({ $selected }) =>
+    $selected 
+      ? 'linear-gradient(90deg, rgba(var(--accent-rgb), 0.12), rgba(var(--accent-rgb), 0.03))' 
+      : 'rgba(255, 255, 255, 0.02)'};
+  border: 1px solid ${({ $selected }) =>
+    $selected ? 'rgba(var(--accent-rgb), 0.3)' : 'transparent'};
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  /* Subtle border glow and shadow for selected state */
+  box-shadow: ${({ $selected }) =>
+    $selected 
+      ? '0 4px 16px rgba(var(--accent-rgb), 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.1)' 
+      : 'none'};
+
+  &:hover {
+    transform: translateX(4px);
+    background: ${({ $selected }) =>
+      $selected 
+        ? 'linear-gradient(90deg, rgba(var(--accent-rgb), 0.15), rgba(var(--accent-rgb), 0.05))' 
+        : 'rgba(255, 255, 255, 0.05)'};
+    border-color: ${({ $selected }) =>
+      $selected ? 'rgba(var(--accent-rgb), 0.5)' : 'rgba(255, 255, 255, 0.1)'};
+  }
 `;
 
 const SimpleRadioIndicator = styled.div<{ $selected: boolean }>`
@@ -210,82 +258,96 @@ const StyledTextarea = styled.textarea`
   display: flex;
   width: 100%;
   min-height: 64px;
-  padding: 8px 12px;
-  background: transparent;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: 14px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13.5px;
   font-family: inherit;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
   outline: none;
   resize: vertical;
   field-sizing: content;
-  transition: color 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+  transition: all 0.2s ease;
 
   &:focus-visible {
-    border-color: var(--ring, var(--accent));
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+    border-color: rgba(var(--accent-rgb), 0.5);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(var(--accent-rgb), 0.15);
   }
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
   }
 
   &:disabled {
     cursor: not-allowed;
     opacity: 0.5;
   }
+`;
 
-  @media (prefers-color-scheme: dark) {
-    background: rgba(255, 255, 255, 0.05);
+const TwoColumnGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  padding: 8px 4px;
+
+  @media (min-width: 900px) {
+    grid-template-columns: 5fr 3fr;
+    align-items: flex-start;
   }
+`;
+
+const EditorColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+`;
+
+const InsightsColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 0;
 `;
 
 const EditorContainer = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const BottomRow = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-  margin-top: ${({ theme }) => theme.spacing.lg};
-  padding: 0 12px;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: ${({ theme }) => theme.spacing.lg};
-  }
-`;
-
-const BottomRowItem = styled.div`
-  flex: 1;
-  min-width: 0;
-
-  @media (max-width: 767px) {
-    width: 100%;
-  }
+  height: 100%;
+  position: relative;
 `;
 
 const ParagraphsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0;
-  max-height: 400px;
-  overflow-y: auto;
-  padding: ${({ theme }) => theme.spacing.md};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border}; 
-  @media (max-width: 768px) {
-   max-height: 350px;
-  }
+  gap: 16px;
 `;
 
 const ParagraphCard = styled.div`
-  padding: ${({ theme }) => theme.spacing.sm};
-  transition: all ${({ theme }) => theme.transitions.fast};
+  padding: 18px 24px;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* Liquid Glass Base */
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  &:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
 `;
 
 const ParagraphType = styled.div<{ $type: string }>`
@@ -309,40 +371,65 @@ const ParagraphType = styled.div<{ $type: string }>`
 `;
 
 const SentenceContainer = styled.div`
-  margin: ${({ theme }) => theme.spacing.xs} 0;
+  margin-top: 10px;
   line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
 `;
 
 const Sentence = styled.span<{ $isHighlight: boolean; $isSelected: boolean }>`
   cursor: pointer;
-  padding: 2px 4px;
-  font-size: 13px;
-  text-decoration: ${({ $isHighlight }) => ($isHighlight ? 'underline' : 'none')};
-  font-style: ${({ $isHighlight }) => ($isHighlight ? 'italic' : 'normal')};
+  padding: 4px 6px;
+  margin: 0 -2px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  text-decoration: none;
+  display: inline-block;
+  
+  /* Liquid Glass Highlight */
   background: ${({ $isHighlight, $isSelected }) =>
-    $isSelected ? 'var(--checkbox)' :
-    $isHighlight ? 'transparent' : 'transparent'};
-  transition: all 0.2s;
+    $isSelected 
+      ? 'linear-gradient(135deg, rgba(var(--accent-rgb), 0.2), rgba(var(--accent-rgb), 0.1))' 
+      : $isHighlight 
+        ? 'rgba(255, 255, 255, 0.05)' 
+        : 'transparent'};
+  
+  color: ${({ $isHighlight, $isSelected }) =>
+    $isSelected || $isHighlight ? 'var(--accent)' : 'inherit'};
+    
+  border: 1px solid ${({ $isSelected }) =>
+    $isSelected ? 'rgba(var(--accent-rgb), 0.4)' : 'transparent'};
+    
+  box-shadow: ${({ $isSelected }) => 
+    $isSelected ? '0 0 12px rgba(var(--accent-rgb), 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2)' : 'none'};
+    
+  backdrop-filter: ${({ $isSelected }) => $isSelected ? 'blur(4px)' : 'none'};
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
   &:hover {
-    background: var(--checkbox);
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.25), rgba(var(--accent-rgb), 0.1));
+    color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    border-color: rgba(var(--accent-rgb), 0.5);
   }
 `;
 
 // Select-style dropdown for alternatives
 const SelectDropdown = styled.div`
   position: fixed;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  min-width: 280px;
+  background: rgba(30, 30, 38, 0.85); /* Slightly transparent */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  z-index: 3000;
+  min-width: 320px;
   max-width: 450px;
   max-height: 300px;
   overflow-y: auto;
-  padding: 6px;
-  z-index: 3000;
-  animation: selectFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 8px;
+  animation: selectFadeIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
   transform-origin: top left;
 
   @keyframes selectFadeIn {
@@ -355,15 +442,22 @@ const SelectDropdown = styled.div`
       transform: scale(1) translateY(0);
     }
   }
+
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+  &::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 `;
 
 const SelectLabel = styled.div`
-  padding: 6px 8px;
+  padding: 8px 10px 6px;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   color: ${({ theme }) => theme.colors.textSecondary};
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 6px;
 `;
 
 const SelectItem = styled.div<{ $isSelected?: boolean }>`
@@ -371,23 +465,30 @@ const SelectItem = styled.div<{ $isSelected?: boolean }>`
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 8px 8px 8px 28px;
+  padding: 10px 10px 10px 32px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 13px;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  transition: background-color 100ms ease;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 150ms ease;
+  margin-bottom: 2px;
 
   &:hover {
-    background-color: var(--checkbox);
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateX(2px);
   }
 
   ${({ $isSelected }) =>
     $isSelected &&
     `
+    background: rgba(var(--accent-rgb), 0.1);
     color: var(--accent);
     font-weight: 500;
+    
+    &:hover {
+      background: rgba(var(--accent-rgb), 0.15);
+    }
   `}
 `;
 
@@ -413,20 +514,25 @@ const SelectOverlay = styled.div`
 `;
 
 const RationalePanel = styled.div`
-  padding: ${({ theme }) => theme.spacing.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  height: fit-content;
+  padding: 16px 20px;
+  border: 1px solid rgba(var(--accent-rgb), 0.2);
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.05) 0%, rgba(var(--accent-rgb), 0.02) 100%);
+  border-radius: 16px;
+  height: 100%;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 `;
 
 const RationaleTitle = styled.div`
-  font-size: 13px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: 6px;
 
   svg {
     width: 14px;
@@ -435,23 +541,29 @@ const RationaleTitle = styled.div`
 `;
 
 const RationaleContent = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
   line-height: 1.6;
 `;
 
 const RationaleEmpty = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
   font-style: italic;
-  text-align: center;
-  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 `;
 
 // Accordion for Key Highlights
 const AccordionWrapper = styled.div`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  padding: 0 ${({ theme }) => theme.spacing.md};
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border-radius: 16px;
+  padding: 0 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.1);
 `;
 
 const AccordionTrigger = styled.button<{ $isOpen: boolean }>`
@@ -521,7 +633,7 @@ const ChevronDownIcon = () => (
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
-    strokeWidth={1.5}
+    strokeWidth={2}
     stroke="currentColor"
   >
     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -530,18 +642,79 @@ const ChevronDownIcon = () => (
 
 const ActionButtonsWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: 12px;
+  margin-left: auto; /* Push buttons to the right */
+`;
 
-  button {
-    display: inline-flex;
-    align-items: center;
-    gap: ${({ theme }) => theme.spacing.xs};
-    white-space: nowrap;
+const GlassButton = styled.button<{ $variant?: 'primary' | 'secondary' | 'ghost', $size?: 'sm' | 'md' }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  
+  /* Size */
+  ${({ $size = 'md' }) => 
+    $size === 'sm' 
+      ? 'padding: 8px 16px; font-size: 13px;'
+      : 'padding: 10px 20px; font-size: 14px;'
   }
 
-  @media (min-width: 768px) {
-    flex-direction: row;
+  /* Variants */
+  ${({ $variant = 'secondary' }) => {
+    switch ($variant) {
+      case 'primary':
+        return `
+          background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.6));
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: #ffffff;
+          box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+          
+          &:hover {
+            background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.9), rgba(var(--accent-rgb), 0.7));
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+          }
+        `;
+      case 'ghost':
+        return `
+          background: transparent;
+          border: 1px solid transparent;
+          color: rgba(255, 255, 255, 0.6);
+          box-shadow: none;
+          
+          &:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.08);
+          }
+        `;
+      case 'secondary':
+      default:
+        return `
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+          
+          &:hover {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+          }
+        `;
+    }
+  }}
+
+  &:active {
+    transform: translateY(1px);
   }
 `;
 
@@ -875,16 +1048,15 @@ export function CoverLetterGenerator({
         ]}
       />
 
-      {/* Right Sheet - Generation Form (only for new letters) */}
-      <Sheet
+      {/* Modal - Generation Form (only for new letters) */}
+      <Modal
         isOpen={isOpen && !existingLetter}
         onClose={onClose}
         title="Generate Cover Letter"
         description="Create a personalized, customizable cover letter with AI assistance"
-        size="lg"
-        side="right"
+        size="md"
       >
-        <Sheet.Body>
+        <Modal.Body>
           <GeneratorContent>
             <OptionSection>
               <OptionLabel>Template</OptionLabel>
@@ -999,27 +1171,30 @@ export function CoverLetterGenerator({
               </CustomizationSection>
             </OptionSection>
 
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', margin: '0 8px 12px 0' }}>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={onClose}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleGenerate}
-              >
-                Generate
-              </Button>
-            </div>
+            <Modal.Footer>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', width: '100%' }}>
+                <GlassButton
+                  $size="md"
+                  $variant="ghost"
+                  onClick={onClose}
+                >
+                  Cancel
+                </GlassButton>
+                <GlassButton
+                  $size="md"
+                  $variant="primary"
+                  onClick={handleGenerate}
+                >
+                  Generate
+                </GlassButton>
+              </div>
+            </Modal.Footer>
           </GeneratorContent>
-        </Sheet.Body>
-      </Sheet>
+        </Modal.Body>
+      </Modal>
 
-      {/* Bottom Sheet - Editor/Viewer */}
-      <Sheet
+      {/* Modal - Editor/Viewer */}
+      <Modal
         isOpen={isEditorSheetOpen}
         onClose={() => {
           setIsEditorSheetOpen(false);
@@ -1031,14 +1206,15 @@ export function CoverLetterGenerator({
         title="Cover Letter"
         description={generatedLetter ? `${generatedLetter.wordCount} words` : undefined}
         size="xl"
-        side="bottom"
       >
-        <Sheet.Body>
+        <Modal.Body>
           {generatedLetter && (
-            <GeneratorContent>
+            <GeneratorContent style={{ padding: '0 20px 20px' }}>
               {generatedLetter.paragraphs && generatedLetter.paragraphs.length > 0 ? (
-                <EditorContainer>
-                  <ParagraphsContainer>
+                <TwoColumnGrid>
+                  {/* Left Column: The Application Letter */}
+                  <EditorColumn>
+                    <ParagraphsContainer>
                     {generatedLetter.paragraphs.map((paragraph) => (
                       <ParagraphCard
                         key={paragraph.id}
@@ -1076,96 +1252,73 @@ export function CoverLetterGenerator({
                         </SentenceContainer>
                       </ParagraphCard>
                     ))}
-                  </ParagraphsContainer>
-                </EditorContainer>
+                    </ParagraphsContainer>
+                  </EditorColumn>
+
+                  {/* Right Column: Insights & Rationale */}
+                  <InsightsColumn>
+                    {generatedLetter.paragraphs && generatedLetter.paragraphs.length > 0 && (
+                      <RationalePanel>
+                        <RationaleTitle>
+                          <LightbulbIcon /> Why This Content?
+                        </RationaleTitle>
+                        {activeParagraph ? (
+                          <RationaleContent>
+                            <strong style={{ display: 'block', marginBottom: '8px', fontSize: '12px' }}>
+                              {activeParagraph.type.replace('_', ' ').toUpperCase()}:
+                            </strong>
+                            {activeParagraph.rationale}
+                          </RationaleContent>
+                        ) : (
+                          <RationaleEmpty>
+                            Hover over a paragraph to see why it was included. AI adapts styling of thoughts accordingly.
+                          </RationaleEmpty>
+                        )}
+                      </RationalePanel>
+                    )}
+
+                    {generatedLetter.keyHighlights && generatedLetter.keyHighlights.length > 0 && (
+                      <AccordionWrapper>
+                        <AccordionTrigger
+                          $isOpen={isHighlightsOpen}
+                          onClick={() => setIsHighlightsOpen(!isHighlightsOpen)}
+                        >
+                          <AccordionTriggerText>
+                            Key Highlights ({generatedLetter.keyHighlights.length})
+                          </AccordionTriggerText>
+                          <AccordionChevron $isOpen={isHighlightsOpen}>
+                            <ChevronDownIcon />
+                          </AccordionChevron>
+                        </AccordionTrigger>
+                        <AccordionContent $isOpen={isHighlightsOpen}>
+                          <AccordionContentInner>
+                            <AccordionContentPadding>
+                              {generatedLetter.keyHighlights.map((highlight, index) => (
+                                <HighlightItem key={index}>
+                                  <span>{highlight}</span>
+                                </HighlightItem>
+                              ))}
+                            </AccordionContentPadding>
+                          </AccordionContentInner>
+                        </AccordionContent>
+                      </AccordionWrapper>
+                    )}
+                  </InsightsColumn>
+                </TwoColumnGrid>
               ) : (
                 <div style={{
-                  padding: '16px',
-                  background: 'var(--bg-alt)',
-                  borderRadius: '0',
+                  padding: '24px',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  borderRadius: '16px',
                   whiteSpace: 'pre-wrap',
                   lineHeight: '1.8',
-                  maxHeight: '300px',
+                  maxHeight: '600px',
                   overflowY: 'auto'
                 }}>
                   {generatedLetter.content}
                 </div>
               )}
-
-              {/* Bottom Row: Why This Content, Key Highlights, Actions */}
-              <BottomRow>
-                {generatedLetter.paragraphs && generatedLetter.paragraphs.length > 0 && (
-                  <BottomRowItem>
-                    <RationalePanel>
-                      <RationaleTitle>
-                        <LightbulbIcon /> Why This Content?
-                      </RationaleTitle>
-                      {activeParagraph ? (
-                        <RationaleContent>
-                          <strong style={{ display: 'block', marginBottom: '4px', fontSize: '12px' }}>
-                            {activeParagraph.type.replace('_', ' ').toUpperCase()}:
-                          </strong>
-                          {activeParagraph.rationale}
-                        </RationaleContent>
-                      ) : (
-                        <RationaleEmpty>
-                          Hover over a paragraph to see why it was included.
-                        </RationaleEmpty>
-                      )}
-                    </RationalePanel>
-                  </BottomRowItem>
-                )}
-
-                {generatedLetter.keyHighlights && generatedLetter.keyHighlights.length > 0 && (
-                  <BottomRowItem>
-                    <AccordionWrapper>
-                      <AccordionTrigger
-                        $isOpen={isHighlightsOpen}
-                        onClick={() => setIsHighlightsOpen(!isHighlightsOpen)}
-                      >
-                        <AccordionTriggerText>
-                          Key Highlights ({generatedLetter.keyHighlights.length})
-                        </AccordionTriggerText>
-                        <AccordionChevron $isOpen={isHighlightsOpen}>
-                          <ChevronDownIcon />
-                        </AccordionChevron>
-                      </AccordionTrigger>
-                      <AccordionContent $isOpen={isHighlightsOpen}>
-                        <AccordionContentInner>
-                          <AccordionContentPadding>
-                            {generatedLetter.keyHighlights.map((highlight, index) => (
-                              <HighlightItem key={index}>
-                                <span>{highlight}</span>
-                              </HighlightItem>
-                            ))}
-                          </AccordionContentPadding>
-                        </AccordionContentInner>
-                      </AccordionContent>
-                    </AccordionWrapper>
-                  </BottomRowItem>
-                )}
-
-                <ActionButtonsWrapper>
-                  <Button onClick={handleCopy} variant="primary" size="sm">
-                    <CopyIcon /> Copy
-                  </Button>
-                  <Button onClick={handleDownload} variant="ghost" size="sm">
-                    <DownloadIcon /> Download
-                  </Button>
-                  {!existingLetter && (
-                    <Button
-                      onClick={() => {
-                        setIsEditorSheetOpen(false);
-                        setGeneratedLetter(null);
-                      }}
-                      variant="ghost"
-                      size="sm"
-                    >
-                      <RefreshIcon size={16} /> New
-                    </Button>
-                  )}
-                </ActionButtonsWrapper>
-              </BottomRow>
 
               {/* Alternatives Select Dropdown - rendered via portal */}
               {selectedSentence && selectedSentenceData && selectedSentenceData.alternatives && typeof document !== 'undefined' &&
@@ -1204,8 +1357,30 @@ export function CoverLetterGenerator({
               }
             </GeneratorContent>
           )}
-        </Sheet.Body>
-      </Sheet>
+        </Modal.Body>
+        <Modal.Footer>
+          <ActionButtonsWrapper>
+            <GlassButton onClick={handleCopy} $variant="primary" $size="sm">
+              <CopyIcon /> Copy
+            </GlassButton>
+            <GlassButton onClick={handleDownload} $variant="secondary" $size="sm">
+              <DownloadIcon /> Download
+            </GlassButton>
+            {!existingLetter && (
+              <GlassButton
+                onClick={() => {
+                  setIsEditorSheetOpen(false);
+                  setGeneratedLetter(null);
+                }}
+                $variant="ghost"
+                $size="sm"
+              >
+                <RefreshIcon size={16} /> New
+              </GlassButton>
+            )}
+          </ActionButtonsWrapper>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

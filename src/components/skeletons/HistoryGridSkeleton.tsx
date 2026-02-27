@@ -47,7 +47,7 @@ export const HistoryGridSkeleton = () => {
         <Card key={i}>
           <ScorePlaceholder />
           <MetaRow>
-            <SkeletonTitle width="60%" height="20px" style={{ marginBottom: 4 }} />
+            <SkeletonTitle width="60%" height="20px" className="mb-1" />
             <SkeletonText width="40%" height="14px" />
           </MetaRow>
         </Card>

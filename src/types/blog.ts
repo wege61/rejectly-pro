@@ -37,7 +37,7 @@ export interface BlogPost {
   created_at: string;
   updated_at: string;
   // Relations (populated via joins)
-  category?: BlogCategory;
+  category?: BlogCategory | null;
   tags?: BlogTag[];
 }
 

@@ -42,7 +42,15 @@ export async function GET() {
     .map((post) => {
       const pubDate = new Date(post.published_at || post.updated_at).toUTCString();
       const description = post.excerpt || stripHtml(post.content);
-      const categoryName = (post.category as { name: string } | null)?.name;
+      
+      let categoryName: string | undefined;
+      if (post.category) {
+        if (Array.isArray(post.category) && post.category.length > 0) {
+          categoryName = post.category[0]?.name;
+        } else if (!Array.isArray(post.category)) {
+          categoryName = (post.category as any).name;
+        }
+      }
 
       return `
     <item>

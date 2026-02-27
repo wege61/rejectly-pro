@@ -588,9 +588,9 @@ export function postProcessCVForATS(cv: GeneratedCVData): GeneratedCVData {
 
       return {
         ...edu,
-        degree: cleanSpecialCharacters(expandAbbreviations(edu.degree)),
-        institution: cleanSpecialCharacters(edu.institution),
-        location: edu.location ? cleanSpecialCharacters(edu.location) : undefined,
+        degree: cleanSpecialCharacters(expandAbbreviations(edu.degree || '')),
+        institution: cleanSpecialCharacters(edu.institution || ''),
+        location: cleanSpecialCharacters(edu.location || ''),
         graduationDate,
         details: edu.details
           ? cleanSpecialCharacters(expandAbbreviations(edu.details))
@@ -617,8 +617,8 @@ export function postProcessCVForATS(cv: GeneratedCVData): GeneratedCVData {
 
       return {
         ...cert,
-        name: cleanSpecialCharacters(expandAbbreviations(cert.name)),
-        issuer: cert.issuer ? cleanSpecialCharacters(cert.issuer) : undefined,
+        name: cleanSpecialCharacters(expandAbbreviations(cert.name || '')),
+        issuer: cleanSpecialCharacters(cert.issuer || ''),
         date: certDate,
       };
     }),

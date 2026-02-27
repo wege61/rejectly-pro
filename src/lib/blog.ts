@@ -78,9 +78,10 @@ export async function getBlogPosts(filters: BlogFilters = {}): Promise<{
   }
 
   // Transform the nested tags structure
-  const posts: BlogPostWithRelations[] = (data || []).map((post: BlogPost & { tags: { tag: BlogTag }[] }) => ({
+  const posts: BlogPostWithRelations[] = (data || []).map((post: BlogPost & { category: BlogCategory | null, tags: any[] }) => ({
     ...post,
-    tags: post.tags?.map(t => t.tag) || [],
+    category: post.category || null,
+    tags: post.tags?.map((t: any) => t.tag) || [],
   }));
 
   const total = count || 0;
@@ -110,8 +111,9 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPostWithRelat
   // Transform the nested tags structure
   return {
     ...data,
+    category: data.category || null,
     tags: data.tags?.map((t: { tag: BlogTag }) => t.tag) || [],
-  };
+  } as BlogPostWithRelations;
 }
 
 export async function getRelatedPosts(post: BlogPostWithRelations, limit = 3): Promise<BlogPostWithRelations[]> {
@@ -134,9 +136,10 @@ export async function getRelatedPosts(post: BlogPostWithRelations, limit = 3): P
   }
 
   // Transform posts
-  const transformedPosts: BlogPostWithRelations[] = allPosts.map((p: BlogPost & { tags: { tag: BlogTag }[] }) => ({
+  const transformedPosts: BlogPostWithRelations[] = allPosts.map((p: BlogPost & { category: BlogCategory | null, tags: any[] }) => ({
     ...p,
-    tags: p.tags?.map(t => t.tag) || [],
+    category: p.category || null,
+    tags: p.tags?.map((t: any) => t.tag) || [],
   }));
 
   // Current post's tag IDs for comparison

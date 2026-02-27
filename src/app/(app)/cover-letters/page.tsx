@@ -418,17 +418,46 @@ const ReportTabTitle = styled.div`
   letter-spacing: -0.01em;
 `;
 
-const ReportTabGenerateBtn = styled.div`
-  margin-top: 10px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--accent);
-  opacity: 0.75;
-  letter-spacing: 0.02em;
+const ReportTabSubtitle = styled.div`
+  font-size: 10.5px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
   display: flex;
   align-items: center;
   gap: 4px;
-  text-transform: uppercase;
+
+  svg { width: 10px; height: 10px; flex-shrink: 0; opacity: 0.7; }
+`;
+
+const ReportTabGenerateBtn = styled.button`
+  margin-top: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.5));
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.9), rgba(var(--accent-rgb), 0.6));
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+
+  &:active { transform: scale(0.98); }
 `;
 
 /* ── Cover letter grid: 3 columns desktop ── */
@@ -556,6 +585,430 @@ const fadeInUpMini = keyframes`
 const scrollTextMini = keyframes`
   0% { transform: translateY(0); }
   100% { transform: translateY(-50%); }
+`;
+
+/* ── Liquid Glass Empty State (matching Reports page) ── */
+const glowPulse = keyframes`
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%       { opacity: 0.55; transform: scale(1.06); }
+`;
+
+const floatOrb = keyframes`
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-18px) rotate(3deg); }
+  66%       { transform: translateY(8px) rotate(-2deg); }
+`;
+
+const shimmerSlide = keyframes`
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+`;
+
+const EmptyHero = styled.div`
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 36px 40px 44px;
+  text-align: center;
+
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(var(--accent-rgb), 0.10) 0%, transparent 70%),
+    rgba(16, 16, 22, 0.60);
+  backdrop-filter: blur(48px) saturate(180%);
+  -webkit-backdrop-filter: blur(48px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 32px 80px rgba(0,0,0,0.5);
+
+  @media (max-width: 768px) {
+    padding: 32px 20px 40px;
+  }
+`;
+
+const OrbA = styled.div`
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  top: -80px;
+  right: -60px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.14) 0%, transparent 70%);
+  animation: ${floatOrb} 9s ease-in-out infinite;
+  pointer-events: none;
+`;
+
+const OrbB = styled.div`
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  bottom: -60px;
+  left: -40px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.12) 0%, transparent 70%);
+  animation: ${floatOrb} 12s ease-in-out infinite reverse;
+  pointer-events: none;
+`;
+
+const HeroSpecular = styled.div`
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.40) 50%, transparent);
+  pointer-events: none;
+`;
+
+const HeroIconBadge = styled.div`
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%),
+    rgba(var(--accent-rgb), 0.20);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 28px rgba(var(--accent-rgb), 0.30),
+    0 3px 10px rgba(0,0,0,0.35);
+
+  svg {
+    width: 36px;
+    height: 36px;
+    color: rgba(255,255,255,0.92);
+    filter: drop-shadow(0 1px 4px rgba(var(--accent-rgb), 0.5));
+  }
+`;
+
+const HeroTitle = styled.h2`
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 10px;
+  color: rgba(255,255,255,0.95);
+
+  @media (max-width: 768px) { font-size: 22px; }
+`;
+
+const HeroSubtitle = styled.p`
+  font-size: 14px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.60;
+  max-width: 420px;
+  margin: 0 auto 24px;
+  letter-spacing: -0.01em;
+`;
+
+const StepsRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+  max-width: 580px;
+  margin-bottom: 28px;
+  position: relative;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+`;
+
+const StepConnector = styled.div`
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 100%);
+  margin-top: 22px;
+  flex-shrink: 1;
+
+  @media (max-width: 640px) { display: none; }
+`;
+
+const Step = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  width: 130px;
+
+  @media (max-width: 640px) {
+    width: 100%;
+    max-width: 260px;
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+  }
+`;
+
+const StepNum = styled.div<{ $n: 1 | 2 | 3 }>`
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+
+  background: ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(var(--accent-rgb), 0.18)';
+      case 2: return 'rgba(102, 126, 234, 0.18)';
+      case 3: return 'rgba(16, 185, 129, 0.18)';
+    }
+  }};
+  border: 1px solid ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(var(--accent-rgb), 0.35)';
+      case 2: return 'rgba(102, 126, 234, 0.35)';
+      case 3: return 'rgba(16, 185, 129, 0.35)';
+    }
+  }};
+  color: ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'var(--accent)';
+      case 2: return '#818cf8';
+      case 3: return '#34d399';
+    }
+  }};
+`;
+
+const StepText = styled.div`
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.48);
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+  text-align: center;
+
+  @media (max-width: 640px) { text-align: left; }
+`;
+
+const HeroCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.22) 0%,
+    rgba(255,255,255,0.0) 100%
+  ), rgba(var(--accent-rgb), 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 32px rgba(var(--accent-rgb), 0.45),
+    0 2px 8px rgba(0,0,0,0.3);
+
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.70),
+      0 16px 56px rgba(var(--accent-rgb), 0.55),
+      0 4px 16px rgba(0,0,0,0.35);
+  }
+
+  &:active { transform: scale(0.98); }
+
+  svg { width: 20px; height: 20px; flex-shrink: 0; }
+`;
+
+const HeroCTASecondary = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.60);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.22);
+  }
+`;
+
+const HeroCTARow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+/* ── Inline empty state (inside ContentBody when letters = 0) ── */
+const InlineEmptyHero = styled.div`
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 52px 32px 56px;
+  text-align: center;
+
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(var(--accent-rgb), 0.08) 0%, transparent 70%),
+    rgba(16, 16, 22, 0.40);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 32px rgba(0,0,0,0.3);
+`;
+
+const InlineOrbA = styled.div`
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  top: -60px;
+  right: -40px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.10) 0%, transparent 70%);
+  animation: ${floatOrb} 9s ease-in-out infinite;
+  pointer-events: none;
+`;
+
+const InlineOrbB = styled.div`
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  bottom: -40px;
+  left: -20px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.09) 0%, transparent 70%);
+  animation: ${floatOrb} 12s ease-in-out infinite reverse;
+  pointer-events: none;
+`;
+
+const InlineHeroSpecular = styled.div`
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.30) 50%, transparent);
+  pointer-events: none;
+`;
+
+const InlineIconBadge = styled.div`
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 100%),
+    rgba(var(--accent-rgb), 0.16);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.45),
+    0 6px 22px rgba(var(--accent-rgb), 0.25),
+    0 2px 8px rgba(0,0,0,0.3);
+
+  svg {
+    width: 28px;
+    height: 28px;
+    color: rgba(255,255,255,0.88);
+    filter: drop-shadow(0 1px 3px rgba(var(--accent-rgb), 0.45));
+  }
+`;
+
+const InlineHeroTitle = styled.h3`
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  margin-bottom: 8px;
+  color: rgba(255,255,255,0.93);
+`;
+
+const InlineHeroSubtitle = styled.p`
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.60;
+  max-width: 380px;
+  margin: 0 auto 22px;
+  letter-spacing: -0.01em;
+`;
+
+const InlineCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.20) 0%,
+    rgba(255,255,255,0.0) 100%
+  ), rgba(var(--accent-rgb), 0.70);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.50),
+    0 6px 24px rgba(var(--accent-rgb), 0.40),
+    0 2px 6px rgba(0,0,0,0.25);
+
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.65),
+      0 12px 40px rgba(var(--accent-rgb), 0.50),
+      0 3px 12px rgba(0,0,0,0.3);
+  }
+
+  &:active { transform: scale(0.98); }
+
+  svg { width: 16px; height: 16px; flex-shrink: 0; }
 `;
 
 // Mini Report Card Styled Components (matching reports page style - compact version)
@@ -1000,14 +1453,25 @@ const CoverLetterCTAContainer = styled.div`
 const CoverLetterCTALink = styled.span`
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   color: var(--accent);
-  font-weight: 500;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(var(--accent-rgb), 0.12);
+  border: 1px solid rgba(var(--accent-rgb), 0.2);
+  transition: all 0.2s ease;
+
+  svg { width: 14px; height: 14px; }
 
   &:hover {
-    text-decoration: underline;
+    background: rgba(var(--accent-rgb), 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
+
+  &:active { transform: scale(0.98); }
 `;
 
 const CoverLetterActions = styled.div`
@@ -1471,6 +1935,56 @@ export default function CoverLettersPage() {
         </CreditsCardWrapper>
       </Header>
 
+      {/* ── No reports at all: full liquid glass hero ── */}
+      {reports.length === 0 && (
+        <EmptyHero>
+          <OrbA />
+          <OrbB />
+          <HeroSpecular />
+
+          <HeroIconBadge>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+          </HeroIconBadge>
+
+          <HeroTitle>Create your first cover letter</HeroTitle>
+          <HeroSubtitle>
+            Cover letters are generated from your Job Match reports. Run an analysis first, then come back here to craft a personalized letter in seconds.
+          </HeroSubtitle>
+
+          <StepsRow>
+            <Step>
+              <StepNum $n={1}>1</StepNum>
+              <StepText>Run a Job Match analysis on your CV</StepText>
+            </Step>
+            <StepConnector />
+            <Step>
+              <StepNum $n={2}>2</StepNum>
+              <StepText>Select a report and choose your tone</StepText>
+            </Step>
+            <StepConnector />
+            <Step>
+              <StepNum $n={3}>3</StepNum>
+              <StepText>AI generates your personalized letter</StepText>
+            </Step>
+          </StepsRow>
+
+          <HeroCTARow>
+            <HeroCTAButton onClick={() => router.push(ROUTES.APP.ANALYZE)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Start New Analysis
+            </HeroCTAButton>
+            <HeroCTASecondary onClick={() => router.push(ROUTES.APP.REPORTS)}>
+              View my reports
+            </HeroCTASecondary>
+          </HeroCTARow>
+        </EmptyHero>
+      )}
+
       {/* ── Report tab strip ── */}
       {reports.length > 0 && (
         <ReportFilterStrip>
@@ -1516,6 +2030,16 @@ export default function CoverLettersPage() {
                   </ReportTabLetterCount>
                 </ReportTabTop>
                 <ReportTabTitle>{report.job?.title || 'Job Analysis'}</ReportTabTitle>
+                <ReportTabSubtitle>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                  {report.cv?.title || 'Your CV'}
+                </ReportTabSubtitle>
                 {isActive && (
                   <ReportTabGenerateBtn
                     onClick={(e) => {
@@ -1523,7 +2047,7 @@ export default function CoverLettersPage() {
                       handleReportClick(report.id);
                     }}
                   >
-                    ✦ Generate new letter →
+                    ✦ Write with this report
                   </ReportTabGenerateBtn>
                 )}
               </ReportFilterTab>
@@ -1564,17 +2088,40 @@ export default function CoverLettersPage() {
           )}
 
           {filteredCoverLetters.length === 0 ? (
-            <Card variant="bordered">
-              <EmptyState
-                icon={<EmptyState.DocumentIcon />}
-                title={filterReport ? `No letters for "${filterReport.job?.title || 'this report'}" yet` : 'No cover letters yet'}
-                description={
-                  filterReport
-                    ? 'Use the "✦ Generate new letter →" button in the tab above to create one.'
-                    : 'Click on a report tab above to select a report and generate your first cover letter.'
-                }
-              />
-            </Card>
+            <InlineEmptyHero>
+              <InlineOrbA />
+              <InlineOrbB />
+              <InlineHeroSpecular />
+
+              <InlineIconBadge>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+              </InlineIconBadge>
+
+              <InlineHeroTitle>
+                {filterReport
+                  ? `No letters for "${filterReport.job?.title || 'this report'}" yet`
+                  : 'No cover letters yet'}
+              </InlineHeroTitle>
+              <InlineHeroSubtitle>
+                {filterReport
+                  ? 'Use the "✦ Generate new letter →" button in the tab above to write your first personalized letter for this role.'
+                  : 'Select a report tab above to filter by job, then generate your first AI-powered cover letter.'}
+              </InlineHeroSubtitle>
+
+              {filterReport && (
+                <InlineCTAButton
+                  onClick={() => handleReportClick(filterReport.id)}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  Generate letter
+                </InlineCTAButton>
+              )}
+            </InlineEmptyHero>
           ) : (
             <LetterGrid>
               {filteredCoverLetters.map((letter) => {
@@ -1616,8 +2163,11 @@ export default function CoverLettersPage() {
 
                       <CoverLetterCTAContainer className="letter-cta" onClick={(e) => e.stopPropagation()}>
                         <CoverLetterCTALink onClick={() => handleCardClick(letter)}>
-                          View & Edit
-                          <ArrowRightIconLetter />
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                          </svg>
+                          View / Edit
                         </CoverLetterCTALink>
                         <CoverLetterActions>
                           <CoverLetterActionButton

@@ -42,15 +42,15 @@ const Backdrop = styled(motion.div)`
 `;
 
 const ModalContainer = styled(motion.div)<{ $size: string }>`
-  background-color: rgba(10, 10, 10, 0.45);
+  background-color: rgba(20, 20, 28, 0.45);
   backdrop-filter: blur(60px) saturate(220%);
   -webkit-backdrop-filter: blur(60px) saturate(220%);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 36px;
   box-shadow:
-    0 40px 80px -20px rgba(0, 0, 0, 0.6),
+    0 40px 80px -20px rgba(0, 0, 0, 0.7),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
   width: 100%;
   max-height: 90vh;
   margin: auto;

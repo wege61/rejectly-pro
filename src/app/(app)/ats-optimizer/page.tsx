@@ -1375,19 +1375,44 @@ const ScoreArrow = styled.div`
   color: #10b981;
 `;
 
+
 const ImprovementBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
+  padding: 4px 10px;
   background: rgba(16, 185, 129, 0.1);
   border-radius: 20px;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 600;
   color: #10b981;
 `;
 
+const TopFixesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+`;
 
+const TopFixItem = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: #10b981;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+`;
 
 const ButtonGroup = styled.div`
   display: flex;

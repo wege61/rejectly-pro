@@ -165,6 +165,60 @@ const SectionTitle = styled.h3`
   margin: 0;
 `;
 
+const TopIssuesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const IssueAlert = styled.div<{ $severity: string }>`
+  background: ${({ $severity }) =>
+    $severity === "critical" || $severity === "high" ? "rgba(239, 68, 68, 0.08)" : "rgba(245, 158, 11, 0.08)"};
+  border: 1px solid ${({ $severity }) =>
+    $severity === "critical" || $severity === "high" ? "rgba(239, 68, 68, 0.2)" : "rgba(245, 158, 11, 0.2)"};
+  border-left: 4px solid ${({ $severity }) =>
+    $severity === "critical" || $severity === "high" ? "#ef4444" : "#f59e0b"};
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const IssueHeader = styled.div<{ $severity: string }>`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ $severity }) =>
+    $severity === "critical" || $severity === "high" ? "#ef4444" : "#f59e0b"};
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: capitalize;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const IssueText = styled.div`
+  font-size: 14px;
+  color: var(--text-color, #1f2937);
+  line-height: 1.5;
+`;
+
+const IssueSuggestion = styled.div`
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+  
+  @media (prefers-color-scheme: dark) {
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+`;
+
 // Two column grid
 const TwoColumnGrid = styled.div`
   display: grid;
@@ -277,23 +331,54 @@ export function ATSFullResult({
               )}
             </PotentialBadge>
           )}
-        </HeroContent>
 
-        {!isOptimized && (onOptimize || onDownload) && (
-          <ButtonGroup>
-            {onOptimize && (
-              <Button $primary onClick={onOptimize}>
-                Optimize resume
-              </Button>
-            )}
-            {onDownload && (
-              <Button onClick={onDownload}>
-                Download Report
-              </Button>
-            )}
-          </ButtonGroup>
-        )}
+          {!isOptimized && (onOptimize || onDownload) && (
+            <ButtonGroup>
+              {onOptimize && (
+                <Button $primary onClick={onOptimize}>
+                  Optimize resume
+                </Button>
+              )}
+              {onDownload && (
+                <Button onClick={onDownload}>
+                  Download Report
+                </Button>
+              )}
+            </ButtonGroup>
+          )}
+        </HeroContent>
       </HeroSection>
+
+      {/* Top Priority Issues (shown only if there are top issues and it's not the optimized version) */}
+      {!isOptimized && topIssues && topIssues.length > 0 && (
+        <Section>
+          <SectionTitle>Top Issues to Fix</SectionTitle>
+          <TopIssuesContainer>
+            {topIssues.slice(0, 3).map((issue, idx) => (
+              <IssueAlert key={idx} $severity={issue.severity}>
+                <IssueHeader $severity={issue.severity}>
+                  {issue.severity === "critical" || issue.severity === "high" ? (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                  )}
+                  {issue.category ? `${issue.category} ${issue.severity}` : issue.severity} Issue
+                </IssueHeader>
+                <IssueText>{issue.issue}</IssueText>
+                {(issue.suggestion || issue.recommendation) && (
+                  <IssueSuggestion>
+                    <strong>💡 Suggestion:</strong> {issue.suggestion || issue.recommendation}
+                  </IssueSuggestion>
+                )}
+              </IssueAlert>
+            ))}
+          </TopIssuesContainer>
+        </Section>
+      )}
 
       {/* Categories - 2x2 grid */}
       <Section>

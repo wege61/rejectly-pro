@@ -25,21 +25,21 @@ interface CVCustomizationModalProps {
 const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: 24px;
 
   @media (max-width: 640px) {
-    gap: ${({ theme }) => theme.spacing.md};
+    gap: 16px;
   }
 `;
 
 const SectionTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin: 0 0 ${({ theme }) => theme.spacing.sm} 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 12px 0;
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: 8px;
 
   svg {
     width: 18px;
@@ -49,12 +49,16 @@ const SectionTitle = styled.h3`
 `;
 
 const PhotoSection = styled.div`
-  background: ${({ theme }) => theme.colors.surfaceHover};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
+  background: rgba(30, 30, 40, 0.4);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.2);
 
   @media (max-width: 640px) {
-    padding: 14px;
+    padding: 16px;
   }
 `;
 
@@ -98,25 +102,34 @@ const PhotoPreview = styled.div`
 const PhotoOptions = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: 10px;
   flex: 1;
 `;
 
 const PhotoOption = styled.label<{ $isSelected: boolean }>`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  gap: 12px;
+  padding: 12px 16px;
   background: ${({ $isSelected }) =>
-    $isSelected ? "var(--accent-light, rgba(99, 102, 241, 0.08))" : "transparent"};
-  border: 1.5px solid ${({ $isSelected }) => ($isSelected ? "var(--accent)" : "transparent")};
-  border-radius: ${({ theme }) => theme.radius.md};
+    $isSelected ? "rgba(var(--accent-rgb), 0.12)" : "rgba(255,255,255,0.03)"};
+  border: 1px solid ${({ $isSelected }) => ($isSelected ? "rgba(var(--accent-rgb), 0.5)" : "rgba(255,255,255,0.08)")};
+  border-radius: 14px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(10px);
+
+  ${({ $isSelected }) =>
+    $isSelected &&
+    `
+    box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+  `}
 
   &:hover {
     background: ${({ $isSelected }) =>
-      $isSelected ? "var(--accent-light, rgba(99, 102, 241, 0.12))" : "rgba(0,0,0,0.03)"};
+      $isSelected ? "rgba(var(--accent-rgb), 0.16)" : "rgba(255,255,255,0.06)"};
+    border-color: ${({ $isSelected }) => ($isSelected ? "rgba(var(--accent-rgb), 0.6)" : "rgba(255,255,255,0.12)")};
+    transform: translateY(-1px);
   }
 
   input {
@@ -128,50 +141,55 @@ const RadioCircle = styled.span<{ $isSelected: boolean }>`
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 2px solid ${({ $isSelected }) => ($isSelected ? "var(--accent)" : "var(--border-color)")};
+  border: 2px solid ${({ $isSelected }) => ($isSelected ? "var(--accent)" : "rgba(255,255,255,0.3)")};
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
+  background: ${({ $isSelected }) => ($isSelected ? "rgba(var(--accent-rgb), 0.2)" : "rgba(0,0,0,0.2)")};
 
   &::after {
     content: "";
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--accent);
     opacity: ${({ $isSelected }) => ($isSelected ? 1 : 0)};
-    transition: opacity 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: scale(${({ $isSelected }) => ($isSelected ? 1 : 0.5)});
   }
 `;
 
 const OptionLabel = styled.span`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.9);
 `;
 
 const DropzoneArea = styled.div<{ $isDragActive: boolean }>`
-  border: 2px dashed
-    ${({ $isDragActive }) => ($isDragActive ? "var(--accent)" : "var(--border-color)")};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.xl};
+  border: 1.5px dashed
+    ${({ $isDragActive }) => ($isDragActive ? "rgba(var(--accent-rgb), 0.8)" : "rgba(255,255,255,0.15)")};
+  border-radius: 16px;
+  padding: 24px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   background: ${({ $isDragActive }) =>
-    $isDragActive ? "var(--accent-light, rgba(99, 102, 241, 0.05))" : "transparent"};
+    $isDragActive ? "rgba(var(--accent-rgb), 0.08)" : "rgba(255,255,255,0.02)"};
+  backdrop-filter: blur(10px);
 
   &:hover {
-    border-color: var(--accent);
-    background: var(--accent-light, rgba(99, 102, 241, 0.03));
+    border-color: rgba(var(--accent-rgb), 0.6);
+    background: rgba(var(--accent-rgb), 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
 
   p {
-    margin: ${({ theme }) => theme.spacing.sm} 0 0 0;
-    font-size: ${({ theme }) => theme.typography.fontSize.sm};
-    color: ${({ theme }) => theme.colors.textSecondary};
+    margin: 12px 0 0 0;
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
   }
 `;
 
@@ -201,7 +219,7 @@ const LoadingState = styled.div`
 const TemplateGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: 16px;
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -213,25 +231,29 @@ const TemplateGrid = styled.div`
 `;
 
 const TemplateCard = styled.div<{ $isSelected: boolean; $color: string }>`
-  border: 2px solid
-    ${({ $isSelected, $color }) => ($isSelected ? $color : "var(--border-color)")};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.md};
+  border: 1.5px solid
+    ${({ $isSelected, $color }) => ($isSelected ? $color : "rgba(255,255,255,0.08)")};
+  border-radius: 16px;
+  padding: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  background: ${({ theme }) => theme.colors.surface};
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(30,30,40,0.5);
   position: relative;
+  backdrop-filter: blur(10px);
 
   ${({ $isSelected, $color }) =>
     $isSelected &&
     `
-    box-shadow: 0 0 0 3px ${$color}20;
+    background: rgba(255,255,255,0.04);
+    box-shadow: 0 0 20px ${$color}25, inset 0 1px 0 rgba(255,255,255,0.1);
+    transform: translateY(-2px);
   `}
 
   &:hover {
-    border-color: ${({ $color }) => $color};
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-color: ${({ $color, $isSelected }) => ($isSelected ? $color : "rgba(255,255,255,0.2)")};
+    background: rgba(255,255,255,0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -240,19 +262,20 @@ const TemplateSwatch = styled.div<{ $color: string }>`
   height: 8px;
   border-radius: 4px;
   background: ${({ $color }) => $color};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px ${({ $color }) => $color}40;
 `;
 
 const TemplateName = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.95);
   margin-bottom: 4px;
 `;
 
 const TemplateDescription = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
   line-height: 1.5;
 `;
 
@@ -272,6 +295,60 @@ const SelectedBadge = styled.div<{ $color: string }>`
     width: 14px;
     height: 14px;
     color: white;
+  }
+`;
+
+const GlassPrimaryButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: none;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%), var(--accent);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.4), 0 8px 24px rgba(var(--accent-rgb), 0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.5), 0 12px 32px rgba(var(--accent-rgb), 0.5);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+const GlassSecondaryButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: rgba(255,255,255,0.95);
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.25);
   }
 `;
 
@@ -522,17 +599,17 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="ghost" onClick={onSkip} style={{ color: 'var(--text-secondary)' }}>
+        <GlassSecondaryButton onClick={onSkip}>
           Skip Customization
-        </Button>
-        <Button variant="primary" onClick={handleConfirm} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        </GlassSecondaryButton>
+        <GlassPrimaryButton onClick={handleConfirm}>
           Save & Optimize
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <polyline points="16 16 12 12 8 16"/>
             <line x1="12" y1="12" x2="12" y2="21"/>
             <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 0 1 0 3 16.3"/>
           </svg>
-        </Button>
+        </GlassPrimaryButton>
       </Modal.Footer>
     </Modal>
   );

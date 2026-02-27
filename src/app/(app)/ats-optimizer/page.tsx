@@ -16,6 +16,8 @@ import { useCreditConfirm } from "@/hooks/useCreditConfirm";
 import { useAuth } from "@/hooks/useAuth";
 import { LoadingModal } from "@/components/ui/LoadingModal";
 import { FileUpload } from "@/components/ui/FileUpload";
+import { CVCustomizationModal } from "@/components/features/CVCustomizationModal";
+import { CVCustomizationOptions } from "@/types/cvCustomization";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
@@ -74,62 +76,7 @@ const DownloadIcon = () => (
    </svg>
 );
 
-const FAB = styled.button`
-  position: fixed;
-  bottom: 32px;
-  right: 32px;
-  width: 60px;
-  height: 60px;
-  border-radius: 9999px;
-  z-index: 90;
 
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.22) 0%,
-    rgba(255, 255, 255, 0.0) 100%
-  ), rgba(220, 60, 60, 0.38);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow:
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.55),
-    0 8px 32px rgba(220, 60, 60, 0.5),
-    0 2px 8px rgba(0, 0, 0, 0.25);
-
-  &:hover {
-    transform: scale(1.08) translateY(-3px);
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.3) 0%,
-      rgba(255, 255, 255, 0.0) 100%
-    ), rgba(230, 70, 70, 0.58);
-    box-shadow:
-      inset 0 1.5px 0 rgba(255, 255, 255, 0.65),
-      0 16px 48px rgba(220, 60, 60, 0.55),
-      0 4px 16px rgba(0, 0, 0, 0.3);
-  }
-
-  &:active { transform: scale(0.96); }
-
-  svg {
-    width: 26px;
-    height: 26px;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
-  }
-
-  @media (max-width: 768px) {
-    bottom: 24px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-  }
-`;
 
 const PlusIcon = () => (
   <svg
@@ -530,73 +477,6 @@ const ResultsSection = styled.div`
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-`;
-
-// Percentile Badge (Faz 1)
-const PercentileBadge = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  margin-top: 16px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #6366f1;
-`;
-
-const PercentileMessage = styled.p`
-  font-size: 13px;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-top: 8px;
-  font-weight: 500;
-`;
-
-// Improvement Potential Section (Faz 1)
-const ImprovementPotentialSection = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 16px;
-  padding: 20px 24px;
-  margin-bottom: 24px;
-`;
-
-const ImprovementHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-`;
-
-const ImprovementTitle = styled.h3`
-  font-size: 14px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const ImprovementScores = styled.span`
-  font-size: 14px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const ImprovementBar = styled.div`
-  height: 12px;
-  background: ${({ theme }) => theme.colors.border};
-  border-radius: 6px;
-  overflow: hidden;
-  position: relative;
-`;
-
-const ImprovementCurrent = styled.div<{ $score: number }>`
-  position: absolute;
-  height: 100%;
-  width: ${({ $score }) => $score}%;
-  background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
-  border-radius: 6px;
-  transition: width 0.5s ease;
 `;
 
 const ImprovementPotential = styled.div<{ $max: number }>`
@@ -2276,6 +2156,59 @@ const ATSUploadPrimaryBtn = styled.button`
   &:disabled { opacity: 0.40; cursor: not-allowed; }
   svg { width: 18px; height: 18px; flex-shrink: 0; }
 `;
+
+// Floating Action Button for easy access to upload
+const FAB = styled.button`
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(5, 150, 105, 0.9) 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 
+    0 8px 32px rgba(16, 185, 129, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 100;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 
+      0 12px 48px rgba(16, 185, 129, 0.5),
+      inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.95);
+  }
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  @media (max-width: 768px) {
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+`;
+
 export default function DashboardATSOptimizerPage() {
   const [step, setStep] = useState<Step>("upload");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -2284,6 +2217,11 @@ export default function DashboardATSOptimizerPage() {
   const [error, setError] = useState<string | null>(null);
   const [atsResult, setAtsResult] = useState<ATSResult | null>(null);
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
+
+  // Customization modal states
+  const [isCVCustomizationModalOpen, setIsCVCustomizationModalOpen] = useState(false);
+  const [currentDocumentId, setCurrentDocumentId] = useState<string | null>(null);
+  const [cvCustomizationOptions, setCvCustomizationOptions] = useState<CVCustomizationOptions | null>(null);
 
   // CV Selection states
   const [existingCVs, setExistingCVs] = useState<CVDocument[]>([]);
@@ -2407,6 +2345,7 @@ export default function DashboardATSOptimizerPage() {
 
     setError(null);
     setCvText(cv.text);
+    setCurrentDocumentId(cv.id); // Remember the ID for photo extraction later
     setIsUploadModalOpen(false); // Close modal
     setStep("analyzing"); // Start analysis flow
 
@@ -2469,14 +2408,26 @@ export default function DashboardATSOptimizerPage() {
       const parsedText = parseData.text;
       setCvText(parsedText);
 
-      // Step 2: Upload the file to save it (in background)
+      // Step 2: Upload the file to save it (wait for it so we have an ID for photos)
       const uploadFormData = new FormData();
       uploadFormData.append("file", file);
 
-      fetch("/api/cv/upload", {
+      const uploadResponse = await fetch("/api/cv/upload", {
         method: "POST",
         body: uploadFormData,
-      }).catch(console.error);
+      });
+      
+      const uploadData = await uploadResponse.json();
+      
+      if (!uploadResponse.ok) {
+         throw new Error(`CV Upload Failed: ${uploadData.error || "Unknown error"}`);
+      }
+      
+      if (uploadData.document?.id) {
+         setCurrentDocumentId(uploadData.document.id);
+      } else {
+         throw new Error("CV Upload Failed: No document ID returned from server.");
+      }
 
       // Step 3: Run ATS analysis with cvText
       const analyzeResponse = await fetch("/api/ats/check", {
@@ -2501,9 +2452,11 @@ export default function DashboardATSOptimizerPage() {
   }, []);
 
 
-  const performOptimization = async () => {
+  const performOptimization = async (options?: CVCustomizationOptions) => {
     setStep("optimizing");
     setError(null);
+
+    const activeOptions = options || cvCustomizationOptions;
 
     try {
       const response = await fetch("/api/ats/optimize", {
@@ -2516,7 +2469,9 @@ export default function DashboardATSOptimizerPage() {
             categories: atsResult!.categories,
             topIssues: atsResult!.topIssues,
             quickWins: atsResult!.quickWins,
-          }
+          },
+          photoBase64: activeOptions?.photoBase64,
+          colorTemplateKey: activeOptions?.colorTemplateKey
         }),
       });
 
@@ -2547,10 +2502,27 @@ export default function DashboardATSOptimizerPage() {
       return;
     }
 
+    setIsCVCustomizationModalOpen(true);
+  };
+
+  const handleCustomizationConfirm = (options: CVCustomizationOptions) => {
+    setIsCVCustomizationModalOpen(false);
+    setCvCustomizationOptions(options);
+
     creditConfirm.requestCredit({
       action: "CV Optimization",
       creditsRequired: 1,
-      onConfirm: performOptimization,
+      onConfirm: () => performOptimization(options),
+    });
+  };
+
+  const handleCustomizationSkip = () => {
+    setIsCVCustomizationModalOpen(false);
+    
+    creditConfirm.requestCredit({
+      action: "CV Optimization",
+      creditsRequired: 1,
+      onConfirm: () => performOptimization(),
     });
   };
 
@@ -2604,6 +2576,7 @@ export default function DashboardATSOptimizerPage() {
     setError(null);
     setAtsResult(null);
     setOptimizationResult(null);
+    setCurrentDocumentId(null);
     setIsUploadModalOpen(false); // Ensure modal is closed
   };
 
@@ -2724,10 +2697,7 @@ export default function DashboardATSOptimizerPage() {
             </HistorySection>
           )}
 
-          {/* FAB for Upload */}
-          <FAB onClick={() => setIsUploadModalOpen(true)}>
-            <PlusIcon />
-          </FAB>
+
         </>
       ) : (
         /* Not in 'upload' step - render the wizard content (Analyzing, Result, Optimized) */
@@ -2762,9 +2732,9 @@ export default function DashboardATSOptimizerPage() {
                       summary={atsResult.summary}
                       categories={atsResult.categories}
                       hasContactInfo={atsResult.metadata?.hasContactInfo || { email:false, phone:false, linkedin:false, location:false }}
-                      parsingChecks={atsResult.parsingChecks}
-                      keywordStats={atsResult.metadata?.keywordStats}
-                      wordCount={atsResult.metadata?.wordCount}
+                      parsingChecks={atsResult.parsingChecks || { singleColumn: { ok: false, note: "" }, standardSections: { ok: false, note: "" }, cleanCharacters: { ok: false, note: "" }, abbreviations: { ok: false, note: "" } }}
+                      keywordStats={atsResult.metadata?.keywordStats || { hardSkillsCount: 0, softSkillsCount: 0, actionVerbsCount: 0, quantifiedAchievements: 0 }}
+                      wordCount={atsResult.metadata?.wordCount || 0}
                       topIssues={atsResult.topIssues}
                       potentialScore={scoreAnalysis.maxPotential}
                       easyWinsPoints={scoreAnalysis.easyWinsPoints}
@@ -2787,10 +2757,10 @@ export default function DashboardATSOptimizerPage() {
                     beforeScore={optimizationResult.beforeScore}
                     summary={optResult?.summary || "Optimized."}
                     categories={optResult?.categories || { format:{earnedPoints:0, maxPoints:0, issues:[], passes:[]} } as any}
-                    hasContactInfo={optResult?.metadata?.hasContactInfo}
-                    parsingChecks={optResult?.parsingChecks}
-                    keywordStats={optResult?.metadata?.keywordStats}
-                    wordCount={optResult?.metadata?.wordCount}
+                    hasContactInfo={optResult?.metadata?.hasContactInfo || { email: false, phone: false, linkedin: false, location: false }}
+                    parsingChecks={optResult?.parsingChecks || { singleColumn: { ok: false, note: "" }, standardSections: { ok: false, note: "" }, cleanCharacters: { ok: false, note: "" }, abbreviations: { ok: false, note: "" } }}
+                    keywordStats={optResult?.metadata?.keywordStats || { hardSkillsCount: 0, softSkillsCount: 0, actionVerbsCount: 0, quantifiedAchievements: 0 }}
+                    wordCount={optResult?.metadata?.wordCount || 0}
                     changes={optimizationResult.changes}
                     downloadUrl={optimizationResult.pdfUrl}
                     onPreview={handlePreviewCV}
@@ -2999,8 +2969,8 @@ export default function DashboardATSOptimizerPage() {
           <Button variant="ghost" onClick={() => setDeleteModalOpen(false)} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button 
-            variant="danger" 
+          <Button
+            variant="danger"
             onClick={handleDeleteConfirm}
             disabled={isDeleting}
           >
@@ -3009,6 +2979,21 @@ export default function DashboardATSOptimizerPage() {
         </Modal.Footer>
       </Modal>
 
+      {/* CV Customization Modal */}
+      <CVCustomizationModal
+        isOpen={isCVCustomizationModalOpen}
+        onClose={() => setIsCVCustomizationModalOpen(false)}
+        onConfirm={handleCustomizationConfirm}
+        onSkip={handleCustomizationSkip}
+        documentId={currentDocumentId || undefined}
+      />
+
+      {/* Floating Action Button */}
+      {step !== "analyzing" && step !== "optimizing" && (
+        <FAB onClick={() => setIsUploadModalOpen(true)} aria-label="Optimize another resume">
+          <PlusIcon />
+        </FAB>
+      )}
     </Container>
   );
 }

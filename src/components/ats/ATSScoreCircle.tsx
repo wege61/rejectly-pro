@@ -9,18 +9,11 @@ interface ATSScoreCircleProps {
   animated?: boolean;
 }
 
-const getScoreColor = (score: number): string => {
-  if (score >= 85) return "var(--primary-500)";
-  if (score >= 70) return "#2a57a0ff";
-  if (score >= 50) return "#EAB308";
-  return "#F97316";
-};
-
-const getScoreData = (score: number): { label: string; description: string } => {
-  if (score >= 85) return { label: "Excellent", description: "Should parse correctly" };
-  if (score >= 70) return { label: "Good", description: "Minor parsing issues" };
-  if (score >= 50) return { label: "Fair", description: "Some data may not extract" };
-  return { label: "Poor", description: "Parsing issues detected" };
+const getScoreTheme = (score: number) => {
+  if (score >= 85) return { color: "#34C759", label: "Excellent", description: "Highly ATS Compatible" }; // Apple Green
+  if (score >= 70) return { color: "#007AFF", label: "Good", description: "Minor parsing issues" }; // Apple Blue
+  if (score >= 50) return { color: "#FF9500", label: "Fair", description: "Data extraction at risk" }; // Apple Orange
+  return { color: "#FF3B30", label: "Poor", description: "Severe parsing blocks" }; // Apple Red
 };
 
 const fillAnimation = keyframes`
@@ -31,37 +24,50 @@ const Container = styled.div<{ $size: string }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: ${({ $size }) => $size === "large" ? "20px" : $size === "medium" ? "14px" : "10px"};
+  gap: ${({ $size }) => $size === "large" ? "24px" : "16px"};
 `;
 
-const CircleWrapper = styled.div<{ $size: string; $color: string }>`
+// Apple-style deeply frosted panel behind the circle
+const CircleWrapper = styled.div<{ $size: string }>`
   position: relative;
-  width: ${({ $size }) => $size === "large" ? "200px" : $size === "medium" ? "150px" : "100px"};
-  height: ${({ $size }) => $size === "large" ? "200px" : $size === "medium" ? "150px" : "100px"};
+  width: ${({ $size }) => $size === "large" ? "240px" : $size === "medium" ? "180px" : "120px"};
+  height: ${({ $size }) => $size === "large" ? "240px" : $size === "medium" ? "180px" : "120px"};
   border-radius: 50%;
-  background: ${({ $color }) => `${$color}08`};
+  
+  /* Deep blur liquid glass */
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(40px) saturate(140%);
+  -webkit-backdrop-filter: blur(40px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const SVG = styled.svg`
   transform: rotate(-90deg);
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
+  position: absolute;
 `;
 
 const BackgroundCircle = styled.circle`
   fill: none;
-  stroke: var(--border-color, #e5e7eb);
-  stroke-width: 10;
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 6;
 `;
 
 const ProgressCircle = styled.circle<{ $color: string; $animated: boolean }>`
   fill: none;
-  stroke: ${({ $color }) => $color};
-  stroke-width: 10;
+  stroke-width: 6;
   stroke-linecap: round;
-  transition: stroke-dashoffset 1s ease-out;
-  animation: ${({ $animated }) => $animated ? fillAnimation : "none"} 1.2s ease-out;
-  filter: drop-shadow(0 0 6px ${({ $color }) => `${$color}40`});
+  stroke: ${({ $color }) => $color};
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: ${({ $animated }) => $animated ? fillAnimation : "none"} 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Very soft glow, not neon */
+  filter: drop-shadow(0 0 4px ${({ $color }) => `${$color}30`});
 `;
 
 const ScoreContainer = styled.div`
@@ -71,36 +77,43 @@ const ScoreContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 `;
 
 const ScoreNumber = styled.span<{ $size: string; $color: string }>`
-  font-size: ${({ $size }) => $size === "large" ? "56px" : $size === "medium" ? "40px" : "28px"};
-  font-weight: 800;
+  font-size: ${({ $size }) => $size === "large" ? "64px" : $size === "medium" ? "48px" : "32px"};
+  font-weight: 700;
   color: ${({ $color }) => $color};
   line-height: 1;
-  letter-spacing: -2px;
+  letter-spacing: -1.5px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 `;
 
 const ScoreMax = styled.span<{ $size: string }>`
-  font-size: ${({ $size }) => $size === "large" ? "14px" : $size === "medium" ? "12px" : "10px"};
-  color: var(--text-secondary, #6b7280);
+  font-size: ${({ $size }) => $size === "large" ? "14px" : "12px"};
+  color: rgba(255, 255, 255, 0.5);
   margin-top: 4px;
+  font-weight: 500;
 `;
 
 const LabelContainer = styled.div`
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;
 
 const Label = styled.div<{ $color: string }>`
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: ${({ $color }) => $color};
-  margin-bottom: 4px;
+  letter-spacing: -0.3px;
 `;
 
 const Description = styled.div`
-  font-size: 13px;
-  color: var(--text-secondary, #6b7280);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
 `;
 
 export function ATSScoreCircle({
@@ -109,8 +122,7 @@ export function ATSScoreCircle({
   showLabel = true,
   animated = true
 }: ATSScoreCircleProps) {
-  const color = getScoreColor(score);
-  const { label, description } = getScoreData(score);
+  const theme = getScoreTheme(score);
 
   const radius = 42;
   const circumference = 2 * Math.PI * radius;
@@ -119,29 +131,29 @@ export function ATSScoreCircle({
 
   return (
     <Container $size={size}>
-      <CircleWrapper $size={size} $color={color}>
+      <CircleWrapper $size={size}>
         <SVG viewBox="0 0 100 100">
           <BackgroundCircle cx="50" cy="50" r={radius} />
           <ProgressCircle
             cx="50"
             cy="50"
             r={radius}
-            $color={color}
+            $color={theme.color}
             $animated={animated}
             strokeDasharray={circumference}
             strokeDashoffset={offset}
           />
         </SVG>
         <ScoreContainer>
-          <ScoreNumber $size={size} $color={color}>{score}</ScoreNumber>
-          <ScoreMax $size={size}>of 100</ScoreMax>
+          <ScoreNumber $size={size} $color={theme.color}>{score}</ScoreNumber>
+          <ScoreMax $size={size}>/ 100</ScoreMax>
         </ScoreContainer>
       </CircleWrapper>
 
       {showLabel && (
         <LabelContainer>
-          <Label $color={color}>{label}</Label>
-          <Description>{description}</Description>
+          <Label $color={theme.color}>{theme.label}</Label>
+          <Description>{theme.description}</Description>
         </LabelContainer>
       )}
     </Container>

@@ -1,6 +1,7 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+import { motion } from "motion/react";
 
 interface ATSBeforeAfterProps {
   beforeScore: number;
@@ -25,11 +26,99 @@ const Container = styled.div`
   gap: 24px;
 `;
 
-const ComparisonRow = styled.div`
+const TopMetricsRow = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
+  margin-bottom: 32px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const MetricCard = styled.div`
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(40px) saturate(140%);
+  -webkit-backdrop-filter: blur(40px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+`;
+
+const MetricValue = styled.div<{ $color: string }>`
+  font-size: 42px;
+  font-weight: 700;
+  color: ${({ $color }) => $color};
+  line-height: 1;
+  letter-spacing: -1px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin-bottom: 8px;
+`;
+
+const MetricLabel = styled.div`
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.6);
+`;
+
+const ChangesList = styled.div`
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(40px) saturate(140%);
+  -webkit-backdrop-filter: blur(40px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+`;
+
+const ListHeader = styled.div`
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const ListTitle = styled.h3`
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+`;
+
+const ChangesCountBadge = styled.span`
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+`;
+
+const ChangeRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  transition: background 0.2s ease;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -37,168 +126,55 @@ const ComparisonRow = styled.div`
   }
 `;
 
-const ScoreCard = styled.div<{ $type: "before" | "after" }>`
-  background: var(--bg-alt, #f9fafb);
-  border: 1px solid ${({ $type }) => $type === "after" ? "#059669" : "var(--border-color, #e5e7eb)"};
-  border-radius: 12px;
-  padding: 24px;
-  text-align: center;
-`;
-
-const ScoreLabel = styled.div<{ $type: "before" | "after" }>`
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: ${({ $type }) => $type === "after" ? "#059669" : "var(--text-secondary, #6b7280)"};
-  margin-bottom: 12px;
-`;
-
-const ScoreNumber = styled.div<{ $color: string }>`
-  font-size: 48px;
-  font-weight: 700;
-  color: ${({ $color }) => $color};
-  line-height: 1;
-`;
-
-const ScoreMax = styled.div`
-  font-size: 13px;
-  color: var(--text-secondary, #6b7280);
-  margin-top: 4px;
-`;
-
-const Arrow = styled.div`
+const ChangeSide = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
-
-  @media (max-width: 768px) {
-    flex-direction: row;
-    padding: 8px 0;
-  }
+  gap: 6px;
 `;
 
-const ArrowIcon = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: var(--bg-alt, #f3f4f6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary, #6b7280);
-  font-size: 18px;
-`;
-
-const ImprovementBadge = styled.div`
-  background: var(--bg-alt, #f3f4f6);
-  color: #059669;
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 600;
-`;
-
-const ChangesSection = styled.div`
-  background: var(--bg-color, #ffffff);
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 12px;
-  overflow: hidden;
-`;
-
-const ChangesSectionHeader = styled.div`
-  background: var(--bg-alt, #f9fafb);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
-`;
-
-const ChangesTitle = styled.h3`
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-color, #1f2937);
-  margin: 0;
-`;
-
-const ChangesCount = styled.span`
+const ChangeSideLabel = styled.div<{ $type: "before" | "after" }>`
   font-size: 12px;
-  color: var(--text-secondary, #6b7280);
-`;
-
-const ChangesList = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ChangeItem = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 32px 1fr;
-  gap: 12px;
-  padding: 16px;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
-  align-items: start;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-`;
-
-const ChangeColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const ChangeLabel = styled.div<{ $type: "before" | "after" }>`
-  font-size: 10px;
   font-weight: 600;
+  color: ${({ $type }) => $type === "before" ? "#FF3B30" : "#34C759"};
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: ${({ $type }) => $type === "before" ? "#dc2626" : "#059669"};
 `;
 
-const ChangeText = styled.div<{ $type: "before" | "after" }>`
-  font-size: 13px;
+const ChangeText = styled.p`
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
   line-height: 1.5;
-  color: var(--text-color, #1f2937);
-  padding: 10px 12px;
-  background: var(--bg-alt, #f9fafb);
-  border-radius: 6px;
-  border-left: 3px solid ${({ $type }) => $type === "before" ? "#dc2626" : "#059669"};
 `;
 
 const ChangeArrow = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary, #6b7280);
-  font-size: 16px;
-  padding-top: 20px;
+  color: rgba(255, 255, 255, 0.2);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 
   @media (max-width: 768px) {
-    padding: 0;
-    justify-content: flex-start;
+    transform: rotate(90deg);
   }
 `;
 
 const CategoryBadge = styled.span`
   display: inline-block;
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: var(--bg-alt, #f3f4f6);
-  color: var(--text-secondary, #6b7280);
-  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
   width: fit-content;
 `;
 
@@ -209,52 +185,50 @@ export function ATSBeforeAfter({ beforeScore, afterScore, changes }: ATSBeforeAf
 
   return (
     <Container>
-      <ComparisonRow>
-        <ScoreCard $type="before">
-          <ScoreLabel $type="before">Before</ScoreLabel>
-          <ScoreNumber $color={beforeColor}>{beforeScore}</ScoreNumber>
-          <ScoreMax>/100</ScoreMax>
-        </ScoreCard>
-
-        <Arrow>
-          <ArrowIcon>→</ArrowIcon>
-          <ImprovementBadge>+{improvement}</ImprovementBadge>
-        </Arrow>
-
-        <ScoreCard $type="after">
-          <ScoreLabel $type="after">After</ScoreLabel>
-          <ScoreNumber $color={afterColor}>{afterScore}</ScoreNumber>
-          <ScoreMax>/100</ScoreMax>
-        </ScoreCard>
-      </ComparisonRow>
+      <TopMetricsRow>
+        <MetricCard>
+          <MetricValue $color="#34C759">+{improvement}</MetricValue>
+          <MetricLabel>Score Increase</MetricLabel>
+        </MetricCard>
+        <MetricCard>
+          <MetricValue $color="#007AFF">{changes.length}</MetricValue>
+          <MetricLabel>Issues Fixed</MetricLabel>
+        </MetricCard>
+        <MetricCard>
+          <MetricValue $color="white">{afterScore}%</MetricValue>
+          <MetricLabel>New ATS Score</MetricLabel>
+        </MetricCard>
+      </TopMetricsRow>
 
       {changes.length > 0 && (
-        <ChangesSection>
-          <ChangesSectionHeader>
-            <ChangesTitle>Changes</ChangesTitle>
-            <ChangesCount>{changes.length} items</ChangesCount>
-          </ChangesSectionHeader>
-
-          <ChangesList>
+        <ChangesList>
+          <ListHeader>
+            <ListTitle>Optimization Log</ListTitle>
+            <ChangesCountBadge>{changes.length} Fixes Applied</ChangesCountBadge>
+          </ListHeader>
+          
+          <div>
             {changes.map((change, idx) => (
-              <ChangeItem key={idx}>
-                <ChangeColumn>
-                  <CategoryBadge>{change.category}</CategoryBadge>
-                  <ChangeLabel $type="before">Issue</ChangeLabel>
-                  <ChangeText $type="before">{change.issue}</ChangeText>
-                </ChangeColumn>
+              <ChangeRow key={idx}>
+                <ChangeSide>
+                  <ChangeSideLabel $type="before">Identified Issue</ChangeSideLabel>
+                  <ChangeText>{change.issue}</ChangeText>
+                </ChangeSide>
 
-                <ChangeArrow>→</ChangeArrow>
+                <ChangeArrow>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </ChangeArrow>
 
-                <ChangeColumn>
-                  <div style={{ height: "18px" }} />
-                  <ChangeLabel $type="after">Fixed</ChangeLabel>
-                  <ChangeText $type="after">{change.fix}</ChangeText>
-                </ChangeColumn>
-              </ChangeItem>
+                <ChangeSide>
+                  <ChangeSideLabel $type="after">AI Optimization</ChangeSideLabel>
+                  <ChangeText>{change.fix}</ChangeText>
+                </ChangeSide>
+              </ChangeRow>
             ))}
-          </ChangesList>
-        </ChangesSection>
+          </div>
+        </ChangesList>
       )}
     </Container>
   );

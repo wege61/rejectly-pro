@@ -110,9 +110,30 @@ export async function POST(request: NextRequest) {
 
     // 5. Generate PDF
     console.log("📄 Generating PDF...");
+    let finalPhotoBase64 = photoBase64;
+    
+    // If the photo is passed as an HTTP URL, we must fetch and convert it to Base64 for jsPDF in Node.js
+    if (finalPhotoBase64 && finalPhotoBase64.startsWith("http")) {
+      try {
+        const res = await fetch(finalPhotoBase64);
+        if (res.ok) {
+          const buffer = Buffer.from(await res.arrayBuffer());
+          const ext = finalPhotoBase64.toLowerCase().endsWith('.png') ? 'png' : 'jpeg';
+          finalPhotoBase64 = `data:image/${ext};base64,${buffer.toString('base64')}`;
+          console.log("✅ Successfully converted HTTP photo URL to Base64 for PDF generation.");
+        } else {
+          console.warn("⚠️ Failed to fetch photo from URL, proceeding without photo.");
+          finalPhotoBase64 = undefined;
+        }
+      } catch (err) {
+        console.error("⚠️ Error fetching photo URL:", err);
+        finalPhotoBase64 = undefined;
+      }
+    }
+
     const pdfDoc = await generateCVPDF(optimizedCV, undefined, {
       colorTemplate: colorTemplateKey || undefined,
-      photoBase64: photoBase64 || undefined,
+      photoBase64: finalPhotoBase64 || undefined,
     });
     const pdfBuffer = Buffer.from(pdfDoc.output("arraybuffer"));
 

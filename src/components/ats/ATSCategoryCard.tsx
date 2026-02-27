@@ -23,10 +23,11 @@ interface ATSCategoryCardProps {
   }>;
 }
 
-const getScoreColor = (percentage: number): string => {
-  if (percentage >= 70) return "var(--primary-500)";
-  if (percentage >= 50) return "#2a57a0";
-  return "#f97316";
+const getScoreColor = (percentage: number) => {
+  if (percentage >= 85) return "#34C759"; // Apple Green
+  if (percentage >= 70) return "#007AFF"; // Apple Blue
+  if (percentage >= 50) return "#FF9500"; // Apple Orange
+  return "#FF3B30"; // Apple Red
 };
 
 const CheckIcon = () => (
@@ -102,25 +103,26 @@ const ExpandedContainer = styled.div`
   z-index: 100;
 `;
 
-// Collapsed card - ReportCard style
+// Collapsed card - Apple Liquid Glass style
 const CollapsedCard = styled(motion.div)`
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  border-radius: 16px;
-  background: var(--bg-alt);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(40px) saturate(140%);
+  -webkit-backdrop-filter: blur(40px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
   min-height: 180px;
   padding: 24px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: background 0.3s ease;
 
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
   }
 `;
 
@@ -143,11 +145,11 @@ const CollapsedCTA = styled(motion.div)<{ $isMobile?: boolean }>`
   `}
 `;
 
-const CTALink = styled.span`
+const CTALink = styled.span<{ $color: string }>`
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--accent);
+  color: ${({ $color }) => $color};
   font-weight: 500;
   font-size: 14px;
 `;
@@ -160,7 +162,7 @@ const CollapsedOverlay = styled(motion.div)`
   z-index: 1;
 `;
 
-// Expanded card
+// Expanded card - Apple Liquid Glass
 const ExpandedCard = styled(motion.div)`
   position: relative;
   width: 100%;
@@ -168,7 +170,11 @@ const ExpandedCard = styled(motion.div)`
   max-height: 90%;
   display: flex;
   flex-direction: column;
-  background: var(--bg-color, #ffffff);
+  background: rgba(30, 30, 40, 0.6);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   border-radius: 24px;
   overflow: hidden;
 
@@ -176,6 +182,7 @@ const ExpandedCard = styled(motion.div)`
     height: 100%;
     max-height: 100%;
     border-radius: 0;
+    border: none;
   }
 `;
 
@@ -191,46 +198,44 @@ const ExpandedHeader = styled.div`
 
 const CloseButton = styled(motion.button)`
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: none;
-  background: var(--bg-alt, #f9fafb);
-  color: var(--text-secondary, #6b7280);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
 
   &:hover {
-    background: var(--border-color, #e5e7eb);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: scale(1.05);
   }
 `;
 
-// Score value - reports page style
+// Score value - Apple style
 const ScoreValue = styled(motion.span)<{ $color: string; $size?: "small" | "large" }>`
-  font-size: ${({ $size }) => $size === "large" ? "42px" : "42px"};
+  font-size: ${({ $size }) => $size === "large" ? "48px" : "42px"};
   font-weight: 700;
   color: ${({ $color }) => $color};
   line-height: 1;
+  letter-spacing: -1px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   &::after {
     content: '%';
-    font-size: ${({ $size }) => $size === "large" ? "28px" : "28px"};
+    font-size: ${({ $size }) => $size === "large" ? "24px" : "20px"};
     margin-left: 2px;
-    opacity: 0.7;
-  }
-
-  @media (max-width: 640px) {
-    font-size: 42px;
-
-    &::after {
-      font-size: 24px;
-    }
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
   }
 `;
 
@@ -238,14 +243,15 @@ const ScoreValue = styled(motion.span)<{ $color: string; $size?: "small" | "larg
 const CategoryName = styled(motion.h3)`
   font-weight: 600;
   font-size: 20px;
-  color: var(--text-color, #1f2937);
+  color: rgba(255, 255, 255, 0.95);
   margin: 0;
+  letter-spacing: -0.3px;
 `;
 
 // Category meta
 const CategoryMeta = styled(motion.p)`
-  font-size: 13px;
-  color: var(--text-secondary, #6b7280);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
   margin: 0;
   display: flex;
   align-items: center;
@@ -253,13 +259,10 @@ const CategoryMeta = styled(motion.p)`
   
 `;
 
-const IssueCount = styled.span<{ $hasIssues: boolean }>`
-  font-size: 12px;
+const IssueCount = styled.span<{ $hasIssues: boolean; $color: string }>`
+  font-size: 13px;
   font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 4px;
-  color: ${({ $hasIssues }) => $hasIssues ? "#F97316" : "var(--primary-500)"};
-  
+  color: ${({ $color }) => $color};
 `;
 
 // Scrollable content area
@@ -413,26 +416,19 @@ export function ATSCategoryCard({
   const [isExpanded, setIsExpanded] = useState(expanded);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const percentage = Math.round((earnedPoints / maxPoints) * 100);
   const color = getScoreColor(percentage);
   const id = useId();
   const expandedRef = useRef<HTMLDivElement>(null);
 
-  // Check for mobile viewport and dark mode
+  // Check for mobile viewport
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 1024);
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDarkMode(darkModeQuery.matches);
-    const darkModeHandler = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
-    darkModeQuery.addEventListener('change', darkModeHandler);
-
     return () => {
       window.removeEventListener('resize', checkMobile);
-      darkModeQuery.removeEventListener('change', darkModeHandler);
     };
   }, []);
 
@@ -513,10 +509,10 @@ export function ATSCategoryCard({
                 >
                   {earnedPoints}/{maxPoints} pts
                   {issues.length > 0 && (
-                    <IssueCount $hasIssues={true}>{issues.length} issues</IssueCount>
+                    <IssueCount $hasIssues={true} $color="#FF3B30">{issues.length} issues</IssueCount>
                   )}
                   {issues.length === 0 && passes.length > 0 && (
-                    <IssueCount $hasIssues={false}>All passed</IssueCount>
+                    <IssueCount $hasIssues={false} $color="#34C759">All passed</IssueCount>
                   )}
                 </CategoryMeta>
               </ExpandedHeader>
@@ -665,27 +661,21 @@ export function ATSCategoryCard({
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
         animate={{
-          y: isHovered ? -4 : 0,
+          y: isHovered ? -2 : 0,
           boxShadow: isHovered
-            ? (isDarkMode
-              ? "0 20px 40px rgba(0, 0, 0, 0.12), 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset"
-              : "0 20px 40px rgba(0, 0, 0, 0.12)")
-            : (isDarkMode
-              ? "0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset"
-              : "0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05), 0 12px 24px rgba(0, 0, 0, 0.05)")
+            ? `0 12px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08)`
+            : `0 4px 24px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.05)`
         }}
         transition={{
           type: "tween",
-          duration: 0.5,
-          ease: [0.4, 0, 0.2, 1],
-          y: { type: "tween", duration: 0.3 },
-          boxShadow: { type: "tween", duration: 0.3 }
+          duration: 0.3,
+          ease: "easeOut",
         }}
       >
         <CollapsedOverlay
           animate={{
             backgroundColor: isHovered
-              ? (isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)")
+              ? "rgba(255, 255, 255, 0.02)"
               : "rgba(0, 0, 0, 0)"
           }}
           transition={{ duration: 0.3 }}
@@ -702,7 +692,7 @@ export function ATSCategoryCard({
           </ScoreValue>
         </motion.div>
 
-        <div style={{ marginTop: '8px', zIndex: 2, position: 'relative' }}>
+        <div style={{ marginTop: '12px', zIndex: 2, position: 'relative' }}>
           <CategoryName
             layoutId={`title-${name}-${id}`}
             layout="position"
@@ -717,10 +707,10 @@ export function ATSCategoryCard({
           >
             {earnedPoints}/{maxPoints} pts
             {issues.length > 0 && (
-              <IssueCount $hasIssues={true}>{issues.length} issues</IssueCount>
+              <IssueCount $hasIssues={true} $color="#FF3B30">{issues.length} issues</IssueCount>
             )}
             {issues.length === 0 && passes.length > 0 && (
-              <IssueCount $hasIssues={false}>All passed</IssueCount>
+              <IssueCount $hasIssues={false} $color="#34C759">All passed</IssueCount>
             )}
           </CategoryMeta>
         </div>
@@ -733,7 +723,7 @@ export function ATSCategoryCard({
           }}
           transition={{ type: "tween", duration: 0.3 }}
         >
-          <CTALink>
+          <CTALink $color={color}>
             View Details
             <ArrowRightIcon />
           </CTALink>

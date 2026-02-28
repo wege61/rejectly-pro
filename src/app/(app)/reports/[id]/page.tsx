@@ -1,6 +1,6 @@
 "use client";
 
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Card } from "@/components/ui/Card";
@@ -564,6 +564,521 @@ const Grid = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
 `;
 
+// ==========================================
+// UNIFIED HERO SECTION — Apple-Level Focus
+// ==========================================
+const ProHeroSection = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 56px 32px 48px;
+  margin-bottom: 32px;
+  background: rgba(15, 15, 18, 0.6);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border-radius: 32px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: 31px;
+    background: rgba(15, 15, 18, 0.35);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+`;
+
+const ProHeroScoreRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    gap: 32px;
+  }
+`;
+
+const ProHeroScoreBlock = styled.div<{ $isPrimary?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+`;
+
+const ProHeroScoreValue = styled.div<{ $color?: string; $isPrimary?: boolean }>`
+  font-size: ${p => p.$isPrimary ? '72px' : '40px'};
+  font-weight: 600;
+  letter-spacing: -3px;
+  color: ${p => p.$color || '#ffffff'};
+  line-height: 1;
+
+  @media (max-width: 640px) {
+    font-size: ${p => p.$isPrimary ? '56px' : '32px'};
+  }
+`;
+
+const ProHeroScoreLabel = styled.div<{ $isPrimary?: boolean }>`
+  font-size: ${p => p.$isPrimary ? '14px' : '12px'};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+`;
+
+const ProHeroScorePrev = styled.span`
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.3);
+  text-decoration: line-through;
+  font-weight: 400;
+  margin-right: 12px;
+  letter-spacing: -1px;
+`;
+
+const ProHeroDivider = styled.div`
+  width: 1px;
+  height: 64px;
+  background: linear-gradient(180deg, rgba(102, 126, 234, 0.3) 0%, rgba(255, 255, 255, 0.06) 100%);
+
+  @media (max-width: 640px) {
+    width: 48px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(102, 126, 234, 0.3) 50%, transparent 100%);
+  }
+`;
+
+const ProHeroSummary = styled.p`
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: 520px;
+  margin: 0 auto 32px;
+  font-weight: 400;
+  letter-spacing: -0.1px;
+`;
+
+const ProHeroCTA = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 40px;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), rgba(238, 90, 90, 0.9);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  letter-spacing: -0.2px;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.5), 
+    0 8px 32px rgba(238, 90, 90, 0.4);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 
+      inset 0 1px 0 rgba(255, 255, 255, 0.6), 
+      0 12px 40px rgba(238, 90, 90, 0.6);
+    background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 100%), rgba(238, 90, 90, 1);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+// ==========================================
+// WHAT WE CHANGED — Merged Section
+// ==========================================
+const WhatChangedSection = styled.div`
+  margin-bottom: 32px;
+`;
+
+const WhatChangedHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+`;
+
+const WhatChangedTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  margin: 0;
+`;
+
+const WhatChangedBadge = styled.div`
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary-400);
+  padding: 5px 14px;
+  background: rgba(var(--primary-rgb, 59, 130, 246), 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(var(--primary-rgb, 59, 130, 246), 0.15);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+`;
+
+const ChangeRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(15, 15, 18, 0.5);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  &:hover {
+    background: rgba(15, 15, 18, 0.65);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transform: translateY(-1px);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const ChangeImpact = styled.div<{ $color?: string }>`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${p => p.$color || 'var(--primary-400)'};
+  min-width: 48px;
+  text-align: right;
+`;
+
+const ChangeInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const ChangeCategory = styled.div`
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+`;
+
+const ChangeProblem = styled.div`
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const ChangeArrow = styled.div`
+  color: rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+// ==========================================
+// TABBED DETAIL PANEL — Progressive Disclosure
+// ==========================================
+const DetailPanel = styled.div`
+  margin-bottom: 32px;
+`;
+
+const TabBar = styled.div`
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(15, 15, 18, 0.6);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const TabButton = styled.button<{ $active?: boolean }>`
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: ${p => p.$active ? '#ffffff' : 'rgba(255, 255, 255, 0.4)'};
+  background: ${p => p.$active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
+  border: ${p => p.$active ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid transparent'};
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  letter-spacing: -0.1px;
+  box-shadow: ${p => p.$active ? 'inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 8px rgba(0, 0, 0, 0.15)' : 'none'};
+
+  &:hover {
+    color: ${p => p.$active ? '#ffffff' : 'rgba(255, 255, 255, 0.6)'};
+    background: ${p => p.$active ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.03)'};
+  }
+`;
+
+const TabContent = styled.div`
+  position: relative;
+  padding: 28px;
+  background: rgba(15, 15, 18, 0.5);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  min-height: 120px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+`;
+
+const TabContentText = styled.div`
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.6);
+
+  strong {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+  }
+`;
+
+const TabContentList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    position: relative;
+    padding: 10px 0 10px 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 16px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary-400);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+`;
+
+const KeywordTagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+
+const KeywordTag = styled.span<{ $type?: 'added' | 'missing' }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 20px;
+  color: ${p => p.$type === 'added' ? 'var(--primary-400)' : 'rgba(255, 255, 255, 0.5)'};
+  background: ${p => p.$type === 'added' ? 'rgba(var(--primary-rgb, 59, 130, 246), 0.08)' : 'rgba(15, 15, 18, 0.5)'};
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid ${p => p.$type === 'added' ? 'rgba(var(--primary-rgb, 59, 130, 246), 0.18)' : 'rgba(255, 255, 255, 0.06)'};
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${p => p.$type === 'added' ? 'rgba(var(--primary-rgb, 59, 130, 246), 0.3)' : 'rgba(255, 255, 255, 0.1)'};
+  }
+`;
+
+const RoleItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const TabRoleTitle = styled.div`
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+`;
+
+const TabRoleFit = styled.div<{ $color?: string }>`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${p => p.$color || 'var(--primary-400)'};
+`;
+
+// ==========================================
+// FOCUSED ACTION — One Clear Path
+// ==========================================
+const ActionSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+`;
+
+const PrimaryActionButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 480px;
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--accent);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: -0.2px;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(var(--accent-rgb, 59, 130, 246), 0.3);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const SecondaryActionsRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 24px;
+`;
+
+const SecondaryActionLink = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const FakeItFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 8px;
+
+  button {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
 // Stats Bento Grid - Dashboard style
 const StatsBentoGrid = styled.div`
   display: grid;
@@ -574,6 +1089,10 @@ const StatsBentoGrid = styled.div`
 
   @media (min-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
   }
 `;
 
@@ -593,33 +1112,28 @@ const StatBentoCard = styled.div<{ $isClickable?: boolean }>`
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  border-radius: 16px;
-  background: var(--bg-alt);
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(80px) saturate(180%);
+  -webkit-backdrop-filter: blur(80px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   cursor: ${({ $isClickable }) => $isClickable ? 'pointer' : 'default'};
-  transition: all 0.3s ease;
-  min-height: 180px;
-
-  /* Light styles */
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
-
-  /* Dark styles */
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  min-height: 200px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 12px 40px rgba(0, 0, 0, 0.3);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 20px 50px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   &:hover .stat-icon {
-    transform: scale(0.85);
+    transform: scale(0.9);
   }
 
   &:hover .stat-content {
-    transform: translateY(-28px);
+    transform: translateY(-24px);
   }
 
   &:hover .stat-cta {
@@ -628,17 +1142,12 @@ const StatBentoCard = styled.div<{ $isClickable?: boolean }>`
   }
 
   &:hover .stat-overlay {
-    background: rgba(0, 0, 0, 0.03);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover .stat-overlay {
-      background: rgba(255, 255, 255, 0.05);
-    }
+    background: rgba(255, 255, 255, 0.03);
   }
 
   &:hover .stat-bg-element {
-    opacity: 0.8;
+    opacity: 1;
+    filter: blur(60px) brightness(1.1);
   }
 `;
 
@@ -679,36 +1188,40 @@ const StatBentoIcon = styled.div<{ $color?: string }>`
 `;
 
 const StatBentoValue = styled.span<{ $color?: string }>`
-  font-size: 48px;
-  font-weight: 700;
-  color: ${({ $color }) => $color || 'var(--accent)'};
+  font-size: 52px;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: -2px;
   line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 
   @media (max-width: 1024px) {
-    font-size: 40px;
+    font-size: 44px;
   }
 
   @media (max-width: 640px) {
-    font-size: 36px;
+    font-size: 40px;
   }
 `;
 
 const StatBentoTitle = styled.h3`
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-color);
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.5px;
   margin-top: 4px;
+  text-transform: uppercase;
 
   @media (max-width: 640px) {
-    font-size: 16px;
+    font-size: 13px;
   }
 `;
 
 const StatBentoDescription = styled.p`
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.4);
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.5;
+  font-weight: 400;
 `;
 
 const StatBentoCTA = styled.div`
@@ -754,8 +1267,8 @@ const StatBentoOverlay = styled.div`
   pointer-events: none;
   position: absolute;
   inset: 0;
-  transition: all 0.3s ease;
-  border-radius: 16px;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  border-radius: 32px;
 `;
 
 // Background animation elements
@@ -764,16 +1277,17 @@ const ScoreBgCircle = styled.div<{ $score: number; $size: number; $delay: number
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
   border-radius: 50%;
+  border: none;
   background: ${({ $score }) =>
-    $score >= 80
-      ? 'rgba(16, 185, 129, 0.15)'
-      : $score >= 60
-        ? 'rgba(245, 158, 11, 0.15)'
-        : 'rgba(239, 68, 68, 0.15)'};
-  animation: ${statCardPulse} 3s ease-in-out infinite;
+    $score >= 85 ? 'rgba(74, 144, 226, 0.8)' :
+    $score >= 70 ? 'rgba(66, 153, 225, 0.8)' :
+    $score >= 50 ? 'rgba(236, 201, 75, 0.8)' :
+    'rgba(245, 101, 101, 0.8)'};
+  opacity: 0.15;
+  filter: blur(60px);
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: ${statCardFloat} 8s ease-in-out infinite;
   animation-delay: ${({ $delay }) => $delay}s;
-  opacity: 0.4;
-  transition: opacity 0.3s ease;
 `;
 
 const KeywordBgTag = styled.div<{ $top: number; $left: number; $delay: number }>`
@@ -2949,11 +3463,13 @@ const FixDrawerTitleRow = styled.div`
 `;
 
 const FixDrawerImpactBadge = styled.span`
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--primary-500);
-  padding: 6px 12px;
-  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #34C759; /* Apple System Green */
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(52, 199, 89, 0.1);
+  box-shadow: 0 0 12px rgba(52, 199, 89, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 `;
 
 const FixDrawerMeta = styled.div`
@@ -2973,20 +3489,29 @@ const FixDrawerCategory = styled.span`
 
 const FixDrawerSection = styled.span`
   font-size: 12px;
-  color: var(--text-secondary);
-  padding: 2px 8px;
-  background: var(--bg-alt);
-  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
 `;
 
 const FixDrawerInfoArea = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 0 24px 20px;
+  gap: 20px;
+  padding: 24px 28px;
   max-width: 720px;
-  margin: 0 auto;
+  margin: 0 auto 16px;
   width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border-radius: 24px;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 8px 32px rgba(0, 0, 0, 0.2);
 `;
 
 const FixDrawerInfoRow = styled.div`
@@ -2998,17 +3523,19 @@ const FixDrawerInfoRow = styled.div`
 const FixDrawerInfoLabel = styled.span`
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
 `;
 
 const FixDrawerInfoText = styled.p<{ $secondary?: boolean }>`
-  font-size: ${({ $secondary }) => $secondary ? '14px' : '15px'};
+  font-size: ${({ $secondary }) => $secondary ? '15px' : '16px'};
   font-weight: ${({ $secondary }) => $secondary ? '400' : '500'};
-  color: ${({ $secondary }) => $secondary ? 'var(--text-secondary)' : 'var(--text-primary)'};
+  color: ${({ $secondary }) => $secondary ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.95)'};
   line-height: 1.5;
   margin: 0;
+  letter-spacing: -0.2px;
 `;
 
 const FixDrawerPreviewArea = styled.div`
@@ -3024,11 +3551,12 @@ const FixDrawerPreviewArea = styled.div`
 const PDFPreviewContainerDrawer = styled.div`
   width: 100%;
   max-width: 600px;
-  height: 50vh;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  height: 65vh;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   overflow: hidden;
-  background-color: var(--bg-alt);
+  background: rgba(15, 15, 18, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 `;
 
 const FakeItToggleContainer = styled.div`
@@ -3181,25 +3709,25 @@ const ResumeActionItem = styled.div<{ $disabled?: boolean; $color?: string }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 20px;
-  border-radius: 16px;
-  background: var(--bg-alt);
+  padding: 24px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(80px) saturate(180%);
+  -webkit-backdrop-filter: blur(80px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   min-height: 180px;
+  position: relative;
+  overflow: hidden;
 
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 12px 24px rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -20px 80px -20px rgba(255, 255, 255, 0.12) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 12px 40px rgba(0, 0, 0, 0.3);
 
   &:hover {
-    transform: ${({ $disabled }) => ($disabled ? 'none' : 'translateY(-4px)')};
-    box-shadow: ${({ $disabled }) => ($disabled ? 'none' : '0 20px 40px rgba(0, 0, 0, 0.12)')};
+    transform: ${({ $disabled }) => ($disabled ? 'none' : 'translateY(-2px) scale(1.01)')};
+    box-shadow: ${({ $disabled }) => ($disabled ? 'none' : 'inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 20px 50px rgba(0, 0, 0, 0.4)')};
+    border-color: ${({ $disabled }) => ($disabled ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.08)')};
   }
 
   &:hover .action-cta svg {
@@ -3212,12 +3740,26 @@ const ResumeActionIcon = styled.div<{ $color?: string }>`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: ${({ $color }) => $color || 'var(--text-color)'};
-  margin-bottom: 20px;
+  color: ${({ $color }) => $color || 'rgba(255, 255, 255, 0.9)'};
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  
+  ${ResumeActionItem}:hover & {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
 
   svg {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
   }
 `;
 
@@ -3229,16 +3771,16 @@ const ResumeActionContent = styled.div`
 `;
 
 const ResumeActionTitle = styled.div`
-  font-size: 19px;
-  font-weight: 700;
-  color: var(--text-color);
+  font-size: 18px;
+  font-weight: 500;
+  color: #ffffff;
   letter-spacing: -0.3px;
   line-height: 1.25;
 `;
 
 const ResumeActionDescription = styled.div`
   font-size: 14px;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.5);
   line-height: 1.5;
 `;
 
@@ -3283,21 +3825,39 @@ const ResumeStatusBadge = styled.div<{ $ready?: boolean }>`
 const ResumeFooter = styled.div<{ $variant?: 'default' | 'accent' }>`
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 20px;
+  gap: 16px;
+  padding: 18px 24px;
   margin: 0 24px 24px;
-  border-radius: 12px;
-  background: transparent;
-  border: 1px dashed ${({ $variant }) =>
-    $variant === 'accent' ? 'rgba(245, 158, 11, 0.35)' : 'var(--border-color)'};
+  border-radius: 24px;
+  background: ${({ $variant }) =>
+    $variant === 'accent' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.02)'};
+  backdrop-filter: blur(80px) saturate(180%);
+  -webkit-backdrop-filter: blur(80px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 12px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 10% 50%, ${({ $variant }) => $variant === 'accent' ? 'rgba(245, 158, 11, 0.05)' : 'rgba(255,255,255,0.02)'}, transparent 60%);
+    pointer-events: none;
+  }
 
   &:hover {
     background: ${({ $variant }) =>
-      $variant === 'accent' ? 'rgba(245, 158, 11, 0.06)' : 'rgba(102, 126, 234, 0.04)'};
+      $variant === 'accent' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.04)'};
     border-color: ${({ $variant }) =>
-      $variant === 'accent' ? 'rgba(245, 158, 11, 0.5)' : 'var(--primary-300)'};
+      $variant === 'accent' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.06)'};
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 20px 50px rgba(0, 0, 0, 0.4);
   }
 `;
 
@@ -3489,11 +4049,14 @@ const SectionLabel = styled.div`
 `;
 
 
-// Score Breakdown Card - FixesCard tarzında
 const ScoreBreakdownCard = styled.div`
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(80px) saturate(180%);
+  -webkit-backdrop-filter: blur(80px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 28px;
   overflow: hidden;
-
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 12px 40px rgba(0, 0, 0, 0.3);
 `;
 
 const ScoreBreakdownHeader = styled.div`
@@ -3501,7 +4064,7 @@ const ScoreBreakdownHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   gap: 16px;
   flex-wrap: wrap;
 
@@ -3534,8 +4097,11 @@ const ScoreBreakdownBadge = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
 `;
 
 const ScoreBadgeValue = styled.span<{ $muted?: boolean }>`
@@ -3594,12 +4160,14 @@ const StackedBarWrapper = styled.div`
 `;
 
 const StackedBar = styled.div`
-  height: 28px;
-  background: var(--border-color);
-  border-radius: 6px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   display: flex;
-  gap: 2px;
+  gap: 1.5px;
   padding: 2px;
 `;
 
@@ -3607,14 +4175,28 @@ const StackedBarSegment = styled.div<{ $width: number; $color: string }>`
   height: 100%;
   width: ${({ $width }) => $width}%;
   background: ${({ $color }) => $color};
-  opacity: 0.85;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  opacity: 0.95;
+  border-radius: 8px;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  overflow: hidden;
   cursor: default;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), transparent);
+    border-radius: 8px 8px 0 0;
+  }
 
   &:hover {
     opacity: 1;
-    transform: scaleY(1.08);
+    filter: brightness(1.1);
   }
 `;
 
@@ -3631,11 +4213,12 @@ const LegendItem = styled.div`
 `;
 
 const LegendDot = styled.div<{ $color: string }>`
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   background: ${({ $color }) => $color};
-  border-radius: 3px;
+  border-radius: 50%;
   flex-shrink: 0;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
 `;
 
 const LegendText = styled.div`
@@ -3665,8 +4248,8 @@ const ScoreBreakdownFooter = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  background: var(--checkbox);
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 `;
 
 const BreakdownFooterLabel = styled.span`
@@ -3779,6 +4362,710 @@ const getCategoryIcon = (category: string) => {
   return <CheckCircle />;
 };
 
+// ============================================
+// FREE REPORT UX REDESIGN — Styled Components
+// ============================================
+
+const pulseGlow = keyframes`
+  0%, 100% { box-shadow: 0 0 40px rgba(ef, 68, 68, 0.1), inset 0 0 20px rgba(ef, 68, 68, 0.05); }
+  50% { box-shadow: 0 0 60px rgba(ef, 68, 68, 0.2), inset 0 0 30px rgba(ef, 68, 68, 0.1); }
+`;
+
+// --- Hero Score Rings ---
+const FreeHeroSection = styled.div<{ $isCritical?: boolean }>`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 32px;
+  padding: 48px 24px 40px;
+  border-radius: 32px;
+  background: rgba(15, 15, 18, 0.6);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  ${({ $isCritical }) => $isCritical && css`
+    animation: ${pulseGlow} 4s ease-in-out infinite;
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(239, 68, 68, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+  `}
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+`;
+
+const ScoreRingsRow = styled.div`
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 500px) {
+    gap: 24px;
+  }
+`;
+
+const ScoreRingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+`;
+
+const ScoreRingSVG = styled.svg`
+  width: 140px;
+  height: 140px;
+
+  @media (max-width: 500px) {
+    width: 110px;
+    height: 110px;
+  }
+`;
+
+const ScoreRingLabel = styled.span`
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+`;
+
+const AIInsightText = styled.p`
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 520px;
+  margin: 0;
+`;
+
+const HeroCTAButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+  padding: 20px 32px;
+  border: none;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%), rgba(238, 90, 90, 0.9);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.5), 
+    0 8px 32px rgba(238, 90, 90, 0.4);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 
+      inset 0 1px 0 rgba(255, 255, 255, 0.6), 
+      0 12px 40px rgba(238, 90, 90, 0.6);
+    background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 100%), rgba(238, 90, 90, 1);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+// --- Score Simulator ---
+const ScoreSimulatorCard = styled.div`
+  position: relative;
+  border-radius: 20px;
+  background: rgba(15, 15, 18, 0.4);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  }
+`;
+
+const SimulatorTitle = styled.h3`
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const SimulatorStep = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const SimulatorStepBar = styled.div<{ $width: number; $color: string }>`
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: ${({ $width }) => $width}%;
+    background: ${({ $color }) => $color};
+    border-radius: 4px;
+    transition: width 1s ease;
+  }
+`;
+
+const SimulatorStepLabel = styled.span`
+  font-size: 13px;
+  color: var(--text-secondary);
+  min-width: 130px;
+  white-space: nowrap;
+`;
+
+const SimulatorStepValue = styled.span<{ $color: string }>`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ $color }) => $color};
+  min-width: 50px;
+  text-align: right;
+`;
+
+// --- Diagnosis Card ---
+const DiagnosisCard = styled.div`
+  position: relative;
+  border-radius: 20px;
+  background: rgba(15, 15, 18, 0.5);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 40px rgba(239, 68, 68, 0.05), inset 0 1px 0 rgba(239, 68, 68, 0.1);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 100%;
+    background: radial-gradient(circle at 100% 0%, rgba(239, 68, 68, 0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+`;
+
+const DiagnosisTitle = styled.h3`
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const DiagnosisRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const DiagnosisLabel = styled.span`
+  font-size: 14px;
+  color: var(--text-color);
+  font-weight: 500;
+`;
+
+const DiagnosisStatus = styled.span<{ $status: 'good' | 'warning' | 'critical' }>`
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: ${({ $status }) =>
+    $status === 'good' ? 'rgba(16, 185, 129, 0.12)' :
+    $status === 'warning' ? 'rgba(245, 158, 11, 0.12)' :
+    'rgba(239, 68, 68, 0.15)'};
+  border: 1px solid ${({ $status }) =>
+    $status === 'good' ? 'rgba(16, 185, 129, 0.2)' :
+    $status === 'warning' ? 'rgba(245, 158, 11, 0.2)' :
+    'rgba(239, 68, 68, 0.3)'};
+  color: ${({ $status }) =>
+    $status === 'good' ? '#10b981' :
+    $status === 'warning' ? '#f59e0b' :
+    '#ef4444'};
+  box-shadow: inset 0 1px 0 ${({ $status }) =>
+    $status === 'good' ? 'rgba(16, 185, 129, 0.1)' :
+    $status === 'warning' ? 'rgba(245, 158, 11, 0.1)' :
+    'rgba(239, 68, 68, 0.1)'};
+`;
+
+const DiagnosisFooter = styled.div`
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+`;
+
+// --- Interview Probability ---
+const InterviewProbabilityPill = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 16px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 24px;
+
+  @media (max-width: 500px) {
+    flex-direction: column;
+    gap: 12px;
+  }
+`;
+
+const ProbabilityItem = styled.div<{ $isGhost?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: ${({ $isGhost }) => $isGhost ? 0.5 : 1};
+`;
+
+const ProbabilityValue = styled.span<{ $color: string }>`
+  font-size: 28px;
+  font-weight: 700;
+  color: ${({ $color }) => $color};
+`;
+
+const ProbabilityLabel = styled.span`
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const ProbabilityArrow = styled.span`
+  font-size: 20px;
+  color: var(--text-secondary);
+`;
+
+// --- Blurred CV Preview ---
+const scanLaser = keyframes`
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+`;
+
+const BlurredPreviewCard = styled.div`
+  position: relative;
+  border-radius: 20px;
+  background: rgba(15, 15, 18, 0.6);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 24px;
+  margin-bottom: 24px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  &:hover {
+    border-color: rgba(102, 126, 234, 0.4);
+    box-shadow: 0 16px 48px rgba(102, 126, 234, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+`;
+
+const ScanningLaser = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(102, 126, 234, 0.8);
+  box-shadow: 0 0 15px 4px rgba(102, 126, 234, 0.4);
+  animation: ${scanLaser} 3s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+`;
+
+const FreeBlurredContent = styled.div`
+  filter: blur(6px);
+  user-select: none;
+  pointer-events: none;
+`;
+
+const BlurredLine = styled.div<{ $width: number }>`
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  margin-bottom: 8px;
+  width: ${({ $width }) => $width}%;
+`;
+
+const BlurredPreviewOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(15, 15, 18, 0.4);
+  backdrop-filter: blur(4px);
+  border-radius: 20px;
+  z-index: 3;
+
+  svg {
+    width: 48px;
+    height: 48px;
+    color: white;
+    filter: drop-shadow(0 0 12px rgba(255,255,255,0.4));
+  }
+`;
+
+const BlurredPreviewText = styled.span`
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+`;
+
+const BlurredPreviewSubtext = styled.span`
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+`;
+
+// --- Quick Win Tips ---
+const QuickWinCard = styled.div`
+  position: relative;
+  border-radius: 20px;
+  background: rgba(15, 15, 18, 0.4);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+`;
+
+const QuickWinTitle = styled.h3`
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const QuickWinTip = styled.div`
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.1);
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-color);
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+`;
+
+const QuickWinFooter = styled.div`
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+  text-align: center;
+`;
+
+// --- Frosted Lock-List ---
+const LockListCard = styled.div`
+  border-radius: 24px;
+  background: rgba(15, 15, 18, 0.5);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+`;
+
+const LockListTitle = styled.div`
+  padding: 20px 24px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+`;
+
+const LockListItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+
+  &:hover {
+    background: rgba(102, 126, 234, 0.08);
+    transform: translateX(4px);
+    
+    svg:last-child {
+      color: rgba(102, 126, 234, 0.8);
+      transform: translateX(2px);
+    }
+  }
+
+  svg:last-child {
+    transition: all 0.3s ease;
+  }
+`;
+
+const LockListLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+`;
+
+const LockListIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  color: #a3bffa;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const LockListLabel = styled.span`
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-color);
+`;
+
+const FreeKeywordsCard = styled.div`
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 24px;
+  margin-bottom: 24px;
+`;
+
+const FreeKeywordsTitle = styled.h3`
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+// --- Liquid Glass Upgrade Section ---
+const LiquidGlassUpgrade = styled.div`
+  position: relative;
+  border-radius: 32px;
+  background: rgba(15, 15, 18, 0.6);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  padding: 40px 32px;
+  text-align: center;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: 31px;
+    background: rgba(15,15,18,0.4);
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+`;
+
+const UpgradeGlassTitle = styled.h3`
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(180deg, #ffffff 0%, #a3bffa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 0 24px 0;
+  letter-spacing: -0.5px;
+`;
+
+const SocialProofRow = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+`;
+
+const GlassBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  strong {
+    color: #ffffff;
+    font-weight: 700;
+  }
+`;
+
+const GlassTestimonial = styled.div`
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-style: italic;
+`;
+
+const TestimonialAttribution = styled.span`
+  display: block;
+  margin-top: 8px;
+  font-style: normal;
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+`;
+
+const UpgradeCTAButton = styled.button`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 32px;
+  border: 1px solid rgba(102, 126, 234, 0.8);
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  background: rgba(102, 126, 234, 0.15);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(102, 126, 234, 0.25);
+    border-color: rgba(102, 126, 234, 1);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+`;
+
+const UpgradeGuarantee = styled.div`
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+`;
+
 export default function ReportDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -3824,6 +5111,7 @@ export default function ReportDetailPage() {
   const [isSummaryDrawerOpen, setIsSummaryDrawerOpen] = useState(false);
   const [isBulletPointsDrawerOpen, setIsBulletPointsDrawerOpen] = useState(false);
   const [isAtsDrawerOpen, setIsAtsDrawerOpen] = useState(false);
+  const [activeDetailTab, setActiveDetailTab] = useState<'summary' | 'keywords' | 'bullets' | 'ats' | 'roles'>('summary');
   const [optimizedScoreBreakdown, setOptimizedScoreBreakdown] = useState<ScoreBreakdown | null>(null);
   const [atsScore, setAtsScore] = useState<number | null>(null);
   const [atsScoreError, setAtsScoreError] = useState<boolean>(false);
@@ -3838,6 +5126,7 @@ export default function ReportDetailPage() {
   const [isCVCustomizationModalOpen, setIsCVCustomizationModalOpen] = useState(false);
   const [pendingAdditionalTools, setPendingAdditionalTools] = useState<string[]>([]);
   const [cvPhotoBase64, setCvPhotoBase64] = useState<string | null>(null);
+  const [isUpgradeConfirmModalOpen, setIsUpgradeConfirmModalOpen] = useState(false);
   const wasGeneratingRef = useRef(false);
   const [userCredits, setUserCredits] = useState<UserCredits>({
     credits: 0,
@@ -4916,360 +6205,351 @@ export default function ReportDetailPage() {
       </Header>
 
       <HeaderMeta>
-        
-
-        {/* CV Action Button */}
-        {(report.pro && report.generated_cv) || !report.pro ? (
-          <CVActionButtonWrapper>
-            {report.pro && report.generated_cv ? (
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handlePreviewCV}
-                style={{
-                  background: 'var(--accent)',
-                  padding: '12px 24px',
-                  fontSize: '15px',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                 
-                }}
-              >
-                 View optimized resume
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
-                isLoading={isUpgrading}
-                style={{
-                  background: 'var(--gradient-primary)',
-                  padding: '12px 24px',
-                  fontSize: '15px',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-                }}
-              >
-                <RocketIcon /> Generate optimized resume
-              </Button>
-            )}
-          </CVActionButtonWrapper>
-        ) : null}
       </HeaderMeta>
 
-      <StatsBentoGrid>
-        {/* Match Score Card */}
-        <StatBentoCard
-          $isClickable={!!report.score_breakdown || visibleSections?.showScoreComparison}
-          onClick={() => {
-            if (visibleSections?.showScoreComparison && (optimizedScoreBreakdown || report.optimized_score_breakdown)) {
-              setIsOptimizedScoreBreakdownModalOpen(true);
-            } else if (report.score_breakdown) {
-              setIsScoreBreakdownModalOpen(true);
-            }
-          }}
-        >
-          <StatBentoBackground>
-            <ScoreBgCircle className="stat-bg-element" $score={report.fit_score} $size={120} $delay={0} style={{ top: '10%', right: '10%' }} />
-            <ScoreBgCircle className="stat-bg-element" $score={report.fit_score} $size={80} $delay={0.5} style={{ top: '30%', right: '30%' }} />
-            <ScoreBgCircle className="stat-bg-element" $score={report.fit_score} $size={60} $delay={1} style={{ top: '15%', right: '50%' }} />
-          </StatBentoBackground>
-          <StatBentoContent className="stat-content">
-            <StatBentoIcon
-              className="stat-icon"
-              $color={(optimizedScore ?? report.fit_score) >= 85 ? 'var(--primary-500)' : (optimizedScore ?? report.fit_score) >= 70 ? '#2a57a0ff' : (optimizedScore ?? report.fit_score) >= 50 ? '#EAB308' : '#F97316'}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </StatBentoIcon>
-            {visibleSections?.showScoreComparison ? (
-              <>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
-                  <span style={{ fontSize: '24px', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>{report.fit_score}%</span>
-                  <StatBentoValue $color={optimizedScore! >= 85 ? 'var(--primary-500)' : optimizedScore! >= 70 ? '#2a57a0ff' : optimizedScore! >= 50 ? '#EAB308' : '#F97316'}>{optimizedScore}%</StatBentoValue>
-                </div>
-                <StatBentoTitle>Match Score</StatBentoTitle>
-                <StatBentoDescription><strong>↑ +{(optimizedScore! - report.fit_score!).toFixed(1)}%</strong> improvement after optimization</StatBentoDescription>
-              </>
-            ) : (
-              <>
-                <StatBentoValue $color={report.fit_score >= 85 ? 'var(--primary-500)' : report.fit_score >= 70 ? '#2a57a0ff' : report.fit_score >= 50 ? '#EAB308' : '#F97316'}>
-                  {report.fit_score}%
-                </StatBentoValue>
-                <StatBentoTitle>Match Score</StatBentoTitle>
-                <StatBentoDescription>{getScoreLabel(report.fit_score)}</StatBentoDescription>
-              </>
-            )}
-          </StatBentoContent>
-          {(report.score_breakdown || visibleSections?.showScoreComparison) && (
-            <StatBentoCTA className="stat-cta">
-              <StatBentoCTALink>
-                View breakdown
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </StatBentoCTALink>
-            </StatBentoCTA>
-          )}
-          <StatBentoOverlay className="stat-overlay" />
-        </StatBentoCard>
+      {/* ====== FREE USER: New Liquid Glass Hero ====== */}
+      {userState === 'free' ? (
+        <>
+          {/* Hero Score Rings */}
+          <FreeHeroSection $isCritical={report.fit_score < 70}>
+            <ScoreRingsRow>
+              {/* Match Score Ring */}
+              <ScoreRingContainer>
+                <ScoreRingSVG viewBox="0 0 120 120">
+                  {/* Ghost ring (potential) */}
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(102, 126, 234, 0.08)" strokeWidth="8" />
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(102, 126, 234, 0.15)" strokeWidth="8"
+                    strokeDasharray={`${95 * 3.27} ${327 - 95 * 3.27}`}
+                    strokeLinecap="round" transform="rotate(-90 60 60)" />
+                  {/* Actual ring */}
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
+                  <circle cx="60" cy="60" r="52" fill="none"
+                    stroke={report.fit_score >= 70 ? '#10b981' : report.fit_score >= 50 ? '#f59e0b' : '#ef4444'}
+                    strokeWidth="8" strokeDasharray={`${report.fit_score * 3.27} ${327 - report.fit_score * 3.27}`}
+                    strokeLinecap="round" transform="rotate(-90 60 60)" />
+                  <text x="60" y="56" textAnchor="middle" fill="var(--text-color)" fontSize="28" fontWeight="700">{report.fit_score}%</text>
+                  <text x="60" y="74" textAnchor="middle" fill="rgba(102,126,234,0.4)" fontSize="11" fontWeight="500">→ 95%</text>
+                </ScoreRingSVG>
+                <ScoreRingLabel>Match Score</ScoreRingLabel>
+              </ScoreRingContainer>
 
-        {/* ATS Score Card - Shows for both free and pro reports */}
-        <StatBentoCard $isClickable={false}>
-          <StatBentoBackground>
+              {/* ATS Score Ring */}
+              <ScoreRingContainer>
+                <ScoreRingSVG viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(102, 126, 234, 0.08)" strokeWidth="8" />
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(102, 126, 234, 0.15)" strokeWidth="8"
+                    strokeDasharray={`${95 * 3.27} ${327 - 95 * 3.27}`}
+                    strokeLinecap="round" transform="rotate(-90 60 60)" />
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
+                  <circle cx="60" cy="60" r="52" fill="none"
+                    stroke={(originalAtsScore ?? 0) >= 70 ? '#10b981' : (originalAtsScore ?? 0) >= 50 ? '#f59e0b' : '#ef4444'}
+                    strokeWidth="8" strokeDasharray={`${(originalAtsScore ?? 0) * 3.27} ${327 - (originalAtsScore ?? 0) * 3.27}`}
+                    strokeLinecap="round" transform="rotate(-90 60 60)" />
+                  <text x="60" y="56" textAnchor="middle" fill="var(--text-color)" fontSize="28" fontWeight="700">
+                    {isLoadingOriginalAtsScore ? '...' : originalAtsScore !== null ? `${originalAtsScore}%` : '--'}
+                  </text>
+                  <text x="60" y="74" textAnchor="middle" fill="rgba(102,126,234,0.4)" fontSize="11" fontWeight="500">→ 95%</text>
+                </ScoreRingSVG>
+                <ScoreRingLabel>ATS Score</ScoreRingLabel>
+              </ScoreRingContainer>
+            </ScoreRingsRow>
+
+            {/* AI Insight */}
+            <AIInsightText>
+              Your resume matches <strong style={{ color: 'var(--text-color)' }}>{report.fit_score}%</strong> of the job requirements.
+              {missingKeywords.length > 0 ? (<> Missing <strong style={{ color: '#f59e0b' }}>{missingKeywords.length} critical keywords</strong>.</>) : null}
+              {' '}Pro optimization can boost your score to <strong style={{ color: '#10b981' }}>95%+</strong>.
+            </AIInsightText>
+
+            {/* Centralized CTA */}
+            <HeroCTAButton
+              onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}
+              disabled={isUpgrading}
+            >
+              <RocketIcon /> {isUpgrading ? 'Generating...' : 'Generate Optimized Resume'}
+            </HeroCTAButton>
+          </FreeHeroSection>
+
+          {/* Interview Probability */}
+          <InterviewProbabilityPill>
+            <ProbabilityItem>
+              <ProbabilityValue $color={report.fit_score >= 70 ? '#10b981' : report.fit_score >= 50 ? '#f59e0b' : '#ef4444'}>
+                ~{Math.min(Math.max(Math.round(report.fit_score * 0.3), 5), 40)}%
+              </ProbabilityValue>
+              <ProbabilityLabel>Interview Chance</ProbabilityLabel>
+            </ProbabilityItem>
+            <ProbabilityArrow>→</ProbabilityArrow>
+            <ProbabilityItem $isGhost>
+              <ProbabilityValue $color="#10b981">~65%+</ProbabilityValue>
+              <ProbabilityLabel>After Pro</ProbabilityLabel>
+            </ProbabilityItem>
+          </InterviewProbabilityPill>
+
+          {/* Score Simulator */}
+          <ScoreSimulatorCard>
+            <SimulatorTitle>Score Potential Simulator</SimulatorTitle>
             {(() => {
-              const displayScore = report.pro && report.generated_cv ? atsScore : originalAtsScore;
-              return (
-                <>
-                  <ScoreBgCircle className="stat-bg-element" $score={displayScore || 0} $size={100} $delay={0} style={{ top: '15%', right: '15%' }} />
-                  <ScoreBgCircle className="stat-bg-element" $score={displayScore || 0} $size={70} $delay={0.3} style={{ top: '25%', right: '35%' }} />
-                  <ScoreBgCircle className="stat-bg-element" $score={displayScore || 0} $size={50} $delay={0.6} style={{ top: '20%', right: '55%' }} />
-                </>
-              );
+              const keywordBoost = Math.min(missingKeywords.length * 5, 25);
+              const bulletBoost = rewrittenBullets.length > 0 ? 15 : 12;
+              const atsBoost = atsFlags.length > 0 ? 8 : 5;
+              let cumulative = report.fit_score;
+              const steps = [
+                { label: `Add ${missingKeywords.length} keywords`, boost: keywordBoost, color: '#667eea' },
+                { label: 'Rewrite bullet points', boost: bulletBoost, color: '#10b981' },
+                { label: 'ATS format optimization', boost: atsBoost, color: '#f59e0b' },
+              ];
+              return steps.map((step, i) => {
+                cumulative = Math.min(cumulative + step.boost, 98);
+                return (
+                  <SimulatorStep key={i}>
+                    <SimulatorStepLabel>{step.label}</SimulatorStepLabel>
+                    <SimulatorStepBar $width={Math.min((step.boost / 25) * 100, 100)} $color={step.color} />
+                    <SimulatorStepValue $color={step.color}>→ {cumulative}%</SimulatorStepValue>
+                  </SimulatorStep>
+                );
+              });
             })()}
-          </StatBentoBackground>
-          <StatBentoContent className="stat-content">
-            <StatBentoIcon
-              className="stat-icon"
+          </ScoreSimulatorCard>
+
+          {/* Diagnosis Card */}
+          <DiagnosisCard>
+            <DiagnosisTitle>Resume Diagnosis</DiagnosisTitle>
+            <DiagnosisRow>
+              <DiagnosisLabel>Keywords</DiagnosisLabel>
+              <DiagnosisStatus $status={missingKeywords.length === 0 ? 'good' : missingKeywords.length <= 3 ? 'warning' : 'critical'}>
+                {missingKeywords.length === 0 ? 'Complete' : `${missingKeywords.length} missing`}
+              </DiagnosisStatus>
+            </DiagnosisRow>
+            <DiagnosisRow>
+              <DiagnosisLabel>Bullet Points</DiagnosisLabel>
+              <DiagnosisStatus $status={rewrittenBullets.length > 0 ? 'warning' : 'warning'}>
+                Not impact-focused
+              </DiagnosisStatus>
+            </DiagnosisRow>
+            <DiagnosisRow>
+              <DiagnosisLabel>ATS Compatibility</DiagnosisLabel>
+              <DiagnosisStatus $status={(originalAtsScore ?? 50) >= 70 ? 'good' : (originalAtsScore ?? 50) >= 50 ? 'warning' : 'critical'}>
+                {(originalAtsScore ?? 50) >= 70 ? 'Good' : (originalAtsScore ?? 50) >= 50 ? 'Needs work' : 'Low'}
+              </DiagnosisStatus>
+            </DiagnosisRow>
+            <DiagnosisRow>
+              <DiagnosisLabel>Summary Section</DiagnosisLabel>
+              <DiagnosisStatus $status="warning">Too generic</DiagnosisStatus>
+            </DiagnosisRow>
+            <DiagnosisFooter>Pro fixes {missingKeywords.length > 0 ? '3 of 4' : '2 of 3'} issues automatically</DiagnosisFooter>
+          </DiagnosisCard>
+
+          {/* Quick Win Tips */}
+          <QuickWinCard>
+            <QuickWinTitle>Free Tips</QuickWinTitle>
+            {missingKeywords.length > 0 ? (
+              <QuickWinTip>
+                <span>Add the keyword &quot;<strong>{missingKeywords[0]}</strong>&quot; — it appears in the job posting but is missing from your resume.</span>
+              </QuickWinTip>
+            ) : null}
+            <QuickWinTip>
+              <span>Use action verbs like &quot;Led&quot;, &quot;Delivered&quot;, &quot;Scaled&quot; to make your bullet points more impactful.</span>
+            </QuickWinTip>
+            <QuickWinFooter>Pro applies all {missingKeywords.length + 10}+ optimizations automatically</QuickWinFooter>
+          </QuickWinCard>
+
+          {/* Missing Keywords */}
+          {missingKeywords.length > 0 ? (
+            <FreeKeywordsCard>
+              <FreeKeywordsTitle>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#f59e0b" width="18" height="18">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
+                </svg>
+                Missing Keywords
+              </FreeKeywordsTitle>
+              <KeywordList>
+                {missingKeywords.map((keyword: string) => (
+                  <Badge key={keyword} variant="warning">{keyword}</Badge>
+                ))}
+              </KeywordList>
+            </FreeKeywordsCard>
+          ) : null}
+
+          {/* Blurred CV Preview */}
+          <BlurredPreviewCard onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}>
+            <ScanningLaser />
+            <FreeBlurredContent>
+              <BlurredLine $width={60} />
+              <BlurredLine $width={90} />
+              <BlurredLine $width={75} />
+              <BlurredLine $width={85} />
+              <div style={{ height: 16 }} />
+              <BlurredLine $width={40} />
+              <BlurredLine $width={95} />
+              <BlurredLine $width={80} />
+              <BlurredLine $width={70} />
+              <div style={{ height: 16 }} />
+              <BlurredLine $width={50} />
+              <BlurredLine $width={88} />
+              <BlurredLine $width={65} />
+            </FreeBlurredContent>
+            <BlurredPreviewOverlay>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+              </svg>
+              <BlurredPreviewText>Your 95%+ optimized resume is ready</BlurredPreviewText>
+              <BlurredPreviewSubtext>Tap to unlock with Pro</BlurredPreviewSubtext>
+            </BlurredPreviewOverlay>
+          </BlurredPreviewCard>
+
+          {/* Frosted Lock-List */}
+          <LockListCard>
+            <LockListTitle>What Pro Unlocks</LockListTitle>
+            <LockListItem onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}>
+              <LockListLeft>
+                <LockListIcon>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                </LockListIcon>
+                <LockListLabel>AI-Optimized Resume PDF</LockListLabel>
+              </LockListLeft>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="18" height="18"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+            </LockListItem>
+            <LockListItem onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}>
+              <LockListLeft>
+                <LockListIcon>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
+                </LockListIcon>
+                <LockListLabel>Rewritten Bullet Points</LockListLabel>
+              </LockListLeft>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="18" height="18"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+            </LockListItem>
+            <LockListItem onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}>
+              <LockListLeft>
+                <LockListIcon>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                </LockListIcon>
+                <LockListLabel>ATS Optimization Tips</LockListLabel>
+              </LockListLeft>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="18" height="18"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+            </LockListItem>
+            <LockListItem onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}>
+              <LockListLeft>
+                <LockListIcon>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
+                </LockListIcon>
+                <LockListLabel>Cover Letter Generator</LockListLabel>
+              </LockListLeft>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="18" height="18"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+            </LockListItem>
+          </LockListCard>
+
+          {/* Liquid Glass Upgrade Section */}
+          <LiquidGlassUpgrade>
+            <UpgradeGlassTitle>Unlock Full Optimization</UpgradeGlassTitle>
+            <SocialProofRow>
+              <GlassBadge><strong>487</strong> upgraded this week</GlassBadge>
+              <GlassBadge><strong>12,483+</strong> professionals</GlassBadge>
+            </SocialProofRow>
+            <GlassTestimonial>
+              &quot;The ATS optimization made all the difference. Finally working in tech!&quot;
+              <TestimonialAttribution>— Chris P., Software Engineer, 23</TestimonialAttribution>
+            </GlassTestimonial>
+            <UpgradeCTAButton
+              onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}
+              disabled={isUpgrading}
+            >
+              <RocketIcon /> {isUpgrading ? 'Upgrading...' : userCredits.canAnalyze ? 'Upgrade Now — Use 1 Credit' : 'Get Credits & Upgrade'}
+            </UpgradeCTAButton>
+            <UpgradeGuarantee>
+              <CheckCircleIcon /> 100% Satisfaction Guaranteed
+            </UpgradeGuarantee>
+          </LiquidGlassUpgrade>
+        </>
+      ) : (
+        <>
+      {/* ====== UNIFIED HERO — One Focal Point ====== */}
+      <ProHeroSection>
+        <ProHeroScoreRow>
+          {/* Match Score — Primary */}
+          <ProHeroScoreBlock $isPrimary>
+            <div style={{ display: 'flex', alignItems: 'baseline' }}>
+              {visibleSections?.showScoreComparison && (
+                <ProHeroScorePrev>{report.fit_score}%</ProHeroScorePrev>
+              )}
+              <ProHeroScoreValue
+                $isPrimary
+                $color={(() => {
+                  const s = optimizedScore ?? report.fit_score;
+                  return s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2a57a0ff' : s >= 50 ? '#EAB308' : '#F97316';
+                })()}
+              >
+                {visibleSections?.showScoreComparison ? optimizedScore : report.fit_score}%
+              </ProHeroScoreValue>
+            </div>
+            <ProHeroScoreLabel $isPrimary>Match Score</ProHeroScoreLabel>
+          </ProHeroScoreBlock>
+
+          <ProHeroDivider />
+
+          {/* ATS Score — Secondary */}
+          <ProHeroScoreBlock>
+            <ProHeroScoreValue
               $color={(() => {
-                const score = report.pro && report.generated_cv ? atsScore : originalAtsScore;
-                if (score === null) return 'var(--text-secondary)';
-                return score >= 85 ? 'var(--primary-500)' : score >= 70 ? '#2a57a0ff' : score >= 50 ? '#EAB308' : '#F97316';
+                const s = report.pro && report.generated_cv ? atsScore : originalAtsScore;
+                if (s === null) return 'rgba(255,255,255,0.3)';
+                return s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2a57a0ff' : s >= 50 ? '#EAB308' : '#F97316';
               })()}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-              </svg>
-            </StatBentoIcon>
-            {/* Pro report with optimized CV - show comparison */}
-            {report.pro && report.generated_cv ? (
-              isLoadingAtsScore ? (
-                <>
-                  <StatBentoValue $color="var(--text-secondary)">...</StatBentoValue>
-                  <StatBentoTitle>ATS Score</StatBentoTitle>
-                  <StatBentoDescription>Calculating ATS compatibility...</StatBentoDescription>
-                </>
-              ) : atsScore !== null ? (
-                <>
-                  {originalAtsScore !== null && originalAtsScore < atsScore ? (
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
-                      <span style={{ fontSize: '24px', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>{originalAtsScore}%</span>
-                      <StatBentoValue
-                        $color={atsScore >= 85 ? 'var(--primary-500)' : atsScore >= 70 ? '#2a57a0ff' : atsScore >= 50 ? '#EAB308' : '#F97316'}
-                      >
-                        {atsScore}%
-                      </StatBentoValue>
-                    </div>
-                  ) : (
-                    <StatBentoValue
-                      $color={atsScore >= 85 ? 'var(--primary-500)' : atsScore >= 70 ? '#2a57a0ff' : atsScore >= 50 ? '#EAB308' : '#F97316'}
-                    >
-                      {atsScore}%
-                    </StatBentoValue>
-                  )}
-                  <StatBentoTitle>ATS Score</StatBentoTitle>
-                  <StatBentoDescription>
-                    {originalAtsScore !== null && originalAtsScore < atsScore ? (
-                      <><strong>↑ +{atsScore - originalAtsScore}%</strong> ATS improvement</>
-                    ) : (
-                      atsScore >= 85
-                        ? 'Excellent ATS compatibility'
-                        : atsScore >= 70
-                        ? 'Good ATS compatibility'
-                        : atsScore >= 55
-                        ? 'Moderate ATS compatibility'
-                        : 'Needs ATS optimization'
-                    )}
-                  </StatBentoDescription>
-                </>
-              ) : (
-                <>
-                  <StatBentoValue $color="var(--text-secondary)">--</StatBentoValue>
-                  <StatBentoTitle>ATS Score</StatBentoTitle>
-                  <StatBentoDescription>ATS compatibility score unavailable</StatBentoDescription>
-                </>
-              )
-            ) : (
-              /* Free report - show original CV ATS score */
-              isLoadingOriginalAtsScore ? (
-                <>
-                  <StatBentoValue $color="var(--text-secondary)">...</StatBentoValue>
-                  <StatBentoTitle>ATS Score</StatBentoTitle>
-                  <StatBentoDescription>Calculating ATS compatibility...</StatBentoDescription>
-                </>
-              ) : originalAtsScore !== null ? (
-                <>
-                  <StatBentoValue
-                    $color={originalAtsScore >= 85 ? 'var(--primary-500)' : originalAtsScore >= 70 ? '#2a57a0ff' : originalAtsScore >= 50 ? '#EAB308' : '#F97316'}
-                  >
-                    {originalAtsScore}%
-                  </StatBentoValue>
-                  <StatBentoTitle>ATS Score</StatBentoTitle>
-                  <StatBentoDescription>
-                    {originalAtsScore >= 85
-                      ? 'Excellent ATS compatibility'
-                      : originalAtsScore >= 70
-                      ? 'Good ATS compatibility'
-                      : originalAtsScore >= 55
-                      ? 'Moderate ATS compatibility'
-                      : 'Optimize your CV for better ATS results'}
-                  </StatBentoDescription>
-                </>
-              ) : (
-                <>
-                  <StatBentoValue $color="var(--text-secondary)">--</StatBentoValue>
-                  <StatBentoTitle>ATS Score</StatBentoTitle>
-                  <StatBentoDescription>ATS compatibility score unavailable</StatBentoDescription>
-                </>
-              )
-            )}
-          </StatBentoContent>
-          <StatBentoOverlay className="stat-overlay" />
-        </StatBentoCard>
-
-        {/* Keywords Card */}
-        <StatBentoCard
-          $isClickable={!!(report.pro && report.generated_cv)}
-          onClick={() => {
-            if (report.pro && report.generated_cv) {
-              setIsKeywordsModalOpen(true);
-            }
-          }}
-        >
-          <StatBentoBackground>
-            <KeywordBgTag className="stat-bg-element" $top={15} $left={60} $delay={0}>React</KeywordBgTag>
-            <KeywordBgTag className="stat-bg-element" $top={25} $left={75} $delay={0.3}>TypeScript</KeywordBgTag>
-            <KeywordBgTag className="stat-bg-element" $top={35} $left={55} $delay={0.6}>Node.js</KeywordBgTag>
-            <KeywordBgTag className="stat-bg-element" $top={20} $left={85} $delay={0.9}>AWS</KeywordBgTag>
-          </StatBentoBackground>
-          <StatBentoContent className="stat-content">
-            <StatBentoIcon className="stat-icon" $color="var(--accent)">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
-              </svg>
-            </StatBentoIcon>
-            <StatBentoValue>{missingKeywords.length}</StatBentoValue>
-            <StatBentoTitle>{report.pro && report.generated_cv ? 'Keywords Added' : 'Missing Keywords'}</StatBentoTitle>
-            <StatBentoDescription>
-              {report.pro && report.generated_cv
-                ? 'Important keywords integrated into your optimized resume'
-                : 'Add these keywords to improve your match score'}
-            </StatBentoDescription>
-          </StatBentoContent>
-          {report.pro && report.generated_cv && (
-            <StatBentoCTA className="stat-cta">
-              <StatBentoCTALink>
-                View details
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </StatBentoCTALink>
-            </StatBentoCTA>
-          )}
-          <StatBentoOverlay className="stat-overlay" />
-        </StatBentoCard>
-
-        {/* Role Recommendations Card */}
-        {visibleSections?.showRoleRecommendations && (
-          <StatBentoCard
-            $isClickable={roleRecommendations.length > 0}
-            onClick={() => {
-              if (roleRecommendations.length > 0) {
-                setIsRoleRecommendationsDrawerOpen(true);
-              }
-            }}
-          >
-            <StatBentoBackground>
-              <RoleBgBar className="stat-bg-element" $width={85} $top={20} $delay={0} />
-              <RoleBgBar className="stat-bg-element" $width={70} $top={35} $delay={0.3} />
-              <RoleBgBar className="stat-bg-element" $width={55} $top={50} $delay={0.6} />
-            </StatBentoBackground>
-            <StatBentoContent className="stat-content">
-              <StatBentoIcon className="stat-icon" $color="var(--primary-500)">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
-                </svg>
-              </StatBentoIcon>
-              <StatBentoValue $color="var(--primary-500)">{roleRecommendations.length}</StatBentoValue>
-              <StatBentoTitle>Role Recommendations</StatBentoTitle>
-              <StatBentoDescription>Alternative positions that match your profile</StatBentoDescription>
-            </StatBentoContent>
-            {roleRecommendations.length > 0 && (
-              <StatBentoCTA className="stat-cta">
-                <StatBentoCTALink>
-                  View details
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </StatBentoCTALink>
-              </StatBentoCTA>
-            )}
-            <StatBentoOverlay className="stat-overlay" />
-          </StatBentoCard>
-        )}
-      </StatsBentoGrid>
-
-      {/* Personalized Alert - Show immediately after scores for free users */}
-      {visibleSections?.showUpgradePrompt && (
-        <PersonalizedAlert
-          $variant={getPersonalizedMessage(report.fit_score).variant}
-        >
-          {getPersonalizedMessage(report.fit_score).message}
-        </PersonalizedAlert>
-      )}
-
-      {visibleSections?.showCareerInsight &&
-        roleRecommendations.length > 0 && (
-          <CareerInsightCard>
-            <InsightHeader>
-              <InsightContent>
-                <InsightTitle>Better matches for your profile</InsightTitle>
-                <InsightSubtitle>
-                  Roles that better align with your experience and skills
-                </InsightSubtitle>
-              </InsightContent>
-              <MatchScoreBadge>
-                Original match score: <strong>{report.fit_score}%</strong>
-              </MatchScoreBadge>
-            </InsightHeader>
-
-            <AlternativeRolesSection>
-              <SectionLabel>Recommended Positions</SectionLabel>
               {(() => {
-                const sorted = [...roleRecommendations].slice(0, 3).sort((a, b) => b.fit - a.fit);
-                const maxValue = Math.max(...sorted.map(r => r.fit), 0);
-                const widths = sorted.map(r => r.fit === 0 ? 0 : Math.max((r.fit / maxValue) * 100, 2));
-                return (
-                  <BarListWrapper>
-                    <BarListBars>
-                      {sorted.map((role, index) => (
-                        <BarListRow key={index}>
-                          <BarListFill $width={widths[index]}>
-                            <BarListLabel>{role.title}</BarListLabel>
-                          </BarListFill>
-                        </BarListRow>
-                      ))}
-                    </BarListBars>
-                    <BarListValues>
-                      {sorted.map((role, index) => (
-                        <BarListValueRow key={index} $isLast={index === sorted.length - 1}>
-                          <BarListValue>{role.fit}%</BarListValue>
-                        </BarListValueRow>
-                      ))}
-                    </BarListValues>
-                  </BarListWrapper>
-                );
+                const s = report.pro && report.generated_cv ? atsScore : originalAtsScore;
+                const loading = report.pro && report.generated_cv ? isLoadingAtsScore : isLoadingOriginalAtsScore;
+                if (loading) return '...';
+                if (s !== null) return `${s}%`;
+                return '--';
               })()}
-            </AlternativeRolesSection>
-          </CareerInsightCard>
+            </ProHeroScoreValue>
+            <ProHeroScoreLabel>ATS Score</ProHeroScoreLabel>
+          </ProHeroScoreBlock>
+        </ProHeroScoreRow>
+
+        {/* AI-Generated One Sentence Summary */}
+        <ProHeroSummary>
+          {visibleSections?.showScoreComparison ? (
+            <>We improved your match by <strong style={{ color: 'var(--primary-400)' }}>+{(optimizedScore! - report.fit_score).toFixed(1)} points</strong> through {missingKeywords.length > 0 ? `${missingKeywords.length} keyword additions` : 'keyword optimization'}{improvementBreakdown.length > 0 ? ` and ${improvementBreakdown.length} content rewrites` : ''}.{atsScore !== null && originalAtsScore !== null && atsScore > originalAtsScore ? ` ATS compatibility went from ${originalAtsScore}% to ${atsScore}%.` : ''}</>
+          ) : (
+            <>{getScoreLabel(report.fit_score)}. {missingKeywords.length > 0 ? `${missingKeywords.length} critical keywords are missing from your resume.` : 'Your resume covers the key requirements.'}</>
+          )}
+        </ProHeroSummary>
+
+        {/* Primary CTA — integrated into hero */}
+        {report.generated_cv ? (
+          <ProHeroCTA onClick={handlePreviewCV}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            View Optimized Resume
+          </ProHeroCTA>
+        ) : (
+          <ProHeroCTA onClick={async () => {
+            setIsUpgrading(true);
+            try {
+              const response = await fetch('/api/cv/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reportId: report.id, fakeItMode: false }),
+              });
+              const cvResult = await response.json();
+              if (!response.ok) throw new Error(cvResult.error || 'Failed to generate resume');
+              const supabase = createClient();
+              const { data: updatedReport } = await supabase.from('reports').select('*').eq('id', report.id).single();
+              if (updatedReport) setReport(updatedReport);
+            } catch (err) {
+              console.error(err);
+            } finally {
+              setIsUpgrading(false);
+            }
+          }} disabled={isUpgrading}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.841m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>
+            {isUpgrading ? 'Generating...' : 'Generate Optimized Resume'}
+          </ProHeroCTA>
         )}
+      </ProHeroSection>
+      </>
+      )}
 
       {report.generated_cv && isAnalyzingOptimized && (
         <Section>
@@ -5334,480 +6614,115 @@ export default function ReportDetailPage() {
         </Section>
       )}
 
+      {/* ====== SECTION 2: What We Changed ====== */}
       {visibleSections?.showProblemSummary &&
         !isAnalyzingOptimized && (
-          <>
-            {/* Fixes Card - Unified Component */}
+          <WhatChangedSection>
+            <WhatChangedHeader>
+              <WhatChangedTitle>{improvementBreakdown.length} improvement{improvementBreakdown.length !== 1 ? 's' : ''} applied</WhatChangedTitle>
+              <WhatChangedBadge>
+                +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}% total impact
+              </WhatChangedBadge>
+            </WhatChangedHeader>
 
-<Section>
-              <ScoreBreakdownCard>
-                <ScoreBreakdownHeader>
-                  <ScoreBreakdownHeaderLeft>
-                    <ScoreBreakdownTitle>Score Breakdown</ScoreBreakdownTitle>
-                    <ScoreBreakdownSubtitle>
-                      How each optimization impacts your score
-                    </ScoreBreakdownSubtitle>
-                  </ScoreBreakdownHeaderLeft>
-                  <ScoreBreakdownBadge>
-                    <ScoreBadgeValue $muted>{report.fit_score}%</ScoreBadgeValue>
-                    <ScoreBadgeArrow>→</ScoreBadgeArrow>
-                    <ScoreBadgeValue>{optimizedScore}%</ScoreBadgeValue>
-                  </ScoreBreakdownBadge>
-                </ScoreBreakdownHeader>
+            {report.fake_it_mode && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: 'rgba(234, 179, 8, 0.08)', borderRadius: '12px', marginBottom: '12px', fontSize: '13px', color: 'rgba(234, 179, 8, 0.8)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+                Fake It Mode — be prepared to discuss added skills in interviews.
+              </div>
+            )}
 
-                <ScoreBreakdownBody>
-                  {(() => {
-                    // Softer, pastel colors
-                    const colors = [
-                      "var(--primary-500)", // soft green
-                      "#2A57A0", // soft blue
-                      "#EAB308", // soft purple
-                      "#F97316", // soft amber
-                      "var(--accent)", // soft pink
-                      "#F97316", // soft teal
-                    ];
-                    const totalImprovement = improvementBreakdown.reduce((sum, i) => sum + i.impact, 0);
-
-                    return (
-                      <>
-                        <StackedBarContainer>
-                          <StackedBarLabel>
-                            <StackedBarLabelTitle>Before</StackedBarLabelTitle>
-                            <StackedBarLabelValue>{report.fit_score}%</StackedBarLabelValue>
-                          </StackedBarLabel>
-
-                          <StackedBarWrapper>
-                            <StackedBar>
-                              {improvementBreakdown.map((improvement, index) => {
-                                const color = colors[index % colors.length];
-                                const segmentWidth = (improvement.impact / totalImprovement) * 100;
-                                return (
-                                  <StackedBarSegment
-                                    key={index}
-                                    $width={segmentWidth}
-                                    $color={color}
-                                    title={`${improvement.category}: +${Math.round(improvement.impact * 10) / 10}%`}
-                                  />
-                                );
-                              })}
-                            </StackedBar>
-                          </StackedBarWrapper>
-
-                          <StackedBarLabel $align="right">
-                            <StackedBarLabelTitle>After</StackedBarLabelTitle>
-                            <StackedBarLabelValue $highlight>{optimizedScore}%</StackedBarLabelValue>
-                          </StackedBarLabel>
-                        </StackedBarContainer>
-
-                        <BreakdownLegend>
-                          {improvementBreakdown.map((improvement, index) => {
-                            const color = colors[index % colors.length];
-                            return (
-                              <LegendItem key={index}>
-                                <LegendDot $color={color} />
-                                <LegendText>
-                                  <LegendCategory>{improvement.category}</LegendCategory>
-                                  <LegendValue $color={color}>
-                                    +{Math.round(improvement.impact * 10) / 10}%
-                                  </LegendValue>
-                                </LegendText>
-                              </LegendItem>
-                            );
-                          })}
-                        </BreakdownLegend>
-                      </>
-                    );
-                  })()}
-                </ScoreBreakdownBody>
-
-                <ScoreBreakdownFooter>
-                  <BreakdownFooterLabel>Total Improvement</BreakdownFooterLabel>
-                  <BreakdownFooterValue>
-                    +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}%
-                  </BreakdownFooterValue>
-                </ScoreBreakdownFooter>
-              </ScoreBreakdownCard>
-            </Section>
-
-            <Section>
-              <FixesCard>
-                <FixesHeader>
-                  <FixesHeaderLeft>
-                    <FixesTitle>
-                      {improvementBreakdown.length} Problem{improvementBreakdown.length !== 1 ? 's' : ''} Fixed
-                    </FixesTitle>
-                    <FixesSubtitle>
-                      Issues identified and resolved in your resume
-                    </FixesSubtitle>
-                  </FixesHeaderLeft>
-
-                  <FixesScoreBadge>
-                    <FixesScoreItem>
-                      <FixesScoreValue>{report.fit_score}%</FixesScoreValue>
-                      <FixesScoreLabel>Before</FixesScoreLabel>
-                    </FixesScoreItem>
-                    <FixesScoreArrow>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                      </svg>
-                    </FixesScoreArrow>
-                    <FixesScoreItem>
-                      <FixesScoreValue $isAfter>{optimizedScore}%</FixesScoreValue>
-                      <FixesScoreLabel>After</FixesScoreLabel>
-                    </FixesScoreItem>
-                  </FixesScoreBadge>
-                </FixesHeader>
-
-                {report.fake_it_mode && (
-                  <FakeItModeWarning>
-                    <div className="warning-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ width: 20, height: 20 }}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                      </svg>
-                    </div>
-                    <div className="warning-content">
-                      <div className="warning-title">Fake It Mode Active</div>
-                      <div className="warning-text">
-                        All missing keywords were added. Be prepared to discuss these skills in interviews.
-                      </div>
-                    </div>
-                  </FakeItModeWarning>
-                )}
-
-                <FixesGrid>
-                  {improvementBreakdown.map((improvement, index) => (
-                    <FixCardItem
-                      key={index}
-                      $severity={improvement.severity || "minor"}
-                      onClick={() => handleImprovementClick(improvement)}
-                      title="Click to view details"
-                    >
-                      <FixCardContent>
-                        
-                        <FixCardImpact>+{Math.round(improvement.impact * 10) / 10}%</FixCardImpact>
-                        <FixCardCategory>{improvement.category}</FixCardCategory>
-                        <FixCardProblem>
-                          {improvement.problem || improvement.action}
-                        </FixCardProblem>
-                      </FixCardContent>
-                      <FixCardFooter>
-                        <span>View fix details</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                        </svg>
-                      </FixCardFooter>
-                    </FixCardItem>
-                  ))}
-                </FixesGrid>
-
-                
-              </FixesCard>
-            </Section>
-
-            
-          </>
+            {[...improvementBreakdown]
+              .sort((a, b) => b.impact - a.impact)
+              .map((improvement, index) => (
+              <ChangeRow key={index} onClick={() => handleImprovementClick(improvement)}>
+                <ChangeImpact>+{Math.round(improvement.impact * 10) / 10}%</ChangeImpact>
+                <ChangeInfo>
+                  <ChangeCategory>{improvement.category}</ChangeCategory>
+                  <ChangeProblem>{improvement.problem || improvement.action}</ChangeProblem>
+                </ChangeInfo>
+                <ChangeArrow>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                </ChangeArrow>
+              </ChangeRow>
+            ))}
+          </WhatChangedSection>
         )}
 
-      {/* Bento Grid - Summary, Bullet Points, Role Recommendations, ATS Tips */}
-      {visibleSections?.showSampleContent ? (
-        <BentoGrid>
-          {/* Summary - Compact Card that opens Drawer */}
-          <BentoCard onClick={() => setIsSummaryDrawerOpen(true)} style={{ cursor: 'pointer' }}>
-            <BentoCardInner>
-              <BentoCardContent style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                  </svg>
-                  <BentoCardTitle style={{ margin: 0 }}>Summary</BentoCardTitle>
+      {/* ====== SECTION 3: Details on Demand — Tabbed Panel ====== */}
+      {!visibleSections?.showSampleContent && (
+        <DetailPanel>
+          <TabBar>
+            <TabButton $active={activeDetailTab === 'summary'} onClick={() => setActiveDetailTab('summary')}>Summary</TabButton>
+            <TabButton $active={activeDetailTab === 'keywords'} onClick={() => setActiveDetailTab('keywords')}>Keywords</TabButton>
+            <TabButton $active={activeDetailTab === 'bullets'} onClick={() => setActiveDetailTab('bullets')}>Bullets</TabButton>
+            <TabButton $active={activeDetailTab === 'ats'} onClick={() => setActiveDetailTab('ats')}>ATS</TabButton>
+            {roleRecommendations.length > 0 && (
+              <TabButton $active={activeDetailTab === 'roles'} onClick={() => setActiveDetailTab('roles')}>Roles</TabButton>
+            )}
+          </TabBar>
+
+          <TabContent>
+            {activeDetailTab === 'summary' && (
+              <TabContentText>{report.summary_free || 'No summary available.'}</TabContentText>
+            )}
+
+            {activeDetailTab === 'keywords' && (
+              <>
+                <div style={{ marginBottom: '12px', fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
+                  {report.pro && report.generated_cv
+                    ? `${missingKeywords.length} keywords integrated into your optimized resume`
+                    : `${missingKeywords.length} keywords missing from your resume`}
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="var(--text-secondary)" width="20" height="20">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </BentoCardContent>
-              <BentoOverlay />
-            </BentoCardInner>
-          </BentoCard>
-
-          {/* Role Recommendations */}
-          <BentoCard onClick={scrollToUpgrade} style={{ cursor: 'pointer' }}>
-            <BentoCardInner>
-              <BentoCardContent style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                  </svg>
-                  <BentoCardTitle style={{ margin: 0 }}>Role Recommendations</BentoCardTitle>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="var(--text-secondary)" width="20" height="20">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-              </BentoCardContent>
-              <BentoOverlay />
-            </BentoCardInner>
-          </BentoCard>
-
-          {/* Missing Keywords */}
-          <BentoCard onClick={scrollToUpgrade} style={{ cursor: 'pointer' }}>
-            <BentoCardInner>
-              <BentoCardContent style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
-                  </svg>
-                  <BentoCardTitle style={{ margin: 0 }}>Missing Keywords</BentoCardTitle>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="var(--text-secondary)" width="20" height="20">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-              </BentoCardContent>
-              <BentoOverlay />
-            </BentoCardInner>
-          </BentoCard>
-
-          {/* ATS-Optimized CV */}
-          <BentoCard onClick={scrollToUpgrade} style={{ cursor: 'pointer' }}>
-            <BentoCardInner>
-              <BentoCardContent style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-                  </svg>
-                  <BentoCardTitle style={{ margin: 0 }}>ATS-Optimized CV</BentoCardTitle>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="var(--text-secondary)" width="20" height="20">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-              </BentoCardContent>
-              <BentoOverlay className="bento-overlay" />
-            </BentoCardInner>
-          </BentoCard>
-        </BentoGrid>
-      ) : (
-        <BentoGrid>
-          {/* Summary - Compact Card that opens Drawer */}
-          <BentoCard onClick={() => setIsSummaryDrawerOpen(true)} style={{ cursor: 'pointer' }}>
-            <BentoCardInner>
-              <BentoCardContent style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                  </svg>
-                  <BentoCardTitle style={{ margin: 0 }}>Summary</BentoCardTitle>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="var(--text-secondary)" width="20" height="20">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </BentoCardContent>
-              <BentoOverlay />
-            </BentoCardInner>
-          </BentoCard>
-
-          {/* Role Recommendations */}
-          <BentoCard onClick={() => setIsRoleRecommendationsDrawerOpen(true)} style={{ cursor: 'pointer' }}>
-            <BentoCardInner>
-              <BentoCardContent style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                  </svg>
-                  <BentoCardTitle style={{ margin: 0 }}>Role Recommendations</BentoCardTitle>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="var(--text-secondary)" width="20" height="20">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </BentoCardContent>
-              <BentoOverlay />
-            </BentoCardInner>
-          </BentoCard>
-
-          {/* Professional Bullet Points */}
-          <BentoCard onClick={() => setIsBulletPointsDrawerOpen(true)} style={{ cursor: 'pointer' }}>
-            <BentoCardInner>
-              <BentoCardContent style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                  </svg>
-                  <BentoCardTitle style={{ margin: 0 }}>
-                    {report.generated_cv ? "Professional bullet points applied" : "Rewritten bullet points"}
-                  </BentoCardTitle>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="var(--text-secondary)" width="20" height="20">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </BentoCardContent>
-              <BentoOverlay />
-            </BentoCardInner>
-          </BentoCard>
-
-          {/* ATS Optimizations */}
-          <BentoCard onClick={() => setIsAtsDrawerOpen(true)} style={{ cursor: 'pointer' }}>
-            <BentoCardInner>
-              <BentoCardContent style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="var(--text-secondary)" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-                  </svg>
-                  <BentoCardTitle style={{ margin: 0 }}>
-                    {report.generated_cv ? "ATS optimizations applied" : "ATS optimization tips"}
-                  </BentoCardTitle>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="var(--text-secondary)" width="20" height="20">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </BentoCardContent>
-              <BentoOverlay />
-            </BentoCardInner>
-          </BentoCard>
-
-          
-        </BentoGrid>
-      )}
-
-      {/* Missing Keywords - Below the Bento Grid */}
-      {!(report.pro && report.generated_cv) && (
-        <Section>
-          <Card variant="bordered">
-            <Card.Header>
-              <Card.Title>Missing Keywords</Card.Title>
-              <Card.Description>
-                Add these keywords to improve your match score
-              </Card.Description>
-            </Card.Header>
-            <Card.Content>
-              <KeywordList>
-                {missingKeywords.map((keyword: string) => (
-                  <Badge key={keyword} variant="warning">
-                    {keyword}
-                  </Badge>
-                ))}
-              </KeywordList>
-            </Card.Content>
-          </Card>
-        </Section>
-      )}
-
-      {visibleSections?.showSampleContent && (
-        <>
-
-          {/* Main Upgrade Card */}
-          <Section ref={upgradeRef}>
-            <ProUpgradeCard variant="elevated">
-              <Card.Content>
-                <UpgradeTitle>Unlock Your Full Potential</UpgradeTitle>
-
-                {/* Hero Stat */}
-                <HeroStat>
-                  <HeroStatNumber>94%</HeroStatNumber>
-                  <HeroStatLabel>of Pro users get more interviews</HeroStatLabel>
-                </HeroStat>
-
-                {/* Testimonial Carousel */}
-                <TestimonialCarousel>
-                  {testimonials.map((testimonial, index) => (
-                    <TestimonialSlide key={index} $isActive={index === currentTestimonial}>
-                      <TestimonialText>&quot;{testimonial.text}&quot;</TestimonialText>
-                      <TestimonialAuthor>
-                        — {testimonial.author}, {testimonial.role}
-                      </TestimonialAuthor>
-                    </TestimonialSlide>
+                <KeywordTagList>
+                  {missingKeywords.map((kw: string) => (
+                    <KeywordTag key={kw} $type={report.pro && report.generated_cv ? 'added' : 'missing'}>{kw}</KeywordTag>
                   ))}
-                </TestimonialCarousel>
+                </KeywordTagList>
+              </>
+            )}
 
-                {/* Compact Comparison */}
-                <ComparisonTable>
-                  <ComparisonRow $isHeader>
-                    <ComparisonCell>What You Get</ComparisonCell>
-                    <ComparisonCell>FREE</ComparisonCell>
-                    <ComparisonCell>PRO</ComparisonCell>
-                  </ComparisonRow>
-                  <ComparisonRow>
-                    <ComparisonCell>AI-Optimized Resume PDF</ComparisonCell>
-                    <ComparisonCell>
-                      <XMarkIcon />
-                    </ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                  </ComparisonRow>
-                  <ComparisonRow>
-                    <ComparisonCell>Rewritten Bullet Points</ComparisonCell>
-                    <ComparisonCell>
-                      <XMarkIcon />
-                    </ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                  </ComparisonRow>
-                  <ComparisonRow>
-                    <ComparisonCell>ATS Optimization Tips</ComparisonCell>
-                    <ComparisonCell>
-                      <XMarkIcon />
-                    </ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                  </ComparisonRow>
-                  <ComparisonRow>
-                    <ComparisonCell>Cover Letter Generator</ComparisonCell>
-                    <ComparisonCell>
-                      <XMarkIcon />
-                    </ComparisonCell>
-                    <ComparisonCell>
-                      <CheckCircleIcon />
-                    </ComparisonCell>
-                  </ComparisonRow>
-                </ComparisonTable>
+            {activeDetailTab === 'bullets' && (
+              <TabContentList>
+                {rewrittenBullets.length > 0 ? (
+                  rewrittenBullets.map((bullet: string, i: number) => (
+                    <li key={i}>{bullet}</li>
+                  ))
+                ) : (
+                  <li style={{ color: 'rgba(255,255,255,0.3)' }}>No rewritten bullets available</li>
+                )}
+              </TabContentList>
+            )}
 
-                {/* Social Proof - Compact */}
-                <SocialProofContainer>
-                  <SocialProofBadge>
-                    <ProofIcon>
-                      <FireIcon />
-                    </ProofIcon>
-                    <ProofText>
-                      <strong>487</strong> upgraded this week
-                    </ProofText>
-                  </SocialProofBadge>
-                  <SocialProofBadge>
-                    <ProofIcon>
-                      <BriefcaseIcon />
-                    </ProofIcon>
-                    <ProofText>
-                      <strong>12,483+</strong> professionals
-                    </ProofText>
-                  </SocialProofBadge>
-                </SocialProofContainer>
+            {activeDetailTab === 'ats' && (
+              <TabContentList>
+                {atsFlags.length > 0 ? (
+                  atsFlags.map((flag: string, i: number) => (
+                    <li key={i}>{flag}</li>
+                  ))
+                ) : (
+                  <li style={{ color: 'rgba(255,255,255,0.3)' }}>No ATS optimizations recorded</li>
+                )}
+              </TabContentList>
+            )}
 
-                {/* CTA Button */}
-                <MainCTAButton
-                  size="lg"
-                  data-upgrade-button
-                  onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
-                  isLoading={isUpgrading}
-                >
-                  {isUpgrading ? (
-                    "Upgrading..."
-                  ) : userCredits.canAnalyze ? (
-                    <>
-                      <RocketIcon /> Upgrade Now - Use 1 Credit
-                    </>
-                  ) : (
-                    <>
-                      <RocketIcon /> Get Credits & Upgrade
-                    </>
-                  )}
-                </MainCTAButton>
-
-                {/* Guarantee */}
-                <GuaranteeBadge>
-                  <CheckCircleIcon /> 100% Satisfaction Guaranteed
-                </GuaranteeBadge>
-              </Card.Content>
-            </ProUpgradeCard>
-          </Section>
-        </>
+            {activeDetailTab === 'roles' && (
+              <>
+                {roleRecommendations.map((role, i) => (
+                  <RoleItem key={i}>
+                    <div>
+                      <TabRoleTitle>{role.title}</TabRoleTitle>
+                      {role.description && (
+                        <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{role.description}</div>
+                      )}
+                    </div>
+                    <TabRoleFit $color={role.fit >= 80 ? 'var(--primary-400)' : role.fit >= 60 ? '#EAB308' : '#F97316'}>{role.fit}%</TabRoleFit>
+                  </RoleItem>
+                ))}
+              </>
+            )}
+          </TabContent>
+        </DetailPanel>
       )}
 
       {/* PRO-only sections */}
@@ -6166,9 +7081,12 @@ export default function ReportDetailPage() {
           </PDFPreviewContainerDrawer>
         </FixDrawerPreviewArea>
         <DrawerFooter>
-          <Button variant="primary" onClick={handleDownloadCV} style={{ width: '300px', maxWidth: '95%' }}>
-             Download Optimized Resume
-          </Button>
+          <ProHeroCTA onClick={handleDownloadCV} style={{ width: '340px', maxWidth: '95%' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Download Optimized Resume
+          </ProHeroCTA>
         </DrawerFooter>
       </Drawer>
 
@@ -6318,7 +7236,7 @@ export default function ReportDetailPage() {
 
             <Button
               size="lg"
-              onClick={userCredits.canAnalyze ? handleUpgradeToPro : () => setIsBuyCreditsModalOpen(true)}
+              onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}
               isLoading={isUpgrading}
               style={{
                 width: '100%',
@@ -6716,6 +7634,32 @@ export default function ReportDetailPage() {
           </Button>
         </DrawerFooter>
       </Drawer>
+
+      {/* Upgrade Confirmation Modal */}
+      <Modal
+        isOpen={isUpgradeConfirmModalOpen}
+        onClose={() => setIsUpgradeConfirmModalOpen(false)}
+        title="Ready to Upgrade?"
+        description="This will consume 1 credit to generate your fully AI-optimized resume."
+      >
+        <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+          <Button variant="ghost" onClick={() => setIsUpgradeConfirmModalOpen(false)} style={{ flex: 1 }}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              setIsUpgradeConfirmModalOpen(false);
+              handleUpgradeToPro();
+            }}
+            disabled={isUpgrading}
+            style={{ flex: 1 }}
+          >
+            {isUpgrading ? 'Upgrading...' : 'Confirm Upgrade'}
+          </Button>
+        </div>
+      </Modal>
+
     </Container>
   );
 }

@@ -60,21 +60,27 @@ export async function generateCVPDF(
     return doc.splitTextToSize(text, maxWidth);
   };
 
-  // Helper function to draw highlight border around a section
+  // Apple-style contextual highlight (Xcode style left-bar + subtle tint)
   const drawHighlightBorder = (startY: number, endY: number) => {
-    const padding = 3;
-    const borderWidth = 2;
-    doc.setDrawColor(COLORS.highlight);
-    doc.setLineWidth(borderWidth);
-    doc.roundedRect(
-      margin - padding,
-      startY - padding,
-      contentWidth + padding * 2,
-      endY - startY + padding * 2,
-      3,
-      3
-    );
-    doc.setLineWidth(0.5); // Reset line width
+    const padding = 4;
+    const boxX = margin - padding;
+    const boxY = startY - padding;
+    const boxW = contentWidth + padding * 2;
+    const boxH = endY - startY + padding * 2;
+    const radius = 6;
+    const accentColor = "#0A84FF"; // Apple System Blue (Dark Mode)
+
+    // 1. Draw a very soft, light-blue fill for the background with no borders
+    doc.saveGraphicsState();
+    // @ts-ignore - GState is available but types might be outdated
+    doc.setGState(new doc.GState({ opacity: 0.06 }));
+    doc.setFillColor(accentColor);
+    doc.roundedRect(boxX, boxY, boxW, boxH, radius, radius, "F");
+    doc.restoreGraphicsState();
+
+    // 2. Draw a thick vertical accent bar on the left edge
+    doc.setFillColor(accentColor);
+    doc.roundedRect(boxX, boxY, 3, boxH, 1.5, 1.5, "F");
   };
 
   // 1. CONTACT SECTION

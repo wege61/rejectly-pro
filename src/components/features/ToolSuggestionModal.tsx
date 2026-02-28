@@ -3,6 +3,7 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Briefcase, Target, Plus, Sparkles, Check, X, AlertCircle } from "lucide-react";
 import {
@@ -22,10 +23,12 @@ interface ToolSuggestionModalProps {
 const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: 24px;
+  padding: 12px 12px 32px 12px;
 
   @media (max-width: 640px) {
-    gap: ${({ theme }) => theme.spacing.md};
+    gap: 16px;
+    padding: 8px 8px 24px 8px;
   }
 `;
 
@@ -42,17 +45,21 @@ const HighlightText = styled.span`
 `;
 
 const ExperienceSection = styled.div`
-  background: ${({ theme }) => theme.colors.surfaceHover};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
+  background: rgba(15, 15, 18, 0.4);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
   @media (max-width: 640px) {
-    padding: 14px;
-    gap: 12px;
-    border-radius: 12px;
+    padding: 16px;
+    gap: 16px;
+    border-radius: 16px;
   }
 `;
 
@@ -224,32 +231,33 @@ const ToolTooltip = styled.div`
 const ToolCheckbox = styled.label<{ $priority: string; $isSelected: boolean }>`
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 10px;
+  padding: 10px 14px;
   background: ${({ theme, $isSelected }) =>
-    $isSelected ? "var(--accent-light, rgba(99, 102, 241, 0.08))" : theme.colors.surface};
-  border: 1.5px solid
+    $isSelected ? "rgba(102, 126, 234, 0.15)" : "rgba(255, 255, 255, 0.03)"};
+  border: 1px solid
     ${({ theme, $isSelected, $priority }) =>
       $isSelected
-        ? "var(--accent)"
+        ? "rgba(102, 126, 234, 0.5)"
         : $priority === "high"
-        ? theme.colors.warning
-        : theme.colors.border};
-  border-radius: 8px;
+        ? "rgba(245, 158, 11, 0.4)"
+        : "rgba(255, 255, 255, 0.08)"};
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   user-select: none;
 
   &:hover {
     background: ${({ theme, $isSelected }) =>
-      $isSelected ? "var(--accent-light, rgba(99, 102, 241, 0.12))" : theme.colors.surfaceHover};
+      $isSelected ? "rgba(102, 126, 234, 0.25)" : "rgba(255, 255, 255, 0.06)"};
     border-color: ${({ $isSelected, $priority, theme }) =>
       $isSelected
-        ? "var(--accent)"
+        ? "rgba(102, 126, 234, 0.8)"
         : $priority === "high"
-        ? theme.colors.warning
-        : "var(--accent-light, rgba(99, 102, 241, 0.4))"};
-    transform: translateY(-1px);
+        ? "rgba(245, 158, 11, 0.6)"
+        : "rgba(255, 255, 255, 0.2)"};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   &:active {
@@ -261,9 +269,9 @@ const ToolCheckbox = styled.label<{ $priority: string; $isSelected: boolean }>`
   }
 
   @media (max-width: 640px) {
-    padding: 6px 10px;
-    gap: 6px;
-    border-radius: 6px;
+    padding: 8px 12px;
+    gap: 8px;
+    border-radius: 10px;
   }
 `;
 
@@ -314,20 +322,23 @@ const ToolCategory = styled.span`
 const GlobalSection = styled.div`
   background: linear-gradient(
     135deg,
-    rgba(99, 102, 241, 0.05) 0%,
-    rgba(139, 92, 246, 0.05) 100%
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.1) 100%
   );
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: 20px;
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
   @media (max-width: 640px) {
-    padding: 14px;
-    gap: 12px;
-    border-radius: 12px;
+    padding: 16px;
+    gap: 16px;
+    border-radius: 16px;
   }
 `;
 
@@ -379,17 +390,18 @@ const EmptyText = styled.p`
 `;
 
 const CustomToolsSection = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px dashed ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
+  background: rgba(15, 15, 18, 0.3);
+  backdrop-filter: blur(20px);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: 16px;
 
   @media (max-width: 640px) {
-    padding: 14px;
-    border-radius: 12px;
+    padding: 16px;
+    border-radius: 16px;
   }
 `;
 
@@ -413,22 +425,23 @@ const InputWrapper = styled.div`
 
 const CustomToolsInput = styled.input`
   flex: 1;
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  background: ${({ theme }) => theme.colors.background};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  transition: all ${({ theme }) => theme.transitions.fast};
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(15, 15, 18, 0.4);
+  color: white;
+  font-size: 14px;
+  transition: all 0.2s ease;
 
   &:focus {
     outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-light, rgba(99, 102, 241, 0.1));
+    border-color: rgba(102, 126, 234, 0.6);
+    background: rgba(15, 15, 18, 0.6);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
   }
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.textTertiary};
+    color: rgba(255, 255, 255, 0.3);
   }
 `;
 
@@ -436,21 +449,24 @@ const AddButton = styled.button<{ $visible: boolean }>`
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  background: var(--accent);
+  padding: 12px 20px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
   color: white;
-  border: none;
-  border-radius: ${({ theme }) => theme.radius.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
-  transform: ${({ $visible }) => ($visible ? 'scale(1)' : 'scale(0.9)')};
+  transform: ${({ $visible }) => ($visible ? 'scale(1)' : 'scale(0.95)')};
   pointer-events: ${({ $visible }) => ($visible ? 'auto' : 'none')};
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 
   &:hover {
-    background: var(--accent-hover, rgba(99, 102, 241, 0.9));
+    transform: ${({ $visible }) => ($visible ? 'scale(1) translateY(-1px)' : 'scale(0.95)')};
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 
   &:active {
@@ -479,13 +495,14 @@ const CustomToolsList = styled.div`
 const CustomToolBadge = styled.span`
   display: inline-flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
-  padding: 4px 10px;
-  background: var(--accent-light, rgba(99, 102, 241, 0.1));
-  border: 1px solid var(--accent);
-  border-radius: ${({ theme }) => theme.radius.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--accent);
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(102, 126, 234, 0.15);
+  border: 1px solid rgba(102, 126, 234, 0.4);
+  border-radius: 10px;
+  font-size: 13px;
+  color: white;
+  backdrop-filter: blur(10px);
 
   button {
     display: flex;
@@ -494,13 +511,13 @@ const CustomToolBadge = styled.span`
     padding: 0;
     background: none;
     border: none;
-    color: var(--accent);
+    color: rgba(255, 255, 255, 0.6);
     cursor: pointer;
-    opacity: 0.7;
-    transition: opacity ${({ theme }) => theme.transitions.fast};
+    transition: all 0.2s ease;
 
     &:hover {
-      opacity: 1;
+      color: rgba(255, 255, 255, 1);
+      transform: scale(1.1);
     }
 
     svg {
@@ -510,6 +527,40 @@ const CustomToolBadge = styled.span`
   }
 `;
 
+const ModalGlassCTAButton = styled(motion.button)`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 28px;
+  border: 1px solid rgba(102, 126, 234, 0.4);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  background: rgba(102, 126, 234, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  overflow: hidden;
+
+  &:hover:not(:disabled) {
+    background: rgba(102, 126, 234, 0.25);
+    border-color: rgba(102, 126, 234, 0.8);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+  }
+`;
 
 export const ToolSuggestionModal: React.FC<ToolSuggestionModalProps> = ({
   isOpen,
@@ -813,13 +864,14 @@ export const ToolSuggestionModal: React.FC<ToolSuggestionModalProps> = ({
           {hasNoSuggestions ? "Continue" : "I didn't use any of these"}
         </Button>
         {!hasNoSuggestions && (
-          <Button
-            variant="primary"
+          <ModalGlassCTAButton
             onClick={handleConfirm}
             disabled={totalSelectedCount === 0}
+            whileHover={totalSelectedCount > 0 ? { scale: 1.02, y: -2 } : {}}
+            whileTap={totalSelectedCount > 0 ? { scale: 0.98, y: 0 } : {}}
           >
             Add Selected Tools ({totalSelectedCount})
-          </Button>
+          </ModalGlassCTAButton>
         )}
       </Modal.Footer>
     </Modal>

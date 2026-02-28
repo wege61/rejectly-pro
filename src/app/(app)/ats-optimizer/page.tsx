@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/contexts/ToastContext";
 import styled, { keyframes, css } from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useCallback, useEffect } from "react";
 import {
   analyzeScore,
@@ -1844,13 +1845,13 @@ const ATSCTARow = styled.div`
 
 /* ── ATS Upload Modal — Liquid Glass ── */
 const ATSModalHeaderInner = styled.div`
-  padding: 28px 28px 0;
+  padding: 32px 32px 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   position: relative;
 
-  @media (max-width: 640px) { padding: 24px 20px 0; }
+  @media (max-width: 640px) { padding: 24px 24px 0; }
 `;
 
 const ATSModalIconBadge = styled.div`
@@ -1896,8 +1897,13 @@ const ATSModalHeadSub = styled.p`
 
 const ATSModalCloseBtn = styled.button`
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 32px;
+  right: 32px;
+
+  @media (max-width: 640px) {
+    top: 24px;
+    right: 24px;
+  }
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -2154,7 +2160,109 @@ const ATSUploadPrimaryBtn = styled.button`
   }
   &:active { transform: scale(0.98); }
   &:disabled { opacity: 0.40; cursor: not-allowed; }
+  &:disabled { opacity: 0.40; cursor: not-allowed; }
   svg { width: 18px; height: 18px; flex-shrink: 0; }
+`;
+
+// Preview Modal specific styles
+const PreviewModalOverlay = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(10, 10, 14, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  @media (max-width: 768px) {
+    padding: 0;
+    align-items: flex-end;
+  }
+`;
+
+const PreviewModalContent = styled(motion.div)`
+  width: 100%;
+  max-width: 900px;
+  height: 90vh;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  /* Liquid Glass Base */
+  background: rgba(22, 22, 30, 0.7);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  box-shadow: 
+    0 4px 1px rgba(255, 255, 255, 0.05) inset,
+    0 24px 64px rgba(0, 0, 0, 0.4),
+    0 12px 24px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    height: 95vh;
+    border-radius: 28px 28px 0 0;
+    border-bottom: none;
+  }
+`;
+
+const PreviewModalBody = styled.div`
+  flex: 1;
+  padding: 0 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
+`;
+
+const PreviewModalFooter = styled.div`
+  padding: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: rgba(10, 10, 14, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+  @media (max-width: 768px) {
+    padding: 16px;
+    flex-direction: column;
+  }
+`;
+
+const PreviewSecondaryBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 // Floating Action Button for easy access to upload
@@ -2929,29 +3037,61 @@ export default function DashboardATSOptimizerPage() {
       />
 
        {/* CV Preview Modal */}
-      <Modal
-        isOpen={isPreviewOpen}
-        onClose={handleClosePreview}
-        title="CV Preview"
-        description="Review your optimized resume before downloading"
-        size="lg"
-      >
-        <Modal.Body>
-           <PDFPreviewContainer>
-             {pdfPreviewUrl ? (
-               <iframe
-                 src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                 title="CV Preview"
-                 style={{ width: '100%', height: '100%', border: 'none' }}
-               />
-             ) : <div style={{ display:'flex', justifyContent:'center', alignItems:'center', height:'100%' }}><Spinner /></div>}
-           </PDFPreviewContainer>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="ghost" onClick={handleClosePreview}>Close</Button>
-          <Button variant="primary" onClick={handleDownloadCV}><DownloadIcon /> Download</Button>
-        </Modal.Footer>
-      </Modal>
+       <AnimatePresence>
+        {isPreviewOpen && (
+          <PreviewModalOverlay
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={handleClosePreview}
+          >
+            <PreviewModalContent
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            >
+              <ATSModalHeaderInner>
+                <ATSModalIconBadge>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </ATSModalIconBadge>
+                <ATSModalHeadTitle>CV Preview</ATSModalHeadTitle>
+                <ATSModalHeadSub>Review your optimized resume before downloading</ATSModalHeadSub>
+                <ATSModalCloseBtn onClick={handleClosePreview} aria-label="Close">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                  </svg>
+                </ATSModalCloseBtn>
+              </ATSModalHeaderInner>
+
+              <PreviewModalBody>
+                 <PDFPreviewContainer style={{ height: '100%', borderRadius: '16px', overflow: 'hidden', background: 'white' }}>
+                   {pdfPreviewUrl ? (
+                     <iframe
+                       src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                       title="CV Preview"
+                       style={{ width: '100%', height: '100%', border: 'none' }}
+                     />
+                   ) : <div style={{ display:'flex', justifyContent:'center', alignItems:'center', height:'100%', color: 'black' }}><Spinner /></div>}
+                 </PDFPreviewContainer>
+              </PreviewModalBody>
+
+              <PreviewModalFooter>
+                <PreviewSecondaryBtn onClick={handleClosePreview}>Cancel</PreviewSecondaryBtn>
+                <ATSUploadPrimaryBtn onClick={handleDownloadCV} style={{ width: 'auto' }}>
+                  <DownloadIcon /> 
+                  Download PDF
+                </ATSUploadPrimaryBtn>
+              </PreviewModalFooter>
+            </PreviewModalContent>
+          </PreviewModalOverlay>
+        )}
+      </AnimatePresence>
 
       {/* Delete Confirmation Modal */}
       <Modal

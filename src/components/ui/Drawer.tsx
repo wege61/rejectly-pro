@@ -37,9 +37,10 @@ interface DrawerDescriptionProps {
 const Overlay = styled(motion.div)`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
   z-index: 9998;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
 `;
 
 const DrawerContainer = styled(motion.div)`
@@ -49,13 +50,16 @@ const DrawerContainer = styled(motion.div)`
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  background: ${({ theme }) => theme.colors.backgroundAlt2};
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  max-height: 90vh;
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: rgba(15, 15, 18, 0.75);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  max-height: 96vh;
+  box-shadow: 0 -16px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 `;
 
 const Handle = styled.div`
@@ -73,11 +77,12 @@ const HandleBar = styled.div`
   width: 48px;
   height: 5px;
   border-radius: 9999px;
-  background: ${({ theme }) => theme.colors.border};
+  background: rgba(255, 255, 255, 0.15);
   transition: background 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
   ${Handle}:hover & {
-    background: ${({ theme }) => theme.colors.textTertiary};
+    background: rgba(255, 255, 255, 0.25);
   }
 `;
 
@@ -94,21 +99,22 @@ const Header = styled.div`
   margin: 0 auto;
   gap: 6px;
   padding: 0 24px 20px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   max-width: 1200px;
 `;
 
 const Title = styled.h2`
   font-size: 20px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
   line-height: 1.4;
+  letter-spacing: -0.3px;
 `;
 
 const Description = styled.p`
   font-size: 15px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: rgba(255, 255, 255, 0.5);
   margin: 0 auto;
   max-width: 1200px;
   line-height: 1.5;
@@ -123,14 +129,10 @@ const BodyWrapper = styled.div`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-  }
+  border-radius: 16px;
+  background: rgba(15, 15, 18, 0.4);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 
   /* Top fade indicator */
   &::before {
@@ -142,14 +144,14 @@ const BodyWrapper = styled.div`
     height: 20px;
     background: linear-gradient(
       to bottom,
-      ${({ theme }) => theme.colors.backgroundAlt} 0%,
+      rgba(15, 15, 18, 0.6) 0%,
       transparent 100%
     );
     z-index: 2;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s ease;
-    border-radius: 12px 12px 0 0;
+    border-radius: 16px 16px 0 0;
   }
 
   /* Bottom fade indicator */
@@ -162,14 +164,14 @@ const BodyWrapper = styled.div`
     height: 20px;
     background: linear-gradient(
       to top,
-      ${({ theme }) => theme.colors.backgroundAlt} 0%,
+      rgba(15, 15, 18, 0.6) 0%,
       transparent 100%
     );
     z-index: 2;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s ease;
-    border-radius: 0 0 12px 12px;
+    border-radius: 0 0 16px 16px;
   }
 
   &[data-scroll-top="true"]::before {
@@ -200,12 +202,12 @@ const Body = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.border};
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 3px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: ${({ theme }) => theme.colors.textTertiary};
+    background: rgba(255, 255, 255, 0.2);
   }
 `;
 
@@ -215,11 +217,12 @@ const Footer = styled.div`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 16px 24px 24px;
+  padding: 20px 24px 28px;
   margin: 0 auto;
   max-width: 1200px;
   width: 100%;
-  `;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  `;;
 
 // Animation variants with proper typing
 const overlayVariants = {

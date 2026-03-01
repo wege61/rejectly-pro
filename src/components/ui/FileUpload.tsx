@@ -51,20 +51,23 @@ const UploadWrapper = styled.div`
 `;
 
 const UploadContainer = styled(motion.div)`
-  padding: 40px;
+  padding: 12px;
   display: block;
   border-radius: 12px;
   cursor: pointer;
   width: 100%;
   position: relative;
   overflow: hidden;
-  background: var(--bg-color);
-  border: 2px dashed var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: var(--primary-500);
-    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.05) 0%, rgba(var(--primary-500-rgb), 0.08) 100%);
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.04);
   }
 `;
 
@@ -83,7 +86,7 @@ const GridPatternInner = styled.div`
   align-items: center;
   gap: 1px;
   transform: scale(1.05);
-  background: var(--bg-color);
+  background: transparent;
 `;
 
 const GridCell = styled.div<{ $isEven: boolean }>`
@@ -91,8 +94,8 @@ const GridCell = styled.div<{ $isEven: boolean }>`
   height: 40px;
   flex-shrink: 0;
   border-radius: 2px;
-  background: ${({ $isEven }) => $isEven ? 'var(--bg-alt)' : 'var(--bg-alt)'};
-  box-shadow: ${({ $isEven }) => !$isEven ? 'inset 0 0 1px 3px var(--bg-color)' : 'none'};
+  background: ${({ $isEven }) => $isEven ? 'rgba(255, 255, 255, 0.02)' : 'transparent'};
+  box-shadow: ${({ $isEven }) => !$isEven ? 'inset 0 0 1px 3px rgba(255, 255, 255, 0.01)' : 'none'};
 `;
 
 const ContentContainer = styled.div`
@@ -106,21 +109,21 @@ const ContentContainer = styled.div`
 
 const UploadTitle = styled.p`
   font-weight: 700;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--text-color);
 `;
 
 const UploadDescription = styled.p`
   font-weight: 400;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-secondary);
-  margin-top: 8px;
+  text-align: center;
+  padding: 0 12px;
 `;
 
 const FilePreviewContainer = styled.div`
   position: relative;
   width: 100%;
-  margin-top: 40px;
   max-width: 560px;
   margin-left: auto;
   margin-right: auto;
@@ -130,19 +133,20 @@ const FileCard = styled(motion.div)`
   position: relative;
   overflow: hidden;
   z-index: 40;
-  background: var(--bg-alt);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  padding: 16px;
-  margin-top: 16px;
+  padding: 12px;
   width: 100%;
   margin-left: auto;
   margin-right: auto;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const FileHeader = styled.div`
@@ -169,7 +173,7 @@ const FileSize = styled(motion.p)`
   flex-shrink: 0;
   font-size: 14px;
   color: var(--text-secondary);
-  background: var(--bg-color);
+  background: rgba(255, 255, 255, 0.05);
 `;
 
 const FileMeta = styled.div`
@@ -191,7 +195,7 @@ const FileMeta = styled.div`
 const FileType = styled(motion.p)`
   padding: 2px 8px;
   border-radius: 6px;
-  background: var(--bg-color);
+  background: rgba(255, 255, 255, 0.05);
 `;
 
 const FileDate = styled(motion.p)`
@@ -218,11 +222,11 @@ const FileActionButton = styled.button<{ $variant?: "primary" | "danger" }>`
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
-  background: var(--bg-color);
+  background: rgba(255, 255, 255, 0.04);
   color: ${({ $variant }) => $variant === "danger" ? "#ef4444" : "var(--text-color)"};
 
   &:hover {
-    background: ${({ $variant }) => $variant === "danger" ? "rgba(239, 68, 68, 0.1)" : "var(--bg-alt)"};
+    background: ${({ $variant }) => $variant === "danger" ? "rgba(239, 68, 68, 0.1)" : "rgba(255, 255, 255, 0.08)"};
   }
 
   svg {
@@ -250,7 +254,7 @@ const XIcon = () => (
 const UploadIconBox = styled(motion.div)<{ $isDragActive: boolean }>`
   position: relative;
   z-index: 40;
-  background: var(--bg-alt);
+  background: rgba(255, 255, 255, 0.03);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -261,12 +265,13 @@ const UploadIconBox = styled(motion.div)<{ $isDragActive: boolean }>`
   margin-left: auto;
   margin-right: auto;
   border-radius: 12px;
-  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-color);
-  transition: box-shadow 0.3s ease;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
 
   ${UploadContainer}:hover & {
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   svg {

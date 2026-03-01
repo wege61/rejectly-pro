@@ -752,18 +752,43 @@ const DemoTitleRow = styled.div`
 const DemoInputsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 32px;
+  gap: 24px;
+  position: relative;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 16px;
+  }
+`;
+
+const CompactLabelRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+`;
+
+const CompactLabel = styled.div`
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg {
+    width: 16px;
+    height: 16px;
   }
 `;
 
 const DemoInputSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
+  height: 100%;
 `;
 
 const DemoInputContent = styled.div`
@@ -1481,12 +1506,26 @@ const PricingGrid = styled.div`
 `;
 
 const PricingCard = styled.div<{ $featured?: boolean }>`
-  background: var(--bg-alt);
-  border: 1px solid ${({ $featured }) => $featured ? "var(--text-color)" : "var(--border-color)"};
-  border-radius: 16px;
+  background: ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.04)" : "rgba(255, 255, 255, 0.02)"};
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.08)"};
+  border-radius: 24px;
   padding: 40px;
   position: relative;
-  transition: all 0.2s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: ${({ $featured }) => $featured 
+    ? "inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 255, 255, 0.03)"
+    : "inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 4px 24px rgba(0, 0, 0, 0.3)"};
+
+  &:hover {
+    background: ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.06)" : "rgba(255, 255, 255, 0.04)"};
+    border-color: ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.3)" : "rgba(255, 255, 255, 0.15)"};
+    box-shadow: ${({ $featured }) => $featured 
+      ? "inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 255, 255, 0.05)"
+      : "inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4)"};
+    transform: translateY(-4px);
+  }
 
   @media (max-width: 768px) {
     padding: 32px;
@@ -1498,13 +1537,18 @@ const PricingBadge = styled.div`
   top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--text-color);
-  color: var(--bg-alt);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.75));
+  backdrop-filter: blur(10px);
+  color: #000;
   padding: 8px 20px;
   border-radius: 20px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 700;
   white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15), inset 0 1px 1px #fff;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 `;
 
 const PricingPlanName = styled.h3`
@@ -2893,7 +2937,7 @@ export default function Page() {
     if (!file) return;
 
     setIsUploadingCV(true);
-    setHasUploadedFile(false);
+    setHasUploadedFile(true); // Hide text area instantly upon upload
 
     try {
       const formData = new FormData();
@@ -2911,8 +2955,8 @@ export default function Page() {
       }
 
       setCvText(data.text);
-      setHasUploadedFile(true);
     } catch (error) {
+      setHasUploadedFile(false); // Revert back if upload fails
       const errorMessage =
         error instanceof Error ? error.message : "Upload failed";
       alert(errorMessage);
@@ -3266,11 +3310,13 @@ export default function Page() {
                 <DemoInputsGrid>
                   {/* Resume Input Section */}
                   <DemoInputSection>
-                    <InputLabel>
-                      <DocumentTextIcon />
-                      Your Resume
-                    </InputLabel>
-                    <DemoInputContent>
+                    <CompactLabelRow>
+                      <CompactLabel>
+                        <DocumentTextIcon />
+                        Resume
+                      </CompactLabel>
+                    </CompactLabelRow>
+                    <DemoInputContent style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                       <FileUpload
                         accept=".pdf,.docx"
                         onChange={(files) => {
@@ -3280,19 +3326,19 @@ export default function Page() {
                         }}
                         onRemove={() => {
                           setHasUploadedFile(false);
-                          setCvText("");
+                          setCvText(""); // Clear parsed text when resume is removed
                         }}
                       />
                       {!hasUploadedFile && (
                         <>
-                          <DemoOrDivider>
+                          <DemoOrDivider style={{ margin: '16px 0', opacity: 0.6 }}>
                             <span>or paste text</span>
                           </DemoOrDivider>
                           <NewDemoTextarea
                             placeholder="Paste your resume text here..."
                             value={cvText}
                             onChange={(e) => setCvText(e.target.value)}
-                            style={{ minHeight: '120px' }}
+                            style={{ flex: 1, minHeight: '160px' }}
                           />
                         </>
                       )}
@@ -3301,16 +3347,20 @@ export default function Page() {
 
                   {/* Job Description Input Section */}
                   <DemoInputSection>
-                    <InputLabel>
-                      <BriefcaseIcon />
-                      Job Description
-                    </InputLabel>
-                    <NewDemoTextarea
-                      placeholder="Paste the job description here..."
-                      value={jobText}
-                      onChange={(e) => setJobText(e.target.value)}
-                      style={{ minHeight: '200px', flex: 1 }}
-                    />
+                    <CompactLabelRow>
+                      <CompactLabel>
+                        <BriefcaseIcon />
+                        Job Description
+                      </CompactLabel>
+                    </CompactLabelRow>
+                    <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                      <NewDemoTextarea
+                        placeholder="Paste the target job description here..."
+                        value={jobText}
+                        onChange={(e) => setJobText(e.target.value)}
+                        style={{ flex: 1, height: '100%', minHeight: '300px' }}
+                      />
+                    </div>
                   </DemoInputSection>
                 </DemoInputsGrid>
 

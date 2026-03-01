@@ -5,21 +5,19 @@ import { ComponentPropsWithoutRef, ReactNode } from "react";
 
 // Card Container
 const CardWrapper = styled.div`
-  background: var(--bg-alt);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 4px 24px rgba(0, 0, 0, 0.3);
   color: var(--text-color);
   display: flex;
   flex-direction: column;
   gap: 24px;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 24px 0;
-  transition: all 0.3s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  outline: 1px solid rgba(0, 0, 0, 0.05);
-
-  
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
 `;
 
 // Card Header

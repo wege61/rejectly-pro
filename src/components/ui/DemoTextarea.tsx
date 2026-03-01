@@ -8,28 +8,28 @@ const StyledTextarea = styled.textarea`
   width: 100%;
   min-height: 120px;
   border-radius: 12px;
-  border: 2px solid var(--border-color);
-  background: var(--bg-color);
-  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 16px;
   font-size: 14px;
   font-family: inherit;
   color: var(--text-color);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   resize: vertical;
   outline: none;
 
   &::placeholder {
     color: var(--text-secondary);
+    opacity: 0.6;
   }
 
   &:focus {
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px rgba(var(--primary-500-rgb), 0.15);
-  }
-
-  &:hover:not(:focus) {
-    border-color: var(--primary-200);
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(255, 255, 255, 0.05);
   }
 
   &:disabled {

@@ -234,10 +234,9 @@ const overlayVariants = {
 // Scale background helper
 function getScaleWrapper(): HTMLElement | null {
   // Try to find the app layout container first (includes sidebar + main)
-  // Then fall back to Next.js wrapper or body's first child
+  // Then fall back to body's first child
   return document.getElementById('app-layout') ||
-         document.getElementById('__next') ||
-         document.body.firstElementChild as HTMLElement;
+         (document.body.firstElementChild as HTMLElement);
 }
 
 function applyScaleBackground(scale: boolean) {

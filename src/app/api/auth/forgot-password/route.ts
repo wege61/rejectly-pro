@@ -1,5 +1,6 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { z } from "zod";
 import { verifyTurnstileToken } from "@/lib/validations";
 
@@ -43,15 +44,29 @@ export async function POST(request: Request) {
 
     // Get origin from request headers
     const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "";
+    const cookieStore = await cookies();
+
+    // Create Supabase client (read-only cookies for this operation)
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+          set() {},
+          remove() {},
+        },
+      }
+    );
 
     // Send password reset email
-    const supabase = await createClient();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${origin}/auth/callback?next=/reset-password`,
     });
 
     // Always return success to prevent email enumeration
-    // Even if the email doesn't exist, we show the same message
     if (error) {
       console.error("Password reset error:", error);
     }

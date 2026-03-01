@@ -1,5 +1,6 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { z } from "zod";
 import { verifyTurnstileToken } from "@/lib/validations";
 
@@ -49,8 +50,44 @@ export async function POST(request: Request) {
       }
     }
 
+    // Create response to set cookies on
+    const response = NextResponse.json({ success: true });
+    const cookieStore = await cookies();
+
+    // Create Supabase client with cookie handling
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+              secure: process.env.NODE_ENV === "production",
+              httpOnly: true,
+              sameSite: "lax",
+            });
+          },
+          remove(name: string, options: CookieOptions) {
+            response.cookies.set({
+              name,
+              value: "",
+              ...options,
+              secure: process.env.NODE_ENV === "production",
+              httpOnly: true,
+              sameSite: "lax",
+            });
+          },
+        },
+      }
+    );
+
     // Create user with Supabase
-    const supabase = await createClient();
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -63,7 +100,6 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      // Handle specific error cases
       if (error.message.includes("already registered")) {
         return NextResponse.json(
           { error: "An account with this email already exists" },
@@ -76,13 +112,18 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      user: {
-        id: data.user?.id,
-        email: data.user?.email,
+    return NextResponse.json(
+      {
+        success: true,
+        user: {
+          id: data.user?.id,
+          email: data.user?.email,
+        },
       },
-    });
+      {
+        headers: response.headers,
+      }
+    );
   } catch (error) {
     console.error("Signup error:", error);
     return NextResponse.json(

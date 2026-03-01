@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "next dev --turbo",
+    "build": "next build",
     "postbuild": "echo '✓ Build completed. Sitemap is generated dynamically at /sitemap.xml'",
     "start": "next start",
     "lint": "eslint",
@@ -27,7 +27,7 @@
     "lucide-react": "^0.554.0",
     "mammoth": "^1.11.0",
     "motion": "^12.23.25",
-    "next": "^16.1.6",
+    "next": "15.1.0",
     "openai": "^6.5.0",
     "pdf-parse-fork": "^1.2.0",
     "pdf2json": "^4.0.0",
@@ -60,13 +60,6 @@
     "typescript": "^5"
   },
   "pnpm": {
-    "onlyBuiltDependencies": [],
-    "overrides": {
-      "tar": "^7.5.8",
-      "minimatch": "^9.0.7",
-      "lodash": "^4.17.23",
-      "js-yaml": "^4.1.1",
-      "ajv": "^6.14.0"
-    }
+    "onlyBuiltDependencies": []
   }
 }

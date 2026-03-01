@@ -36,7 +36,10 @@
       "Bash(pnpm security:audit:*)",
       "Bash(pnpm build:*)",
       "Bash(pnpm audit:*)",
-      "Bash(pnpm update:*)"
+      "Bash(pnpm update:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

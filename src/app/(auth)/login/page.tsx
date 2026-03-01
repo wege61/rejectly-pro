@@ -179,7 +179,8 @@ function LoginForm() {
     try {
       await signIn(email, password, turnstileToken);
       toast.success("Login successful! Redirecting...");
-      router.push(redirectTo);
+      // Full page reload to ensure cookies are picked up
+      window.location.href = redirectTo;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Login failed. Please try again.";
       toast.error(errorMessage);

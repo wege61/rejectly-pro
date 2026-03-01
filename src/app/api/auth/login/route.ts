@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const result = loginSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
-        { error: result.error.errors[0]?.message || "Invalid request" },
+        { error: result.error.issues[0]?.message || "Invalid request" },
         { status: 400 }
       );
     }
@@ -94,18 +94,20 @@ export async function POST(request: Request) {
     }
 
     // Return the response with cookies set
-    return NextResponse.json(
-      {
-        success: true,
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-        },
+    const finalResponse = NextResponse.json({
+      success: true,
+      user: {
+        id: data.user.id,
+        email: data.user.email,
       },
-      {
-        headers: response.headers,
-      }
-    );
+    });
+
+    // Transfer cookies from the response object used by createServerClient
+    response.cookies.getAll().forEach((cookie) => {
+      finalResponse.cookies.set(cookie);
+    });
+
+    return finalResponse;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(

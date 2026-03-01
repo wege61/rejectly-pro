@@ -191,18 +191,17 @@ export async function middleware(request: NextRequest) {
             ...options,
             secure: process.env.NODE_ENV === 'production',
             httpOnly: true,
-            sameSite: 'lax' as const, // 'lax' allows OAuth redirects, 'strict' would break them
+            sameSite: 'lax' as const,
           };
+
+          // Update request for subsequent middleware/route usage
           request.cookies.set({
             name,
             value,
             ...secureOptions,
           });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
+
+          // Update response to send to browser
           response.cookies.set({
             name,
             value,
@@ -216,16 +215,13 @@ export async function middleware(request: NextRequest) {
             httpOnly: true,
             sameSite: 'lax' as const,
           };
+
           request.cookies.set({
             name,
             value: '',
             ...secureOptions,
           });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
+
           response.cookies.set({
             name,
             value: '',

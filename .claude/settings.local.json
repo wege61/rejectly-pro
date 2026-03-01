@@ -31,7 +31,12 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nResolve merge conflict in report page\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(node -e:*)",
       "Bash(npx next build:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm security:audit:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm audit:*)",
+      "Bash(pnpm update:*)"
     ],
     "deny": [],
     "ask": []

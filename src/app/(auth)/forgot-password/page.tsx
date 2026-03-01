@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Turnstile, type TurnstileRef } from '@/components/ui/Turnstile';
 import { resetPassword } from '@/lib/auth';
 import { useToast } from '@/contexts/ToastContext';
 import { ROUTES } from '@/lib/constants';
@@ -56,7 +57,24 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [captchaError, setCaptchaError] = useState<string>('');
+  const turnstileRef = useRef<TurnstileRef>(null);
   const toast = useToast();
+
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token);
+    setCaptchaError('');
+  };
+
+  const handleTurnstileError = () => {
+    setCaptchaError('CAPTCHA verification failed. Please try again.');
+    setTurnstileToken(null);
+  };
+
+  const handleTurnstileExpire = () => {
+    setTurnstileToken(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,14 +84,23 @@ export default function ForgotPasswordPage() {
       return;
     }
 
+    // Check CAPTCHA if configured
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) {
+      setCaptchaError('Please complete the CAPTCHA verification.');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await resetPassword(email);
+      await resetPassword(email, turnstileToken);
       setEmailSent(true);
       toast.success('Password reset email sent!');
     } catch (error: any) {
       toast.error(error.message || 'Failed to send reset email. Please try again.');
+      // Reset CAPTCHA on failed attempt
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
     } finally {
       setIsLoading(false);
     }
@@ -114,6 +141,14 @@ export default function ForgotPasswordPage() {
           required
           fullWidth
           autoComplete="email"
+        />
+
+        <Turnstile
+          ref={turnstileRef}
+          onVerify={handleTurnstileVerify}
+          onError={handleTurnstileError}
+          onExpire={handleTurnstileExpire}
+          error={captchaError}
         />
 
         <Button type="submit" isLoading={isLoading} fullWidth size="lg">

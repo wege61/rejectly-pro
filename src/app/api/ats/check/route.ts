@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserAccessStatus, consumeCredit } from "@/lib/credits";
 import {
   ATSCheckResult,
-  ATSCheckRequest,
   ATSCheckResponse,
   getATSScoreLabel,
   getATSScoreColor,
@@ -15,29 +14,24 @@ import {
 } from "@/lib/ats/deterministicScoring";
 import { generateATSCheckPrompt } from "@/lib/ai/prompts";
 import { openai, AI_MODEL } from "@/lib/ai/client";
+import { atsCheckRequestSchema, validateRequest } from "@/lib/validations";
 
 export async function POST(request: NextRequest) {
   console.log("\n\n🔍 ATS CHECK ENDPOINT CALLED 🔍\n\n");
 
   try {
-    // 1. Parse request first
-    const body: ATSCheckRequest & { useAI?: boolean; reportId?: string } = await request.json();
-    const { documentId, cvText, unlock = false, useAI = false, reportId } = body;
+    // 1. Parse and validate request
+    const body = await request.json();
+    const validation = validateRequest(atsCheckRequestSchema, body);
 
-    console.log("📋 ATS Check Request:", {
-      documentId,
-      reportId,
-      hasCvText: !!cvText,
-      unlock,
-      useAI,
-    });
-
-    if (!documentId && !reportId && !cvText) {
+    if (!validation.success) {
       return NextResponse.json(
-        { error: "Either documentId, reportId or cvText is required" },
+        { error: validation.error },
         { status: 400 }
       );
     }
+
+    const { documentId, cvText, unlock, useAI, reportId } = validation.data;
 
     // 2. Public access for cvText-only requests (no auth required)
     if (!documentId && !reportId && cvText) {
@@ -318,7 +312,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "ATS check failed",
+        error: "ATS check failed. Please try again.",
       },
       { status: 500 }
     );

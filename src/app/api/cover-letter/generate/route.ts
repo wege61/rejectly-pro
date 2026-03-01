@@ -213,11 +213,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Cover letter generation error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
 
     return NextResponse.json(
-      { error: `Failed to generate cover letter: ${errorMessage}` },
+      { error: "Failed to generate cover letter. Please try again." },
       { status: 500 }
     );
   }

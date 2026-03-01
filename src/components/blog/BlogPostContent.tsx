@@ -9,6 +9,13 @@ import { TableOfContents, extractHeadings, addHeadingIds } from "./TableOfConten
 import { BlogCTA, SidebarCTA } from "./BlogCTA";
 import type { BlogPostWithRelations } from "@/types/blog";
 
+// Dynamic import for DOMPurify to avoid SSR issues
+const sanitizeHtml = (html: string, options?: { ADD_ATTR?: string[] }): string => {
+  if (typeof window === "undefined") return html;
+  const DOMPurify = require("dompurify");
+  return DOMPurify.sanitize(html, options);
+};
+
 const Container = styled.div`
   min-height: 100vh;
   background-color: var(--bg-color);
@@ -554,12 +561,15 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
       <ArticleSection>
         <ArticleLayout>
           <ArticleContent itemScope itemType="https://schema.org/Article">
-            {/* Content is stored as HTML in Supabase */}
+            {/* Content is stored as HTML in Supabase - sanitized with DOMPurify */}
             <Content
               className="article-content"
               itemProp="articleBody"
               dangerouslySetInnerHTML={{
-                __html: addHeadingIds(post.content, extractHeadings(post.content))
+                __html: sanitizeHtml(
+                  addHeadingIds(post.content, extractHeadings(post.content)),
+                  { ADD_ATTR: ['target'] }
+                )
               }}
             />
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { PRICING } from '@/lib/constants';
 import { createClient } from '@/lib/supabase/server';
+import { checkoutRequestSchema, validateRequest } from '@/lib/validations';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,15 +15,18 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    const { priceId, successUrl, cancelUrl, mode = 'subscription', quantity = 1 } = await req.json();
+    // Validate request body
+    const body = await req.json();
+    const validation = validateRequest(checkoutRequestSchema, body);
 
-    if (!priceId || !successUrl || !cancelUrl) {
-      return new NextResponse('Missing required fields', { status: 400 });
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.error },
+        { status: 400 }
+      );
     }
 
-    if (priceId.includes('price_1Q...') || priceId.startsWith('price_1Q')) {
-      return new NextResponse('Invalid Price ID. Please configure Stripe Price IDs in .env.local', { status: 400 });
-    }
+    const { priceId, successUrl, cancelUrl, mode, quantity } = validation.data;
 
     // Identify the plan based on priceId
     const plan = Object.values(PRICING).find((p) => p.priceId === priceId);
@@ -52,8 +56,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ sessionId: session.id, url: session.url });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error creating checkout session:', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create checkout session. Please try again.' },
+      { status: 500 }
+    );
   }
 }

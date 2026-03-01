@@ -16,86 +16,173 @@ const slideDown = keyframes`
   }
 `;
 
+const shimmer = keyframes`
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+`;
+
 const Banner = styled.div<{ $variant: 'warning' | 'danger' }>`
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.lg}`};
+  gap: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.xl}`};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  border-radius: ${({ theme }) => theme.radius.xl};
+  overflow: hidden;
+  
+  /* Ultra-Refined Apple Frosted Glass */
   background: ${({ $variant }) =>
     $variant === 'danger'
-      ? 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)'
-      : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)'};
-  border-bottom: 1px solid ${({ $variant }) =>
-    $variant === 'danger' ? '#fecaca' : '#fde68a'};
-  animation: ${css`${slideDown}`} 0.3s ease-out;
+      ? 'rgba(239, 68, 68, 0.03)'
+      : 'rgba(245, 158, 11, 0.03)'};
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  
+  /* Delicate Borders & Inner Shadow for depth */
+  border: 1px solid ${({ $variant }) =>
+    $variant === 'danger' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)'};
+  box-shadow: 
+    0 4px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  
+  animation: ${css`${slideDown}`} 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Shimmer effect overlay for premium feel */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      ${({ $variant }) => $variant === 'danger' ? 'rgba(239, 68, 68, 0.03)' : 'rgba(245, 158, 11, 0.03)'} 50%,
+      transparent 100%
+    );
+    transform: skewX(-20deg);
+    animation: ${shimmer} 6s infinite;
+    pointer-events: none;
+  }
 
   @media (max-width: 640px) {
-    gap: 8px;
-    padding: 8px 12px;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    border-radius: 0;
+    margin-bottom: 0;
+    border-left: none;
+    border-right: none;
   }
 `;
 
 const BannerContent = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: ${({ theme }) => theme.spacing.md};
+  z-index: 1; /* Above shimmer */
 
   @media (max-width: 640px) {
-    gap: 6px;
+    flex-direction: column;
+    gap: 8px;
+  }
+`;
+
+const BannerIconWrapper = styled.div<{ $variant: 'warning' | 'danger' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: ${({ $variant }) => 
+    $variant === 'danger' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)'};
+  border: 1px solid ${({ $variant }) => 
+    $variant === 'danger' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)'};
+
+  @media (max-width: 640px) {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 4px;
   }
 `;
 
 const BannerIcon = styled.span`
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 1;
 
   @media (max-width: 640px) {
-    font-size: 14px;
+    font-size: 20px;
   }
 `;
 
-const BannerText = styled.span<{ $variant: 'warning' | 'danger' }>`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ $variant }) => ($variant === 'danger' ? '#991b1b' : '#92400e')};
+const BannerText = styled.span`
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  opacity: 0.9;
 
   @media (max-width: 640px) {
-    font-size: 12px;
+    font-size: 14px;
+    line-height: 1.5;
   }
 `;
 
 const BannerButton = styled.button<{ $variant: 'warning' | 'danger' }>`
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
-  background: ${({ $variant }) => ($variant === 'danger' ? '#dc2626' : '#f59e0b')};
-  color: white;
-  border: none;
-  border-radius: ${({ theme }) => theme.radius.md};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  position: relative;
+  overflow: hidden;
+  padding: 8px 18px;
+  background: ${({ $variant }) => 
+    $variant === 'danger' 
+      ? 'rgba(239, 68, 68, 0.1)' 
+      : 'rgba(245, 158, 11, 0.1)'};
+  color: ${({ $variant }) => 
+    $variant === 'danger' ? '#fca5a5' : '#fcd34d'};
+  border: 1px solid ${({ $variant }) => 
+    $variant === 'danger' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)'};
+  border-radius: 100px; /* Pill shape */
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
+  z-index: 1;
 
   &:hover {
-    background: ${({ $variant }) => ($variant === 'danger' ? '#b91c1c' : '#d97706')};
     transform: translateY(-1px);
+    background: ${({ $variant }) => 
+      $variant === 'danger' 
+        ? 'rgba(239, 68, 68, 0.2)' 
+        : 'rgba(245, 158, 11, 0.2)'};
+    color: white;
+    border-color: ${({ $variant }) => 
+      $variant === 'danger' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(245, 158, 11, 0.4)'};
+    box-shadow: 0 4px 12px ${({ $variant }) => 
+      $variant === 'danger' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)'};
   }
 
   &:active {
-    transform: translateY(0);
+    transform: translateY(1px);
   }
 
   @media (max-width: 640px) {
-    padding: 6px 10px;
-    font-size: 11px;
-    border-radius: 6px;
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 4px;
   }
 `;
 
 const CreditsCount = styled.span<{ $variant: 'warning' | 'danger' }>`
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ $variant }) => ($variant === 'danger' ? '#dc2626' : '#d97706')};
+  font-weight: 600;
+  color: ${({ $variant }) => ($variant === 'danger' ? '#ef4444' : '#f59e0b')};
 `;
 
 interface CreditWarningBannerProps {
@@ -123,20 +210,22 @@ export function CreditWarningBanner({ threshold = 3, className }: CreditWarningB
   return (
     <Banner $variant={variant} className={className}>
       <BannerContent>
-        <BannerIcon>{isDanger ? '🚫' : '⚠️'}</BannerIcon>
-        <BannerText $variant={variant}>
+        <BannerIconWrapper $variant={variant}>
+          <BannerIcon>{isDanger ? '🚫' : '⚠️'}</BannerIcon>
+        </BannerIconWrapper>
+        <BannerText>
           {isDanger ? (
-            <>You're out of credits! Buy credits to continue analyzing.</>
+            <>You've run out of credits. <CreditsCount $variant={variant}>Refill required</CreditsCount> to continue using the Optimizer.</>
           ) : (
             <>
-              Only <CreditsCount $variant={variant}>{credits.credits}</CreditsCount> credit{credits.credits !== 1 ? 's' : ''} left.
-              {credits.credits === 1 ? ' Use your last credit wisely!' : ' Get more credits to continue seamlessly.'}
+              You have <CreditsCount $variant={variant}>{credits.credits}</CreditsCount> credit{credits.credits !== 1 ? 's' : ''} remaining.
+              {credits.credits === 1 ? ' Use it wisely or top up now.' : ' Consider refilling soon to prevent interruptions.'}
             </>
           )}
         </BannerText>
       </BannerContent>
       <BannerButton $variant={variant} onClick={() => router.push(ROUTES.APP.BILLING)}>
-        {isDanger ? 'Buy Credits' : 'Get Credits'}
+        {isDanger ? 'Refill Credits' : 'Get More Credits'}
       </BannerButton>
     </Banner>
   );

@@ -62,12 +62,16 @@ const pulse = keyframes`
 // Styled Components
 const WelcomeContainer = styled.div`
   position: relative;
-  height: 600px;
+  min-height: 500px;
+  height: 60vh;
+  max-height: 600px;
   display: flex;
   flex-direction: column;
 
-  @media (max-height: 700px) {
-    height: 500px;
+  @media (max-width: 640px) {
+    min-height: 480px;
+    height: auto;
+    max-height: none;
   }
 `;
 
@@ -88,63 +92,41 @@ const SlidesContainer = styled.div<{ $currentSlide: number }>`
 const Slide = styled.div`
   min-width: 100%;
   height: 100%;
-  padding: ${({ theme }) => `${theme.spacing.xl} ${theme.spacing.lg}`};
+  padding: ${({ theme }) => `${theme.spacing["2xl"]} ${theme.spacing.xl}`};
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   position: relative;
-`;
 
-const SlideIcon = styled.div<{ $animation?: string }>`
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-  animation: ${({ $animation }) => {
-    switch ($animation) {
-      case 'float':
-        return float;
-      case 'pulse':
-        return pulse;
-      default:
-        return fadeInUp;
-    }
-  }} 2s ease-in-out infinite;
-
-  svg {
-    width: 80px;
-    height: 80px;
-    stroke-width: 1.5;
-    color: ${({ theme }) => theme.colors.primary};
-  }
-
-  @media (max-height: 700px) {
-    svg {
-      width: 60px;
-      height: 60px;
-    }
-    margin-bottom: ${({ theme }) => theme.spacing.md};
+  @media (max-width: 640px) {
+    padding: ${({ theme }) => `${theme.spacing.lg} ${theme.spacing.md}`};
   }
 `;
 
 const SlideTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  letter-spacing: -0.02em;
 
-  @media (max-height: 700px) {
-    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  @media (max-width: 640px) {
+    font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
   }
 `;
 
 const SlideDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
   color: ${({ theme }) => theme.colors.textSecondary};
-  max-width: 480px;
+  max-width: 520px;
   line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  margin-top: ${({ theme }) => theme.spacing.sm};
 
-  @media (max-height: 700px) {
-    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  @media (max-width: 640px) {
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+    margin-top: ${({ theme }) => theme.spacing.xs};
   }
 `;
 
@@ -177,8 +159,19 @@ const NavigationSection = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: ${({ theme }) => theme.spacing.xl};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   gap: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: 640px) {
+    padding: ${({ theme }) => theme.spacing.lg};
+    gap: ${({ theme }) => theme.spacing.sm};
+
+    & > button {
+      width: auto;
+      height: 40px; /* Standard height */
+      flex: 1;
+    }
+  }
 `;
 
 const DotsContainer = styled.div`
@@ -186,22 +179,28 @@ const DotsContainer = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
   justify-content: center;
   flex: 1;
+
+  @media (max-width: 640px) {
+    display: none; /* Hide on mobile to save space for buttons */
+  }
 `;
 
 const Dot = styled.button<{ $isActive: boolean }>`
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  width: ${({ $isActive }) => $isActive ? '24px' : '8px'};
+  height: 8px;
+  border-radius: 4px;
   background-color: ${({ theme, $isActive }) =>
-    $isActive ? theme.colors.primary : theme.colors.border};
-  transition: all ${({ theme }) => theme.transitions.normal};
+    $isActive ? theme.colors.primary : 'rgba(255, 255, 255, 0.2)'};
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   border: none;
   padding: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 
   &:hover {
-    transform: scale(1.2);
-    background-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme, $isActive }) =>
+      $isActive ? theme.colors.primary : 'rgba(255, 255, 255, 0.4)'};
   }
 `;
 
@@ -352,14 +351,12 @@ interface WelcomeModalProps {
 
 const SLIDES_DATA = [
   {
-    icon: <RocketIcon />,
     title: "Land Your Dream Job 3x Faster",
     description: "Join thousands of job seekers who have transformed their career with AI-powered resume optimization and smart job matching.",
     animation: "float" as const,
     variant: 0,
   },
   {
-    icon: <DocumentIcon />,
     title: "AI-Powered Resume Analysis",
     description: "Get past ATS systems and stand out to recruiters. Our AI analyzes your resume like a hiring manager would.",
     features: [
@@ -371,7 +368,6 @@ const SLIDES_DATA = [
     variant: 1,
   },
   {
-    icon: <BriefcaseIcon />,
     title: "Smart Job Matching",
     description: "Stop wasting time on wrong applications. Know your match score before you apply and focus on opportunities you'll actually get.",
     features: [
@@ -383,7 +379,6 @@ const SLIDES_DATA = [
     variant: 2,
   },
   {
-    icon: <EditIcon />,
     title: "AI Cover Letter Generator",
     description: "Generate personalized, compelling cover letters in seconds. Each one tailored to the specific job and company.",
     features: [
@@ -395,7 +390,6 @@ const SLIDES_DATA = [
     variant: 3,
   },
   {
-    icon: <ChartIcon />,
     title: "Track Your Progress & Improve",
     description: "Get detailed analytics on every application. See what's working, what's not, and continuously improve your success rate.",
     features: [
@@ -407,7 +401,6 @@ const SLIDES_DATA = [
     variant: 1,
   },
   {
-    icon: <SparklesIcon />,
     title: "Ready to Get More Interviews?",
     description: "Start optimizing your job search today. Most users see results within their first 5 applications.",
     animation: "pulse" as const,
@@ -473,9 +466,6 @@ export function WelcomeModal({ isOpen, onClose, onComplete }: WelcomeModalProps)
               {SLIDES_DATA.map((slide, index) => (
                 <Slide key={index}>
                   <GradientBackground $variant={slide.variant} />
-                  <SlideIcon $animation={slide.animation}>
-                    {slide.icon}
-                  </SlideIcon>
                   <SlideTitle>{slide.title}</SlideTitle>
                   <SlideDescription>{slide.description}</SlideDescription>
                   {slide.features && (
@@ -495,9 +485,9 @@ export function WelcomeModal({ isOpen, onClose, onComplete }: WelcomeModalProps)
 
           <NavigationSection>
             <Button
-              variant="ghost"
+              variant="glass-secondary"
               onClick={currentSlide === 0 ? handleSkip : handlePrev}
-              size="sm"
+              size="md"
             >
               {currentSlide === 0 ? 'Skip' : '← Back'}
             </Button>
@@ -513,8 +503,9 @@ export function WelcomeModal({ isOpen, onClose, onComplete }: WelcomeModalProps)
               ))}
             </DotsContainer>
 
-            <Button onClick={handleNext} size="sm">
-              {isLastSlide ? 'Get Started!' : 'Next →'}
+            <Button variant="glass-primary" onClick={handleNext} size="md">
+              {isLastSlide ? 'Get Started ' : 'Next '}
+              <span style={{ marginLeft: 4 }}>→</span>
             </Button>
           </NavigationSection>
         </WelcomeContainer>

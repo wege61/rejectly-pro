@@ -15,15 +15,7 @@ export function WebVitals() {
           non_interaction: true,
         })
 
-        // Log to console in development
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`[Web Vitals] ${metric.name}:`, {
-            value: metric.value,
-            rating: metric.rating,
-            delta: metric.delta,
-            id: metric.id,
-          })
-        }
+        // Console logging removed for production clarity
       }
     }
 

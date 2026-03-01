@@ -1,22 +1,30 @@
 import { createClient } from '@/lib/supabase/client';
 import { ROUTES } from './constants';
 
-export async function signUp(email: string, password: string, name: string) {
-  const supabase = createClient();
-
-  // Email confirmation olmadan direkt kayıt
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        name,
-        full_name: name,
-      },
+export async function signUp(email: string, password: string, name: string, turnstileToken?: string | null) {
+  const response = await fetch('/api/auth/signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+      email,
+      password,
+      name,
+      turnstileToken,
+    }),
   });
 
-  if (error) throw error;
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Sign up failed');
+  }
+
+  // Refresh the Supabase client to pick up the new session
+  const supabase = createClient();
+  await supabase.auth.getSession();
+
   return data;
 }
 
@@ -34,15 +42,29 @@ export async function signInWithGoogle(redirectTo?: string) {
   window.location.href = authUrl;
 }
 
-export async function signIn(email: string, password: string) {
-  const supabase = createClient();
-  
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+export async function signIn(email: string, password: string, turnstileToken?: string | null) {
+  const response = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      turnstileToken,
+    }),
   });
 
-  if (error) throw error;
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Login failed');
+  }
+
+  // Refresh the Supabase client to pick up the new session
+  const supabase = createClient();
+  await supabase.auth.getSession();
+
   return data;
 }
 
@@ -55,13 +77,24 @@ export async function signOut() {
   window.location.href = ROUTES.PUBLIC.HOME;
 }
 
-export async function resetPassword(email: string) {
-  const supabase = createClient();
-  const origin = window.location.origin;
-  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?next=/reset-password`,
+export async function resetPassword(email: string, turnstileToken?: string | null) {
+  const response = await fetch('/api/auth/forgot-password', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email,
+      turnstileToken,
+    }),
   });
-  if (error) throw error;
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Password reset failed');
+  }
+
   return data;
 }
 

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateSystematicScoringPrompt } from "@/lib/ai/prompts";
 import { ScoreBreakdown, normalizeScoreBreakdown } from "@/types/scoreBreakdown";
+import { analyzeRequestSchema, validateRequest } from "@/lib/validations";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,22 +18,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get request body
-    const { cvId, jobIds } = await request.json();
+    // Get and validate request body
+    const body = await request.json();
+    const validation = validateRequest(analyzeRequestSchema, body);
 
-    if (!cvId || !jobIds || !Array.isArray(jobIds) || jobIds.length === 0) {
+    if (!validation.success) {
       return NextResponse.json(
-        { error: "CV ID and at least one job ID required" },
+        { error: validation.error },
         { status: 400 }
       );
     }
 
-    if (jobIds.length > 3) {
-      return NextResponse.json(
-        { error: "Maximum 3 job postings allowed for free analysis" },
-        { status: 400 }
-      );
-    }
+    const { cvId, jobIds } = validation.data;
 
     // Fetch CV document
     const { data: cvDoc, error: cvError } = await supabase
@@ -140,16 +137,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Free analysis error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    const errorStack = error instanceof Error ? error.stack : "";
 
     return NextResponse.json(
-      {
-        error: `Failed to generate analysis: ${errorMessage}`,
-        stack: errorStack,
-        details: String(error)
-      },
+      { error: "Failed to generate analysis. Please try again." },
       { status: 500 }
     );
   }

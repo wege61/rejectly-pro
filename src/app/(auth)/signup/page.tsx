@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Turnstile, type TurnstileRef } from '@/components/ui/Turnstile';
 import { signUp, signInWithGoogle } from '@/lib/auth';
 import { useToast } from '@/contexts/ToastContext';
 import { ROUTES } from '@/lib/constants';
@@ -151,8 +152,25 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [captchaError, setCaptchaError] = useState<string>('');
+  const turnstileRef = useRef<TurnstileRef>(null);
   const toast = useToast();
   const router = useRouter();
+
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token);
+    setCaptchaError('');
+  };
+
+  const handleTurnstileError = () => {
+    setCaptchaError('CAPTCHA verification failed. Please try again.');
+    setTurnstileToken(null);
+  };
+
+  const handleTurnstileExpire = () => {
+    setTurnstileToken(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,15 +185,24 @@ export default function SignupPage() {
       return;
     }
 
+    // Check CAPTCHA if configured
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) {
+      setCaptchaError('Please complete the CAPTCHA verification.');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await signUp(email, password, name);
+      await signUp(email, password, name, turnstileToken);
       toast.success('Account created successfully! Redirecting...');
       router.push(ROUTES.APP.DASHBOARD);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Sign up failed. Please try again.';
       toast.error(errorMessage);
+      // Reset CAPTCHA on failed attempt
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
     } finally {
       setIsLoading(false);
     }
@@ -272,6 +299,14 @@ export default function SignupPage() {
             autoComplete="new-password"
           />
         </Field>
+
+        <Turnstile
+          ref={turnstileRef}
+          onVerify={handleTurnstileVerify}
+          onError={handleTurnstileError}
+          onExpire={handleTurnstileExpire}
+          error={captchaError}
+        />
 
         <Button type="submit" isLoading={isLoading} fullWidth size="lg">
           Create Account

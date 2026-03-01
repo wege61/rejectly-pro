@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useRef } from "react";
 import styled from "styled-components";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Turnstile, type TurnstileRef } from "@/components/ui/Turnstile";
 import { signIn, signInWithGoogle } from "@/lib/auth";
 import { useToast } from "@/contexts/ToastContext";
 import { ROUTES } from "@/lib/constants";
@@ -142,22 +143,49 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [captchaError, setCaptchaError] = useState<string>("");
+  const turnstileRef = useRef<TurnstileRef>(null);
   const toast = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || ROUTES.APP.DASHBOARD;
 
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token);
+    setCaptchaError("");
+  };
+
+  const handleTurnstileError = () => {
+    setCaptchaError("CAPTCHA verification failed. Please try again.");
+    setTurnstileToken(null);
+  };
+
+  const handleTurnstileExpire = () => {
+    setTurnstileToken(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check CAPTCHA if configured
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) {
+      setCaptchaError("Please complete the CAPTCHA verification.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await signIn(email, password);
+      await signIn(email, password, turnstileToken);
       toast.success("Login successful! Redirecting...");
       router.push(redirectTo);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Login failed. Please try again.";
       toast.error(errorMessage);
+      // Reset CAPTCHA on failed attempt
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
     } finally {
       setIsLoading(false);
     }
@@ -228,6 +256,14 @@ function LoginForm() {
             autoComplete="current-password"
           />
         </Field>
+
+        <Turnstile
+          ref={turnstileRef}
+          onVerify={handleTurnstileVerify}
+          onError={handleTurnstileError}
+          onExpire={handleTurnstileExpire}
+          error={captchaError}
+        />
 
         <Button type="submit" isLoading={isLoading} fullWidth size="lg">
           Login

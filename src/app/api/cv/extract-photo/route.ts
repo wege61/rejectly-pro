@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import path from "path";
-// @ts-ignore - Ignore missing types for legacy build
-const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
-// Force fake worker initialization on the main Node thread, completely bypassing workerSrc file routing bugs
-require("pdfjs-dist/legacy/build/pdf.worker.js");
+// @ts-ignore - Import pdfjs-dist for Node.js environment
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 
 // Polyfill for Node.js environments if needed
 if (typeof Promise.withResolvers === "undefined") {

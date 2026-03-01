@@ -183,9 +183,9 @@ const WizardContainer = styled.div<{ $isPreview?: boolean }>`
 
   @media (max-width: 640px) {
     height: 100%;
-    min-height: auto;
+    min-height: 400px;
     border-radius: inherit;
-    padding: 24px 20px;
+    padding: 24px 16px;
     padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
   }
 `;
@@ -248,18 +248,31 @@ const StepHeader = styled.div`
   text-align: center;
   margin-bottom: ${({ theme }) => theme.spacing.lg};
   flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    margin-bottom: ${({ theme }) => theme.spacing.md};
+  }
 `;
 
 const StepTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
   color: ${({ theme }) => theme.colors.textPrimary};
+  letter-spacing: -0.02em;
+
+  @media (max-width: 640px) {
+    font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
+  }
 `;
 
 const StepDescription = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.colors.textSecondary};
+
+  @media (max-width: 640px) {
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  }
 `;
 
 const StepContent = styled.div`
@@ -284,9 +297,12 @@ const UploadArea = styled.div<{ $isDragging: boolean }>`
   padding: ${({ theme }) => `${theme.spacing["2xl"]} ${theme.spacing.xl}`};
   text-align: center;
   background-color: ${({ theme, $isDragging }) =>
-    $isDragging ? 'rgba(var(--primary-rgb), 0.15)' : 'rgba(255, 255, 255, 0.03)'};
-  backdrop-filter: blur(30px) saturate(150%);
-  -webkit-backdrop-filter: blur(30px) saturate(150%);
+    $isDragging ? 'rgba(var(--primary-rgb), 0.15)' : 'rgba(255, 255, 255, 0.02)'};
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 
+    0 4px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 280px;
@@ -312,27 +328,27 @@ const UploadArea = styled.div<{ $isDragging: boolean }>`
 const SegmentControl = styled.div`
   display: flex;
   background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: ${({ theme }) => theme.radius.lg};
-  padding: 4px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 9px;
+  padding: 2px;
   margin-bottom: ${({ theme }) => theme.spacing.lg};
   flex-shrink: 0;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
 `;
 
 const SegmentButton = styled.button<{ $active?: boolean }>`
   flex: 1;
-  padding: 8px 16px;
-  border-radius: ${({ theme }) => theme.radius.md};
-  background: ${({ $active }) => $active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
+  padding: 6px 16px;
+  border-radius: 7px;
+  background: ${({ $active }) => $active ? 'rgba(255, 255, 255, 0.12)' : 'transparent'};
   color: ${({ $active, theme }) => $active ? theme.colors.textPrimary : theme.colors.textSecondary};
   font-weight: ${({ $active }) => $active ? 600 : 500};
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   border: none;
   cursor: pointer;
-  box-shadow: ${({ $active }) => $active ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  box-shadow: ${({ $active }) => $active ? '0 1px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05)' : 'none'};
+  font-size: 13px;
+  letter-spacing: -0.01em;
   
   &:hover {
     color: ${({ theme }) => theme.colors.textPrimary};
@@ -368,11 +384,14 @@ const JobForm = styled.div`
 const Input = styled.input`
   width: 100%;
   padding: ${({ theme }) => theme.spacing.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  background-color: ${({ theme }) => theme.colors.surface};
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: ${({ theme }) => theme.colors.textPrimary};
   font-size: ${({ theme }) => theme.typography.fontSize.base};
+  transition: all 0.3s ease;
 
   &:focus {
     outline: none;
@@ -384,11 +403,14 @@ const Textarea = styled.textarea`
   width: 100%;
   min-height: 200px;
   padding: ${({ theme }) => theme.spacing.md};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  background-color: ${({ theme }) => theme.colors.surface};
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: ${({ theme }) => theme.colors.textPrimary};
   font-size: ${({ theme }) => theme.typography.fontSize.base};
+  transition: all 0.3s ease;
   resize: vertical;
 
   &:focus {
@@ -473,6 +495,7 @@ const WizardActions = styled.div`
     & > button {
       min-width: 0;
       flex: 1;
+      height: 40px; /* Standard height */
     }
   }
 `;
@@ -505,12 +528,12 @@ const CompactJobList = styled.div`
 const CompactJobCard = styled.div<{ $selected?: boolean }>`
   padding: ${({ theme }) => theme.spacing.md};
   border: 1px solid ${({ theme, $selected }) =>
-    $selected ? theme.colors.primary : 'rgba(255, 255, 255, 0.12)'};
+    $selected ? theme.colors.primary : 'rgba(255, 255, 255, 0.05)'};
   border-radius: ${({ theme }) => theme.radius.lg};
   background-color: ${({ theme, $selected }) =>
-    $selected ? 'rgba(var(--primary-rgb), 0.15)' : 'rgba(255, 255, 255, 0.04)'};
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+    $selected ? 'rgba(var(--primary-rgb), 0.15)' : 'rgba(255, 255, 255, 0.02)'};
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
@@ -568,11 +591,11 @@ const CVOptionWrapper = styled.div`
 
 const ExistingCVCard = styled.div`
   padding: ${({ theme }) => theme.spacing.md};
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: ${({ theme }) => theme.radius.lg};
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(40px) saturate(150%);
-  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
@@ -1234,7 +1257,7 @@ export function OnboardingWizard({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <StepHeader>
-              <StepTitle><DocumentIcon /> Select Resume</StepTitle>
+              <StepTitle>Select Resume</StepTitle>
               <StepDescription>
                 {hasExistingCV
                   ? "Upload a new PDF/DOCX or use a previously saved resume"
@@ -1280,7 +1303,6 @@ export function OnboardingWizard({
                           }}
                           style={{ borderColor: selectedCV === uploadedCV.id ? 'var(--primary)' : undefined }}
                         >
-                          <CVIcon><DocumentIcon /></CVIcon>
                           <CVTextContent>
                             <CVTitle>{uploadedCV.title}</CVTitle>
                             <CVSubtitle>
@@ -1309,7 +1331,6 @@ export function OnboardingWizard({
                             background: selectedCV === cv.id ? 'rgba(var(--primary-rgb), 0.08)' : undefined
                           }}
                         >
-                          <CVIcon><DocumentIcon /></CVIcon>
                           <CVTextContent>
                             <CVTitle>{cv.title}</CVTitle>
                             <CVSubtitle>Saved Resume</CVSubtitle>
@@ -1341,7 +1362,6 @@ export function OnboardingWizard({
                       onDragLeave={handleDragLeave}
                       onClick={() => document.getElementById("wizard-cv-upload")?.click()}
                     >
-                      <UploadIcon><UploadArrowIcon /></UploadIcon>
                       <UploadText>
                         <strong>Click to upload</strong> or drag and drop
                       </UploadText>
@@ -1378,7 +1398,7 @@ export function OnboardingWizard({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <StepHeader>
-              <StepTitle><BriefcaseIcon /> Add Job Posting</StepTitle>
+              <StepTitle>Add Job Posting</StepTitle>
               <StepDescription>
                 {hasExistingJob
                   ? "Paste a new job description or use an existing one"
@@ -1475,12 +1495,12 @@ export function OnboardingWizard({
 
             {/* Always-visible footer — anchored at bottom of SlideContainer */}
             <WizardActions>
-              <Button variant="ghost" onClick={() => changeStep(1)}>
+              <Button variant="glass-secondary" onClick={() => changeStep(1)}>
                 ← Previous
               </Button>
               {activeJobTab === "new" && (
                 <Button
-                  variant="primary"
+                  variant="glass-primary"
                   onClick={async () => {
                     let finalJobId = selectedJob;
                     const newJobId = await handleJobSubmit();
@@ -1497,7 +1517,7 @@ export function OnboardingWizard({
                   }}
                   disabled={!jobTitle || !jobDetails}
                 >
-                  Save & Analyze <TargetIcon />
+                  Save & Analyze
                 </Button>
               )}
             </WizardActions>
@@ -1615,7 +1635,7 @@ export function OnboardingWizard({
                     <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       Preview: {previewDocument.title}
                     </h3>
-                    <Button variant="ghost" size="sm" onClick={() => setPreviewDocument(null)}>
+                    <Button variant="glass-secondary" size="sm" onClick={() => setPreviewDocument(null)}>
                       Close
                     </Button>
                   </div>

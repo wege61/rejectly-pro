@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateProReportPrompt } from "@/lib/ai/prompts";
 import { getUserAccessStatus, consumeCredit } from "@/lib/credits";
+import { proAnalyzeRequestSchema, validateRequest } from "@/lib/validations";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,15 +18,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get request body
-    const { reportId } = await request.json();
+    // Get and validate request body
+    const body = await request.json();
+    const validation = validateRequest(proAnalyzeRequestSchema, body);
 
-    if (!reportId) {
+    if (!validation.success) {
       return NextResponse.json(
-        { error: "Report ID required" },
+        { error: validation.error },
         { status: 400 }
       );
     }
+
+    const { reportId } = validation.data;
 
     // Fetch report
     const { data: report, error: reportError } = await supabase
@@ -135,16 +139,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Pro analysis error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    const errorStack = error instanceof Error ? error.stack : "";
 
     return NextResponse.json(
-      {
-        error: `Failed to generate Pro analysis: ${errorMessage}`,
-        stack: errorStack,
-        details: String(error)
-      },
+      { error: "Failed to generate Pro analysis. Please try again." },
       { status: 500 }
     );
   }

@@ -4,7 +4,7 @@ import styled, { css } from "styled-components";
 import { useState, MouseEvent } from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "danger";
+  variant?: "primary" | "secondary" | "ghost" | "danger" | "glass-primary" | "glass-secondary";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   isLoading?: boolean;
@@ -113,6 +113,49 @@ const StyledButton = styled.button<{
 
           &:active:not(:disabled) {
             transform: translateY(0);
+          }
+        `;
+      case "glass-primary":
+        return css`
+          background: linear-gradient(135deg, rgba(53, 162, 159, 0.9) 0%, rgba(11, 102, 106, 0.9) 100%);
+          color: white;
+          border: 1px solid rgba(53, 162, 159, 0.5);
+          box-shadow: 0 8px 32px rgba(53, 162, 159, 0.2);
+          backdrop-filter: blur(12px) saturate(160%);
+          -webkit-backdrop-filter: blur(12px) saturate(160%);
+
+          &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(63, 172, 169, 1) 0%, rgba(21, 112, 116, 1) 100%);
+            box-shadow: 0 12px 40px rgba(53, 162, 159, 0.3);
+            border-color: rgba(53, 162, 159, 0.8);
+          }
+
+          &:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 4px 16px rgba(53, 162, 159, 0.2);
+          }
+        `;
+      case "glass-secondary":
+        return css`
+          background: rgba(255, 255, 255, 0.05);
+          color: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: none;
+          backdrop-filter: blur(12px) saturate(160%);
+          -webkit-backdrop-filter: blur(12px) saturate(160%);
+
+          &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+          }
+
+          &:active:not(:disabled) {
+            transform: translateY(0);
+            background: rgba(255, 255, 255, 0.05);
           }
         `;
       default: // primary

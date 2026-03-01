@@ -1,8 +1,16 @@
 "use client";
 
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Footer } from "@/components/ui/Footer";
+
+// Dynamic import for DOMPurify to avoid SSR issues
+const sanitizeHtml = (html: string): string => {
+  if (typeof window === "undefined") return html;
+  // DOMPurify is loaded dynamically on client-side
+  const DOMPurify = require("dompurify");
+  return DOMPurify.sanitize(html);
+};
 
 const Container = styled.div`
   min-height: 100vh;
@@ -433,7 +441,7 @@ export default function FAQPage() {
                     </Question>
                     <Answer $isOpen={isOpen}>
                       <AnswerText
-                        dangerouslySetInnerHTML={{ __html: faq.answer }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.answer) }}
                       />
                     </Answer>
                   </FAQItem>

@@ -1518,7 +1518,7 @@ const FAB = styled.button<{ $showHint?: boolean; $hidden?: boolean }>`
   justify-content: center;
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.normal};
-  z-index: 90;
+  z-index: ${({ $showHint }) => ($showHint ? 10001 : 90)};
   border: 1px solid rgba(255, 255, 255, 0.3);
   opacity: ${({ $hidden }) => ($hidden ? 0 : 1)};
   pointer-events: ${({ $hidden }) => ($hidden ? "none" : "auto")};
@@ -1610,12 +1610,13 @@ const SpotlightOverlay = styled.div<{ $show: boolean }>`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(255, 255, 255, 0.05);
   z-index: 10000;
   pointer-events: ${({ $show }) => ($show ? 'auto' : 'none')};
   opacity: ${({ $show }) => ($show ? 1 : 0)};
   transition: opacity 0.5s ease;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
 `;
 
 const SpotlightCircle = styled.div`
@@ -1629,13 +1630,11 @@ const SpotlightCircle = styled.div`
   z-index: 9999;
   background: radial-gradient(
     circle,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.85) 40%,
-    transparent 70%
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
   );
-  box-shadow:
-    0 0 0 9999px rgba(15, 23, 42, 0.85),
-    0 0 80px 20px var(--accent-shadow);
+  box-shadow: none;
 
   &::before {
     content: '';
@@ -1643,10 +1642,10 @@ const SpotlightCircle = styled.div`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 160%;
-    height: 160%;
+    width: 140%;
+    height: 140%;
     border-radius: 50%;
-    border: 3px solid var(--accent);
+    background: radial-gradient(circle, rgba(238, 90, 90, 0.15) 0%, transparent 60%);
   }
 `;
 
@@ -1675,24 +1674,21 @@ const HintContainer = styled.div`
 `;
 
 const HintText = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
+  font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: #ffffff;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
   line-height: ${({ theme }) => theme.typography.lineHeight.tight};
-  text-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    0 4px 12px var(--accent-shadow);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 `;
 
 const HintSubtext = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  color: rgba(255, 255, 255, 0.95);
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  color: ${({ theme }) => theme.colors.textSecondary};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   margin-bottom: ${({ theme }) => theme.spacing.xl};
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  letter-spacing: -0.01em;
 `;
 
 const ArrowContainer = styled.div`
@@ -1704,18 +1700,18 @@ const ArrowContainer = styled.div`
 
 const ArrowText = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.textSecondary};
+  letter-spacing: -0.01em;
 `;
 
 const ArrowIcon = styled.div`
-  color: #ffffff;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  color: ${({ theme }) => theme.colors.textSecondary};
 
   svg {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
+    stroke-width: 1.5;
   }
 `;
 

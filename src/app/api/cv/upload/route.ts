@@ -28,13 +28,7 @@ export async function POST(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
 
-    // DEBUG: Log user info
-    console.log("🔍 Auth Debug:", {
-      hasUser: !!user,
-      userId: user?.id,
-      authError: authError?.message,
-    });
-
+    // DEBUG: Log user info removed
     if (authError || !user) {
       console.error("❌ Auth failed:", authError);
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -83,13 +77,7 @@ export async function POST(request: NextRequest) {
     // CV content validation - block irrelevant files
     const cvValidation = await validateCVContent(cleanedText);
     if (!cvValidation.isCV) {
-      console.log("❌ CV validation failed:", {
-        userId: user.id,
-        fileName: file.name,
-        detectedType: cvValidation.detectedType,
-        confidence: cvValidation.confidence,
-        reason: cvValidation.reason,
-      });
+      // CV validation failed log removed
       return NextResponse.json(
         {
           error: cvValidation.reason,
@@ -100,12 +88,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("✅ CV validation passed:", {
-      userId: user.id,
-      fileName: file.name,
-      confidence: cvValidation.confidence,
-    });
-
+    // CV validation passed log removed
     // Check if user already has a CV with the same filename
     const sanitizedTitle = cleanText(file.name);
     const { data: existingCV } = await supabase
@@ -153,12 +136,7 @@ export async function POST(request: NextRequest) {
 
     if (existingCV) {
       // Update existing CV - overwrite with new content
-      console.log("ℹ️ Updating existing CV with same name:", {
-        userId: user.id,
-        fileName: file.name,
-        existingDocId: existingCV.id,
-      });
-
+      // Updating existing CV log removed
       // Delete old file from storage if exists
       if (existingCV.file_url) {
         await supabaseAdmin.storage
@@ -186,11 +164,7 @@ export async function POST(request: NextRequest) {
       }
 
       document = updatedDoc;
-      console.log("✅ CV updated:", {
-        documentId: document.id,
-        userId: user.id,
-        type: "cv"
-      });
+      // CV updated log removed
     } else {
       // Create new CV
       const { data: newDoc, error: dbError } = await supabase
@@ -211,11 +185,7 @@ export async function POST(request: NextRequest) {
       }
 
       document = newDoc;
-      console.log("✅ CV uploaded:", {
-        documentId: document.id,
-        userId: user.id,
-        type: "cv"
-      });
+      // CV uploaded log removed
     }
 
     return NextResponse.json({
@@ -229,11 +199,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("CV upload error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
 
     return NextResponse.json(
-      { error: `Failed to upload CV: ${errorMessage}` },
+      { error: "Failed to upload CV. Please try again." },
       { status: 500 }
     );
   }

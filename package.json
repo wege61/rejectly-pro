@@ -7,24 +7,30 @@
     "build": "next build --turbopack",
     "postbuild": "echo '✓ Build completed. Sitemap is generated dynamically at /sitemap.xml'",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "security:audit": "npx tsx scripts/security-audit.ts",
+    "security:deps": "pnpm audit",
+    "prebuild:prod": "pnpm security:audit"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@marsidev/react-turnstile": "^1.4.2",
     "@stripe/stripe-js": "^8.7.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/storage-js": "^2.75.1",
     "@supabase/supabase-js": "^2.75.0",
     "framer-motion": "^12.23.25",
-    "jspdf": "^3.0.3",
+    "isomorphic-dompurify": "^3.0.0",
+    "jsdom": "^28.1.0",
+    "jspdf": "^4.2.0",
     "lucide-react": "^0.554.0",
     "mammoth": "^1.11.0",
     "motion": "^12.23.25",
-    "next": "^15.5.9",
+    "next": "^16.1.6",
     "openai": "^6.5.0",
     "pdf-parse-fork": "^1.2.0",
     "pdf2json": "^4.0.0",
-    "pdfjs-dist": "^3.11.174",
+    "pdfjs-dist": "^4.2.67",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-dropzone": "^14.3.8",
@@ -34,10 +40,12 @@
     "stripe": "^20.3.1",
     "styled-components": "^6.1.19",
     "web-vitals": "^5.1.0",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/dompurify": "^3.2.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -47,9 +55,18 @@
     "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "15.5.5",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   },
   "pnpm": {
-    "onlyBuiltDependencies": []
+    "onlyBuiltDependencies": [],
+    "overrides": {
+      "tar": "^7.5.8",
+      "minimatch": "^9.0.7",
+      "lodash": "^4.17.23",
+      "js-yaml": "^4.1.1",
+      "ajv": "^6.14.0"
+    }
   }
 }

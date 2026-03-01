@@ -268,8 +268,29 @@ export default function BillingPage() {
     const query = new URLSearchParams(window.location.search);
     if (query.get('payment') === 'success') {
       setPaymentStatus('success');
-      refreshCredits();
+      
+      // Clean up the URL exactly once right away
       window.history.replaceState({}, '', '/billing');
+
+      // Immediate refresh attempt
+      refreshCredits();
+      
+      // Polling mechanism to bridge the gap between UI redirect and DB Webhook (which can take a few seconds)
+      let attempts = 0;
+      const maxAttempts = 5; // 5 attempts = ~10 seconds
+      
+      const pollInterval = setInterval(() => {
+        attempts++;
+        if (attempts >= maxAttempts) {
+          clearInterval(pollInterval);
+        } else {
+          refreshCredits();
+        }
+      }, 2000); // Poll every 2 seconds
+
+      // Cleanup on unmount or after success
+      return () => clearInterval(pollInterval);
+      
     } else if (query.get('payment') === 'cancelled') {
       setPaymentStatus('cancelled');
       window.history.replaceState({}, '', '/billing');

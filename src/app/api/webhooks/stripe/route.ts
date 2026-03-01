@@ -5,8 +5,28 @@ import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
 export async function POST(req: Request) {
-  const body = await req.text();
+  console.log('--- STRIPE WEBHOOK RECEIVED ---');
+  let body: string;
+  try {
+    body = await req.text();
+    console.log(`Webhook Body parsed, length: ${body.length}`);
+  } catch (err: any) {
+    console.error('Failed to parse webhook body:', err.message);
+    return new NextResponse(`Body Parse Error: ${err.message}`, { status: 400 });
+  }
+
   const signature = (await headers()).get('Stripe-Signature') as string;
+  console.log(`Stripe-Signature header present: ${!!signature}`);
+
+  if (!signature) {
+    console.error('Missing Stripe-Signature header');
+    return new NextResponse('Missing signature', { status: 400 });
+  }
+
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error('Missing STRIPE_WEBHOOK_SECRET environment variable. Please configure it in .env.local');
+    return new NextResponse('Server configuration error: Webhook secret missing', { status: 500 });
+  }
 
   let event: Stripe.Event;
 
@@ -16,7 +36,9 @@ export async function POST(req: Request) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
+    console.log(`Webhook event constructed successfully. Type: ${event.type}`);
   } catch (error: any) {
+    console.error('Stripe Webhook signature verification failed:', error.message);
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
   }
 
@@ -37,41 +59,123 @@ export async function POST(req: Request) {
       console.log(`Processing payment for user: ${userId}, Plan: ${planType}, Credits: ${creditsAdded}`);
       
       try {
-        // 1. Get current profile to update credits safely (or use RPC if available)
-        const { data: profile, error: fetchError } = await supabase
-          .from('profiles')
-          .select('credits, subscription_status')
-          .eq('id', userId)
-          .single();
+        if (planType === 'subscription') {
+          // Handle Pro Subscription
+          // 1. Check if a subscription record already exists
+          const { data: existingSub, error: subFetchError } = await supabase
+            .from('subscriptions')
+            .select('id')
+            .eq('user_id', userId)
+            .single();
 
-        if (fetchError) {
-          console.error('Error fetching profile:', fetchError);
-          return new NextResponse('Error fetching profile', { status: 500 });
+          if (subFetchError && subFetchError.code !== 'PGRST116') { // PGRST116 is not found
+            console.error('Error fetching subscription:', subFetchError);
+            return new NextResponse('Error fetching subscription', { status: 500 });
+          }
+
+          // We'll give them 1 month of access from now for simplify, 
+          // Stripe handles recurrent webhook but this is just checkout.session.completed
+          // For real, we should read period_end from Stripe or handle 'customer.subscription.created'
+          // We will use 1 month as fallback if Stripe's period isn't immediately available here 
+          // but better is reading from the session or stripe customer
+          
+          const currentPeriodStart = new Date();
+          const currentPeriodEnd = new Date();
+          currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
+
+          if (existingSub) {
+            // Update existing subscription
+            const { error: updateError } = await supabase
+              .from('subscriptions')
+              .update({
+                status: 'active',
+                plan: 'pro',
+                current_period_start: currentPeriodStart.toISOString(),
+                current_period_end: currentPeriodEnd.toISOString(),
+              })
+              .eq('user_id', userId);
+
+            if (updateError) {
+              console.error('Error updating subscription:', updateError);
+              return new NextResponse('Error updating subscription', { status: 500 });
+            }
+          } else {
+            // Create new subscription
+            const { error: insertError } = await supabase
+              .from('subscriptions')
+              .insert({
+                user_id: userId,
+                status: 'active',
+                plan: 'pro',
+                current_period_start: currentPeriodStart.toISOString(),
+                current_period_end: currentPeriodEnd.toISOString(),
+              });
+
+            if (insertError) {
+              console.error('Error creating subscription:', insertError);
+              return new NextResponse('Error creating subscription', { status: 500 });
+            }
+          }
+          console.log(`Successfully activated subscription for user ${userId}`);
+
+        } else if (creditsAdded > 0) {
+          // Handle One-Time Credits Purchase
+          // Check if user has credits record
+          const { data: existingCredits, error: creditsFetchError } = await supabase
+            .from('user_credits')
+            .select('credits')
+            .eq('user_id', userId)
+            .single();
+
+          if (creditsFetchError && creditsFetchError.code !== 'PGRST116') {
+            console.error('Error fetching credits:', creditsFetchError);
+            return new NextResponse('Error fetching credits', { status: 500 });
+          }
+
+          if (existingCredits) {
+            // Update existing credits
+            const { error: updateError } = await supabase
+              .from('user_credits')
+              .update({ credits: existingCredits.credits + creditsAdded })
+              .eq('user_id', userId);
+
+            if (updateError) {
+              console.error('Error updating credits:', updateError);
+              return new NextResponse('Error updating credits', { status: 500 });
+            }
+          } else {
+            // Create new credits record
+            const { error: insertError } = await supabase
+              .from('user_credits')
+              .insert({
+                user_id: userId,
+                credits: creditsAdded
+              });
+
+            if (insertError) {
+              console.error('Error creating credits record:', insertError);
+              return new NextResponse('Error creating credits record', { status: 500 });
+            }
+          }
+          console.log(`Successfully added ${creditsAdded} credits for user ${userId}`);
         }
 
-        const currentCredits = profile?.credits || 0;
-        const newCredits = planType === 'subscription' ? -1 : currentCredits + creditsAdded;
-        const newStatus = planType === 'subscription' ? 'active' : profile?.subscription_status;
-
-        // 2. Update profile
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({
-            credits: newCredits,
-            subscription_status: newStatus,
-            plan: planType === 'subscription' ? 'pro' : undefined 
-          })
-          .eq('id', userId);
-
-        if (updateError) {
-          console.error('Error updating profile:', updateError);
-          return new NextResponse('Error updating profile', { status: 500 });
-        }
+        // Also update payments table for the record
+        const amountTotal = session.amount_total || 0;
+        const currency = session.currency || 'usd';
         
-        console.log(`Successfully updated user ${userId}: credits=${newCredits}, status=${newStatus}`);
+        await supabase
+          .from('payments')
+          .insert({
+            user_id: userId,
+            stripe_session_id: session.id,
+            amount_cents: amountTotal,
+            currency: currency,
+            status: 'success'
+          });
 
       } catch (err) {
-        console.error('Unexpected error updating profile:', err);
+        console.error('Unexpected error processing webhook:', err);
         return new NextResponse('Internal Server Error', { status: 500 });
       }
     }

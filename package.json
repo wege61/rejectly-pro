@@ -19,6 +19,7 @@
     "@supabase/ssr": "^0.7.0",
     "@supabase/storage-js": "^2.75.1",
     "@supabase/supabase-js": "^2.75.0",
+    "dompurify": "^3.3.1",
     "framer-motion": "^12.23.25",
     "isomorphic-dompurify": "^3.0.0",
     "jsdom": "^28.1.0",
@@ -45,7 +46,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@types/dompurify": "^3.2.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -15,20 +15,34 @@ interface BlogCTAProps {
 const CTABox = styled.div<{ $variant: CTAVariant }>`
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
-  padding: ${({ $variant }) => ($variant === "inline" ? "24px" : "32px 28px")};
-  margin: ${({ $variant }) => ($variant === "inline" ? "32px 0" : "48px 0")};
-  background: ${({ $variant }) =>
-    $variant === "primary"
-      ? "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)"
-      : $variant === "secondary"
-      ? "linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(91, 33, 182, 0.15) 100%)"
-      : "var(--bg-alt)"};
-  border: ${({ $variant }) =>
-    $variant === "inline" ? "1px solid var(--border-color)" : "none"};
+  border-radius: 20px;
+  padding: ${({ $variant }) => ($variant === "inline" ? "24px" : "40px 32px")};
+  margin: ${({ $variant }) => ($variant === "inline" ? "32px 0" : "64px 0")};
+  
+  /* Liquid Glass Styling */
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.2), 
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  
+  /* Add subtle glow behind CTA */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(238, 90, 90, 0.05) 0%, transparent 60%);
+    z-index: 0;
+    pointer-events: none;
+  }
 
   @media (max-width: 768px) {
-    padding: ${({ $variant }) => ($variant === "inline" ? "20px" : "24px 20px")};
+    padding: ${({ $variant }) => ($variant === "inline" ? "20px" : "32px 24px")};
   }
 `;
 
@@ -39,36 +53,20 @@ const CTAContent = styled.div<{ $variant: CTAVariant }>`
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 20px;
-  color: ${({ $variant }) => ($variant === "primary" ? "#ffffff" : "inherit")};
+  gap: 24px;
+  color: #fff;
 
   @media (min-width: 768px) {
     flex-direction: row;
     text-align: left;
-    align-items: flex-start;
-    gap: 24px;
+    align-items: center;
+    gap: 32px;
   }
 `;
 
+/* Icons are removed for an Apple Minimalist look */
 const IconWrapper = styled.div<{ $variant: CTAVariant }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: ${({ $variant }) =>
-    $variant === "primary"
-      ? "rgba(255, 255, 255, 0.2)"
-      : "rgba(var(--primary-500-rgb), 0.15)"};
-  flex-shrink: 0;
-
-  svg {
-    width: 32px;
-    height: 32px;
-    color: ${({ $variant }) =>
-      $variant === "primary" ? "white" : "var(--primary-500)"};
-  }
+  display: none; 
 `;
 
 const TextContent = styled.div`
@@ -76,21 +74,22 @@ const TextContent = styled.div`
 `;
 
 const CTATitle = styled.h3<{ $variant: CTAVariant }>`
-  font-size: ${({ $variant }) => ($variant === "inline" ? "18px" : "24px")};
+  font-size: ${({ $variant }) => ($variant === "inline" ? "20px" : "28px")};
   font-weight: 700;
-  margin: 0 0 10px 0;
-  color: ${({ $variant }) => ($variant === "primary" ? "#ffffff" : "var(--text-color)")};
-  line-height: 1.3;
+  margin: 0 0 12px 0;
+  color: #ffffff;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 
   @media (max-width: 768px) {
-    font-size: ${({ $variant }) => ($variant === "inline" ? "16px" : "20px")};
+    font-size: ${({ $variant }) => ($variant === "inline" ? "18px" : "24px")};
   }
 `;
 
 const CTADescription = styled.p<{ $variant: CTAVariant }>`
-  font-size: ${({ $variant }) => ($variant === "inline" ? "14px" : "15px")};
+  font-size: ${({ $variant }) => ($variant === "inline" ? "14px" : "16px")};
   margin: 0;
-  color: ${({ $variant }) => ($variant === "primary" ? "rgba(255, 255, 255, 0.9)" : "var(--text-secondary)")};
+  color: rgba(255, 255, 255, 0.6);
   line-height: 1.6;
 
   @media (max-width: 768px) {
@@ -102,31 +101,31 @@ const CTAButton = styled(Link)<{ $variant: CTAVariant }>`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: ${({ $variant }) =>
-    $variant === "inline" ? "12px 20px" : "14px 28px"};
-  border-radius: 12px;
-  font-size: ${({ $variant }) => ($variant === "inline" ? "14px" : "16px")};
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-size: 15px;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s ease;
   flex-shrink: 0;
-  background: ${({ $variant }) =>
-    $variant === "primary" ? "white" : "var(--primary-500)"};
-  color: ${({ $variant }) =>
-    $variant === "primary" ? "var(--primary-600)" : "white"};
+  
+  /* Liquid Glass Button Style */
+  color: white;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%),
+    rgba(238, 90, 90, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 4px 12px rgba(238, 90, 90, 0.2);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px
-      ${({ $variant }) =>
-        $variant === "primary"
-          ? "rgba(255, 255, 255, 0.3)"
-          : "rgba(var(--primary-500-rgb), 0.4)"};
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%),
+      rgba(238, 90, 90, 1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 6px 16px rgba(238, 90, 90, 0.3);
   }
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     transition: transform 0.2s ease;
   }
 
@@ -138,8 +137,8 @@ const CTAButton = styled(Link)<{ $variant: CTAVariant }>`
 const FeatureList = styled.ul<{ $variant: CTAVariant }>`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 16px;
-  margin: 14px 0 0 0;
+  gap: 12px 24px;
+  margin: 20px 0 0 0;
   padding: 0;
   list-style: none;
   justify-content: center;
@@ -152,15 +151,16 @@ const FeatureList = styled.ul<{ $variant: CTAVariant }>`
 const FeatureItem = styled.li<{ $variant: CTAVariant }>`
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 500;
-  color: ${({ $variant }) => ($variant === "primary" ? "rgba(255, 255, 255, 0.9)" : "var(--text-secondary)")};
+  color: rgba(255, 255, 255, 0.5);
 
   svg {
-    width: 12px;
-    height: 12px;
-    color: ${({ $variant }) => ($variant === "primary" ? "#fbbf24" : "var(--primary-500)")};
+    width: 14px;
+    height: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    opacity: 0.5;
   }
 `;
 
@@ -229,46 +229,30 @@ export function BlogCTA({ type = "general", variant = "primary" }: BlogCTAProps)
   );
 }
 
-// Sticky Sidebar CTA
+// Sticky Sidebar CTA (Not used in new design, left for compatibility but restyled)
 const SidebarCTAWrapper = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(var(--primary-500-rgb), 0.08) 0%,
-    rgba(var(--primary-700-rgb), 0.12) 100%
-  );
-  border: 1px solid rgba(var(--primary-500-rgb), 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 24px;
   text-align: center;
 `;
 
 const SidebarIcon = styled.div`
-  width: 48px;
-  height: 48px;
-  margin: 0 auto 16px;
-  border-radius: 12px;
-  background: rgba(var(--primary-500-rgb), 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    width: 24px;
-    height: 24px;
-    color: var(--primary-500);
-  }
+  display: none; /* Removing icon */
 `;
 
 const SidebarTitle = styled.h4`
   font-size: 16px;
   font-weight: 700;
   margin: 0 0 8px 0;
-  color: var(--text-color);
+  color: white;
 `;
 
 const SidebarDescription = styled.p`
   font-size: 14px;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.6);
   margin: 0 0 16px 0;
   line-height: 1.5;
 `;
@@ -280,22 +264,29 @@ const SidebarButton = styled(Link)`
   gap: 8px;
   width: 100%;
   padding: 12px 20px;
-  border-radius: 10px;
+  border-radius: 9999px;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  background: var(--primary-500);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%), rgba(238, 90, 90, 0.9);
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
 
   &:hover {
-    background: var(--primary-600);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%), rgba(238, 90, 90, 1);
     transform: translateY(-1px);
   }
 
   svg {
     width: 16px;
     height: 16px;
+    transition: transform 0.2s ease;
+  }
+  
+  &:hover svg {
+    transform: translateX(4px);
   }
 `;
 

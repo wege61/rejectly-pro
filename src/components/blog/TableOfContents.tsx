@@ -11,28 +11,33 @@ export interface TOCItem {
 }
 
 const TOCContainer = styled.nav`
-  padding: 20px;
-  background: var(--bg-alt);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 `;
 
 const TOCHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 20px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
   }
 `;
 
@@ -40,33 +45,50 @@ const TOCList = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 8px;
+  padding-bottom: 40px;
+
+  /* Liquid Glass Scrollbar */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
 `;
 
 const TOCItem = styled.li<{ $level: number; $isActive: boolean }>`
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   padding-left: ${({ $level }) => ($level === 3 ? "16px" : "0")};
 
   a {
     display: block;
-    font-size: ${({ $level }) => ($level === 2 ? "14px" : "13px")};
-    font-weight: ${({ $level, $isActive }) =>
-      $isActive ? "600" : $level === 2 ? "500" : "400"};
+    font-size: ${({ $level }) => ($level === 2 ? "13px" : "12px")};
+    font-weight: ${({ $level }) => ($level === 2 ? "500" : "400")};
     color: ${({ $isActive }) =>
-      $isActive ? "var(--primary-500)" : "var(--text-secondary)"};
+      $isActive ? "var(--accent)" : "rgba(255, 255, 255, 0.6)"};
     text-decoration: none;
     line-height: 1.5;
-    padding: 6px 12px;
-    border-radius: 6px;
-    border-left: 2px solid
-      ${({ $isActive }) =>
-        $isActive ? "var(--primary-500)" : "transparent"};
+    padding: 8px 12px;
+    border-radius: 8px;
+    
     background: ${({ $isActive }) =>
-      $isActive ? "rgba(var(--primary-500-rgb), 0.08)" : "transparent"};
+      $isActive ? "rgba(255, 255, 255, 0.1)" : "transparent"};
     transition: all 0.2s ease;
 
     &:hover {
-      color: var(--primary-500);
-      background: rgba(var(--primary-500-rgb), 0.05);
+      color: white;
+      background: rgba(255, 255, 255, 0.05);
     }
   }
 `;

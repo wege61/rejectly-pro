@@ -4,15 +4,24 @@ import styled from 'styled-components';
 import { BreadcrumbSchema } from '@/components/seo/StructuredData';
 
 const Container = styled.div`
+  min-height: 100vh;
+  margin-top: 40px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: 80px 24px 60px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing['3xl']} ${({ theme }) => theme.spacing.lg};
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['4xl']};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  font-size: 56px;
+  font-weight: 900;
+  margin-bottom: 24px;
   text-align: center;
+  
+  @media (max-width: 768px) {
+    font-size: 36px;
+  }
 `;
 
 export default function FeaturesPage() {

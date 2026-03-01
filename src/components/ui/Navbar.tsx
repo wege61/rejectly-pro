@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
+import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 const fadeIn = keyframes`
@@ -27,27 +28,32 @@ const slideDown = keyframes`
 `;
 
 // Main Header Container
-const Header = styled.header`
+const Header = styled.header<{ $isBlogDetail?: boolean }>`
   position: fixed;
   top: 0;
-  left: 0;
+  left: ${({ $isBlogDetail }) => ($isBlogDetail ? "340px" : "0")};
   right: 0;
   z-index: 1000;
-  padding: 16px 24px;
+  padding: ${({ $isBlogDetail }) => ($isBlogDetail ? "12px 24px" : "16px 24px")};
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    left: 0;
+  }
 
   @media (max-width: 768px) {
     padding: 12px 16px;
   }
 `;
 
-const NavContainer = styled.nav`
+const NavContainer = styled.nav<{ $isBlogDetail?: boolean }>`
   position: relative;
-  max-width: 1200px;
+  max-width: ${({ $isBlogDetail }) => ($isBlogDetail ? "900px" : "1200px")};
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 24px;
+  padding: ${({ $isBlogDetail }) => ($isBlogDetail ? "8px 16px" : "12px 24px")};
   border-radius: 9999px;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
@@ -56,7 +62,7 @@ const NavContainer = styled.nav`
     position: absolute;
     inset: 0;
     border-radius: 9999px;
-    background: rgba(150, 150, 150, 0.08);
+    background: rgba(150, 150, 150, 0.08); /* Exact match to Navbar */
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.12);
     backdrop-filter: blur(40px) saturate(200%);
@@ -65,7 +71,7 @@ const NavContainer = styled.nav`
   }
 
   @media (max-width: 768px) {
-    padding: 10px 16px;
+    padding: 8px 16px;
     border-radius: 32px;
     &::before {
       border-radius: 32px;
@@ -518,17 +524,27 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { user, loading } = useAuth();
+  const pathname = usePathname();
+
+  // Check if we are on a blog detail page (e.g. /blog/something) vs just /blog
+  // Or maybe any /blog page. The user said "blog sayfamızda". We'll offset it
+  // on detail pages, but maybe just string check.
+  const isBlogDetail = pathname?.startsWith('/blog/') && pathname !== '/blog';
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  if (isBlogDetail) {
+    return null;
+  }
+
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <>
-      <Header>
-        <NavContainer onMouseLeave={() => setActiveDropdown(null)}>
+      <Header $isBlogDetail={isBlogDetail}>
+        <NavContainer $isBlogDetail={isBlogDetail} onMouseLeave={() => setActiveDropdown(null)}>
           <Logo href={ROUTES.PUBLIC.HOME}>Rejectly.pro</Logo>
 
           <DesktopMenu>

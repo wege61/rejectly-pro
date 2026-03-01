@@ -8,6 +8,7 @@ import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
 
 const Container = styled.div`
   min-height: 100vh;
+  margin-top: 40px;
   background-color: var(--bg-color);
   color: var(--text-color);
   padding: 80px 24px 60px;

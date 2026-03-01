@@ -28,18 +28,24 @@ const shimmer = keyframes`
 
 const PageContainer = styled.div`
   min-height: 100vh;
+  margin-top: 40px;
   background-color: var(--bg-color);
   color: var(--text-color);
+  padding: 80px 24px 60px;
+
+  @media (max-width: 768px) {
+    padding: 60px 16px 40px;
+  }
 `;
 
 const HeroSection = styled.section`
   text-align: center;
-  padding: 60px 24px 40px;
+  padding: 0 0 40px;
   max-width: 800px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    padding: 40px 16px 32px;
+    padding: 0 0 32px;
   }
 `;
 

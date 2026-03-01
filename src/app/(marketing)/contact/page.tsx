@@ -11,6 +11,7 @@ const Container = styled.div`
   background-color: var(--bg-color);
   color: var(--text-color);
   padding: 80px 24px 60px;
+  margin-top: 40px;
 
   @media (max-width: 768px) {
     padding: 60px 16px 40px;

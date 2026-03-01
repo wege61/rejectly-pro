@@ -10,19 +10,24 @@ import { Carousel, AppleCard, Card } from "@/components/ui/AppleCarousel";
 // ==================== STYLED COMPONENTS ====================
 const Container = styled.div`
   min-height: 100vh;
+  margin-top: 40px;
   background-color: var(--bg-color);
   color: var(--text-color);
-  padding-bottom: 60px;
+  padding: 80px 24px 60px;
+
+  @media (max-width: 768px) {
+    padding: 60px 16px 40px;
+  }
 `;
 
 const HeroSection = styled.section`
-  padding: 120px 24px 80px;
+  padding: 0 0 80px;
   text-align: center;
   position: relative;
   overflow: hidden;
 
   @media (max-width: 768px) {
-    padding: 80px 16px 60px;
+    padding: 0 0 60px;
   }
 `;
 

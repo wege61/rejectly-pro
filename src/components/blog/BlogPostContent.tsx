@@ -655,10 +655,6 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
           </TitleWrapper>
 
           <ArticleContent itemScope itemType="https://schema.org/Article">
-<<<<<<< Updated upstream
-            {/* Content is stored as HTML in Supabase - sanitized with DOMPurify */}
-=======
->>>>>>> Stashed changes
             <Content
               className="article-content"
               itemProp="articleBody"

@@ -61,9 +61,6 @@ export async function POST(request: Request) {
               name,
               value,
               ...options,
-              secure: process.env.NODE_ENV === "production",
-              httpOnly: true,
-              sameSite: "lax",
             });
           },
           remove(name: string, options: CookieOptions) {
@@ -71,9 +68,6 @@ export async function POST(request: Request) {
               name,
               value: "",
               ...options,
-              secure: process.env.NODE_ENV === "production",
-              httpOnly: true,
-              sameSite: "lax",
             });
           },
         },

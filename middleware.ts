@@ -186,46 +186,31 @@ export async function middleware(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          // Apply secure cookie settings
-          const secureOptions = {
-            ...options,
-            secure: process.env.NODE_ENV === 'production',
-            httpOnly: true,
-            sameSite: 'lax' as const,
-          };
-
           // Update request for subsequent middleware/route usage
           request.cookies.set({
             name,
             value,
-            ...secureOptions,
+            ...options,
           });
 
           // Update response to send to browser
           response.cookies.set({
             name,
             value,
-            ...secureOptions,
+            ...options,
           });
         },
         remove(name: string, options: CookieOptions) {
-          const secureOptions = {
-            ...options,
-            secure: process.env.NODE_ENV === 'production',
-            httpOnly: true,
-            sameSite: 'lax' as const,
-          };
-
           request.cookies.set({
             name,
             value: '',
-            ...secureOptions,
+            ...options,
           });
 
           response.cookies.set({
             name,
             value: '',
-            ...secureOptions,
+            ...options,
           });
         },
       },

@@ -14,7 +14,7 @@ const signupSchema = z.object({
       "Password must contain at least one uppercase letter, one lowercase letter, and one number"
     ),
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
-  turnstileToken: z.string().optional(),
+  turnstileToken: z.string().nullish(),
 });
 
 export async function POST(request: Request) {

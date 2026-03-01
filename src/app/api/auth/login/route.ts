@@ -7,7 +7,7 @@ import { verifyTurnstileToken } from "@/lib/validations";
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
-  turnstileToken: z.string().optional(),
+  turnstileToken: z.string().nullish(),
 });
 
 export async function POST(request: Request) {

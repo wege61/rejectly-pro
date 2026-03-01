@@ -4,14 +4,6 @@ import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
-import dynamic from "next/dynamic";
-
-// Import ThemeToggle with SSR disabled
-const ThemeToggle = dynamic(
-  () => import("@/components/ui/ThemeToggle").then((mod) => mod.ThemeToggle),
-  { ssr: false }
-);
-
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -181,12 +173,6 @@ const RightSection = styled.div`
   }
 `;
 
-const ThemeToggleWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-`;
-
 const LoginLink = styled.a`
   font-size: 14px;
   font-weight: 500;
@@ -315,12 +301,6 @@ const MobileDivider = styled.div`
   margin: 8px 0;
 `;
 
-const MobileThemeWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-`;
 
 const MobileCTAButton = styled.a`
   display: flex;
@@ -612,10 +592,6 @@ export function Navbar() {
           </DesktopMenu>
 
           <RightSection>
-            <ThemeToggleWrapper>
-              {isMounted ? <ThemeToggle /> : <div style={{ width: 48, height: 26 }} />}
-            </ThemeToggleWrapper>
-            
             {!isMounted || loading ? (
                  <div style={{ width: 100, height: 36 }} /> // Placeholder to prevent shifting
             ) : user ? (
@@ -653,9 +629,6 @@ export function Navbar() {
           Blog
         </MobileMenuItem>
         <MobileDivider />
-        <MobileThemeWrapper>
-          {isMounted ? <ThemeToggle /> : <div style={{ height: 26 }} />}
-        </MobileThemeWrapper>
         {!isMounted || loading ? (
             <div style={{ height: '50px' }} />
         ) : user ? (

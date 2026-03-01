@@ -46,52 +46,6 @@ const darkColors = {
   infoHover: "#0B666A",
 };
 
-// Light Theme Colors
-const lightColors = {
-  // Primary - Cool Spectrum for light mode
-  primary: "#0B666A", // primary-700 for better contrast
-  primaryHover: "#071952", // primary-900
-  primaryLight: "rgba(151, 254, 237, 0.2)", // primary-200 with opacity
-
-  // Secondary
-  secondary: "#F4F7FA", // light-bg
-  secondaryHover: "#E5E7EB",
-
-  // Neutral - LIGHT MODE
-  background: "#F4F7FA", // light-bg
-  backgroundAlt: "#F4F7FA", // light-bg
-  backgroundAlt2: "#FFFFFF", // light-card (modals, sheets)
-  backgroundAlt3: "#F3F4F6", // subtle contrast
-  surface: "#FFFFFF", // light-card
-  surfaceHover: "#F3F4F6", // Subtle hover state
-
-  // Text - LIGHT MODE
-  textPrimary: "#1E1E2A", // light-text
-  textSecondary: "#5C6570", // light-subtext
-  textTertiary: "#6B7280", // Lighter grey for hints
-
-  // Borders - LIGHT MODE
-  border: "rgba(15, 23, 42, 0.08)", // primary-200
-  borderHover: "#35A29F", // primary-500
-
-  // Status - Adapted for light backgrounds
-  success: "#28A745", // Softer green for readability
-  successLight: "#E9F7EF", // Light green background
-  successHover: "#218838",
-
-  warning: "#F39C12", // Warm amber
-  warningLight: "#FFF7E6", // Light yellow background
-  warningHover: "#E08E0B",
-
-  error: "#E74C3C", // Clear red
-  errorLight: "#FDECEA", // Light red background
-  errorHover: "#C0392B",
-
-  info: "#35A29F", // primary-500
-  infoLight: "rgba(53, 162, 159, 0.1)", // primary-500 with opacity
-  infoHover: "#0B666A", // primary-700
-};
-
 const baseTheme = {
 
   spacing: {
@@ -148,12 +102,6 @@ const baseTheme = {
     xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
   },
 
-  shadowLight: {
-    sm: "0 1px 2px 0 rgb(0 0 0 / 0.03)",
-    md: "0 2px 4px -1px rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04)",
-    lg: "0 8px 12px -2px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04)",
-    xl: "0 16px 20px -4px rgb(0 0 0 / 0.08), 0 4px 8px -4px rgb(0 0 0 / 0.04)",
-  },
 
   zIndex: {
     dropdown: 1000,
@@ -250,21 +198,13 @@ const baseTheme = {
   },
 };
 
-// Create dark theme by combining base theme with dark colors
+// Dark theme (only theme)
 export const darkTheme = {
   ...baseTheme,
   colors: darkColors,
   shadow: baseTheme.shadowDark,
 };
 
-// Create light theme by combining base theme with light colors
-export const lightTheme = {
-  ...baseTheme,
-  colors: lightColors,
-  shadow: baseTheme.shadowLight,
-};
-
-// Default theme (dark)
 export const theme = darkTheme;
 
 export type Theme = typeof darkTheme;

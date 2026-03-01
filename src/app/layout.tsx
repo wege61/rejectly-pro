@@ -106,16 +106,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  const theme = localStorage.getItem('theme') || 'dark';
-                  document.documentElement.setAttribute('data-theme', theme);
-                } catch (e) {
-                  document.documentElement.setAttribute('data-theme', 'dark');
-                }
-              })();
-            `,
+            __html: `document.documentElement.setAttribute('data-theme', 'dark');`,
           }}
         />
         <style
@@ -166,38 +157,6 @@ export default function RootLayout({
                 --border-color: rgba(255, 255, 255, 0.08);
                 --primary-color: var(--primary-500);
                 --text-secondary: var(--dark-subtext);
-                --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-              }
-
-              /* Light theme - Applied via data-theme attribute */
-              :root[data-theme="light"] {
-                /* Light Mode Neutrals */
-                --light-bg: #F4F7FA;
-                --light-card: #FFFFFF;
-                --light-text: #1E1E2A;
-                --light-subtext: #5C6570;
-                --landing: #006e81;
-                --landing-button: #ea7a18;
-                --navbar: #fefffd;
-                --checkbox: rgba(0, 0, 0, 0.2);
-
-                /* Light mode color overrides */
-                --primary-100: rgba(11, 102, 106, 0.12);
-                --primary-50: rgba(11, 102, 106, 0.06);
-                --success-light: rgba(40, 167, 69, 0.1);
-                --success-bg: rgba(40, 167, 69, 0.05);
-                --success-border: rgba(40, 167, 69, 0.3);
-                --accent-light: rgba(255, 122, 115, 0.12);
-
-                /* Legacy mappings for light mode */
-                --bg-color: var(--light-bg);
-                --text-color: var(--light-text);
-                --surface-color: var(--light-card);
-                --surface-hover: #F3F4F6;
-                --bg-alt: var(--light-card);
-                --border-color: var(--primary-200);
-                --primary-color: var(--primary-500);
-                --text-secondary: var(--light-subtext);
                 --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
               }
 

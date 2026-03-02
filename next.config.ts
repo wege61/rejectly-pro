@@ -27,9 +27,6 @@ const nextConfig = {
       exclude: ['error', 'warn'],
     } : false,
   },
-  experimental: {
-    optimizePackageImports: ['lucide-react', 'styled-components'],
-  },
   serverExternalPackages: ['pdfjs-dist', 'jsdom', 'isomorphic-dompurify', 'dompurify'],
   poweredByHeader: false,
 

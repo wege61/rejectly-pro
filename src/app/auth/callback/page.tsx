@@ -12,7 +12,6 @@ import styled from "styled-components";
 export const dynamic = "force-static";
 export const fetchCache = "force-no-store";
 export const preferredRegion = "auto";
-export const runtime = "edge";
 
 /* ------------------------------------------------------
    ✅ Basit stiller

@@ -28,7 +28,7 @@ const Form = styled.form`
   -webkit-backdrop-filter: blur(32px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
-  padding: 32px;
+  padding: 24px;
   box-shadow: 
     0 24px 48px -12px rgba(0, 0, 0, 0.4),
     inset 0 1px 1px rgba(255, 255, 255, 0.1);
@@ -36,8 +36,8 @@ const Form = styled.form`
   overflow: hidden;
 
   @media (max-width: 768px) {
-    padding: 24px 20px;
-    border-radius: 24px;
+    padding: 20px;
+    border-radius: 20px;
     background: rgba(20, 20, 22, 0.6);
   }
 
@@ -61,12 +61,12 @@ const Header = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   text-align: center;
 `;
 
 const Title = styled.h1`
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #ffffff;
@@ -74,7 +74,7 @@ const Title = styled.h1`
 `;
 
 const Subtitle = styled.p`
-  font-size: 15px;
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.6);
   margin: 0;
 `;
@@ -82,19 +82,19 @@ const Subtitle = styled.p`
 const FieldGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme }) => theme.spacing.md};
 `;
 
 const FieldsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
 
 const Field = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: 2px;
 `;
 
 const LabelRow = styled.div`

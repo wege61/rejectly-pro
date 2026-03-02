@@ -19,15 +19,16 @@ const Container = styled.div`
 const FormSection = styled.div`
   display: flex;
   flex-direction: column;
-  padding: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing.lg};
   background-color: #000000;
   position: relative;
   overflow: hidden;
   height: 100vh;
   max-height: 100vh;
+  justify-content: center;
 
   @media (min-width: 768px) {
-    padding: ${({ theme }) => theme.spacing['2xl']};
+    padding: ${({ theme }) => theme.spacing.xl};
   }
 `;
 
@@ -49,11 +50,14 @@ const BackgroundOrb = styled.div<{ $color: string; $size: string; $top: string; 
 const LogoContainer = styled.div`
   display: flex;
   justify-content: center;
-  position: relative;
+  position: absolute;
+  top: 24px;
+  left: 24px;
   z-index: 10;
 
   @media (min-width: 768px) {
-    justify-content: flex-start;
+    top: 32px;
+    left: 32px;
   }
 `;
 

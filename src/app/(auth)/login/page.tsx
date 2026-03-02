@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, Suspense, useRef } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -12,35 +12,83 @@ import { ROUTES } from "@/lib/constants";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 
+const shimmer = keyframes`
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+`;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xl};
+  gap: ${({ theme }) => theme.spacing.md};
+  
+  /* Liquid Glass Styling */
+  background: rgba(20, 20, 22, 0.4);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 24px 20px;
+    border-radius: 24px;
+    background: rgba(20, 20, 22, 0.6);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
 `;
 
 const Header = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: 4px;
   text-align: center;
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize["2xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--text-color);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
 `;
 
 const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--text-secondary);
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
 `;
 
 const FieldGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.lg};
+`;
+
+const FieldsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md};
 `;
 
 const Field = styled.div`
@@ -56,30 +104,36 @@ const LabelRow = styled.div`
 `;
 
 const Label = styled.label`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  padding-left: 4px;
 `;
 
 const ForgotLink = styled(Link)`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--text-secondary);
+  font-size: 13px;
+  color: var(--accent);
   text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
 
   &:hover {
-    text-decoration: underline;
+    opacity: 0.8;
   }
 `;
 
 const Footer = styled.p`
   text-align: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: ${({ theme }) => theme.spacing.sm};
 
   a {
-    color: var(--text-color);
-    text-decoration: underline;
-    text-underline-offset: 4px;
+    color: #ffffff;
+    font-weight: 500;
+    text-decoration: none;
+    margin-left: 4px;
+    transition: color 0.2s ease;
 
     &:hover {
       color: var(--accent);
@@ -90,52 +144,29 @@ const Footer = styled.p`
 const Divider = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  margin: 8px 0;
 
   &::before,
   &::after {
     content: "";
     flex: 1;
     height: 1px;
-    background: var(--border-color);
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
   }
 `;
 
 const DividerText = styled.span`
-  font-size: 14px;
-  color: var(--text-secondary);
-  text-transform: lowercase;
-`;
-
-const GoogleButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--text-color);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: var(--hover-bg);
-    border-color: var(--text-secondary);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  svg {
-    font-size: 20px;
-  }
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 `;
 
 function LoginForm() {
@@ -147,7 +178,6 @@ function LoginForm() {
   const [captchaError, setCaptchaError] = useState<string>("");
   const turnstileRef = useRef<TurnstileRef>(null);
   const toast = useToast();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || ROUTES.APP.DASHBOARD;
 
@@ -168,7 +198,6 @@ function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check CAPTCHA if configured
     if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) {
       setCaptchaError("Please complete the CAPTCHA verification.");
       return;
@@ -179,12 +208,10 @@ function LoginForm() {
     try {
       await signIn(email, password, turnstileToken);
       toast.success("Login successful! Redirecting...");
-      // Full page reload to ensure cookies are picked up
       window.location.href = redirectTo;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Login failed. Please try again.";
       toast.error(errorMessage);
-      // Reset CAPTCHA on failed attempt
       turnstileRef.current?.reset();
       setTurnstileToken(null);
     } finally {
@@ -195,7 +222,6 @@ function LoginForm() {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      // Pass the redirect destination to Google sign in
       signInWithGoogle(redirectTo);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Google sign in failed. Please try again.";
@@ -207,56 +233,76 @@ function LoginForm() {
   return (
     <Form onSubmit={handleSubmit}>
       <Header>
-        <Title>Login to your account</Title>
-        <Subtitle>Enter your email below to login to your account</Subtitle>
+        <Title>Welcome Back</Title>
+        <Subtitle>Sign in to continue to Rejectly.pro</Subtitle>
       </Header>
 
       <FieldGroup>
-        <GoogleButton
+        <Button
           type="button"
+          variant="glass-secondary"
+          size="lg"
+          fullWidth
           onClick={handleGoogleSignIn}
           disabled={isGoogleLoading || isLoading}
+          style={{ gap: '12px', fontWeight: 600 }}
         >
-          <FcGoogle />
+          <FcGoogle size={22} />
           {isGoogleLoading ? "Connecting..." : "Continue with Google"}
-        </GoogleButton>
+        </Button>
 
         <Divider>
           <DividerText>or</DividerText>
         </Divider>
 
-        <Field>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            fullWidth
-            autoComplete="email"
-          />
-        </Field>
+        <FieldsContainer>
+          <Field>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              fullWidth
+              autoComplete="email"
+              style={{
+                background: "rgba(0, 0, 0, 0.2)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: "#fff",
+                borderRadius: "16px",
+                padding: "12px 16px",
+              }}
+            />
+          </Field>
 
-        <Field>
-          <LabelRow>
-            <Label htmlFor="password">Password</Label>
-            <ForgotLink href={ROUTES.AUTH.FORGOT_PASSWORD}>
-              Forgot your password?
-            </ForgotLink>
-          </LabelRow>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            fullWidth
-            autoComplete="current-password"
-          />
-        </Field>
+          <Field>
+            <LabelRow>
+              <Label htmlFor="password">Password</Label>
+              <ForgotLink href={ROUTES.AUTH.FORGOT_PASSWORD}>
+                Forgot password?
+              </ForgotLink>
+            </LabelRow>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              fullWidth
+              autoComplete="current-password"
+              style={{
+                background: "rgba(0, 0, 0, 0.2)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: "#fff",
+                borderRadius: "16px",
+                padding: "12px 16px",
+              }}
+            />
+          </Field>
+        </FieldsContainer>
 
         <Turnstile
           ref={turnstileRef}
@@ -266,14 +312,26 @@ function LoginForm() {
           error={captchaError}
         />
 
-        <Button type="submit" isLoading={isLoading} fullWidth size="lg">
-          Login
+        <Button 
+          type="submit" 
+          variant="glass-primary"
+          isLoading={isLoading} 
+          fullWidth 
+          size="lg"
+          style={{ 
+            borderRadius: '16px', 
+            fontWeight: 600,
+            fontSize: '16px',
+            marginTop: '8px'
+          }}
+        >
+          Sign In
         </Button>
       </FieldGroup>
 
       <Footer>
         Don&apos;t have an account?{" "}
-        <Link href={ROUTES.AUTH.SIGNUP}>Sign up</Link>
+        <Link href={ROUTES.AUTH.SIGNUP}>Create one</Link>
       </Footer>
     </Form>
   );
@@ -286,3 +344,4 @@ export default function LoginPage() {
     </Suspense>
   );
 }
+

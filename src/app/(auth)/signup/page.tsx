@@ -15,32 +15,75 @@ import { FcGoogle } from 'react-icons/fc';
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xl};
+  gap: ${({ theme }) => theme.spacing.md};
+  
+  /* Liquid Glass Styling */
+  background: rgba(20, 20, 22, 0.4);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 24px 20px;
+    border-radius: 24px;
+    background: rgba(20, 20, 22, 0.6);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
 `;
 
 const Header = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: 4px;
   text-align: center;
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: var(--text-color);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
 `;
 
 const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--text-secondary);
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
 `;
 
 const FieldGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const FieldsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
 `;
 
 const Field = styled.div`
@@ -49,27 +92,38 @@ const Field = styled.div`
   gap: ${({ theme }) => theme.spacing.xs};
 `;
 
+const LabelRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
 const Label = styled.label`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  padding-left: 4px;
 `;
 
 const FieldDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: var(--text-secondary);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
   margin-top: 2px;
+  padding-left: 4px;
 `;
 
 const Footer = styled.p`
   text-align: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: ${({ theme }) => theme.spacing.sm};
 
   a {
-    color: var(--text-color);
-    text-decoration: underline;
-    text-underline-offset: 4px;
+    color: #ffffff;
+    font-weight: 500;
+    text-decoration: none;
+    margin-left: 4px;
+    transition: color 0.2s ease;
 
     &:hover {
       color: var(--accent);
@@ -78,15 +132,18 @@ const Footer = styled.p`
 `;
 
 const TermsText = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  color: var(--text-secondary);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
   text-align: center;
   line-height: 1.5;
+  margin-top: -4px;
+  margin-bottom: -8px;
 
   a {
-    color: var(--text-color);
-    text-decoration: underline;
-    text-underline-offset: 2px;
+    color: #ffffff;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
 
     &:hover {
       color: var(--accent);
@@ -97,56 +154,34 @@ const TermsText = styled.p`
 const Divider = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  margin: 8px 0;
 
   &::before,
   &::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: var(--border-color);
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
   }
 `;
 
 const DividerText = styled.span`
-  font-size: 14px;
-  color: var(--text-secondary);
-  text-transform: lowercase;
-`;
-
-const GoogleButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--text-color);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: var(--hover-bg);
-    border-color: var(--text-secondary);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  svg {
-    font-size: 20px;
-  }
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 `;
 
 export default function SignupPage() {
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -194,7 +229,8 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      await signUp(email, password, name, turnstileToken);
+      const fullName = `${firstName} ${lastName}`.trim();
+      await signUp(email, password, fullName, turnstileToken);
       toast.success('Account created successfully! Redirecting...');
       router.push(ROUTES.APP.DASHBOARD);
     } catch (error: unknown) {
@@ -228,77 +264,134 @@ export default function SignupPage() {
       </Header>
 
       <FieldGroup>
-        <GoogleButton
+        <Button
           type="button"
+          variant="glass-secondary"
+          size="lg"
+          fullWidth
           onClick={handleGoogleSignIn}
           disabled={isGoogleLoading || isLoading}
+          style={{ gap: '12px', fontWeight: 600 }}
         >
-          <FcGoogle />
+          <FcGoogle size={22} />
           {isGoogleLoading ? 'Connecting...' : 'Continue with Google'}
-        </GoogleButton>
+        </Button>
 
         <Divider>
           <DividerText>or</DividerText>
         </Divider>
 
-        <Field>
-          <Label htmlFor="name">Full Name</Label>
-          <Input
-            id="name"
-            type="text"
-            placeholder="John Doe"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            fullWidth
-            autoComplete="name"
-          />
-        </Field>
+        <FieldsContainer>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <Field style={{ flex: 1 }}>
+              <Label htmlFor="firstName">First Name</Label>
+              <Input
+                id="firstName"
+                type="text"
+                placeholder="Alex"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                fullWidth
+                autoComplete="given-name"
+                style={{
+                  background: "rgba(0, 0, 0, 0.2)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  color: "#fff",
+                  borderRadius: "16px",
+                  padding: "8px 12px",
+                }}
+              />
+            </Field>
+            <Field style={{ flex: 1 }}>
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                type="text"
+                placeholder="Chen"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                fullWidth
+                autoComplete="family-name"
+                style={{
+                  background: "rgba(0, 0, 0, 0.2)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  color: "#fff",
+                  borderRadius: "16px",
+                  padding: "8px 12px",
+                }}
+              />
+            </Field>
+          </div>
 
-        <Field>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            fullWidth
-            autoComplete="email"
-          />
-        </Field>
+          <Field>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="elon@spacex.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              fullWidth
+              autoComplete="email"
+              style={{
+                background: "rgba(0, 0, 0, 0.2)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: "#fff",
+                borderRadius: "16px",
+                padding: "8px 12px",
+              }}
+            />
+          </Field>
 
-        <Field>
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            fullWidth
-            autoComplete="new-password"
-          />
-          <FieldDescription>
-            Must be at least 8 characters long.
-          </FieldDescription>
-        </Field>
+          <Field>
+            <LabelRow>
+              <Label htmlFor="password">Password</Label>
+            </LabelRow>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Min. 8 characters"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              fullWidth
+              autoComplete="new-password"
+              style={{
+                background: "rgba(0, 0, 0, 0.2)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: "#fff",
+                borderRadius: "16px",
+                padding: "8px 12px",
+              }}
+            />
+          </Field>
 
-        <Field>
-          <Label htmlFor="confirm-password">Confirm Password</Label>
-          <Input
-            id="confirm-password"
-            type="password"
-            placeholder="Confirm your password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            fullWidth
-            autoComplete="new-password"
-          />
-        </Field>
+          <Field>
+            <LabelRow>
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+            </LabelRow>
+            <Input
+              id="confirm-password"
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              fullWidth
+              autoComplete="new-password"
+              style={{
+                background: "rgba(0, 0, 0, 0.2)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: "#fff",
+                borderRadius: "16px",
+                padding: "8px 12px",
+              }}
+            />
+          </Field>
+        </FieldsContainer>
 
         <Turnstile
           ref={turnstileRef}
@@ -308,7 +401,19 @@ export default function SignupPage() {
           error={captchaError}
         />
 
-        <Button type="submit" isLoading={isLoading} fullWidth size="lg">
+        <Button 
+          type="submit" 
+          variant="glass-primary"
+          isLoading={isLoading} 
+          fullWidth 
+          size="lg"
+          style={{ 
+            borderRadius: '16px', 
+            fontWeight: 600,
+            fontSize: '16px',
+            marginTop: '8px'
+          }}
+        >
           Create Account
         </Button>
 

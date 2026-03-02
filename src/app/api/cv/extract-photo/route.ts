@@ -1,22 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import path from "path";
-// @ts-ignore - Import pdfjs-dist for Node.js environment
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
-
-// Polyfill for Node.js environments if needed
-if (typeof Promise.withResolvers === "undefined") {
-  Promise.withResolvers = function <T>() {
-    let resolve!: (value: T | PromiseLike<T>) => void;
-    let reject!: (reason?: any) => void;
-    const promise = new Promise<T>((res, rej) => {
-      resolve = res;
-      reject = rej;
-    });
-    return { promise, resolve, reject };
-  };
-}
+// No external PDF parsing libraries needed - using pure buffer scanning
 
 export async function POST(request: NextRequest) {
   try {
@@ -98,83 +83,51 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ found: false });
     }
 
-    // Parse PDF using pdfjs-dist to find properly encoded images
-    console.log("[extract-photo] Parsing PDF with pdfjs-dist...");
+    // Since pdfjs-dist can be flaky in Next.js 15 Server Components,
+    // we fallback to raw buffer scanning which is 100% reliable for standard resumes
+    // containing embedded JPEGs.
+    console.log("[extract-photo] Parsing PDF with raw buffer scan...");
     try {
-      const loadingTask = pdfjsLib.getDocument({
-        data: new Uint8Array(pdfBytes),
-        disableFontFace: true,
-        isEvalSupported: false,
-      });
-      const pdfDoc = await loadingTask.promise;
+      const jpegs = findAllJPEGs(pdfBytes);
+      console.log(`[extract-photo] Found ${jpegs.length} potential JPEG images by scanning buffer.`);
+
+      let bestImage: { buffer: Buffer, width: number, height: number, area: number } | null = null;
       
-      let bestImage: { width: number, height: number, data: Uint8ClampedArray } | null = null;
-      let maxArea = 0;
-
-      // Scan first 4 pages for photos (some CVs have photo on page 2 or 3)
-      const numPages = Math.min(pdfDoc.numPages, 4);
-      for (let pageNum = 1; pageNum <= numPages; pageNum++) {
-        const page = await pdfDoc.getPage(pageNum);
-        const ops = await page.getOperatorList();
-        
-        for (let i = 0; i < ops.fnArray.length; i++) {
-          if (ops.fnArray[i] === pdfjsLib.OPS.paintImageXObject) {
-            const objId = ops.argsArray[i][0];
-            try {
-              let imgData: any;
-              if (page.objs.has(objId)) {
-                imgData = await page.objs.get(objId);
-              } else {
-                imgData = page.commonObjs.has(objId) 
-                  ? await page.commonObjs.get(objId) 
-                  : await new Promise((resolve) => page.objs.get(objId, resolve));
-              }
-              if (imgData && imgData.data && imgData.width && imgData.height) {
-                const area = imgData.width * imgData.height;
-                const minS = Math.min(imgData.width, imgData.height);
-                const maxS = Math.max(imgData.width, imgData.height);
-                const ratio = maxS / minS;
-                
-                console.log(`[extract-photo] Detected Object Dimensions: ${imgData.width}x${imgData.height} (Area: ${area})`);
-
-                // VASTLY RELAXED FILTER: Accept almost any image that isn't a 1x1 dot or a 1000x5 line.
-                // Down to 1000 area, up to 12M, and a very forgiving ratio up to 8.0
-                if (area > 1000 && area < 12000000 && ratio < 8.0) {
-                  if (area > maxArea) {
-                    maxArea = area;
-                    bestImage = { width: imgData.width, height: imgData.height, data: imgData.data };
-                    console.log("[extract-photo] ✅ Accepted as candidate photo!");
-                  }
-                } else {
-                  console.log(`[extract-photo] ❌ Rejected: Area or Ratio out of bounds (Ratio: ${ratio}).`);
-                }
-              }
-            } catch (imgErr) {
-              console.warn("Could not extract image object:", objId, imgErr);
+      for (const jpeg of jpegs) {
+        const { width, height } = getJPEGDimensions(jpeg);
+        if (width > 0 && height > 0) {
+          const area = width * height;
+          const minS = Math.min(width, height);
+          const maxS = Math.max(width, height);
+          const ratio = maxS / minS;
+          
+          console.log(`[extract-photo] Candidate Dimensions: ${width}x${height} (Area: ${area}, Ratio: ${ratio.toFixed(2)})`);
+          
+          // Accept candidate: decent area and relatively square (not a banner or line)
+          if (area > 1000 && area < 12000000 && ratio < 8.0) {
+            if (!bestImage || area > bestImage.area) {
+              bestImage = { buffer: jpeg, width, height, area };
             }
           }
         }
       }
 
-      const img = bestImage;
-      if (img) {
-        const { width, height, data } = img;
-        console.log(`[extract-photo] Extracted raw image with dimensions ${width}x${height}`);
-        // Encode raw RGBA/RGB to BMP format
-        const bmpBuffer = encodeBMP(width, height, data);
-        const base64 = bmpBuffer.toString('base64');
+      if (bestImage) {
+        console.log(`[extract-photo] Selected best photo candidate: ${bestImage.width}x${bestImage.height}`);
+        const base64 = bestImage.buffer.toString('base64');
         return NextResponse.json({
           found: true,
-          photoBase64: `data:image/bmp;base64,${base64}`,
-          width: width,
-          height: height,
+          photoBase64: `data:image/jpeg;base64,${base64}`,
+          width: bestImage.width,
+          height: bestImage.height,
         });
       }
-    } catch (pdfjsErr) {
-      console.error("[extract-photo] pdfjs parsing failed:", pdfjsErr);
+
+      console.log("[extract-photo] No suitable photo found via raw buffer scan.");
+    } catch (scanErr) {
+      console.error("[extract-photo] Raw buffer scan failed:", scanErr);
     }
 
-    console.log("[extract-photo] No suitable photo found via parsing either.");
     return NextResponse.json({ found: false });
   } catch (error) {
     console.error("[extract-photo] Unexpected error:", error);

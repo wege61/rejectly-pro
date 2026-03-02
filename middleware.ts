@@ -1,6 +1,27 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+// Giriş gerektiren sayfalar
+const PROTECTED_ROUTES = [
+  '/dashboard',
+  '/reports',
+  '/cv',
+  '/ats-optimizer',
+  '/jobs',
+  '/analyze',
+  '/cover-letters',
+  '/billing',
+  '/settings',
+];
+
+// Giriş yapmış kullanıcının görmemesi gereken sayfalar
+const AUTH_ROUTES = [
+  '/login',
+  '/signup',
+  '/forgot-password',
+  '/reset-password',
+];
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 

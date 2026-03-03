@@ -7,11 +7,11 @@ import styled from "styled-components";
 const TurnstileContainer = styled.div`
   display: flex;
   justify-content: center;
-  margin: 16px 0;
+  margin: 4px 0;
 
-  /* Ensure the widget is visible */
+  /* Ensure the widget is visible while preventing huge layout shifts */
   & > div {
-    min-height: 65px;
+    min-height: 40px;
   }
 `;
 
@@ -90,7 +90,7 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
             onExpire={handleExpire}
             options={{
               theme,
-              size: "normal",
+              size: "compact",
             }}
           />
           {error && <ErrorMessage>{error}</ErrorMessage>}

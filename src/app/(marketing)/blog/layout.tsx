@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "ATS optimization",
     "job search strategies",
     "resume writing tips",
-    "interview preparation",
+    "resume analysis",
     "career development",
     "resume optimization guide",
     "job application tips",

@@ -352,7 +352,7 @@ export default function FAQPage() {
         {
           question: "Do you provide cover letter generation?",
           answer:
-            "Not yet, but it's on our roadmap! Currently, we focus on resume analysis and optimization. Cover letter generation and other AI-powered career tools are planned for future releases. <a href='mailto:feedback@rejectly.pro'>Let us know</a> if this is important to you!",
+            "Yes! Our AI generates personalized, compelling cover letters tailored to the specific job description and your resume. Choose from multiple tones (professional, creative, formal) and get a polished cover letter in seconds. It's available with Pro analyses.",
         },
         {
           question: "What is ATS optimization?",

@@ -2886,40 +2886,6 @@ export default function Page() {
         </div>
       ),
     },
-    {
-      src: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
-      title: "Interview Preparation Simulator",
-      category: "Dominate the Room",
-      content: (
-        <div>
-          <p>Don&apos;t freeze when it matters most. Walk into every interview knowing the answers before they ask the questions.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Predictive questions for your specific target role</li>
-            <li>Company-specific talking points and red flags</li>
-            <li>STAR method response frameworks built for your background</li>
-            <li>High-leverage questions to ask your interviewer</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Turn interviews from interrogations into conversations.</p>
-        </div>
-      ),
-    },
-    {
-      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
-      title: "The Application War Room",
-      category: "Command Center",
-      content: (
-        <div>
-          <p>Keep your entire job search arsenal in one focused dashboard. Never drop the ball on a follow-up again.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Automated status tracking pipeline</li>
-            <li>Aggressive follow-up reminders</li>
-            <li>Hard data on your response rate and funnel conversion</li>
-            <li>Centralized document management for every role</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Treat your job search like a high-stakes sales pipeline.</p>
-        </div>
-      ),
-    },
   ];
 
   const loadSample = () => {
@@ -3486,7 +3452,7 @@ export default function Page() {
                   </PotentialScoreBox>
 
                   <TipsList>
-                    {quickWins.slice(0, 3).map((tip, idx) => (
+                    {quickWins.map((tip, idx) => (
                       <TipItem key={idx}>
                         <CheckIcon />
                         <span>{tip}</span>
@@ -3494,27 +3460,16 @@ export default function Page() {
                     ))}
                   </TipsList>
 
-                  <BlurredContent>
+                  {improvementTips.length > 0 && (
                     <TipsList>
-                      {improvementTips.slice(3, 6).map((tip, idx) => (
+                      {improvementTips.map((tip, idx) => (
                         <TipItem key={idx}>
                           <CheckIcon />
                           <span>{tip}</span>
                         </TipItem>
                       ))}
                     </TipsList>
-                  </BlurredContent>
-
-                  <UnlockOverlay>
-                    <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                      <LockIcon />
-                      <strong>
-                        {improvementTips.length - 3} more improvement tips
-                      </strong>
-                      locked
-                    </p>
-                    <p>Upgrade to see all personalized recommendations</p>
-                  </UnlockOverlay>
+                  )}
                 </ImprovementSection>
               )}
 
@@ -3535,7 +3490,7 @@ export default function Page() {
                     Based on your resume, these positions might be a better fit
                   </p>
 
-                  {betterJobs.slice(0, 2).map((job, idx) => (
+                  {betterJobs.map((job, idx) => (
                     <BetterJobCard key={idx}>
                       <JobHeader>
                         <JobInfo>
@@ -3552,59 +3507,23 @@ export default function Page() {
                       <JobDescription>{job.description}</JobDescription>
                     </BetterJobCard>
                   ))}
-
-                  {betterJobs.length > 2 && (
-                    <>
-                      <BetterJobCard $blurred>
-                        <JobHeader>
-                          <JobInfo>
-                            <h4>{betterJobs[2].title}</h4>
-                            <p>
-                              {betterJobs[2].company} • {betterJobs[2].location}
-                            </p>
-                          </JobInfo>
-                          <MatchBadge style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <StarIcon />
-                            {betterJobs[2].matchScore}% Match
-                          </MatchBadge>
-                        </JobHeader>
-                        <JobDescription>
-                          {betterJobs[2].description}
-                        </JobDescription>
-                      </BetterJobCard>
-
-                      <UnlockOverlay>
-                        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                          <LockIcon />
-                          <strong>More perfectly matched jobs</strong>
-                          waiting for you
-                        </p>
-                        <p>
-                          Upgrade to see all recommendations with detailed match
-                          analysis
-                        </p>
-                      </UnlockOverlay>
-                    </>
-                  )}
                 </BetterJobsSection>
               )}
 
               <CTASection>
-                <div style={{ background: 'rgba(238, 90, 90, 0.1)', border: '1px solid rgba(238, 90, 90, 0.3)', padding: '40px 32px', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 20px 40px rgba(238, 90, 90, 0.15)' }}>
-                  <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#ff6b6b', fontSize: '28px', margin: 0 }}>
-                    <LockIcon />
-                    Unlock Your Fatal Flaws for $2
+                <div style={{ background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.25)', padding: '40px 32px', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 20px 40px rgba(34, 197, 94, 0.1)' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#22c55e', fontSize: '28px', margin: 0 }}>
+                    Now You See the Problem. Let Us Fix It.
                   </h3>
                   <p style={{ fontSize: '18px', color: 'var(--text-color)', fontWeight: 500, margin: 0, textAlign: 'center' }}>
-                    You are making critical mistakes that guarantee your rejection. <br/>
-                    Don't lose a $100k+ job because you didn't know the rules.
+                    Get an AI-optimized, ATS-ready resume with all fixes applied — ready to submit in 30 seconds.
                   </p>
                   <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-secondary)', textAlign: 'center' }}>
-                    Get the exact missing keywords, robot-proof formatting, and instant AI rewrites.
+                    Rewritten bullet points, missing keywords added, perfect formatting. Starting at $2.
                   </p>
                   <CTAButtons style={{ marginTop: '16px', width: '100%', justifyContent: 'center' }}>
                     <CTAButton as="a" href="/signup" $variant="primary" style={{ width: '100%', maxWidth: '320px', fontSize: '18px', padding: '16px' }}>
-                      Reveal My Mistakes Now
+                      Get My Optimized Resume
                     </CTAButton>
                   </CTAButtons>
                 </div>

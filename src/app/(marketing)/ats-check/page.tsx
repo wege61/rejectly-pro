@@ -2013,13 +2013,13 @@ export default function ATSCheckPage() {
                   </radialGradient>
                 </defs>
               </CTAGradientCircle>
-              <CTATitle>Ready to fix these issues?</CTATitle>
+              <CTATitle>Now you see the problems. Let us fix them.</CTATitle>
               <CTAText>
-                Get AI-powered suggestions and optimize your resume for maximum ATS compatibility. Join 500+ professionals who landed more interviews.
+                Get an AI-optimized resume with all issues fixed — rewritten bullet points, missing keywords added, and ATS-proof formatting. Ready to download in 30 seconds. Starting at $2.
               </CTAText>
               <CTAButtonGroup>
                 <CTAButton href={ROUTES.AUTH.SIGNUP}>
-                  Fix My Resume
+                  Get My Optimized Resume
                 </CTAButton>
                 <CTASecondaryButton href={ROUTES.PUBLIC.HOW_IT_WORKS}>
                   Learn more

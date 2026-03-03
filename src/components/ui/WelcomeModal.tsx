@@ -390,17 +390,6 @@ const SLIDES_DATA = [
     variant: 3,
   },
   {
-    title: "Track Your Progress & Improve",
-    description: "Get detailed analytics on every application. See what's working, what's not, and continuously improve your success rate.",
-    features: [
-      "Visual analysis reports for each application",
-      "Track application success over time",
-      "Learn from your best-performing resumes",
-    ],
-    animation: "float" as const,
-    variant: 1,
-  },
-  {
     title: "Ready to Get More Interviews?",
     description: "Start optimizing your job search today. Most users see results within their first 5 applications.",
     animation: "pulse" as const,

@@ -362,40 +362,6 @@ export default function HowItWorksPage() {
         </div>
       ),
     },
-    {
-      src: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
-      title: "Interview Preparation",
-      category: "Be Ready",
-      content: (
-        <div>
-          <p>Walk into every interview with confidence. Our AI prepares you with:</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Common questions for your specific role</li>
-            <li>Company-specific talking points</li>
-            <li>STAR method response frameworks</li>
-            <li>Questions to ask your interviewer</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Preparation meets opportunity. Be the candidate they remember.</p>
-        </div>
-      ),
-    },
-    {
-      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
-      title: "Application Tracking",
-      category: "Stay Organized",
-      content: (
-        <div>
-          <p>Never lose track of where you applied. Keep your entire job search organized:</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Dashboard view of all applications</li>
-            <li>Status tracking and follow-up reminders</li>
-            <li>Interview scheduling and notes</li>
-            <li>Response rate analytics</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Your command center for landing the perfect role.</p>
-        </div>
-      ),
-    },
   ];
 
   return (

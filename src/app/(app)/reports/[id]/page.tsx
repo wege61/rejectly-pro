@@ -5302,31 +5302,38 @@ export default function ReportDetailPage() {
     }
   }, [originalCvText, originalAtsScore, isLoadingOriginalAtsScore, fetchOriginalAtsScore, originalAtsScoreError]);
 
-  // Buy credits handler
-  const handleBuyCredits = async (planId: string, credits: number, planName: string) => {
-    setIsBuyingCredits(planId);
+  // Buy credits handler — redirect to Stripe Checkout
+  const handleBuyCredits = async (priceId: string, mode: 'payment' | 'subscription') => {
+    setIsBuyingCredits(priceId);
     try {
-      const response = await fetch("/api/credits/add-test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credits, planName }),
+      const returnUrl = `${window.location.origin}/reports/${reportId}`;
+
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId,
+          mode,
+          successUrl: `${returnUrl}?payment=success`,
+          cancelUrl: `${returnUrl}?payment=cancelled`,
+        }),
       });
 
-      if (response.ok) {
-        await fetchCredits();
-        setPurchaseSuccess(true);
-
-        // Close modal after 5 seconds
-        setTimeout(() => {
-          setIsBuyCreditsModalOpen(false);
-          setPurchaseSuccess(false);
-        }, 5000);
-      } else {
-        alert("Failed to add credits");
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Network response was not ok');
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Error occurred");
+
+      const { url } = await response.json();
+
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error: any) {
+      console.error('Stripe checkout error:', error);
+      alert(error.message || 'Payment failed to start.');
     } finally {
       setIsBuyingCredits(null);
     }
@@ -7271,16 +7278,8 @@ export default function ReportDetailPage() {
       >
         <Modal.Body>
            <SharedPricingCards 
-              onCheckout={(priceId, mode) => {
-                 if (priceId === PRICING.SINGLE.priceId) {
-                   handleBuyCredits('single', 1, 'Single');
-                 } else if (priceId === PRICING.STARTER.priceId) {
-                   handleBuyCredits('starter', 10, 'Starter');
-                 } else {
-                   alert('Subscription requires Stripe integration on this page');
-                 }
-              }}
-              isLoading={isBuyingCredits === 'single' ? PRICING.SINGLE.priceId : isBuyingCredits === 'starter' ? PRICING.STARTER.priceId : null}
+              onCheckout={(priceId, mode) => handleBuyCredits(priceId, mode)}
+              isLoading={isBuyingCredits}
               isModal={true}
            />
         </Modal.Body>

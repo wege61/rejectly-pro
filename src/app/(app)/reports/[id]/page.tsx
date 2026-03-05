@@ -4576,21 +4576,20 @@ const SimulatorStepValue = styled.span<{ $color: string }>`
 const DiagnosisCard = styled.div`
   position: relative;
   border-radius: 20px;
-  background: rgba(15, 15, 18, 0.5);
+  background: rgba(15, 15, 18, 0.4);
   backdrop-filter: blur(40px) saturate(200%);
   -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 12px 40px rgba(239, 68, 68, 0.05), inset 0 1px 0 rgba(239, 68, 68, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
 
   &::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; height: 100%;
-    background: radial-gradient(circle at 100% 0%, rgba(239, 68, 68, 0.05) 0%, transparent 60%);
-    pointer-events: none;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
   }
 `;
 
@@ -4914,12 +4913,13 @@ const LockListLabel = styled.span`
 
 const FreeKeywordsCard = styled.div`
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(15, 15, 18, 0.4);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 24px;
   margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 `;
 
 const FreeKeywordsTitle = styled.h3`
@@ -6215,68 +6215,59 @@ export default function ReportDetailPage() {
       <HeaderMeta>
       </HeaderMeta>
 
-      {/* ====== FREE USER: New Liquid Glass Hero ====== */}
+      {/* ====== FREE USER: Unified Hero (same layout as Pro) ====== */}
       {userState === 'free' ? (
         <>
-          {/* Hero Score Rings */}
-          <FreeHeroSection $isCritical={report.fit_score < 70}>
-            <ScoreRingsRow>
-              {/* Match Score Ring */}
-              <ScoreRingContainer>
-                <ScoreRingSVG viewBox="0 0 120 120">
-                  {/* Ghost ring (potential) */}
-                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(102, 126, 234, 0.08)" strokeWidth="8" />
-                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(102, 126, 234, 0.15)" strokeWidth="8"
-                    strokeDasharray={`${95 * 3.27} ${327 - 95 * 3.27}`}
-                    strokeLinecap="round" transform="rotate(-90 60 60)" />
-                  {/* Actual ring */}
-                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
-                  <circle cx="60" cy="60" r="52" fill="none"
-                    stroke={report.fit_score >= 70 ? '#10b981' : report.fit_score >= 50 ? '#f59e0b' : '#ef4444'}
-                    strokeWidth="8" strokeDasharray={`${report.fit_score * 3.27} ${327 - report.fit_score * 3.27}`}
-                    strokeLinecap="round" transform="rotate(-90 60 60)" />
-                  <text x="60" y="56" textAnchor="middle" fill="var(--text-color)" fontSize="28" fontWeight="700">{report.fit_score}%</text>
-                  <text x="60" y="74" textAnchor="middle" fill="rgba(102,126,234,0.4)" fontSize="11" fontWeight="500">→ 95%</text>
-                </ScoreRingSVG>
-                <ScoreRingLabel>Match Score</ScoreRingLabel>
-              </ScoreRingContainer>
+          <ProHeroSection>
+            <ProHeroScoreRow>
+              {/* Match Score — Primary */}
+              <ProHeroScoreBlock $isPrimary>
+                <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                  <ProHeroScoreValue
+                    $isPrimary
+                    $color={(() => {
+                      const s = report.fit_score;
+                      return s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2a57a0ff' : s >= 50 ? '#EAB308' : '#F97316';
+                    })()}
+                  >
+                    {report.fit_score}%
+                  </ProHeroScoreValue>
+                </div>
+                <ProHeroScoreLabel $isPrimary>Match Score</ProHeroScoreLabel>
+              </ProHeroScoreBlock>
 
-              {/* ATS Score Ring */}
-              <ScoreRingContainer>
-                <ScoreRingSVG viewBox="0 0 120 120">
-                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(102, 126, 234, 0.08)" strokeWidth="8" />
-                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(102, 126, 234, 0.15)" strokeWidth="8"
-                    strokeDasharray={`${95 * 3.27} ${327 - 95 * 3.27}`}
-                    strokeLinecap="round" transform="rotate(-90 60 60)" />
-                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
-                  <circle cx="60" cy="60" r="52" fill="none"
-                    stroke={(originalAtsScore ?? 0) >= 70 ? '#10b981' : (originalAtsScore ?? 0) >= 50 ? '#f59e0b' : '#ef4444'}
-                    strokeWidth="8" strokeDasharray={`${(originalAtsScore ?? 0) * 3.27} ${327 - (originalAtsScore ?? 0) * 3.27}`}
-                    strokeLinecap="round" transform="rotate(-90 60 60)" />
-                  <text x="60" y="56" textAnchor="middle" fill="var(--text-color)" fontSize="28" fontWeight="700">
-                    {isLoadingOriginalAtsScore ? '...' : originalAtsScore !== null ? `${originalAtsScore}%` : '--'}
-                  </text>
-                  <text x="60" y="74" textAnchor="middle" fill="rgba(102,126,234,0.4)" fontSize="11" fontWeight="500">→ 95%</text>
-                </ScoreRingSVG>
-                <ScoreRingLabel>ATS Score</ScoreRingLabel>
-              </ScoreRingContainer>
-            </ScoreRingsRow>
+              <ProHeroDivider />
+
+              {/* ATS Score — Secondary */}
+              <ProHeroScoreBlock>
+                <ProHeroScoreValue
+                  $color={(() => {
+                    const s = originalAtsScore;
+                    if (s === null) return 'rgba(255,255,255,0.3)';
+                    return s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2a57a0ff' : s >= 50 ? '#EAB308' : '#F97316';
+                  })()}
+                >
+                  {isLoadingOriginalAtsScore ? '...' : originalAtsScore !== null ? `${originalAtsScore}%` : '--'}
+                </ProHeroScoreValue>
+                <ProHeroScoreLabel>ATS Score</ProHeroScoreLabel>
+              </ProHeroScoreBlock>
+            </ProHeroScoreRow>
 
             {/* AI Insight */}
-            <AIInsightText>
+            <ProHeroSummary>
               Your resume matches <strong style={{ color: 'var(--text-color)' }}>{report.fit_score}%</strong> of the job requirements.
               {missingKeywords.length > 0 ? (<> Missing <strong style={{ color: '#f59e0b' }}>{missingKeywords.length} critical keywords</strong>.</>) : null}
               {' '}Pro optimization can boost your score to <strong style={{ color: '#10b981' }}>95%+</strong>.
-            </AIInsightText>
+            </ProHeroSummary>
 
             {/* Centralized CTA */}
-            <HeroCTAButton
+            <ProHeroCTA
               onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}
               disabled={isUpgrading}
             >
               <RocketIcon /> {isUpgrading ? 'Generating...' : 'Generate Optimized Resume'}
-            </HeroCTAButton>
-          </FreeHeroSection>
+            </ProHeroCTA>
+          </ProHeroSection>
 
           {/* Interview Probability */}
           <InterviewProbabilityPill>

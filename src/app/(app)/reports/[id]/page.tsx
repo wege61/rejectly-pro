@@ -6284,32 +6284,6 @@ export default function ReportDetailPage() {
             </ProbabilityItem>
           </InterviewProbabilityPill>
 
-          {/* Score Simulator */}
-          <ScoreSimulatorCard>
-            <SimulatorTitle>Score Potential Simulator</SimulatorTitle>
-            {(() => {
-              const keywordBoost = Math.min(missingKeywords.length * 5, 25);
-              const bulletBoost = rewrittenBullets.length > 0 ? 15 : 12;
-              const atsBoost = atsFlags.length > 0 ? 8 : 5;
-              let cumulative = report.fit_score;
-              const steps = [
-                { label: `Add ${missingKeywords.length} keywords`, boost: keywordBoost, color: '#667eea' },
-                { label: 'Rewrite bullet points', boost: bulletBoost, color: '#10b981' },
-                { label: 'ATS format optimization', boost: atsBoost, color: '#f59e0b' },
-              ];
-              return steps.map((step, i) => {
-                cumulative = Math.min(cumulative + step.boost, 98);
-                return (
-                  <SimulatorStep key={i}>
-                    <SimulatorStepLabel>{step.label}</SimulatorStepLabel>
-                    <SimulatorStepBar $width={Math.min((step.boost / 25) * 100, 100)} $color={step.color} />
-                    <SimulatorStepValue $color={step.color}>→ {cumulative}%</SimulatorStepValue>
-                  </SimulatorStep>
-                );
-              });
-            })()}
-          </ScoreSimulatorCard>
-
           {/* Diagnosis Card */}
           <DiagnosisCard>
             <DiagnosisTitle>Resume Diagnosis</DiagnosisTitle>

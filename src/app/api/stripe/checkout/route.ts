@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
         },
       ],
       mode: mode as 'subscription' | 'payment',
+      allow_promotion_codes: true,
       success_url: successUrl,
       cancel_url: cancelUrl,
       customer_email: user.email,

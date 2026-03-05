@@ -5,6 +5,8 @@ import { useToast } from "@/contexts/ToastContext";
 import styled, { keyframes, css } from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useCallback, useEffect } from "react";
+import { useCredits } from "@/contexts/CreditsContext";
+import { useRouter } from "next/navigation";
 import {
   analyzeScore,
   getCategoryImpact,
@@ -2350,6 +2352,8 @@ export default function DashboardATSOptimizerPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Credits system
+  const { credits, isLoading: isLoadingCredits } = useCredits();
+  const router = useRouter();
   const creditConfirm = useCreditConfirm();
   const { user } = useAuth();
   const toast = useToast();
@@ -2745,16 +2749,38 @@ export default function DashboardATSOptimizerPage() {
               </ATSStepsRow>
 
               <ATSCTARow>
-                <ATSCTAButton onClick={() => setIsUploadModalOpen(true)}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <polyline points="16 16 12 12 8 16"/>
-                    <line x1="12" y1="12" x2="12" y2="21"/>
-                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
-                  </svg>
-                  Start Optimization
-                </ATSCTAButton>
-                <ATSCTASecondary onClick={() => setIsUploadModalOpen(true)}>
-                  PDF or DOCX supported
+                {credits.credits > 0 || credits.hasSubscription ? (
+                  <ATSCTAButton onClick={() => setIsUploadModalOpen(true)}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <polyline points="16 16 12 12 8 16"/>
+                      <line x1="12" y1="12" x2="12" y2="21"/>
+                      <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                    </svg>
+                    Start Optimization
+                  </ATSCTAButton>
+                ) : (
+                  <ATSCTAButton onClick={() => router.push('/billing')} style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: 'white',
+                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                  }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ width: 18, height: 18 }}>
+                      <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    Unlock Optimizer
+                  </ATSCTAButton>
+                )}
+                <ATSCTASecondary onClick={() => (credits.credits > 0 || credits.hasSubscription) ? setIsUploadModalOpen(true) : router.push('/billing')}>
+                  {(credits.credits > 0 || credits.hasSubscription) ? (
+                    <>
+                      PDF or DOCX supported
+                      {(credits.credits <= 3 && !credits.hasSubscription) && ` • ${credits.credits} credit${credits.credits !== 1 ? 's' : ''} remaining`}
+                    </>
+                  ) : (
+                    'Ready for your next breakthrough? Unlock credits to continue.'
+                  )}
                 </ATSCTASecondary>
               </ATSCTARow>
             </ATSEmptyHero>
@@ -2991,17 +3017,47 @@ export default function DashboardATSOptimizerPage() {
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
           {/* Start CTA */}
-          <ATSUploadPrimaryBtn
-            disabled={!_file}
-            onClick={() => {
-              if (_file) { setIsUploadModalOpen(false); }
-            }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            {_file ? 'Start Optimization' : 'Select or upload a CV first'}
-          </ATSUploadPrimaryBtn>
+          {credits.credits > 0 || credits.hasSubscription ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <ATSUploadPrimaryBtn
+                disabled={!_file}
+                onClick={() => {
+                  if (_file) { setIsUploadModalOpen(false); }
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {_file ? 'Start Optimization' : 'Select or upload a CV first'}
+              </ATSUploadPrimaryBtn>
+              {(credits.credits <= 3 && !credits.hasSubscription) && (
+                <div style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255, 255, 255, 0.4)', marginTop: '4px' }}>
+                  {credits.credits} credit{credits.credits !== 1 ? 's' : ''} remaining
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <ATSUploadPrimaryBtn
+                  onClick={() => router.push('/billing')}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: 'white',
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                  }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ width: 18, height: 18 }}>
+                  <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+                Unlock Optimizer
+              </ATSUploadPrimaryBtn>
+              <div style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)', letterSpacing: '-0.01em' }}>
+                Ready for your next breakthrough? Unlock credits to continue.
+              </div>
+            </div>
+          )}
         </ATSUploadBody>
       </Modal>
 

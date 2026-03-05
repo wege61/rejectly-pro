@@ -9,8 +9,6 @@ import { Spinner } from "@/components/ui/Spinner";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { CreditsProvider } from "@/contexts/CreditsContext";
-import { CreditWarningBanner } from "@/components/credits";
-
 // ─── Animations ─────────────────────────────────────────────────────────────
 
 const fadeIn = keyframes`
@@ -1018,7 +1016,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* ── Main ── */}
       <PageMain $animating={isAnimating}>
         <CreditsProvider>
-          <CreditWarningBanner />
           {children}
         </CreditsProvider>
       </PageMain>

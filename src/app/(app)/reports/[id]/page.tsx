@@ -7580,24 +7580,6 @@ export default function ReportDetailPage() {
           padding: '40px 32px 32px',
           textAlign: 'center',
         }}>
-          {/* Icon Badge */}
-          <div style={{
-            width: 72,
-            height: 72,
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, rgba(53, 162, 159, 0.2) 0%, rgba(53, 162, 159, 0.05) 100%)',
-            border: '1px solid rgba(53, 162, 159, 0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 24,
-            boxShadow: '0 8px 32px rgba(53, 162, 159, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
-          }}>
-            <svg width="32" height="32" fill="none" stroke="rgba(53, 162, 159, 1)" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-            </svg>
-          </div>
-
           {/* Title */}
           <h3 style={{
             fontSize: 22,

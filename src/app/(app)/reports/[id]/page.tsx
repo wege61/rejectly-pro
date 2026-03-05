@@ -21,6 +21,7 @@ import { CVCustomizationModal } from "@/components/features/CVCustomizationModal
 import { ScoreBreakdownModal } from "@/components/features/ScoreBreakdownModal";
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerBody, DrawerFooter } from "@/components/ui/Drawer";
 import { CreditsCard } from "@/components/dashboard";
+import { SharedPricingCards } from "@/components/billing/PricingCards";
 import { ToolSuggestionResponse } from "@/types/toolSuggestion";
 import { CVCustomizationOptions } from "@/types/cvCustomization";
 import { ScoreBreakdown } from "@/types/scoreBreakdown";
@@ -7269,87 +7270,18 @@ export default function ReportDetailPage() {
         size="lg"
       >
         <Modal.Body>
-          <PricingGrid>
-              {/* Single */}
-              <PricingCard>
-                <PricingHeader>
-                  <PricingName>{PRICING.SINGLE.name}</PricingName>
-                  <PricingPrice>
-                    ${PRICING.SINGLE.price} <span>one-time</span>
-                  </PricingPrice>
-                </PricingHeader>
-                <PricingFeatureList>
-                  {PRICING.SINGLE.features.map((feature) => (
-                    <PricingFeatureItem key={feature}>
-                      <PricingCheckIcon />
-                      <span>{feature}</span>
-                    </PricingFeatureItem>
-                  ))}
-                </PricingFeatureList>
-                <Button
-                  variant="secondary"
-                  fullWidth
-                  onClick={() => handleBuyCredits('single', 1, 'Single')}
-                  disabled={isBuyingCredits === 'single'}
-                >
-                  {isBuyingCredits === 'single' ? 'Processing...' : 'Buy Single'}
-                </Button>
-              </PricingCard>
-
-              {/* Starter - Featured */}
-              <PricingCard $featured>
-                <PricingFeaturedBadge>
-                  <Badge variant="info">Best Value</Badge>
-                </PricingFeaturedBadge>
-                <PricingHeader>
-                  <PricingName>{PRICING.STARTER.name}</PricingName>
-                  <PricingPrice>
-                    ${PRICING.STARTER.price} <span>one-time</span>
-                  </PricingPrice>
-                  <PricingSubtext>$0.70 per report - save 65%</PricingSubtext>
-                </PricingHeader>
-                <PricingFeatureList>
-                  {PRICING.STARTER.features.map((feature) => (
-                    <PricingFeatureItem key={feature}>
-                      <PricingCheckIcon />
-                      <span>{feature}</span>
-                    </PricingFeatureItem>
-                  ))}
-                </PricingFeatureList>
-                <Button
-                  fullWidth
-                  onClick={() => handleBuyCredits('starter', 10, 'Starter')}
-                  disabled={isBuyingCredits === 'starter'}
-                >
-                  {isBuyingCredits === 'starter' ? 'Processing...' : 'Buy Starter'}
-                </Button>
-              </PricingCard>
-
-              {/* Pro */}
-              <PricingCard>
-                <PricingHeader>
-                  <PricingName>{PRICING.PRO.name}</PricingName>
-                  <PricingPrice>
-                    ${PRICING.PRO.price} <span>/month</span>
-                  </PricingPrice>
-                </PricingHeader>
-                <PricingFeatureList>
-                  {PRICING.PRO.features.map((feature) => (
-                    <PricingFeatureItem key={feature}>
-                      <PricingCheckIcon />
-                      <span>{feature}</span>
-                    </PricingFeatureItem>
-                  ))}
-                </PricingFeatureList>
-                <Button
-                  variant="secondary"
-                  fullWidth
-                  onClick={() => alert('Subscription requires Stripe integration')}
-                >
-                  Subscribe
-                </Button>
-              </PricingCard>
-            </PricingGrid>
+           <SharedPricingCards 
+              onCheckout={(priceId, mode) => {
+                 if (priceId === PRICING.SINGLE.priceId) {
+                   handleBuyCredits('single', 1, 'Single');
+                 } else if (priceId === PRICING.STARTER.priceId) {
+                   handleBuyCredits('starter', 10, 'Starter');
+                 } else {
+                   alert('Subscription requires Stripe integration on this page');
+                 }
+              }}
+              isLoading={isBuyingCredits === 'single' ? PRICING.SINGLE.priceId : isBuyingCredits === 'starter' ? PRICING.STARTER.priceId : null}
+           />
         </Modal.Body>
       </Modal>
 

@@ -57,29 +57,31 @@ const GlassButton = styled.button<{ $primary?: boolean }>`
   }
 `;
 
-const PricingGrid = styled.div`
+const PricingGrid = styled.div<{ $compressed?: boolean }>`
   display: grid;
-  gap: ${({ theme }) => theme.spacing.lg};
+  gap: ${({ theme, $compressed }) => $compressed ? theme.spacing.md : theme.spacing.lg};
   grid-template-columns: repeat(3, 1fr);
-  margin-bottom: ${({ theme }) => theme.spacing['2xl']};
+  margin-bottom: ${({ theme, $compressed }) => $compressed ? 0 : theme.spacing['2xl']};
+  padding-top: ${({ $compressed }) => $compressed ? '16px' : '0'};
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
   }
 `;
 
-const PricingCard = styled.div<{ $featured?: boolean }>`
+const PricingCard = styled.div<{ $featured?: boolean; $compressed?: boolean }>`
   background: ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.04)" : "rgba(255, 255, 255, 0.02)"};
   backdrop-filter: blur(40px) saturate(200%);
   -webkit-backdrop-filter: blur(40px) saturate(200%);
   border: 1px solid ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.08)"};
-  border-radius: 24px;
-  padding: 40px;
+  border-radius: ${({ $compressed }) => $compressed ? '20px' : '24px'};
+  padding: ${({ $compressed }) => $compressed ? '28px 24px' : '40px'};
   position: relative;
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: ${({ $featured }) => $featured 
     ? "inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 255, 255, 0.03)"
     : "inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 4px 24px rgba(0, 0, 0, 0.3)"};
+  z-index: 1; /* Keep base card below badge */
 
   &:hover {
     background: ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.06)" : "rgba(255, 255, 255, 0.04)"};
@@ -88,41 +90,43 @@ const PricingCard = styled.div<{ $featured?: boolean }>`
       ? "inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 255, 255, 0.05)"
       : "inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4)"};
     transform: translateY(-4px);
+    z-index: 2; /* Elevate on hover */
   }
 
   @media (max-width: 768px) {
-    padding: 32px;
+    padding: ${({ $compressed }) => $compressed ? '24px' : '32px'};
   }
 `;
 
-const PricingBadge = styled.div`
+const PricingBadge = styled.div<{ $compressed?: boolean }>`
   position: absolute;
-  top: -14px;
+  top: ${({ $compressed }) => $compressed ? '-12px' : '-14px'};
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.75));
   backdrop-filter: blur(10px);
   color: #000;
-  padding: 8px 20px;
+  padding: ${({ $compressed }) => $compressed ? '6px 16px' : '8px 20px'};
   border-radius: 20px;
-  font-size: 13px;
+  font-size: ${({ $compressed }) => $compressed ? '11px' : '13px'};
   font-weight: 700;
   white-space: nowrap;
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15), inset 0 1px 1px #fff;
   border: 1px solid rgba(255, 255, 255, 0.5);
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  z-index: 10; /* Ensure badge escapes modal headers if necessary, or at least stays top of card */
 `;
 
-const PricingPlanName = styled.h3`
-  font-size: 24px;
+const PricingPlanName = styled.h3<{ $compressed?: boolean }>`
+  font-size: ${({ $compressed }) => $compressed ? '20px' : '24px'};
   font-weight: 600;
-  margin: 0 0 12px;
+  margin: 0 0 ${({ $compressed }) => $compressed ? '8px' : '12px'};
   color: var(--text-color);
 `;
 
-const PricingPrice = styled.div`
-  font-size: 56px;
+const PricingPrice = styled.div<{ $compressed?: boolean }>`
+  font-size: ${({ $compressed }) => $compressed ? '48px' : '56px'};
   font-weight: 700;
   color: var(--text-color);
   line-height: 1.1;
@@ -130,79 +134,86 @@ const PricingPrice = styled.div`
   margin-bottom: 6px;
 
   @media (max-width: 768px) {
-    font-size: 48px;
+    font-size: ${({ $compressed }) => $compressed ? '40px' : '48px'};
   }
 `;
 
-const PricingPriceSubtext = styled.p`
-  font-size: 15px;
+const PricingPriceSubtext = styled.p<{ $compressed?: boolean }>`
+  font-size: ${({ $compressed }) => $compressed ? '14px' : '15px'};
   color: var(--text-tertiary);
   margin: 0 0 6px;
 `;
 
-const PricingPlanDescription = styled.p`
-  font-size: 15px;
+const PricingPlanDescription = styled.p<{ $compressed?: boolean }>`
+  font-size: ${({ $compressed }) => $compressed ? '14px' : '15px'};
   color: var(--text-tertiary);
   margin: 0 0 20px;
+  min-height: ${({ $compressed }) => $compressed ? '42px' : 'auto'}; /* align buttons */
 `;
 
-const PricingPlanTagline = styled.p`
-  font-size: 18px;
+const PricingPlanTagline = styled.p<{ $compressed?: boolean }>`
+  font-size: ${({ $compressed }) => $compressed ? '16px' : '18px'};
   font-weight: 600;
   color: var(--text-color);
-  margin: 0 0 24px;
+  margin: 0 0 ${({ $compressed }) => $compressed ? '16px' : '24px'};
 `;
 
-const PricingFeatureList = styled.div`
+const PricingFeatureList = styled.div<{ $compressed?: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: ${({ $compressed }) => $compressed ? '8px' : '12px'};
 `;
 
-const PricingFeatureRow = styled.div`
+const PricingFeatureRow = styled.div<{ $compressed?: boolean }>`
   display: flex;
-  align-items: center;
+  align-items: ${({ $compressed }) => $compressed ? 'flex-start' : 'center'};
   gap: 12px;
-  font-size: 15px;
+  font-size: ${({ $compressed }) => $compressed ? '13px' : '15px'};
   color: var(--text-color);
+  line-height: 1.4;
 
   svg {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: ${({ $compressed }) => $compressed ? '16px' : '20px'};
+    height: ${({ $compressed }) => $compressed ? '16px' : '20px'};
     color: var(--text-tertiary);
+    margin-top: ${({ $compressed }) => $compressed ? '2px' : '0'};
   }
 `;
 
-const PricingFeatureRowMuted = styled.div`
+const PricingFeatureRowMuted = styled.div<{ $compressed?: boolean }>`
   display: flex;
-  align-items: center;
+  align-items: ${({ $compressed }) => $compressed ? 'flex-start' : 'center'};
   gap: 12px;
-  font-size: 14px;
+  font-size: ${({ $compressed }) => $compressed ? '12px' : '14px'};
   color: var(--text-tertiary);
+  line-height: 1.4;
 
   svg {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: ${({ $compressed }) => $compressed ? '16px' : '20px'};
+    height: ${({ $compressed }) => $compressed ? '16px' : '20px'};
     color: var(--text-tertiary);
     opacity: 0.7;
+    margin-top: ${({ $compressed }) => $compressed ? '2px' : '0'};
   }
 `;
 
-const PricingFeatureRowHighlight = styled.div`
+const PricingFeatureRowHighlight = styled.div<{ $compressed?: boolean }>`
   display: flex;
-  align-items: center;
+  align-items: ${({ $compressed }) => $compressed ? 'flex-start' : 'center'};
   gap: 12px;
-  font-size: 15px;
+  font-size: ${({ $compressed }) => $compressed ? '13px' : '15px'};
   color: var(--accent);
   font-weight: 500;
+  line-height: 1.4;
 
   svg {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: ${({ $compressed }) => $compressed ? '16px' : '20px'};
+    height: ${({ $compressed }) => $compressed ? '16px' : '20px'};
     color: var(--accent);
+    margin-top: ${({ $compressed }) => $compressed ? '2px' : '0'};
   }
 `;
 
@@ -302,93 +313,95 @@ const PricingRefreshIcon = () => (
 interface SharedPricingCardsProps {
   onCheckout: (priceId: string, mode: 'payment' | 'subscription') => void;
   isLoading: string | null;
+  /** Pass true when rendering inside a small wrapper like a Modal to reduce padding/font sizes */
+  isModal?: boolean;
 }
 
-export function SharedPricingCards({ onCheckout, isLoading }: SharedPricingCardsProps) {
+export function SharedPricingCards({ onCheckout, isLoading, isModal }: SharedPricingCardsProps) {
   return (
-    <PricingGrid>
+    <PricingGrid $compressed={isModal}>
       {/* Single Plan */}
-      <PricingCard>
-        <PricingPlanName>{PRICING.SINGLE.name}</PricingPlanName>
-        <PricingPrice>${PRICING.SINGLE.price}</PricingPrice>
-        <PricingPriceSubtext>one-time payment</PricingPriceSubtext>
-        <PricingPlanDescription>Try it with a single analysis</PricingPlanDescription>
-        <PricingPlanTagline>Perfect for quick tests</PricingPlanTagline>
+      <PricingCard $compressed={isModal}>
+        <PricingPlanName $compressed={isModal}>{PRICING.SINGLE.name}</PricingPlanName>
+        <PricingPrice $compressed={isModal}>${PRICING.SINGLE.price}</PricingPrice>
+        <PricingPriceSubtext $compressed={isModal}>one-time payment</PricingPriceSubtext>
+        <PricingPlanDescription $compressed={isModal}>Try it with a single analysis</PricingPlanDescription>
+        <PricingPlanTagline $compressed={isModal}>Perfect for quick tests</PricingPlanTagline>
         
         <GlassButton
           onClick={() => onCheckout(PRICING.SINGLE.priceId, 'payment')}
           disabled={isLoading === PRICING.SINGLE.priceId}
-          style={{ marginBottom: '32px' }}
+          style={{ marginBottom: isModal ? '24px' : '32px' }}
         >
           {isLoading === PRICING.SINGLE.priceId ? 'Processing...' : 'Buy Single'} <PricingArrowIcon />
         </GlassButton>
         
-        <PricingFeatureList>
-          <PricingFeatureRow><PricingCreditIcon />1 credit — Perfect for testing</PricingFeatureRow>
-          <PricingFeatureRow><PricingAnalysisIcon />1 job match analysis OR</PricingFeatureRow>
-          <PricingFeatureRow><PricingATSIcon />1 ATS optimization OR</PricingFeatureRow>
-          <PricingFeatureRow><PricingLetterIcon />1 cover letter</PricingFeatureRow>
-          <PricingFeatureRow><PricingSparklesIcon />Full Pro features included</PricingFeatureRow>
-          <PricingFeatureRowMuted><PricingClockIcon />Valid for 30 days</PricingFeatureRowMuted>
-          <PricingFeatureRowMuted><PricingShieldIcon />No subscription, no commitment</PricingFeatureRowMuted>
+        <PricingFeatureList $compressed={isModal}>
+          <PricingFeatureRow $compressed={isModal}><PricingCreditIcon />1 credit — Perfect for testing</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingAnalysisIcon />1 job match analysis OR</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />1 ATS optimization OR</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingLetterIcon />1 cover letter</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingSparklesIcon />Full Pro features included</PricingFeatureRow>
+          <PricingFeatureRowMuted $compressed={isModal}><PricingClockIcon />Valid for 30 days</PricingFeatureRowMuted>
+          <PricingFeatureRowMuted $compressed={isModal}><PricingShieldIcon />No subscription, no commitment</PricingFeatureRowMuted>
         </PricingFeatureList>
       </PricingCard>
 
       {/* Starter Plan */}
-      <PricingCard $featured>
-        <PricingBadge>Most popular</PricingBadge>
-        <PricingPlanName>{PRICING.STARTER.name}</PricingPlanName>
-        <PricingPrice>${PRICING.STARTER.price}</PricingPrice>
-        <PricingPriceSubtext>one-time payment</PricingPriceSubtext>
-        <PricingPlanDescription>$0.70 per analysis — save 65%</PricingPlanDescription>
-        <PricingPlanTagline>Best for active job seekers</PricingPlanTagline>
+      <PricingCard $featured $compressed={isModal}>
+        <PricingBadge $compressed={isModal}>Most popular</PricingBadge>
+        <PricingPlanName $compressed={isModal}>{PRICING.STARTER.name}</PricingPlanName>
+        <PricingPrice $compressed={isModal}>${PRICING.STARTER.price}</PricingPrice>
+        <PricingPriceSubtext $compressed={isModal}>one-time payment</PricingPriceSubtext>
+        <PricingPlanDescription $compressed={isModal}>$0.70 per analysis — save 65%</PricingPlanDescription>
+        <PricingPlanTagline $compressed={isModal}>Best for active job seekers</PricingPlanTagline>
         
         <GlassButton
           $primary
           onClick={() => onCheckout(PRICING.STARTER.priceId, 'payment')}
           disabled={isLoading === PRICING.STARTER.priceId}
-          style={{ marginBottom: '32px' }}
+          style={{ marginBottom: isModal ? '24px' : '32px' }}
         >
           {isLoading === PRICING.STARTER.priceId ? 'Processing...' : 'Buy Starter'} <PricingArrowIcon />
         </GlassButton>
         
-        <PricingFeatureList>
-          <PricingFeatureRow><PricingCreditIcon />10 credits — Use however you need</PricingFeatureRow>
-          <PricingFeatureRow><PricingAnalysisIcon />Job match analyses</PricingFeatureRow>
-          <PricingFeatureRow><PricingATSIcon />ATS optimizations</PricingFeatureRow>
-          <PricingFeatureRow><PricingLetterIcon />Cover letters</PricingFeatureRow>
-          <PricingFeatureRow><PricingMixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</PricingFeatureRow>
-          <PricingFeatureRowHighlight><PricingSaveIcon />Save 65% ($0.70 per credit)</PricingFeatureRowHighlight>
-          <PricingFeatureRowMuted><PricingClockIcon />Credits valid for 90 days</PricingFeatureRowMuted>
-          <PricingFeatureRowMuted><PricingTargetIcon />Best for 5-10 target positions</PricingFeatureRowMuted>
+        <PricingFeatureList $compressed={isModal}>
+          <PricingFeatureRow $compressed={isModal}><PricingCreditIcon />10 credits — Use however you need</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingAnalysisIcon />Job match analyses</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />ATS optimizations</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingLetterIcon />Cover letters</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingMixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</PricingFeatureRow>
+          <PricingFeatureRowHighlight $compressed={isModal}><PricingSaveIcon />Save 65% ($0.70 per credit)</PricingFeatureRowHighlight>
+          <PricingFeatureRowMuted $compressed={isModal}><PricingClockIcon />Credits valid for 90 days</PricingFeatureRowMuted>
+          <PricingFeatureRowMuted $compressed={isModal}><PricingTargetIcon />Best for 5-10 target positions</PricingFeatureRowMuted>
         </PricingFeatureList>
       </PricingCard>
 
       {/* Pro Plan */}
-      <PricingCard>
-        <PricingPlanName>{PRICING.PRO.name}</PricingPlanName>
-        <PricingPrice>${PRICING.PRO.price}</PricingPrice>
-        <PricingPriceSubtext>per month</PricingPriceSubtext>
-        <PricingPlanDescription>Unlimited for power users</PricingPlanDescription>
-        <PricingPlanTagline>Apply without limits</PricingPlanTagline>
+      <PricingCard $compressed={isModal}>
+        <PricingPlanName $compressed={isModal}>{PRICING.PRO.name}</PricingPlanName>
+        <PricingPrice $compressed={isModal}>${PRICING.PRO.price}</PricingPrice>
+        <PricingPriceSubtext $compressed={isModal}>per month</PricingPriceSubtext>
+        <PricingPlanDescription $compressed={isModal}>Unlimited for power users</PricingPlanDescription>
+        <PricingPlanTagline $compressed={isModal}>Apply without limits</PricingPlanTagline>
         
         <GlassButton
           onClick={() => onCheckout(PRICING.PRO.priceId, 'subscription')}
           disabled={isLoading === PRICING.PRO.priceId}
-          style={{ marginBottom: '32px' }}
+          style={{ marginBottom: isModal ? '24px' : '32px' }}
         >
             {isLoading === PRICING.PRO.priceId ? 'Processing...' : 'Subscribe'} <PricingArrowIcon />
         </GlassButton>
 
-        <PricingFeatureList>
-          <PricingFeatureRow><PricingInfinityIcon />Unlimited — No limits, no counting</PricingFeatureRow>
-          <PricingFeatureRow><PricingAnalysisIcon />Unlimited job match analyses</PricingFeatureRow>
-          <PricingFeatureRow><PricingATSIcon />Unlimited ATS optimizations</PricingFeatureRow>
-          <PricingFeatureRow><PricingLetterIcon />Unlimited cover letters</PricingFeatureRow>
-          <PricingFeatureRow><PricingRocketIcon />Perfect for career transitions</PricingFeatureRow>
-          <PricingFeatureRowHighlight><PricingStarIcon />Best value for 20+ analyses/month</PricingFeatureRowHighlight>
-          <PricingFeatureRowMuted><PricingRefreshIcon />Credits never expire while subscribed</PricingFeatureRowMuted>
-          <PricingFeatureRowMuted><PricingShieldIcon />Cancel anytime, no questions asked</PricingFeatureRowMuted>
+        <PricingFeatureList $compressed={isModal}>
+          <PricingFeatureRow $compressed={isModal}><PricingInfinityIcon />Unlimited — No limits, no counting</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingAnalysisIcon />Unlimited job match analyses</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />Unlimited ATS optimizations</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingLetterIcon />Unlimited cover letters</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingRocketIcon />Perfect for career transitions</PricingFeatureRow>
+          <PricingFeatureRowHighlight $compressed={isModal}><PricingStarIcon />Best value for 20+ analyses/month</PricingFeatureRowHighlight>
+          <PricingFeatureRowMuted $compressed={isModal}><PricingRefreshIcon />Credits never expire while subscribed</PricingFeatureRowMuted>
+          <PricingFeatureRowMuted $compressed={isModal}><PricingShieldIcon />Cancel anytime, no questions asked</PricingFeatureRowMuted>
         </PricingFeatureList>
       </PricingCard>
     </PricingGrid>

@@ -7281,6 +7281,7 @@ export default function ReportDetailPage() {
                  }
               }}
               isLoading={isBuyingCredits === 'single' ? PRICING.SINGLE.priceId : isBuyingCredits === 'starter' ? PRICING.STARTER.priceId : null}
+              isModal={true}
            />
         </Modal.Body>
       </Modal>

@@ -7571,24 +7571,139 @@ export default function ReportDetailPage() {
       <Modal
         isOpen={isUpgradeConfirmModalOpen}
         onClose={() => setIsUpgradeConfirmModalOpen(false)}
-        title="Ready to Upgrade?"
-        description="This will consume 1 credit to generate your fully AI-optimized resume."
+        size="sm"
       >
-        <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-          <Button variant="ghost" onClick={() => setIsUpgradeConfirmModalOpen(false)} style={{ flex: 1 }}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => {
-              setIsUpgradeConfirmModalOpen(false);
-              handleUpgradeToPro();
-            }}
-            disabled={isUpgrading}
-            style={{ flex: 1 }}
-          >
-            {isUpgrading ? 'Upgrading...' : 'Confirm Upgrade'}
-          </Button>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '40px 32px 32px',
+          textAlign: 'center',
+        }}>
+          {/* Icon Badge */}
+          <div style={{
+            width: 72,
+            height: 72,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, rgba(53, 162, 159, 0.2) 0%, rgba(53, 162, 159, 0.05) 100%)',
+            border: '1px solid rgba(53, 162, 159, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 24,
+            boxShadow: '0 8px 32px rgba(53, 162, 159, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
+          }}>
+            <svg width="32" height="32" fill="none" stroke="rgba(53, 162, 159, 1)" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+          </div>
+
+          {/* Title */}
+          <h3 style={{
+            fontSize: 22,
+            fontWeight: 600,
+            color: 'rgba(255, 255, 255, 0.95)',
+            margin: '0 0 12px',
+            letterSpacing: '-0.02em',
+          }}>
+            Ready to Upgrade?
+          </h3>
+
+          {/* Description */}
+          <p style={{
+            fontSize: 15,
+            color: 'rgba(255, 255, 255, 0.6)',
+            margin: '0 0 20px',
+            lineHeight: 1.5,
+            maxWidth: 280,
+          }}>
+            Generate a fully AI-optimized resume tailored to this job posting.
+          </p>
+
+          {/* Credit Pill */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 16px',
+            borderRadius: 100,
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            marginBottom: 32,
+            fontSize: 14,
+            color: 'rgba(255, 255, 255, 0.7)',
+          }}>
+            <svg width="16" height="16" fill="none" stroke="rgba(53, 162, 159, 0.9)" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            This will use <span style={{ fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>1 credit</span>
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', gap: 12, width: '100%' }}>
+            <button
+              onClick={() => setIsUpgradeConfirmModalOpen(false)}
+              style={{
+                flex: 1,
+                padding: '14px 24px',
+                borderRadius: 100,
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: 15,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+              onMouseEnter={e => {
+                (e.target as HTMLButtonElement).style.background = 'rgba(255, 255, 255, 0.1)';
+                (e.target as HTMLButtonElement).style.borderColor = 'rgba(255, 255, 255, 0.2)';
+              }}
+              onMouseLeave={e => {
+                (e.target as HTMLButtonElement).style.background = 'rgba(255, 255, 255, 0.05)';
+                (e.target as HTMLButtonElement).style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                setIsUpgradeConfirmModalOpen(false);
+                handleUpgradeToPro();
+              }}
+              disabled={isUpgrading}
+              style={{
+                flex: 1,
+                padding: '14px 24px',
+                borderRadius: 100,
+                background: 'linear-gradient(135deg, rgba(53, 162, 159, 1) 0%, rgba(11, 102, 106, 1) 100%)',
+                border: '1px solid rgba(53, 162, 159, 0.5)',
+                color: 'white',
+                fontSize: 15,
+                fontWeight: 600,
+                cursor: isUpgrading ? 'not-allowed' : 'pointer',
+                opacity: isUpgrading ? 0.5 : 1,
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                boxShadow: '0 8px 24px rgba(53, 162, 159, 0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+              }}
+              onMouseEnter={e => {
+                if (!isUpgrading) {
+                  (e.target as HTMLButtonElement).style.transform = 'translateY(-2px)';
+                  (e.target as HTMLButtonElement).style.boxShadow = '0 12px 32px rgba(53, 162, 159, 0.35)';
+                }
+              }}
+              onMouseLeave={e => {
+                (e.target as HTMLButtonElement).style.transform = 'translateY(0)';
+                (e.target as HTMLButtonElement).style.boxShadow = '0 8px 24px rgba(53, 162, 159, 0.25)';
+              }}
+            >
+              {isUpgrading ? 'Upgrading...' : 'Confirm Upgrade'}
+            </button>
+          </div>
         </div>
       </Modal>
 

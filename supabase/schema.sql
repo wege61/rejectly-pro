@@ -47,7 +47,7 @@ CREATE TABLE reports (
 -- Payments table
 CREATE TABLE payments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   stripe_session_id TEXT UNIQUE NOT NULL,
   amount_cents INTEGER NOT NULL,
   currency TEXT DEFAULT 'usd',

@@ -6,29 +6,39 @@ import { ROUTES } from '@/lib/constants';
 import AuthSidePanel from '@/components/auth/AuthSidePanel';
 
 const Container = styled.div`
-  display: grid;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: hidden;
 
   @media (min-width: 1024px) {
+    display: grid;
     grid-template-columns: 5fr 4fr;
+    height: 100vh;
+    overflow: hidden;
   }
 `;
 
 const FormSection = styled.div`
   display: flex;
   flex-direction: column;
-  padding: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.md} 16px;
   background-color: #000000;
   position: relative;
-  overflow: hidden;
-  height: 100vh;
-  max-height: 100vh;
-  justify-content: center;
+  min-height: 100dvh;
+  justify-content: flex-start;
+  overflow-x: hidden;
 
   @media (min-width: 768px) {
+    justify-content: center;
     padding: ${({ theme }) => theme.spacing.xl};
+  }
+
+  @media (min-width: 1024px) {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
   }
 `;
 
@@ -50,14 +60,16 @@ const BackgroundOrb = styled.div<{ $color: string; $size: string; $top: string; 
 const LogoContainer = styled.div`
   display: flex;
   justify-content: center;
-  position: absolute;
-  top: 24px;
-  left: 24px;
+  position: relative;
+  margin-top: 24px;
+  margin-bottom: 16px;
   z-index: 10;
 
   @media (min-width: 768px) {
+    position: absolute;
     top: 32px;
     left: 32px;
+    margin: 0;
   }
 `;
 

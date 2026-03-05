@@ -4,8 +4,10 @@ import { stripe } from '@/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
+export const dynamic = 'force-dynamic'; // Prevent Next.js from caching the raw body
+
 export async function POST(req: Request) {
-  console.log('--- STRIPE WEBHOOK RECEIVED ---');
+  console.log('--- STRIPE WEBHOOK RECEIVED (Dynamic Route) ---');
   let body: string;
   try {
     body = await req.text();
@@ -96,7 +98,7 @@ export async function POST(req: Request) {
               .eq('user_id', userId);
 
             if (updateError) {
-              console.error('Error updating subscription:', updateError);
+              console.error('Error updating subscription:', JSON.stringify(updateError, null, 2));
               return new NextResponse('Error updating subscription', { status: 500 });
             }
           } else {
@@ -112,7 +114,7 @@ export async function POST(req: Request) {
               });
 
             if (insertError) {
-              console.error('Error creating subscription:', insertError);
+              console.error('Error creating subscription:', JSON.stringify(insertError, null, 2));
               return new NextResponse('Error creating subscription', { status: 500 });
             }
           }
@@ -128,7 +130,7 @@ export async function POST(req: Request) {
             .single();
 
           if (creditsFetchError && creditsFetchError.code !== 'PGRST116') {
-            console.error('Error fetching credits:', creditsFetchError);
+            console.error('Error fetching credits:', JSON.stringify(creditsFetchError, null, 2));
             return new NextResponse('Error fetching credits', { status: 500 });
           }
 
@@ -140,7 +142,7 @@ export async function POST(req: Request) {
               .eq('user_id', userId);
 
             if (updateError) {
-              console.error('Error updating credits:', updateError);
+              console.error('Error updating credits:', JSON.stringify(updateError, null, 2));
               return new NextResponse('Error updating credits', { status: 500 });
             }
           } else {
@@ -153,7 +155,7 @@ export async function POST(req: Request) {
               });
 
             if (insertError) {
-              console.error('Error creating credits record:', insertError);
+              console.error('Error creating credits record:', JSON.stringify(insertError, null, 2));
               return new NextResponse('Error creating credits record', { status: 500 });
             }
           }
@@ -164,7 +166,7 @@ export async function POST(req: Request) {
         const amountTotal = session.amount_total || 0;
         const currency = session.currency || 'usd';
         
-        await supabase
+        const { error: paymentError } = await supabase
           .from('payments')
           .insert({
             user_id: userId,
@@ -174,8 +176,13 @@ export async function POST(req: Request) {
             status: 'success'
           });
 
-      } catch (err) {
-        console.error('Unexpected error processing webhook:', err);
+        if (paymentError) {
+           console.error('Error inserting into payments table:', JSON.stringify(paymentError, null, 2));
+           // NOTE: We don't return 500 here to avoid making Stripe retry if the main logic (credits/sub) succeeded.
+        }
+
+      } catch (err: any) {
+        console.error('Unexpected error processing webhook:', err.message || err);
         return new NextResponse('Internal Server Error', { status: 500 });
       }
     }

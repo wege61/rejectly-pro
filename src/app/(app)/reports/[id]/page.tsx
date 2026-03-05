@@ -4607,18 +4607,41 @@ const DiagnosisRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 14px 16px;
+  margin: 0 -16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 
-  &:last-child {
-    border-bottom: none;
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+
+    .diagnosis-chevron {
+      opacity: 1;
+      transform: translateX(2px);
+    }
+  }
+
+  & + & {
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
   }
 `;
 
 const DiagnosisLabel = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 14px;
   color: var(--text-color);
   font-weight: 500;
+`;
+
+const DiagnosisChevron = styled.span`
+  color: var(--text-secondary);
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
 `;
 
 const DiagnosisStatus = styled.span<{ $status: 'good' | 'warning' | 'critical' }>`
@@ -6287,62 +6310,62 @@ export default function ReportDetailPage() {
           {/* Diagnosis Card */}
           <DiagnosisCard>
             <DiagnosisTitle>Resume Diagnosis</DiagnosisTitle>
-            <DiagnosisRow>
-              <DiagnosisLabel>Keywords</DiagnosisLabel>
-              <DiagnosisStatus $status={missingKeywords.length === 0 ? 'good' : missingKeywords.length <= 3 ? 'warning' : 'critical'}>
-                {missingKeywords.length === 0 ? 'Complete' : `${missingKeywords.length} missing`}
-              </DiagnosisStatus>
+            <DiagnosisRow onClick={() => setIsKeywordsModalOpen(true)}>
+              <DiagnosisLabel>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6Z" /></svg>
+                Keywords
+              </DiagnosisLabel>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <DiagnosisStatus $status={missingKeywords.length === 0 ? 'good' : missingKeywords.length <= 3 ? 'warning' : 'critical'}>
+                  {missingKeywords.length === 0 ? 'Complete' : `${missingKeywords.length} missing`}
+                </DiagnosisStatus>
+                <DiagnosisChevron className="diagnosis-chevron">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
+                </DiagnosisChevron>
+              </div>
             </DiagnosisRow>
-            <DiagnosisRow>
-              <DiagnosisLabel>Bullet Points</DiagnosisLabel>
-              <DiagnosisStatus $status={rewrittenBullets.length > 0 ? 'warning' : 'warning'}>
-                Not impact-focused
-              </DiagnosisStatus>
+            <DiagnosisRow onClick={() => setIsBulletPointsDrawerOpen(true)}>
+              <DiagnosisLabel>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
+                Bullet Points
+              </DiagnosisLabel>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <DiagnosisStatus $status="warning">
+                  Not impact-focused
+                </DiagnosisStatus>
+                <DiagnosisChevron className="diagnosis-chevron">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
+                </DiagnosisChevron>
+              </div>
             </DiagnosisRow>
-            <DiagnosisRow>
-              <DiagnosisLabel>ATS Compatibility</DiagnosisLabel>
-              <DiagnosisStatus $status={(originalAtsScore ?? 50) >= 70 ? 'good' : (originalAtsScore ?? 50) >= 50 ? 'warning' : 'critical'}>
-                {(originalAtsScore ?? 50) >= 70 ? 'Good' : (originalAtsScore ?? 50) >= 50 ? 'Needs work' : 'Low'}
-              </DiagnosisStatus>
+            <DiagnosisRow onClick={() => setIsAtsDrawerOpen(true)}>
+              <DiagnosisLabel>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                ATS Compatibility
+              </DiagnosisLabel>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <DiagnosisStatus $status={(originalAtsScore ?? 50) >= 70 ? 'good' : (originalAtsScore ?? 50) >= 50 ? 'warning' : 'critical'}>
+                  {(originalAtsScore ?? 50) >= 70 ? 'Good' : (originalAtsScore ?? 50) >= 50 ? 'Needs work' : 'Low'}
+                </DiagnosisStatus>
+                <DiagnosisChevron className="diagnosis-chevron">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
+                </DiagnosisChevron>
+              </div>
             </DiagnosisRow>
-            <DiagnosisRow>
-              <DiagnosisLabel>Summary Section</DiagnosisLabel>
-              <DiagnosisStatus $status="warning">Too generic</DiagnosisStatus>
+            <DiagnosisRow onClick={() => setIsSummaryDrawerOpen(true)}>
+              <DiagnosisLabel>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>
+                Summary Section
+              </DiagnosisLabel>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <DiagnosisStatus $status="warning">Too generic</DiagnosisStatus>
+                <DiagnosisChevron className="diagnosis-chevron">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
+                </DiagnosisChevron>
+              </div>
             </DiagnosisRow>
             <DiagnosisFooter>Pro fixes {missingKeywords.length > 0 ? '3 of 4' : '2 of 3'} issues automatically</DiagnosisFooter>
           </DiagnosisCard>
-
-          {/* Quick Win Tips */}
-          <QuickWinCard>
-            <QuickWinTitle>Free Tips</QuickWinTitle>
-            {missingKeywords.length > 0 ? (
-              <QuickWinTip>
-                <span>Add the keyword &quot;<strong>{missingKeywords[0]}</strong>&quot; — it appears in the job posting but is missing from your resume.</span>
-              </QuickWinTip>
-            ) : null}
-            <QuickWinTip>
-              <span>Use action verbs like &quot;Led&quot;, &quot;Delivered&quot;, &quot;Scaled&quot; to make your bullet points more impactful.</span>
-            </QuickWinTip>
-            <QuickWinFooter>Pro applies all {missingKeywords.length + 10}+ optimizations automatically</QuickWinFooter>
-          </QuickWinCard>
-
-          {/* Missing Keywords */}
-          {missingKeywords.length > 0 ? (
-            <FreeKeywordsCard>
-              <FreeKeywordsTitle>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#f59e0b" width="18" height="18">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
-                </svg>
-                Missing Keywords
-              </FreeKeywordsTitle>
-              <KeywordList>
-                {missingKeywords.map((keyword: string) => (
-                  <Badge key={keyword} variant="warning">{keyword}</Badge>
-                ))}
-              </KeywordList>
-            </FreeKeywordsCard>
-          ) : null}
 
           {/* Blurred CV Preview */}
           <BlurredPreviewCard onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}>
@@ -7349,72 +7372,119 @@ export default function ReportDetailPage() {
         originalScore={report?.fit_score}
       />
 
-      {/* Keywords Added Drawer */}
+      {/* Keywords Drawer */}
       <Drawer isOpen={isKeywordsModalOpen} onClose={() => setIsKeywordsModalOpen(false)}>
         <DrawerHeader>
-          <DrawerTitle>Keywords Added</DrawerTitle>
-          <DrawerDescription>Keywords strategically integrated into your optimized resume</DrawerDescription>
+          <DrawerTitle>{userState === 'free' ? 'Missing Keywords' : 'Keywords Added'}</DrawerTitle>
+          <DrawerDescription>
+            {userState === 'free'
+              ? 'These keywords appear in the job posting but are missing from your resume'
+              : 'Keywords strategically integrated into your optimized resume'}
+          </DrawerDescription>
         </DrawerHeader>
 
         <KeywordsSummaryRow>
-            <KeywordsSummaryCount>{missingKeywords.length}</KeywordsSummaryCount>
-            <KeywordsSummaryText>keywords matched from the job description</KeywordsSummaryText>
-          </KeywordsSummaryRow>
+          <KeywordsSummaryCount>{missingKeywords.length}</KeywordsSummaryCount>
+          <KeywordsSummaryText>
+            {userState === 'free' ? 'keywords missing from your resume' : 'keywords matched from the job description'}
+          </KeywordsSummaryText>
+        </KeywordsSummaryRow>
         <DrawerBody>
-          
-
-          {missingKeywords.map((keyword: string) => {
-            const matches = report.generated_cv ? findKeywordInCV(keyword, report.generated_cv) : [];
-            return (
-              <KeywordItemCard key={keyword}>
-                <KeywordItemHeader>
-                  <KeywordBadge>
-                    
-                    {keyword}
-                  </KeywordBadge>
-                  <KeywordImpact>
-                    {matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}` : 'Added'}
-                  </KeywordImpact>
-                </KeywordItemHeader>
-
-                {matches.length > 0 ? (
-                  <KeywordContextList>
-                    {matches.slice(0, 3).map((match, idx) => (
-                      <KeywordContext key={idx}>
-                        <div className="section-label">
-                          <i>Found in</i>
-                          {match.section}
-                        </div>
-                        <div>{highlightKeyword(match.text, keyword)}</div>
-                      </KeywordContext>
-                    ))}
-                    {matches.length > 3 && (
-                      <KeywordDescription>
-                        +{matches.length - 3} more occurrence{matches.length - 3 > 1 ? 's' : ''}
-                      </KeywordDescription>
+          {userState === 'free' ? (
+            <>
+              {missingKeywords.map((keyword: string) => (
+                <div key={keyword} style={{
+                  padding: '16px 20px',
+                  borderRadius: '14px',
+                  background: 'rgba(15, 15, 18, 0.5)',
+                  border: '1px solid rgba(245, 158, 11, 0.15)',
+                  marginBottom: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  backdropFilter: 'blur(20px)',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: 8, height: 8, borderRadius: '50%',
+                      background: '#f59e0b',
+                      boxShadow: '0 0 8px rgba(245, 158, 11, 0.4)',
+                      flexShrink: 0,
+                    }} />
+                    <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-color)' }}>{keyword}</span>
+                  </div>
+                  <span style={{
+                    fontSize: '12px', color: '#f59e0b', fontWeight: 500,
+                    padding: '4px 10px', borderRadius: '8px',
+                    background: 'rgba(245, 158, 11, 0.1)',
+                    border: '1px solid rgba(245, 158, 11, 0.15)',
+                  }}>Missing</span>
+                </div>
+              ))}
+              <div style={{
+                marginTop: '16px', padding: '16px', borderRadius: '12px',
+                background: 'rgba(53, 162, 159, 0.06)',
+                border: '1px solid rgba(53, 162, 159, 0.15)',
+                fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)',
+              }}>
+                💡 Adding these keywords can improve your match score by up to <strong style={{ color: '#10b981' }}>+{Math.min(missingKeywords.length * 5, 25)}%</strong>. Pro optimization adds them naturally into your resume.
+              </div>
+            </>
+          ) : (
+            <>
+              {missingKeywords.map((keyword: string) => {
+                const matches = report.generated_cv ? findKeywordInCV(keyword, report.generated_cv) : [];
+                return (
+                  <KeywordItemCard key={keyword}>
+                    <KeywordItemHeader>
+                      <KeywordBadge>{keyword}</KeywordBadge>
+                      <KeywordImpact>
+                        {matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}` : 'Added'}
+                      </KeywordImpact>
+                    </KeywordItemHeader>
+                    {matches.length > 0 ? (
+                      <KeywordContextList>
+                        {matches.slice(0, 3).map((match, idx) => (
+                          <KeywordContext key={idx}>
+                            <div className="section-label"><i>Found in</i>{match.section}</div>
+                            <div>{highlightKeyword(match.text, keyword)}</div>
+                          </KeywordContext>
+                        ))}
+                        {matches.length > 3 && (
+                          <KeywordDescription>+{matches.length - 3} more occurrence{matches.length - 3 > 1 ? 's' : ''}</KeywordDescription>
+                        )}
+                      </KeywordContextList>
+                    ) : (
+                      <KeywordNotFound>Added to your skills section</KeywordNotFound>
                     )}
-                  </KeywordContextList>
-                ) : (
-                  <KeywordNotFound>
-                    Added to your skills section
-                  </KeywordNotFound>
-                )}
-              </KeywordItemCard>
-            );
-          })}
+                  </KeywordItemCard>
+                );
+              })}
+            </>
+          )}
         </DrawerBody>
         <DrawerFooter>
-          <Button variant="primary" onClick={() => setIsKeywordsModalOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
-            Done
-          </Button>
+          {userState === 'free' ? (
+            <Button variant="primary" onClick={() => { setIsKeywordsModalOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }} style={{width: "300px", maxWidth: "95%"}}>
+              Fix All Keywords with Pro
+            </Button>
+          ) : (
+            <Button variant="primary" onClick={() => setIsKeywordsModalOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
+              Done
+            </Button>
+          )}
         </DrawerFooter>
       </Drawer>
 
       {/* Summary Drawer */}
       <Drawer isOpen={isSummaryDrawerOpen} onClose={() => setIsSummaryDrawerOpen(false)}>
         <DrawerHeader>
-          <DrawerTitle>Summary</DrawerTitle>
-          <DrawerDescription>AI-generated analysis of your resume match</DrawerDescription>
+          <DrawerTitle>{userState === 'free' ? 'Summary Analysis' : 'Summary'}</DrawerTitle>
+          <DrawerDescription>
+            {userState === 'free'
+              ? 'AI analysis of how your resume summary matches this role'
+              : 'AI-generated analysis of your resume match'}
+          </DrawerDescription>
         </DrawerHeader>
         <DrawerBody>
           <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-color)', margin: 0 }}>
@@ -7426,11 +7496,27 @@ export default function ReportDetailPage() {
               ?.replace(/[Tt]hey are/g, 'you are')
             }
           </p>
+          {userState === 'free' && (
+            <div style={{
+              marginTop: '24px', padding: '16px', borderRadius: '12px',
+              background: 'rgba(53, 162, 159, 0.06)',
+              border: '1px solid rgba(53, 162, 159, 0.15)',
+              fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)',
+            }}>
+              💡 A strong summary is tailored to the specific role, highlights relevant achievements, and uses keywords from the job description. Pro generates this automatically.
+            </div>
+          )}
         </DrawerBody>
         <DrawerFooter>
-          <Button variant="primary" onClick={() => setIsSummaryDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
-            Done
-          </Button>
+          {userState === 'free' ? (
+            <Button variant="primary" onClick={() => { setIsSummaryDrawerOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }} style={{width: "300px", maxWidth: "95%"}}>
+              Generate Tailored Summary with Pro
+            </Button>
+          ) : (
+            <Button variant="primary" onClick={() => setIsSummaryDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
+              Done
+            </Button>
+          )}
         </DrawerFooter>
       </Drawer>
 
@@ -7438,25 +7524,61 @@ export default function ReportDetailPage() {
       <Drawer isOpen={isBulletPointsDrawerOpen} onClose={() => setIsBulletPointsDrawerOpen(false)}>
         <DrawerHeader>
           <DrawerTitle>
-            {report.generated_cv ? "Professional Bullet Points Applied" : "Rewritten Bullet Points"}
+            {userState === 'free' ? 'Bullet Point Analysis' : report.generated_cv ? 'Professional Bullet Points Applied' : 'Rewritten Bullet Points'}
           </DrawerTitle>
           <DrawerDescription>
-            {report.generated_cv
-              ? "These achievement-focused bullets are now integrated in your optimized resume"
-              : "Improved versions of your experience bullets"}
+            {userState === 'free'
+              ? 'Your bullet points could be significantly stronger with these improvements'
+              : report.generated_cv
+                ? 'These achievement-focused bullets are now integrated in your optimized resume'
+                : 'Improved versions of your experience bullets'}
           </DrawerDescription>
         </DrawerHeader>
         <DrawerBody>
-          <BulletList style={{ gap: '14px', paddingLeft: '24px' }}>
-            {rewrittenBullets.map((bullet: string, index: number) => (
-              <li key={index} style={{ fontSize: '16px', lineHeight: '1.7' }}>{bullet}</li>
-            ))}
-          </BulletList>
+          {userState === 'free' ? (
+            <>
+              {[
+                { title: 'Quantify Achievements', desc: 'Replace vague descriptions with specific numbers, percentages, and metrics that demonstrate your impact.', example: '"Managed team" → "Led a team of 8, increasing output by 23%"' },
+                { title: 'Use Action Verbs', desc: 'Start each bullet with a powerful action verb that immediately communicates your contribution.', example: '"Was responsible for" → "Spearheaded", "Orchestrated", "Delivered"' },
+                { title: 'Show Results, Not Tasks', desc: 'Focus on what you achieved, not just what you did. Hiring managers want to see outcomes.', example: '"Handled customer complaints" → "Resolved 50+ customer escalations monthly, maintaining 97% satisfaction"' },
+              ].map((tip, i) => (
+                <div key={i} style={{
+                  padding: '18px 20px',
+                  borderRadius: '14px',
+                  background: 'rgba(15, 15, 18, 0.5)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  marginBottom: '12px',
+                  backdropFilter: 'blur(20px)',
+                }}>
+                  <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-color)', marginBottom: '8px' }}>{tip.title}</div>
+                  <div style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)', marginBottom: '12px' }}>{tip.desc}</div>
+                  <div style={{
+                    fontSize: '13px', padding: '10px 14px', borderRadius: '10px',
+                    background: 'rgba(53, 162, 159, 0.06)',
+                    border: '1px solid rgba(53, 162, 159, 0.12)',
+                    color: 'rgba(53, 162, 159, 0.9)', fontStyle: 'italic',
+                  }}>{tip.example}</div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <BulletList style={{ gap: '14px', paddingLeft: '24px' }}>
+              {rewrittenBullets.map((bullet: string, index: number) => (
+                <li key={index} style={{ fontSize: '16px', lineHeight: '1.7' }}>{bullet}</li>
+              ))}
+            </BulletList>
+          )}
         </DrawerBody>
         <DrawerFooter>
-          <Button variant="primary" onClick={() => setIsBulletPointsDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
-            Done
-          </Button>
+          {userState === 'free' ? (
+            <Button variant="primary" onClick={() => { setIsBulletPointsDrawerOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }} style={{width: "300px", maxWidth: "95%"}}>
+              Rewrite All Bullets with Pro
+            </Button>
+          ) : (
+            <Button variant="primary" onClick={() => setIsBulletPointsDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
+              Done
+            </Button>
+          )}
         </DrawerFooter>
       </Drawer>
 
@@ -7464,25 +7586,89 @@ export default function ReportDetailPage() {
       <Drawer isOpen={isAtsDrawerOpen} onClose={() => setIsAtsDrawerOpen(false)}>
         <DrawerHeader>
           <DrawerTitle>
-            {report.generated_cv ? "ATS Optimizations Applied" : "ATS Optimization Tips"}
+            {userState === 'free' ? 'ATS Compatibility Analysis' : report.generated_cv ? 'ATS Optimizations Applied' : 'ATS Optimization Tips'}
           </DrawerTitle>
           <DrawerDescription>
-            {report.generated_cv
-              ? "Your optimized resume has been enhanced with these ATS-friendly improvements"
-              : "Improve your chances with applicant tracking systems"}
+            {userState === 'free'
+              ? 'How well your resume performs with Applicant Tracking Systems'
+              : report.generated_cv
+                ? 'Your optimized resume has been enhanced with these ATS-friendly improvements'
+                : 'Improve your chances with applicant tracking systems'}
           </DrawerDescription>
         </DrawerHeader>
         <DrawerBody>
-          <BulletList style={{ gap: '14px', paddingLeft: '24px' }}>
-            {atsFlags.map((flag: string, index: number) => (
-              <li key={index} style={{ fontSize: '16px', lineHeight: '1.7' }}>{flag}</li>
-            ))}
-          </BulletList>
+          {userState === 'free' && (
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px',
+              padding: '20px', marginBottom: '20px', borderRadius: '16px',
+              background: 'rgba(15, 15, 18, 0.5)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              backdropFilter: 'blur(20px)',
+            }}>
+              <div style={{
+                fontSize: '42px', fontWeight: 700,
+                color: (originalAtsScore ?? 50) >= 70 ? '#10b981' : (originalAtsScore ?? 50) >= 50 ? '#EAB308' : '#F97316',
+              }}>
+                {isLoadingOriginalAtsScore ? '...' : originalAtsScore !== null ? `${originalAtsScore}%` : '--'}
+              </div>
+              <div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-color)' }}>Current ATS Score</div>
+                <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  {(originalAtsScore ?? 50) >= 70 ? 'Good compatibility' : (originalAtsScore ?? 50) >= 50 ? 'Needs improvement' : 'Low compatibility'}
+                </div>
+              </div>
+            </div>
+          )}
+          {atsFlags.length > 0 ? (
+            <>
+              {atsFlags.map((flag: string, index: number) => (
+                <div key={index} style={{
+                  padding: '16px 20px',
+                  borderRadius: '14px',
+                  background: 'rgba(15, 15, 18, 0.5)',
+                  border: `1px solid ${userState === 'free' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(255, 255, 255, 0.08)'}`,
+                  marginBottom: '10px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '12px',
+                  backdropFilter: 'blur(20px)',
+                }}>
+                  <div style={{
+                    width: 8, height: 8, borderRadius: '50%', marginTop: '7px',
+                    background: userState === 'free' ? '#f59e0b' : '#10b981',
+                    boxShadow: `0 0 8px ${userState === 'free' ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`,
+                    flexShrink: 0,
+                  }} />
+                  <span style={{ fontSize: '15px', lineHeight: '1.6', color: 'var(--text-color)' }}>{flag}</span>
+                </div>
+              ))}
+            </>
+          ) : (
+            <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--text-secondary)', textAlign: 'center', padding: '20px 0' }}>
+              No specific ATS flags were detected for this resume.
+            </p>
+          )}
+          {userState === 'free' && (
+            <div style={{
+              marginTop: '16px', padding: '16px', borderRadius: '12px',
+              background: 'rgba(53, 162, 159, 0.06)',
+              border: '1px solid rgba(53, 162, 159, 0.15)',
+              fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)',
+            }}>
+              💡 Pro optimization can boost your ATS score to <strong style={{ color: '#10b981' }}>90%+</strong> by fixing formatting issues, adding relevant keywords, and restructuring content for ATS parsers.
+            </div>
+          )}
         </DrawerBody>
         <DrawerFooter>
-          <Button variant="primary" onClick={() => setIsAtsDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
-            Done
-          </Button>
+          {userState === 'free' ? (
+            <Button variant="primary" onClick={() => { setIsAtsDrawerOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }} style={{width: "300px", maxWidth: "95%"}}>
+              Optimize ATS Score with Pro
+            </Button>
+          ) : (
+            <Button variant="primary" onClick={() => setIsAtsDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
+              Done
+            </Button>
+          )}
         </DrawerFooter>
       </Drawer>
 

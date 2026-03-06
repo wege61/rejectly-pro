@@ -2096,6 +2096,144 @@ const KeywordNotFound = styled.div`
   background: ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
+// --- Free Drawer Liquid Glass Components ---
+const DrawerGlassCard = styled.div<{ $accentColor?: string }>`
+  position: relative;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 10px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+`;
+
+const DrawerGlassPill = styled.div<{ $glowColor: string }>`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid ${({ $glowColor }) => $glowColor}22;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 12px ${({ $glowColor }) => $glowColor}08, inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, ${({ $glowColor }) => $glowColor}25, transparent);
+  }
+
+  &:hover {
+    border-color: ${({ $glowColor }) => $glowColor}40;
+    box-shadow: 0 4px 20px ${({ $glowColor }) => $glowColor}15, inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+  }
+`;
+
+const DrawerGlassDot = styled.div<{ $color: string }>`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: ${({ $color }) => $color};
+  box-shadow: 0 0 10px ${({ $color }) => $color}60, 0 0 4px ${({ $color }) => $color}40;
+  flex-shrink: 0;
+`;
+
+const DrawerGlassBadge = styled.span<{ $color: string }>`
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: ${({ $color }) => $color};
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: ${({ $color }) => $color}15;
+  border: 1px solid ${({ $color }) => $color}25;
+`;
+
+const DrawerGlassTip = styled.div`
+  position: relative;
+  margin-top: 16px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: rgba(53, 162, 159, 0.04);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(53, 162, 159, 0.12);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  box-shadow: inset 0 1px 0 rgba(53, 162, 159, 0.08);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(53, 162, 159, 0.2), transparent);
+  }
+
+  strong {
+    color: #10b981;
+  }
+`;
+
+const DrawerGlassScoreHero = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 28px;
+  margin-bottom: 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  }
+`;
+
+const DrawerGlassExample = styled.div`
+  font-size: 13px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(53, 162, 159, 0.04);
+  border: 1px solid rgba(53, 162, 159, 0.1);
+  color: rgba(53, 162, 159, 0.85);
+  font-style: italic;
+  line-height: 1.5;
+  box-shadow: inset 0 1px 0 rgba(53, 162, 159, 0.06);
+`;
+
 // Role Recommendations Drawer Styled Components - BarList Style
 // BarList — Tremor-style two-column bar chart
 const BarListWrapper = styled.div`
@@ -7393,42 +7531,17 @@ export default function ReportDetailPage() {
           {userState === 'free' ? (
             <>
               {missingKeywords.map((keyword: string) => (
-                <div key={keyword} style={{
-                  padding: '16px 20px',
-                  borderRadius: '14px',
-                  background: 'rgba(15, 15, 18, 0.5)',
-                  border: '1px solid rgba(245, 158, 11, 0.15)',
-                  marginBottom: '10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  backdropFilter: 'blur(20px)',
-                }}>
+                <DrawerGlassPill key={keyword} $glowColor="#f59e0b">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{
-                      width: 8, height: 8, borderRadius: '50%',
-                      background: '#f59e0b',
-                      boxShadow: '0 0 8px rgba(245, 158, 11, 0.4)',
-                      flexShrink: 0,
-                    }} />
+                    <DrawerGlassDot $color="#f59e0b" />
                     <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-color)' }}>{keyword}</span>
                   </div>
-                  <span style={{
-                    fontSize: '12px', color: '#f59e0b', fontWeight: 500,
-                    padding: '4px 10px', borderRadius: '8px',
-                    background: 'rgba(245, 158, 11, 0.1)',
-                    border: '1px solid rgba(245, 158, 11, 0.15)',
-                  }}>Missing</span>
-                </div>
+                  <DrawerGlassBadge $color="#f59e0b">Missing</DrawerGlassBadge>
+                </DrawerGlassPill>
               ))}
-              <div style={{
-                marginTop: '16px', padding: '16px', borderRadius: '12px',
-                background: 'rgba(53, 162, 159, 0.06)',
-                border: '1px solid rgba(53, 162, 159, 0.15)',
-                fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)',
-              }}>
-                💡 Adding these keywords can improve your match score by up to <strong style={{ color: '#10b981' }}>+{Math.min(missingKeywords.length * 5, 25)}%</strong>. Pro optimization adds them naturally into your resume.
-              </div>
+              <DrawerGlassTip>
+                💡 Adding these keywords can improve your match score by up to <strong>+{Math.min(missingKeywords.length * 5, 25)}%</strong>. Pro optimization adds them naturally into your resume.
+              </DrawerGlassTip>
             </>
           ) : (
             <>
@@ -7487,24 +7600,21 @@ export default function ReportDetailPage() {
           </DrawerDescription>
         </DrawerHeader>
         <DrawerBody>
-          <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-color)', margin: 0 }}>
-            {report.summary_free
-              ?.replace(/[Tt]he candidate/g, 'You')
-              ?.replace(/[Tt]he candidate's/g, 'Your')
-              ?.replace(/[Tt]heir/g, 'your')
-              ?.replace(/[Tt]hey have/g, 'you have')
-              ?.replace(/[Tt]hey are/g, 'you are')
-            }
-          </p>
+          <DrawerGlassCard>
+            <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-color)', margin: 0 }}>
+              {report.summary_free
+                ?.replace(/[Tt]he candidate/g, 'You')
+                ?.replace(/[Tt]he candidate's/g, 'Your')
+                ?.replace(/[Tt]heir/g, 'your')
+                ?.replace(/[Tt]hey have/g, 'you have')
+                ?.replace(/[Tt]hey are/g, 'you are')
+              }
+            </p>
+          </DrawerGlassCard>
           {userState === 'free' && (
-            <div style={{
-              marginTop: '24px', padding: '16px', borderRadius: '12px',
-              background: 'rgba(53, 162, 159, 0.06)',
-              border: '1px solid rgba(53, 162, 159, 0.15)',
-              fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)',
-            }}>
+            <DrawerGlassTip>
               💡 A strong summary is tailored to the specific role, highlights relevant achievements, and uses keywords from the job description. Pro generates this automatically.
-            </div>
+            </DrawerGlassTip>
           )}
         </DrawerBody>
         <DrawerFooter>
@@ -7542,23 +7652,11 @@ export default function ReportDetailPage() {
                 { title: 'Use Action Verbs', desc: 'Start each bullet with a powerful action verb that immediately communicates your contribution.', example: '"Was responsible for" → "Spearheaded", "Orchestrated", "Delivered"' },
                 { title: 'Show Results, Not Tasks', desc: 'Focus on what you achieved, not just what you did. Hiring managers want to see outcomes.', example: '"Handled customer complaints" → "Resolved 50+ customer escalations monthly, maintaining 97% satisfaction"' },
               ].map((tip, i) => (
-                <div key={i} style={{
-                  padding: '18px 20px',
-                  borderRadius: '14px',
-                  background: 'rgba(15, 15, 18, 0.5)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  marginBottom: '12px',
-                  backdropFilter: 'blur(20px)',
-                }}>
+                <DrawerGlassCard key={i}>
                   <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-color)', marginBottom: '8px' }}>{tip.title}</div>
                   <div style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)', marginBottom: '12px' }}>{tip.desc}</div>
-                  <div style={{
-                    fontSize: '13px', padding: '10px 14px', borderRadius: '10px',
-                    background: 'rgba(53, 162, 159, 0.06)',
-                    border: '1px solid rgba(53, 162, 159, 0.12)',
-                    color: 'rgba(53, 162, 159, 0.9)', fontStyle: 'italic',
-                  }}>{tip.example}</div>
-                </div>
+                  <DrawerGlassExample>{tip.example}</DrawerGlassExample>
+                </DrawerGlassCard>
               ))}
             </>
           ) : (
@@ -7598,49 +7696,31 @@ export default function ReportDetailPage() {
         </DrawerHeader>
         <DrawerBody>
           {userState === 'free' && (
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px',
-              padding: '20px', marginBottom: '20px', borderRadius: '16px',
-              background: 'rgba(15, 15, 18, 0.5)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(20px)',
-            }}>
+            <DrawerGlassScoreHero>
               <div style={{
                 fontSize: '42px', fontWeight: 700,
                 color: (originalAtsScore ?? 50) >= 70 ? '#10b981' : (originalAtsScore ?? 50) >= 50 ? '#EAB308' : '#F97316',
+                letterSpacing: '-1.5px',
               }}>
                 {isLoadingOriginalAtsScore ? '...' : originalAtsScore !== null ? `${originalAtsScore}%` : '--'}
               </div>
               <div>
                 <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-color)' }}>Current ATS Score</div>
-                <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px' }}>
                   {(originalAtsScore ?? 50) >= 70 ? 'Good compatibility' : (originalAtsScore ?? 50) >= 50 ? 'Needs improvement' : 'Low compatibility'}
                 </div>
               </div>
-            </div>
+            </DrawerGlassScoreHero>
           )}
           {atsFlags.length > 0 ? (
             <>
               {atsFlags.map((flag: string, index: number) => (
-                <div key={index} style={{
-                  padding: '16px 20px',
-                  borderRadius: '14px',
-                  background: 'rgba(15, 15, 18, 0.5)',
-                  border: `1px solid ${userState === 'free' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(255, 255, 255, 0.08)'}`,
-                  marginBottom: '10px',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '12px',
-                  backdropFilter: 'blur(20px)',
-                }}>
-                  <div style={{
-                    width: 8, height: 8, borderRadius: '50%', marginTop: '7px',
-                    background: userState === 'free' ? '#f59e0b' : '#10b981',
-                    boxShadow: `0 0 8px ${userState === 'free' ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`,
-                    flexShrink: 0,
-                  }} />
-                  <span style={{ fontSize: '15px', lineHeight: '1.6', color: 'var(--text-color)' }}>{flag}</span>
-                </div>
+                <DrawerGlassPill key={index} $glowColor={userState === 'free' ? '#f59e0b' : '#10b981'}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <DrawerGlassDot $color={userState === 'free' ? '#f59e0b' : '#10b981'} style={{ marginTop: '6px' }} />
+                    <span style={{ fontSize: '15px', lineHeight: '1.6', color: 'var(--text-color)' }}>{flag}</span>
+                  </div>
+                </DrawerGlassPill>
               ))}
             </>
           ) : (
@@ -7649,14 +7729,9 @@ export default function ReportDetailPage() {
             </p>
           )}
           {userState === 'free' && (
-            <div style={{
-              marginTop: '16px', padding: '16px', borderRadius: '12px',
-              background: 'rgba(53, 162, 159, 0.06)',
-              border: '1px solid rgba(53, 162, 159, 0.15)',
-              fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)',
-            }}>
-              💡 Pro optimization can boost your ATS score to <strong style={{ color: '#10b981' }}>90%+</strong> by fixing formatting issues, adding relevant keywords, and restructuring content for ATS parsers.
-            </div>
+            <DrawerGlassTip>
+              💡 Pro optimization can boost your ATS score to <strong>90%+</strong> by fixing formatting issues, adding relevant keywords, and restructuring content for ATS parsers.
+            </DrawerGlassTip>
           )}
         </DrawerBody>
         <DrawerFooter>

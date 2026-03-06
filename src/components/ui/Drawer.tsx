@@ -3,7 +3,7 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import { motion, AnimatePresence, PanInfo, useDragControls } from 'framer-motion';
 
 // Types
 interface DrawerProps {
@@ -289,6 +289,7 @@ export function Drawer({ isOpen, onClose, children, shouldScaleBackground = true
   const dragY = useRef(0);
   const scrollYRef = useRef(0);
   const wasOpenRef = useRef(false);
+  const dragControls = useDragControls();
 
   // Handle escape key + scroll lock
   useEffect(() => {
@@ -373,11 +374,13 @@ export function Drawer({ isOpen, onClose, children, shouldScaleBackground = true
               stiffness: 300,
             }}
             drag="y"
+            dragControls={dragControls}
+            dragListener={false}
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.5 }}
             onDragEnd={handleDragEnd}
           >
-            <Handle>
+            <Handle onPointerDown={(e) => dragControls.start(e)}>
               <HandleBar />
             </Handle>
             <ContentWrapper>

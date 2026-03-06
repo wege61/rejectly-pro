@@ -7723,7 +7723,7 @@ export default function ReportDetailPage() {
                 : 'Improve your chances with applicant tracking systems'}
           </DrawerDescription>
         </DrawerHeader>
-        <DrawerBody>
+         <DrawerBody>
           {userState === 'free' && (
             <DrawerGlassScoreHero>
               <div style={{
@@ -7752,7 +7752,77 @@ export default function ReportDetailPage() {
                 </DrawerGlassPill>
               ))}
             </>
-          ) : (
+          ) : userState === 'free' && report.score_breakdown ? (() => {
+            const sb = report.score_breakdown as any;
+            const reasons: Array<{text: string; severity: 'critical' | 'warning' | 'info'}> = [];
+
+            // Extract insights from components — use canonical v1 names only
+            // (normalizer maps hardSkills→skillsMatch, experienceLevel→experienceMatch, etc.)
+            const components = sb.components || {};
+            const componentNames: Record<string, string> = {
+              skillsMatch: 'Skills Match',
+              experienceMatch: 'Experience Level',
+              industryRelevance: 'Industry Relevance',
+              educationCerts: 'Education & Certifications',
+              roleSpecific: 'Role-Specific Requirements',
+            };
+
+            Object.entries(components).forEach(([key, comp]: [string, any]) => {
+              if (!comp || !componentNames[key]) return;
+              const pct = comp.percentage ?? (comp.maxPoints ? Math.round((comp.earnedPoints / comp.maxPoints) * 100) : null);
+              if (pct !== null && pct < 60) {
+                const label = componentNames[key];
+                const severity = pct < 30 ? 'critical' as const : 'warning' as const;
+                let detail = `${label}: ${comp.earnedPoints}/${comp.maxPoints} points (${pct}%)`;
+                if (comp.missingItems && comp.missingItems.length > 0) {
+                  detail += ` — Missing: ${comp.missingItems.slice(0, 3).join(', ')}`;
+                  if (comp.missingItems.length > 3) detail += ` +${comp.missingItems.length - 3} more`;
+                }
+                reasons.push({ text: detail, severity });
+              }
+            });
+
+            // Extract penalties
+            if (sb.penalties && sb.penalties.length > 0) {
+              sb.penalties.forEach((p: any) => {
+                if (p.applied === false) return;
+                const desc = p.description || p.reason || p.condition || '';
+                const deduction = p.pointsDeducted || p.deduction || 0;
+                if (desc) {
+                  reasons.push({
+                    text: `${desc}${deduction ? ` (−${deduction} pts)` : ''}`,
+                    severity: (p.severity === 'CRITICAL' || p.severity === 'critical') ? 'critical' : 'warning',
+                  });
+                }
+              });
+            }
+
+            // Add assessment gaps
+            if (sb.assessment?.criticalGaps && sb.assessment.criticalGaps.length > 0) {
+              sb.assessment.criticalGaps.forEach((gap: string) => {
+                if (!reasons.some(r => r.text.includes(gap))) {
+                  reasons.push({ text: gap, severity: 'critical' });
+                }
+              });
+            }
+
+            if (reasons.length === 0) {
+              return (
+                <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--text-secondary)', textAlign: 'center', padding: '20px 0' }}>
+                  No specific ATS issues were detected for this resume.
+                </p>
+              );
+            }
+
+            return reasons.map((reason, index) => (
+              <DrawerGlassPill key={index} $glowColor={reason.severity === 'critical' ? '#ef4444' : '#f59e0b'}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', flex: 1 }}>
+                  <DrawerGlassDot $color={reason.severity === 'critical' ? '#ef4444' : '#f59e0b'} style={{ marginTop: '6px' }} />
+                  <span style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-color)' }}>{reason.text}</span>
+                </div>
+              </DrawerGlassPill>
+            ));
+          })() : (
             <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--text-secondary)', textAlign: 'center', padding: '20px 0' }}>
               No specific ATS flags were detected for this resume.
             </p>

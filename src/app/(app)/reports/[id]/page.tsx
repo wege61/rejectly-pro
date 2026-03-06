@@ -7752,75 +7752,72 @@ export default function ReportDetailPage() {
                 </DrawerGlassPill>
               ))}
             </>
-          ) : userState === 'free' && report.score_breakdown ? (() => {
-            const sb = report.score_breakdown as any;
-            const reasons: Array<{text: string; severity: 'critical' | 'warning' | 'info'}> = [];
+          ) : userState === 'free' ? (() => {
+            const score = originalAtsScore ?? 50;
+            const factors: Array<{title: string; desc: string; severity: 'critical' | 'warning' | 'info'}> = [];
 
-            // Extract insights from components — use canonical v1 names only
-            // (normalizer maps hardSkills→skillsMatch, experienceLevel→experienceMatch, etc.)
-            const components = sb.components || {};
-            const componentNames: Record<string, string> = {
-              skillsMatch: 'Skills Match',
-              experienceMatch: 'Experience Level',
-              industryRelevance: 'Industry Relevance',
-              educationCerts: 'Education & Certifications',
-              roleSpecific: 'Role-Specific Requirements',
-            };
+            // Always show — these are ATS readability fundamentals
+            if (score < 70) {
+              factors.push({
+                title: 'Keyword Optimization',
+                desc: 'ATS systems scan for exact keyword matches from the job posting. Missing key terms means your resume may be filtered out before a human sees it.',
+                severity: score < 50 ? 'critical' : 'warning',
+              });
+            }
 
-            Object.entries(components).forEach(([key, comp]: [string, any]) => {
-              if (!comp || !componentNames[key]) return;
-              const pct = comp.percentage ?? (comp.maxPoints ? Math.round((comp.earnedPoints / comp.maxPoints) * 100) : null);
-              if (pct !== null && pct < 60) {
-                const label = componentNames[key];
-                const severity = pct < 30 ? 'critical' as const : 'warning' as const;
-                let detail = `${label}: ${comp.earnedPoints}/${comp.maxPoints} points (${pct}%)`;
-                if (comp.missingItems && comp.missingItems.length > 0) {
-                  detail += ` — Missing: ${comp.missingItems.slice(0, 3).join(', ')}`;
-                  if (comp.missingItems.length > 3) detail += ` +${comp.missingItems.length - 3} more`;
-                }
-                reasons.push({ text: detail, severity });
-              }
+            if (score < 80) {
+              factors.push({
+                title: 'Section Headers',
+                desc: 'ATS parsers expect standard section names like "Work Experience", "Education", and "Skills". Custom or creative headers may not be recognized.',
+                severity: score < 50 ? 'critical' : 'warning',
+              });
+            }
+
+            if (score < 60) {
+              factors.push({
+                title: 'Complex Formatting',
+                desc: 'Tables, columns, text boxes, and graphics can confuse ATS parsers. Simple single-column layouts are parsed most reliably.',
+                severity: 'critical',
+              });
+              factors.push({
+                title: 'File Parsing Issues',
+                desc: 'Some PDF generators create files that ATS systems struggle to read. Image-based PDFs, scanned documents, or heavily designed templates can cause text extraction failures.',
+                severity: 'critical',
+              });
+            }
+
+            if (score < 70) {
+              factors.push({
+                title: 'Contact Information Placement',
+                desc: 'Headers and footers are often skipped by ATS parsers. Contact details placed in these areas may not be captured.',
+                severity: 'warning',
+              });
+            }
+
+            factors.push({
+              title: 'Content Structure',
+              desc: 'ATS systems work best with clear chronological or functional formatting. Inconsistent date formats, missing job titles, or unclear role descriptions reduce parseability.',
+              severity: score < 50 ? 'warning' : 'info',
             });
 
-            // Extract penalties
-            if (sb.penalties && sb.penalties.length > 0) {
-              sb.penalties.forEach((p: any) => {
-                if (p.applied === false) return;
-                const desc = p.description || p.reason || p.condition || '';
-                const deduction = p.pointsDeducted || p.deduction || 0;
-                if (desc) {
-                  reasons.push({
-                    text: `${desc}${deduction ? ` (−${deduction} pts)` : ''}`,
-                    severity: (p.severity === 'CRITICAL' || p.severity === 'critical') ? 'critical' : 'warning',
-                  });
-                }
+            if (score >= 50) {
+              factors.push({
+                title: 'Special Characters & Fonts',
+                desc: 'Non-standard characters, icons, and uncommon fonts may not render correctly in ATS databases, causing garbled or missing text.',
+                severity: 'info',
               });
             }
 
-            // Add assessment gaps
-            if (sb.assessment?.criticalGaps && sb.assessment.criticalGaps.length > 0) {
-              sb.assessment.criticalGaps.forEach((gap: string) => {
-                if (!reasons.some(r => r.text.includes(gap))) {
-                  reasons.push({ text: gap, severity: 'critical' });
-                }
-              });
-            }
-
-            if (reasons.length === 0) {
-              return (
-                <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--text-secondary)', textAlign: 'center', padding: '20px 0' }}>
-                  No specific ATS issues were detected for this resume.
-                </p>
-              );
-            }
-
-            return reasons.map((reason, index) => (
-              <DrawerGlassPill key={index} $glowColor={reason.severity === 'critical' ? '#ef4444' : '#f59e0b'}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', flex: 1 }}>
-                  <DrawerGlassDot $color={reason.severity === 'critical' ? '#ef4444' : '#f59e0b'} style={{ marginTop: '6px' }} />
-                  <span style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-color)' }}>{reason.text}</span>
+            return factors.map((factor, index) => (
+              <DrawerGlassCard key={index} style={{ gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <DrawerGlassDot $color={factor.severity === 'critical' ? '#ef4444' : factor.severity === 'warning' ? '#f59e0b' : '#3b82f6'} />
+                  <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-color)' }}>{factor.title}</span>
                 </div>
-              </DrawerGlassPill>
+                <p style={{ fontSize: '13px', lineHeight: '1.65', color: 'var(--text-secondary)', margin: '0 0 0 22px' }}>
+                  {factor.desc}
+                </p>
+              </DrawerGlassCard>
             ));
           })() : (
             <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--text-secondary)', textAlign: 'center', padding: '20px 0' }}>
@@ -7829,7 +7826,7 @@ export default function ReportDetailPage() {
           )}
           {userState === 'free' && (
             <DrawerGlassTip>
-              💡 Pro optimization can boost your ATS score to <strong>90%+</strong> by fixing formatting issues, adding relevant keywords, and restructuring content for ATS parsers.
+              💡 Pro optimization restructures your resume for maximum ATS parseability — fixing formatting, adding matched keywords naturally, and ensuring proper section structure for a <strong>90%+</strong> compatibility score.
             </DrawerGlassTip>
           )}
         </DrawerBody>

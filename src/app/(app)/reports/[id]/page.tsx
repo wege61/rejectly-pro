@@ -2101,12 +2101,12 @@ const DrawerGlassCard = styled.div<{ $accentColor?: string }>`
   position: relative;
   padding: 18px 20px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.015);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   margin-bottom: 10px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 
@@ -2114,12 +2114,12 @@ const DrawerGlassCard = styled.div<{ $accentColor?: string }>`
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
   }
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.09);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 `;
 
@@ -2130,24 +2130,24 @@ const DrawerGlassPill = styled.div<{ $glowColor: string }>`
   justify-content: space-between;
   padding: 16px 20px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.025);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid ${({ $glowColor }) => $glowColor}22;
+  background: rgba(255, 255, 255, 0.012);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid ${({ $glowColor }) => $glowColor}15;
   margin-bottom: 8px;
-  box-shadow: 0 2px 12px ${({ $glowColor }) => $glowColor}08, inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 1px 8px ${({ $glowColor }) => $glowColor}06, inset 0 1px 0 rgba(255, 255, 255, 0.03);
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 
   &::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, ${({ $glowColor }) => $glowColor}25, transparent);
+    background: linear-gradient(90deg, transparent, ${({ $glowColor }) => $glowColor}18, transparent);
   }
 
   &:hover {
-    border-color: ${({ $glowColor }) => $glowColor}40;
-    box-shadow: 0 4px 20px ${({ $glowColor }) => $glowColor}15, inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border-color: ${({ $glowColor }) => $glowColor}30;
+    box-shadow: 0 4px 20px ${({ $glowColor }) => $glowColor}10, inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transform: translateY(-1px);
   }
 `;
@@ -2169,8 +2169,8 @@ const DrawerGlassBadge = styled.span<{ $color: string }>`
   color: ${({ $color }) => $color};
   padding: 4px 10px;
   border-radius: 8px;
-  background: ${({ $color }) => $color}15;
-  border: 1px solid ${({ $color }) => $color}25;
+  background: ${({ $color }) => $color}10;
+  border: 1px solid ${({ $color }) => $color}18;
 `;
 
 const DrawerGlassTip = styled.div`
@@ -2178,20 +2178,20 @@ const DrawerGlassTip = styled.div`
   margin-top: 16px;
   padding: 18px 20px;
   border-radius: 16px;
-  background: rgba(53, 162, 159, 0.04);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(53, 162, 159, 0.12);
+  background: rgba(53, 162, 159, 0.025);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(53, 162, 159, 0.08);
   font-size: 14px;
   line-height: 1.7;
   color: var(--text-secondary);
-  box-shadow: inset 0 1px 0 rgba(53, 162, 159, 0.08);
+  box-shadow: inset 0 1px 0 rgba(53, 162, 159, 0.05);
 
   &::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(53, 162, 159, 0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(53, 162, 159, 0.15), transparent);
   }
 
   strong {
@@ -2207,18 +2207,18 @@ const DrawerGlassScoreHero = styled.div`
   padding: 28px;
   margin-bottom: 20px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.025);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.012);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   position: relative;
 
   &::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   }
 `;
 
@@ -2226,12 +2226,41 @@ const DrawerGlassExample = styled.div`
   font-size: 13px;
   padding: 12px 16px;
   border-radius: 12px;
-  background: rgba(53, 162, 159, 0.04);
-  border: 1px solid rgba(53, 162, 159, 0.1);
+  background: rgba(53, 162, 159, 0.025);
+  border: 1px solid rgba(53, 162, 159, 0.07);
   color: rgba(53, 162, 159, 0.85);
   font-style: italic;
   line-height: 1.5;
-  box-shadow: inset 0 1px 0 rgba(53, 162, 159, 0.06);
+  box-shadow: inset 0 1px 0 rgba(53, 162, 159, 0.04);
+`;
+
+const DrawerGlassCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 300px;
+  max-width: 95%;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: none;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%), var(--accent);
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.35), 0 8px 24px rgba(var(--accent-rgb), 0.35);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.45), 0 12px 32px rgba(var(--accent-rgb), 0.45);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 `;
 
 // Role Recommendations Drawer Styled Components - BarList Style
@@ -7578,9 +7607,9 @@ export default function ReportDetailPage() {
         </DrawerBody>
         <DrawerFooter>
           {userState === 'free' ? (
-            <Button variant="primary" onClick={() => { setIsKeywordsModalOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }} style={{width: "300px", maxWidth: "95%"}}>
+            <DrawerGlassCTAButton onClick={() => { setIsKeywordsModalOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }}>
               Fix All Keywords with Pro
-            </Button>
+            </DrawerGlassCTAButton>
           ) : (
             <Button variant="primary" onClick={() => setIsKeywordsModalOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
               Done
@@ -7619,9 +7648,9 @@ export default function ReportDetailPage() {
         </DrawerBody>
         <DrawerFooter>
           {userState === 'free' ? (
-            <Button variant="primary" onClick={() => { setIsSummaryDrawerOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }} style={{width: "300px", maxWidth: "95%"}}>
+            <DrawerGlassCTAButton onClick={() => { setIsSummaryDrawerOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }}>
               Generate Tailored Summary with Pro
-            </Button>
+            </DrawerGlassCTAButton>
           ) : (
             <Button variant="primary" onClick={() => setIsSummaryDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
               Done
@@ -7669,9 +7698,9 @@ export default function ReportDetailPage() {
         </DrawerBody>
         <DrawerFooter>
           {userState === 'free' ? (
-            <Button variant="primary" onClick={() => { setIsBulletPointsDrawerOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }} style={{width: "300px", maxWidth: "95%"}}>
+            <DrawerGlassCTAButton onClick={() => { setIsBulletPointsDrawerOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }}>
               Rewrite All Bullets with Pro
-            </Button>
+            </DrawerGlassCTAButton>
           ) : (
             <Button variant="primary" onClick={() => setIsBulletPointsDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
               Done
@@ -7736,9 +7765,9 @@ export default function ReportDetailPage() {
         </DrawerBody>
         <DrawerFooter>
           {userState === 'free' ? (
-            <Button variant="primary" onClick={() => { setIsAtsDrawerOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }} style={{width: "300px", maxWidth: "95%"}}>
+            <DrawerGlassCTAButton onClick={() => { setIsAtsDrawerOpen(false); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }}>
               Optimize ATS Score with Pro
-            </Button>
+            </DrawerGlassCTAButton>
           ) : (
             <Button variant="primary" onClick={() => setIsAtsDrawerOpen(false)} style={{width: "300px", maxWidth: "95%"}}>
               Done

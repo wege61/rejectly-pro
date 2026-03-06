@@ -37,10 +37,10 @@ interface DrawerDescriptionProps {
 const Overlay = styled(motion.div)`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.45);
   z-index: 9998;
-  backdrop-filter: blur(8px) saturate(180%);
-  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
 `;
 
 const DrawerContainer = styled(motion.div)`
@@ -50,16 +50,46 @@ const DrawerContainer = styled(motion.div)`
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  background: rgba(15, 15, 18, 0.75);
-  backdrop-filter: blur(60px) saturate(200%);
-  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  background: rgba(20, 22, 28, 0.55);
+  backdrop-filter: blur(80px) saturate(200%);
+  -webkit-backdrop-filter: blur(80px) saturate(200%);
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   max-height: 96vh;
-  box-shadow: 0 -16px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -16px 60px rgba(0, 0, 0, 0.4),
+             inset 0 1px 0 rgba(255, 255, 255, 0.12),
+             0 0 0 0.5px rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-bottom: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+
+  /* Specular top glow — liquid glass shine */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 80px;
+    background: radial-gradient(ellipse at center top, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Top edge gradient shine */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 5%, rgba(255, 255, 255, 0.2) 30%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.2) 70%, transparent 95%);
+    pointer-events: none;
+    z-index: 2;
+  }
 `;
 
 const Handle = styled.div`
@@ -77,12 +107,12 @@ const HandleBar = styled.div`
   width: 48px;
   height: 5px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
   transition: background 0.2s ease;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 2px rgba(0, 0, 0, 0.2);
 
   ${Handle}:hover & {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.35);
   }
 `;
 
@@ -130,9 +160,9 @@ const BodyWrapper = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  background: rgba(15, 15, 18, 0.4);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2),
-              inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1),
+              inset 0 0 0 0.5px rgba(255, 255, 255, 0.04);
 
   /* Top fade indicator */
   &::before {
@@ -144,7 +174,7 @@ const BodyWrapper = styled.div`
     height: 20px;
     background: linear-gradient(
       to bottom,
-      rgba(15, 15, 18, 0.6) 0%,
+      rgba(20, 22, 28, 0.4) 0%,
       transparent 100%
     );
     z-index: 2;
@@ -164,7 +194,7 @@ const BodyWrapper = styled.div`
     height: 20px;
     background: linear-gradient(
       to top,
-      rgba(15, 15, 18, 0.6) 0%,
+      rgba(20, 22, 28, 0.4) 0%,
       transparent 100%
     );
     z-index: 2;
@@ -221,8 +251,8 @@ const Footer = styled.div`
   margin: 0 auto;
   max-width: 1200px;
   width: 100%;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  `;;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  `;
 
 // Animation variants with proper typing
 const overlayVariants = {

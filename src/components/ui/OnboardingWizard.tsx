@@ -894,23 +894,25 @@ export function OnboardingWizard({
 
         if (!user) return;
 
-        // Check for existing CV
+        // Fetch all existing CVs for the user
         const { data: cvData } = await supabase
           .from("documents")
           .select("*")
           .eq("user_id", user.id)
           .eq("type", "cv")
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .order("created_at", { ascending: false });
 
-        if (cvData) {
+        if (cvData && cvData.length > 0) {
           setHasExistingCV(true);
-          setUploadedCV(cvData);
-          setCvText(cvData.text || "");
+          // Set the most recent as the "uploaded/selected" one
+          setUploadedCV(cvData[0]);
+          setCvText(cvData[0].text || "");
+          // Store the full list for the "Saved Resumes" tab
+          setCvList(cvData);
           setActiveCvTab("existing");
         } else {
           setHasExistingCV(false);
+          setCvList([]);
           setActiveCvTab("new");
         }
 

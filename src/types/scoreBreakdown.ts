@@ -140,10 +140,15 @@ export interface ScoreBreakdown {
 export function normalizeScoreBreakdown(raw: ScoreBreakdown): ScoreBreakdown {
   // If calculation exists, flatten it
   if (raw.calculation) {
-    raw.rawScore = raw.calculation.rawScore;
-    raw.totalPenalties = raw.calculation.totalPenalties;
-    raw.finalScore = raw.calculation.finalScore;
+    raw.rawScore = Math.round(raw.calculation.rawScore);
+    raw.totalPenalties = Math.round(raw.calculation.totalPenalties);
+    raw.finalScore = Math.round(raw.calculation.finalScore);
   }
+
+  // Always ensure finalScore is an integer
+  if (raw.finalScore != null) raw.finalScore = Math.round(raw.finalScore);
+  if (raw.rawScore != null) raw.rawScore = Math.round(raw.rawScore);
+  if (raw.totalPenalties != null) raw.totalPenalties = Math.round(raw.totalPenalties);
 
   // Helper to normalize component arrays
   const normalizeComponentArrays = (comp: ScoreComponent | undefined) => {
@@ -220,6 +225,70 @@ export function normalizeScoreBreakdown(raw: ScoreBreakdown): ScoreBreakdown {
     if (level === 'junior') raw.jobLevel = 'entry';
     else if (level === 'lead' || level === 'manager') raw.jobLevel = 'senior';
     else raw.jobLevel = level as JobLevel;
+  }
+
+  // =========================================================================
+  // SERVER-SIDE CONSISTENCY ENFORCEMENT
+  // Re-derive earnedPoints from detail sub-scores to catch AI inconsistencies
+  // =========================================================================
+  const enforceConsistency = (comp: ScoreComponent | undefined, maxPoints: number) => {
+    if (!comp || typeof comp.details !== 'object' || !comp.details) return;
+    const d = comp.details;
+    let derivedPoints: number | null = null;
+
+    // Experience: earnedPoints = yearsScore + seniorityScore
+    if (d.yearsScore != null && d.seniorityScore != null) {
+      derivedPoints = d.yearsScore + d.seniorityScore;
+    }
+    // Experience edge case: when yearsRequired=0, yearsScore should be 15
+    else if (d.yearsRequired != null && d.seniorityScore != null) {
+      let yearsScore = d.yearsScore ?? 0;
+      if (d.yearsRequired === 0 && (d.yearsCandidate ?? 0) >= 0) {
+        yearsScore = 15; // Requirement is met trivially
+      }
+      derivedPoints = yearsScore + d.seniorityScore;
+    }
+
+    // Industry: earnedPoints = industryScore + domainScore
+    if (d.industryScore != null && d.domainScore != null) {
+      derivedPoints = d.industryScore + d.domainScore;
+    }
+
+    // Education: earnedPoints = educationScore + certScore
+    if (d.educationScore != null && d.certScore != null) {
+      derivedPoints = d.educationScore + d.certScore;
+    }
+
+    // Apply correction if derived differs from stated
+    if (derivedPoints != null) {
+      derivedPoints = Math.min(derivedPoints, maxPoints);
+      derivedPoints = Math.max(derivedPoints, 0);
+      if (Math.abs(comp.earnedPoints - derivedPoints) > 1) {
+        console.warn(`Score consistency fix: ${comp.name} earnedPoints ${comp.earnedPoints} → ${derivedPoints} (derived from sub-scores)`);
+        comp.earnedPoints = derivedPoints;
+        comp.percentage = comp.maxPoints > 0 ? Math.round((comp.earnedPoints / comp.maxPoints) * 100) : 0;
+      }
+    }
+  };
+
+  enforceConsistency(raw.components.experienceLevel || raw.components.experienceMatch, 25);
+  enforceConsistency(raw.components.industryDomain || raw.components.industryRelevance, 20);
+  enforceConsistency(raw.components.educationCerts, 10);
+
+  // Recalculate rawScore and finalScore from components
+  const allComps = [
+    raw.components.hardSkills || raw.components.skillsMatch,
+    raw.components.experienceLevel || raw.components.experienceMatch,
+    raw.components.industryDomain || raw.components.industryRelevance,
+    raw.components.educationCerts,
+    raw.components.roleSpecific,
+  ].filter(Boolean) as ScoreComponent[];
+
+  const recalcRaw = allComps.reduce((sum, c) => sum + c.earnedPoints, 0);
+  if (raw.rawScore != null && Math.abs(raw.rawScore - recalcRaw) > 1) {
+    console.warn(`Score consistency fix: rawScore ${raw.rawScore} → ${Math.round(recalcRaw)} (sum of components)`);
+    raw.rawScore = Math.round(recalcRaw);
+    raw.finalScore = Math.max(0, raw.rawScore - (raw.totalPenalties || 0));
   }
 
   return raw;

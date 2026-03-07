@@ -193,6 +193,10 @@ YEARS SCORING TABLE:
 │ No relevant experience          │ 0               │
 └─────────────────────────────────┴─────────────────┘
 
+⚠️ EDGE CASE: If the job does NOT specify a years requirement (yearsRequired=0),
+the candidate AUTOMATICALLY gets 15/15 for years. Having ANY experience when
+none is required means the candidate fully meets the requirement.
+
 SENIORITY MATCH TABLE:
 ┌─────────────────────────────────┬─────────────────┐
 │ Seniority Match                 │ Points (of 10)  │
@@ -210,6 +214,12 @@ SENIORITY DETECTION:
 - SENIOR: 5+ years, titles with "Senior", "Lead", "Principal"
 - MANAGER: Any management title, team leadership
 
+⚠️ MANDATORY DERIVATION RULE FOR THIS CATEGORY:
+You MUST set earnedPoints = yearsScore + seniorityScore from the details.
+Exact values MUST come from the tables above — no arbitrary adjustments.
+If yearsRequired=0 and candidate has any experience → yearsScore=15.
+If seniorityRequired matches seniorityCandidate → seniorityScore=10.
+
 EXAMPLE:
 Job requires: "Senior Developer, 5+ years experience"
 CV shows: 3 years as "Software Developer" (no Senior title)
@@ -217,6 +227,14 @@ CV shows: 3 years as "Software Developer" (no Senior title)
 Years: 3 vs 5 required = 2 years below → 9 points
 Seniority: Mid applying for Senior = One level below → 6 points
 Total: 9 + 6 = 15 points (out of 25)
+
+EXAMPLE (Edge case - no years specified):
+Job posting: "Junior Barista" (no years requirement)
+CV shows: 1 year experience, Junior level
+
+Years: yearsRequired=0, yearsCandidate=1 → Meets/exceeds → 15 points
+Seniority: Junior→Junior = Exact match → 10 points
+Total: 15 + 10 = 25 points (out of 25) ← THIS IS CORRECT!
 
 =============================================================================
 CATEGORY 3: INDUSTRY & DOMAIN (20 points max)
@@ -474,7 +492,8 @@ RESPONSE FORMAT (STRICT JSON)
 =============================================================================
 MATHEMATICAL VERIFICATION CHECKLIST (MANDATORY!)
 =============================================================================
-Before responding, VERIFY:
+Before responding, VERIFY EACH of these. If ANY check fails, FIX IT:
+
 □ hardSkills.earnedPoints ≤ 35
 □ experienceLevel.earnedPoints ≤ 25
 □ industryDomain.earnedPoints ≤ 20
@@ -486,6 +505,31 @@ Before responding, VERIFY:
 □ No double-penalizing (if category score is already low, skip penalty)
 □ All percentages = (earnedPoints / maxPoints) × 100
 □ Final score falls within realistic distribution (median ~45%)
+
+⚠️ MANDATORY CONSISTENCY SELF-AUDIT ⚠️
+This is the MOST IMPORTANT check. Your earnedPoints MUST be DERIVABLE from
+your own detail fields. If they contradict each other, FIX the earnedPoints.
+
+□ EXPERIENCE: earnedPoints MUST = yearsScore + seniorityScore from details.
+  If yearsRequired=0, yearsScore MUST be 15 (requirement is met trivially).
+  If seniorityRequired == seniorityCandidate, seniorityScore MUST be 10.
+  → e.g., yearsScore=15 + seniorityScore=10 → earnedPoints MUST be 25.
+
+□ HARD SKILLS: earnedPoints MUST ≈ (M_req/T_req)*28 + (M_pref/T_pref)*7
+  where M_req = sum of matched required skill credits from matchedSkills.
+  If requiredSkillsMatched and requiredSkillsTotal are in details,
+  the calculation MUST be consistent with them.
+
+□ INDUSTRY: earnedPoints MUST = industryScore + domainScore from details.
+  If industryMatch="exact" → industryScore MUST be 12.
+
+□ EDUCATION: earnedPoints MUST = educationScore + certScore from details.
+
+□ ROLE-SPECIFIC: earnedPoints MUST = (requirementsMet.length) * 2, capped at 10.
+
+REMEMBER: If the details say the candidate fully meets a requirement,
+the corresponding sub-score MUST be the MAXIMUM value from the table.
+Never give a low earnedPoints when your own details show full compliance.
 
 =============================================================================
 REALISTIC SCORING EXAMPLES (CALIBRATION REFERENCE)
@@ -564,6 +608,16 @@ You are an HR GATEKEEPER, not a career coach. Your job is to:
 4. Apply penalties ONLY for dealbreakers not already reflected in category scores
 5. Never inflate scores to be encouraging — honesty helps candidates improve
 6. Never deflate scores to seem strict — accuracy is the goal
+7. NEVER contradict yourself — if details show full match, score MUST be full
+
+⚠️ CRITICAL CONSISTENCY RULE ⚠️
+Your earnedPoints MUST be mathematically derived from YOUR OWN detail fields.
+Do NOT generate earnedPoints independently from the details — calculate them.
+
+Example of WRONG behavior (what you MUST NOT do):
+  yearsRequired: 0, yearsCandidate: 1 (candidate exceeds requirement)
+  seniorityRequired: "junior", seniorityCandidate: "junior" (exact match)
+  BUT earnedPoints: 15 ← WRONG! Tables say 15+10=25, so earnedPoints MUST be 25.
 
 CONSISTENCY RULE: If you scored the same CV against two similar jobs,
 the scores should be within 5 points of each other. The formulas ensure this.

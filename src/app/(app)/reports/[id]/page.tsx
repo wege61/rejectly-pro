@@ -8018,8 +8018,148 @@ export default function ReportDetailPage() {
                   </DrawerScoreMeta>
                 </DrawerScoreHero>
 
-                {/* Structured details */}
-                {details && (
+                {/* Structured details — Education & Certs special rendering */}
+                {details && (details.educationMatch || details.certMatch) && (() => {
+                  const eduLabels: Record<string, { label: string; icon: string; color: string }> = {
+                    exact:    { label: 'Exact degree match', icon: '🎓', color: '#10b981' },
+                    related:  { label: 'Related degree', icon: '📘', color: '#22c55e' },
+                    any:      { label: 'Has a degree (not field-specific)', icon: '📄', color: '#f59e0b' },
+                    none:     { label: 'No degree found', icon: '❌', color: '#ef4444' },
+                    bootcamp: { label: 'Bootcamp / Self-taught', icon: '💻', color: '#f97316' },
+                  };
+                  const certLabels: Record<string, { label: string; icon: string; color: string }> = {
+                    all:     { label: 'All required certifications', icon: '✅', color: '#10b981' },
+                    some:    { label: 'Some certifications matched', icon: '🟡', color: '#f59e0b' },
+                    related: { label: 'Related certifications', icon: '📋', color: '#22c55e' },
+                    none:    { label: 'No relevant certifications', icon: '—', color: 'var(--text-tertiary)' },
+                  };
+                  const eduInfo = eduLabels[details.educationMatch || ''] || { label: details.educationMatch || 'Unknown', icon: '❓', color: 'var(--text-secondary)' };
+                  const certInfo = certLabels[details.certMatch || ''] || { label: details.certMatch || 'Unknown', icon: '❓', color: 'var(--text-secondary)' };
+                  const eduScore = details.educationScore ?? 0;
+                  const certScore = details.certScore ?? 0;
+
+                  return (
+                    <>
+                      {/* Education sub-section */}
+                      <DrawerDetailSection>
+                        <DrawerDetailSectionTitle>Education ({eduScore}/6 pts)</DrawerDetailSectionTitle>
+                        <DrawerGlassPill $glowColor={eduInfo.color}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-color)' }}>{eduInfo.label}</span>
+                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                {details.educationMatch === 'exact' ? 'Your degree directly matches the job requirement'
+                                  : details.educationMatch === 'related' ? 'Your degree is in a related field'
+                                  : details.educationMatch === 'any' ? 'You have a degree but not in the required field'
+                                  : details.educationMatch === 'bootcamp' ? 'Alternative education path detected'
+                                  : details.educationMatch === 'none' ? 'No matching educational background found'
+                                  : ''}
+                              </span>
+                            </div>
+                          </div>
+                          <DrawerGlassBadge $color={eduInfo.color}>
+                            {eduScore}/6
+                          </DrawerGlassBadge>
+                        </DrawerGlassPill>
+                      </DrawerDetailSection>
+
+                      {/* Certifications sub-section */}
+                      <DrawerDetailSection>
+                        <DrawerDetailSectionTitle>Certifications ({certScore}/4 pts)</DrawerDetailSectionTitle>
+                        <DrawerGlassPill $glowColor={certInfo.color}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-color)' }}>{certInfo.label}</span>
+                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                {details.certMatch === 'all' ? 'All certifications required by the job are present'
+                                  : details.certMatch === 'some' ? 'Some of the required certifications are present'
+                                  : details.certMatch === 'related' ? 'You have related industry certifications'
+                                  : details.certMatch === 'none' ? 'No certifications were found or none are required'
+                                  : ''}
+                              </span>
+                            </div>
+                          </div>
+                          <DrawerGlassBadge $color={certInfo.color}>
+                            {certScore}/4
+                          </DrawerGlassBadge>
+                        </DrawerGlassPill>
+                      </DrawerDetailSection>
+                    </>
+                  );
+                })()}
+
+                {/* Structured details — Industry & Domain special rendering */}
+                {details && (details.industryMatch || details.domainExperience) && !details.educationMatch && (() => {
+                  const industryLabels: Record<string, { label: string; icon: string; color: string }> = {
+                    exact:        { label: 'Exact industry match', icon: '🎯', color: '#10b981' },
+                    related:      { label: 'Related industry', icon: '🔗', color: '#22c55e' },
+                    transferable: { label: 'Transferable experience', icon: '🔄', color: '#f59e0b' },
+                    different:    { label: 'Different industry', icon: '📍', color: '#f97316' },
+                    none:         { label: 'No industry overlap', icon: '❌', color: '#ef4444' },
+                  };
+                  const domainLabels: Record<string, { label: string; icon: string; color: string }> = {
+                    deep:  { label: 'Deep domain expertise', icon: '⭐', color: '#10b981' },
+                    solid: { label: 'Solid domain experience', icon: '✅', color: '#22c55e' },
+                    some:  { label: 'Some domain exposure', icon: '🟡', color: '#f59e0b' },
+                    none:  { label: 'No domain experience', icon: '—', color: 'var(--text-tertiary)' },
+                  };
+                  const indInfo = industryLabels[details.industryMatch || ''] || { label: details.industryMatch || 'Unknown', icon: '❓', color: 'var(--text-secondary)' };
+                  const domInfo = domainLabels[details.domainExperience || ''] || { label: details.domainExperience || 'Unknown', icon: '❓', color: 'var(--text-secondary)' };
+                  const indScore = details.industryScore ?? 0;
+                  const domScore = details.domainScore ?? 0;
+
+                  return (
+                    <>
+                      {/* Industry sub-section */}
+                      <DrawerDetailSection>
+                        <DrawerDetailSectionTitle>Industry Match ({indScore}/12 pts)</DrawerDetailSectionTitle>
+                        <DrawerGlassPill $glowColor={indInfo.color}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-color)' }}>{indInfo.label}</span>
+                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                {details.industryMatch === 'exact' ? 'Your work history is in the same industry as this role'
+                                  : details.industryMatch === 'related' ? 'Your industry background is closely adjacent'
+                                  : details.industryMatch === 'transferable' ? 'Some of your experience can transfer to this industry'
+                                  : details.industryMatch === 'different' ? 'Your industry background has minimal relevance'
+                                  : details.industryMatch === 'none' ? 'No overlap between your experience and this industry'
+                                  : ''}
+                              </span>
+                            </div>
+                          </div>
+                          <DrawerGlassBadge $color={indInfo.color}>
+                            {indScore}/12
+                          </DrawerGlassBadge>
+                        </DrawerGlassPill>
+                      </DrawerDetailSection>
+
+                      {/* Domain sub-section */}
+                      <DrawerDetailSection>
+                        <DrawerDetailSectionTitle>Domain Expertise ({domScore}/8 pts)</DrawerDetailSectionTitle>
+                        <DrawerGlassPill $glowColor={domInfo.color}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-color)' }}>{domInfo.label}</span>
+                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                {details.domainExperience === 'deep' ? '3+ years of hands-on domain knowledge'
+                                  : details.domainExperience === 'solid' ? '1-3 years of relevant domain experience'
+                                  : details.domainExperience === 'some' ? 'Limited exposure through projects or coursework'
+                                  : details.domainExperience === 'none' ? 'No specific domain experience detected'
+                                  : ''}
+                              </span>
+                            </div>
+                          </div>
+                          <DrawerGlassBadge $color={domInfo.color}>
+                            {domScore}/8
+                          </DrawerGlassBadge>
+                        </DrawerGlassPill>
+                      </DrawerDetailSection>
+                    </>
+                  );
+                })()}
+
+                {/* Structured details — Generic categories (Skills, Experience) */}
+                {details && !details.educationMatch && !details.certMatch && !details.industryMatch && !details.domainExperience && (
                   <DrawerDetailSection>
                     <DrawerDetailSectionTitle>Details</DrawerDetailSectionTitle>
                     <DrawerDetailGrid>
@@ -8063,30 +8203,6 @@ export default function ReportDetailPage() {
                         <DrawerDetailStat>
                           <DrawerDetailStatLabel>Your Level</DrawerDetailStatLabel>
                           <DrawerDetailStatValue>{details.seniorityCandidate}</DrawerDetailStatValue>
-                        </DrawerDetailStat>
-                      )}
-                      {details.industryMatch && (
-                        <DrawerDetailStat>
-                          <DrawerDetailStatLabel>Industry Match</DrawerDetailStatLabel>
-                          <DrawerDetailStatValue>{details.industryMatch}</DrawerDetailStatValue>
-                        </DrawerDetailStat>
-                      )}
-                      {details.domainExperience && (
-                        <DrawerDetailStat>
-                          <DrawerDetailStatLabel>Domain Experience</DrawerDetailStatLabel>
-                          <DrawerDetailStatValue>{details.domainExperience}</DrawerDetailStatValue>
-                        </DrawerDetailStat>
-                      )}
-                      {details.educationMatch && (
-                        <DrawerDetailStat>
-                          <DrawerDetailStatLabel>Education</DrawerDetailStatLabel>
-                          <DrawerDetailStatValue>{details.educationMatch}</DrawerDetailStatValue>
-                        </DrawerDetailStat>
-                      )}
-                      {details.certMatch && (
-                        <DrawerDetailStat>
-                          <DrawerDetailStatLabel>Certifications</DrawerDetailStatLabel>
-                          <DrawerDetailStatValue>{details.certMatch}</DrawerDetailStatValue>
                         </DrawerDetailStat>
                       )}
                     </DrawerDetailGrid>

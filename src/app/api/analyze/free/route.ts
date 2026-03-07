@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         cv_id: cvId,
         job_ids: jobIds,
-        fit_score: finalScore,
+        fit_score: Math.round(finalScore),
         summary_free: scoreBreakdown.summary || "",
         keywords: { missing: uniqueMissingKeywords },
         score_breakdown: scoreBreakdown,

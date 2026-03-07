@@ -40,40 +40,40 @@ CRITICAL ANTI-HALLUCINATION RULES
 ⛔ If enhancing bullets, metrics must be plausible based on context
 
 =============================================================================
-ROLE RECOMMENDATION SCORING (BE BRUTALLY HONEST - STRICT HR STANDARDS)
+ROLE RECOMMENDATION SCORING (REALISTIC HR STANDARDS)
 =============================================================================
-Use these guidelines strictly. Most role recommendations should be 50-70%.
+Role fit scores measure how ready the candidate IS TODAY for each role,
+based ONLY on documented skills/experience. Most scores should be 45-70%.
 
-EXCEPTIONAL MATCH (80-90%) - RARE:
-- Software Engineer → Senior Software Engineer (ONLY if 5+ years documented)
-- Marketing Manager → Marketing Director (ONLY if team leadership documented)
-- CV must show CLEAR evidence of readiness - don't assume potential
+EXCEPTIONAL FIT (80-90%) - VERY RARE:
+- Near-identical current role with proven results (same title, same level, same industry)
+- Example: "Senior React Developer" with 6 years React → "Senior Frontend Engineer" role
+- Must have 90%+ of required skills WITH evidence
 
-STRONG MATCH (70-79%):
-- Same role type, same industry, meets most requirements
-- Software Engineer → DevOps Engineer (if relevant skills documented)
-- Still requires ALL core skills to be present
+STRONG FIT (65-79%):
+- Same role family, meets most requirements with evidence
+- Example: "Backend Engineer" with Python/Django → "Full Stack Developer" (has backend, needs frontend growth)
+- Has 70%+ of core skills documented
 
-MODERATE MATCH (55-69%):
-- Some overlap but notable gaps
-- Career pivot with transferable skills
-- Significant learning curve acknowledged
+MODERATE FIT (50-64%):
+- Adjacent role with meaningful overlap
+- Example: "QA Engineer" → "DevOps Engineer" (testing + automation overlap, needs infra skills)
+- Career pivot where transferable skills are clear but gaps exist
 
-WEAK MATCH (40-54%):
-- Limited relevance, would need substantial upskilling
-- Different field with minimal transferable skills
-- Honest about the gap
+STRETCH FIT (35-49%):
+- Different role but some foundation exists
+- Would require significant upskilling (6+ months)
+- Be honest about the gap
 
-POOR MATCH (Below 40%):
-- Almost no alignment
-- Suggest fundamentally different career path
-- Don't try to force fit
+POOR FIT (Below 35%):
+- Minimal alignment with documented experience
+- Would essentially need to start from scratch
 
 NEVER give 75%+ to:
 - Roles requiring skills NOT demonstrated in CV
-- Seniority jumps (Junior → Senior) without evidence
-- Industry changes without relevant experience
-- "Potential" - only score documented capabilities
+- Seniority jumps (Junior → Senior) without 5+ years documented experience
+- Industry changes without directly relevant technical skills
+- Aspirational roles based on "potential" rather than evidence
 
 =============================================================================
 RESPONSE FORMAT (STRICT JSON)
@@ -123,9 +123,9 @@ For each role, verify:
 
 Example analysis:
 - CV: 3 years Python, Django, REST APIs, team lead of 4 people
-- Role: "Senior Backend Developer" → 88% (strong technical match + leadership)
-- Role: "Engineering Manager" → 65% (leadership shown but limited scope)
-- Role: "Solutions Architect" → 55% (needs more system design evidence)
+- Role: "Backend Developer" → 78% (strong technical match, experience aligns)
+- Role: "Senior Backend Developer" → 58% (skills match but lacks seniority/years)
+- Role: "Engineering Manager" → 42% (some leadership but limited scope, needs growth)
 
 ### atsFlags (3-5 items)
 Provide specific, actionable tips based on THIS CV's actual issues.

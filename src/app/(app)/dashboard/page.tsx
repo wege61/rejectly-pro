@@ -2206,7 +2206,7 @@ export default function DashboardPage() {
                       <RecentReportCardContent>
                         <RecentReportContentInner className="report-content">
                           <RecentReportScoreDisplay>
-                            <RecentReportScoreValue $category={report.fit_score >= 70 ? 'excellent' : report.fit_score >= 41 ? 'good' : 'needsWork'}>{report.fit_score}</RecentReportScoreValue>
+                            <RecentReportScoreValue $category={report.fit_score >= 75 ? 'excellent' : report.fit_score >= 45 ? 'good' : 'needsWork'}>{report.fit_score}</RecentReportScoreValue>
                           </RecentReportScoreDisplay>
                           <RecentReportTitle>
                             {jobTitles || "CV Analysis Report"}

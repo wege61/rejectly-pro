@@ -2,8 +2,8 @@ import { ScoreRange, UserState, ScoreMessage } from "./types";
 
 // Score range thresholds
 export const SCORE_THRESHOLDS = {
-  LOW_MAX: 49,
-  MEDIUM_MAX: 69,
+  LOW_MAX: 44,
+  MEDIUM_MAX: 64,
 } as const;
 
 // Score messages based on score range and user state

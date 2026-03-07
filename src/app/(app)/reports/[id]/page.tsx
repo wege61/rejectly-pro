@@ -24,7 +24,7 @@ import { CreditsCard } from "@/components/dashboard";
 import { SharedPricingCards } from "@/components/billing/PricingCards";
 import { ToolSuggestionResponse } from "@/types/toolSuggestion";
 import { CVCustomizationOptions } from "@/types/cvCustomization";
-import { ScoreBreakdown } from "@/types/scoreBreakdown";
+import { ScoreBreakdown, ScoreComponent } from "@/types/scoreBreakdown";
 import { PRICING } from "@/lib/constants";
 import {
   Report,
@@ -4843,6 +4843,295 @@ const DiagnosisFooter = styled.div`
   text-align: center;
 `;
 
+// --- Score Breakdown Inline ---
+const InlineBreakdownCard = styled.div`
+  position: relative;
+  border-radius: 20px;
+  background: rgba(15, 15, 18, 0.4);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 28px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  }
+`;
+
+const BreakdownHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+`;
+
+const BreakdownTitle = styled.h3`
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+  letter-spacing: -0.01em;
+`;
+
+const BreakdownRawScore = styled.span`
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+`;
+
+const CategorySection = styled.div`
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 0 -16px;
+  transition: background 0.25s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.03);
+
+    .cat-chevron {
+      opacity: 1;
+      transform: translateX(2px);
+    }
+  }
+
+  & + & {
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+`;
+
+const CategoryHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+`;
+
+const CategoryChevron = styled.span`
+  color: var(--text-secondary);
+  opacity: 0.35;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+`;
+
+const CategoryName = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+`;
+
+const CategoryPoints = styled.span`
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+`;
+
+const CategoryBarTrack = styled.div`
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+`;
+
+const CategoryBarFill = styled.div<{ $percent: number; $color: string }>`
+  height: 100%;
+  border-radius: 3px;
+  width: ${({ $percent }) => Math.max($percent, 2)}%;
+  background: ${({ $color }) => $color};
+  transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+`;
+
+const CategoryTags = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+`;
+
+const CategoryTag = styled.span<{ $type: 'matched' | 'missing' }>`
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: ${({ $type }) =>
+    $type === 'matched' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.08)'};
+  border: 1px solid ${({ $type }) =>
+    $type === 'matched' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.12)'};
+  color: ${({ $type }) =>
+    $type === 'matched' ? '#34d399' : 'rgba(239, 68, 68, 0.8)'};
+`;
+
+const PenaltiesSection = styled.div`
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+`;
+
+const PenaltySectionTitle = styled.span`
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  display: block;
+`;
+
+const PenaltyRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+
+  & + & {
+    border-top: 1px solid rgba(255, 255, 255, 0.02);
+  }
+`;
+
+const PenaltyReason = styled.span`
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex: 1;
+`;
+
+const PenaltyDeduction = styled.span<{ $severity: string }>`
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: ${({ $severity }) => {
+    const s = $severity.toLowerCase();
+    return s === 'critical' ? '#ef4444' : s === 'major' ? '#f97316' : '#f59e0b';
+  }};
+  white-space: nowrap;
+`;
+
+const VerdictRow = styled.div`
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const VerdictLabel = styled.span`
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+`;
+
+const VerdictValue = styled.span<{ $color: string }>`
+  font-size: 13px;
+  font-weight: 600;
+  color: ${({ $color }) => $color};
+`;
+
+// --- Category Drawer Detail ---
+const DrawerScoreHero = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.012);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+`;
+
+const DrawerScoreNumber = styled.span<{ $color: string }>`
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: ${({ $color }) => $color};
+  font-variant-numeric: tabular-nums;
+`;
+
+const DrawerScoreMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+const DrawerScoreMetaLabel = styled.span`
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+`;
+
+const DrawerScoreMetaSub = styled.span`
+  font-size: 13px;
+  color: var(--text-secondary);
+`;
+
+const DrawerDetailSection = styled.div`
+  margin-bottom: 20px;
+`;
+
+const DrawerDetailSectionTitle = styled.h4`
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+`;
+
+const DrawerDetailGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const DrawerDetailStat = styled.div`
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+`;
+
+const DrawerDetailStatLabel = styled.div`
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+`;
+
+const DrawerDetailStatValue = styled.div<{ $color?: string }>`
+  font-size: 15px;
+  font-weight: 600;
+  color: ${({ $color }) => $color || 'var(--text-color)'};
+`;
+
+const DrawerSkillEvidence = styled.div`
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  font-style: italic;
+`;
+
 // --- Interview Probability ---
 const InterviewProbabilityPill = styled.div`
   display: flex;
@@ -5302,6 +5591,7 @@ export default function ReportDetailPage() {
   const [isSummaryDrawerOpen, setIsSummaryDrawerOpen] = useState(false);
   const [isBulletPointsDrawerOpen, setIsBulletPointsDrawerOpen] = useState(false);
   const [isAtsDrawerOpen, setIsAtsDrawerOpen] = useState(false);
+  const [activeCategoryDrawer, setActiveCategoryDrawer] = useState<string | null>(null);
   const [activeDetailTab, setActiveDetailTab] = useState<'summary' | 'keywords' | 'bullets' | 'ats' | 'roles'>('summary');
   const [optimizedScoreBreakdown, setOptimizedScoreBreakdown] = useState<ScoreBreakdown | null>(null);
   const [atsScore, setAtsScore] = useState<number | null>(null);
@@ -6549,7 +6839,7 @@ export default function ReportDetailPage() {
           {/* Interview Probability */}
           <InterviewProbabilityPill>
             <ProbabilityItem>
-              <ProbabilityValue $color={report.fit_score >= 70 ? '#10b981' : report.fit_score >= 50 ? '#f59e0b' : '#ef4444'}>
+              <ProbabilityValue $color={report.fit_score >= 75 ? '#10b981' : report.fit_score >= 45 ? '#f59e0b' : '#ef4444'}>
                 ~{Math.min(Math.max(Math.round(report.fit_score * 0.3), 5), 40)}%
               </ProbabilityValue>
               <ProbabilityLabel>Interview Chance</ProbabilityLabel>
@@ -6561,65 +6851,120 @@ export default function ReportDetailPage() {
             </ProbabilityItem>
           </InterviewProbabilityPill>
 
-          {/* Diagnosis Card */}
-          <DiagnosisCard>
-            <DiagnosisTitle>Resume Diagnosis</DiagnosisTitle>
-            <DiagnosisRow onClick={() => setIsKeywordsModalOpen(true)}>
-              <DiagnosisLabel>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6Z" /></svg>
-                Keywords
-              </DiagnosisLabel>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <DiagnosisStatus $status={missingKeywords.length === 0 ? 'good' : missingKeywords.length <= 3 ? 'warning' : 'critical'}>
-                  {missingKeywords.length === 0 ? 'Complete' : `${missingKeywords.length} missing`}
-                </DiagnosisStatus>
-                <DiagnosisChevron className="diagnosis-chevron">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </DiagnosisChevron>
-              </div>
-            </DiagnosisRow>
-            <DiagnosisRow onClick={() => setIsBulletPointsDrawerOpen(true)}>
-              <DiagnosisLabel>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
-                Bullet Points
-              </DiagnosisLabel>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <DiagnosisStatus $status="warning">
-                  Not impact-focused
-                </DiagnosisStatus>
-                <DiagnosisChevron className="diagnosis-chevron">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </DiagnosisChevron>
-              </div>
-            </DiagnosisRow>
-            <DiagnosisRow onClick={() => setIsAtsDrawerOpen(true)}>
-              <DiagnosisLabel>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
-                ATS Compatibility
-              </DiagnosisLabel>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <DiagnosisStatus $status={(originalAtsScore ?? 50) >= 70 ? 'good' : (originalAtsScore ?? 50) >= 50 ? 'warning' : 'critical'}>
-                  {(originalAtsScore ?? 50) >= 70 ? 'Good' : (originalAtsScore ?? 50) >= 50 ? 'Needs work' : 'Low'}
-                </DiagnosisStatus>
-                <DiagnosisChevron className="diagnosis-chevron">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </DiagnosisChevron>
-              </div>
-            </DiagnosisRow>
-            <DiagnosisRow onClick={() => setIsSummaryDrawerOpen(true)}>
-              <DiagnosisLabel>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>
-                Summary Section
-              </DiagnosisLabel>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <DiagnosisStatus $status="warning">Too generic</DiagnosisStatus>
-                <DiagnosisChevron className="diagnosis-chevron">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
-                </DiagnosisChevron>
-              </div>
-            </DiagnosisRow>
-            <DiagnosisFooter>Pro fixes {missingKeywords.length > 0 ? '3 of 4' : '2 of 3'} issues automatically</DiagnosisFooter>
-          </DiagnosisCard>
+          {/* Score Breakdown */}
+          {(() => {
+            const bd = report.score_breakdown as ScoreBreakdown | null;
+            if (!bd?.components) return null;
+
+            const categories = [
+              { key: 'hardSkills', fallback: 'skillsMatch', label: 'Hard Skills' },
+              { key: 'experienceLevel', fallback: 'experienceMatch', label: 'Experience' },
+              { key: 'industryDomain', fallback: 'industryRelevance', label: 'Industry & Domain' },
+              { key: 'educationCerts', fallback: 'educationCerts', label: 'Education & Certs' },
+              { key: 'roleSpecific', fallback: null, label: 'Role-Specific' },
+            ] as const;
+
+            const getBarColor = (pct: number) =>
+              pct >= 75 ? '#10b981' : pct >= 55 ? '#22c55e' : pct >= 35 ? '#f59e0b' : '#ef4444';
+
+            const appliedPenalties = (bd.penalties || []).filter(
+              (p) => p.applied !== false && (p.pointsDeducted || p.deduction || 0) > 0
+            );
+            const totalPenalty = bd.totalPenalties ?? bd.calculation?.totalPenalties ?? 0;
+            const rawScore = bd.rawScore ?? bd.calculation?.rawScore ?? 0;
+
+            const verdictText = bd.assessment?.verdict
+              ? bd.assessment.verdict.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+              : null;
+            const verdictColor = bd.assessment?.verdict
+              ? bd.assessment.verdict === 'would_interview' ? '#10b981'
+                : bd.assessment.verdict === 'lean_interview' ? '#22c55e'
+                : bd.assessment.verdict === 'maybe_with_reservations' ? '#f59e0b'
+                : bd.assessment.verdict === 'likely_reject' ? '#f97316'
+                : '#ef4444'
+              : '#9ca3af';
+
+            return (
+              <InlineBreakdownCard>
+                <BreakdownHeader>
+                  <BreakdownTitle>Score Breakdown</BreakdownTitle>
+                  <BreakdownRawScore>
+                    {rawScore > 0 && totalPenalty > 0
+                      ? `${rawScore} − ${Math.abs(totalPenalty)} penalties = ${report.fit_score}`
+                      : `${report.fit_score} / 100`}
+                  </BreakdownRawScore>
+                </BreakdownHeader>
+
+                {categories.map(({ key, fallback, label }) => {
+                  const comp = (bd.components as Record<string, ScoreComponent | undefined>)[key]
+                    || (fallback ? (bd.components as Record<string, ScoreComponent | undefined>)[fallback] : undefined);
+                  if (!comp) return null;
+
+                  const pct = comp.maxPoints > 0
+                    ? Math.round((comp.earnedPoints / comp.maxPoints) * 100)
+                    : 0;
+                  const matched = comp.matchedItems?.slice(0, 3) || [];
+                  const missing = comp.missingItems?.slice(0, 3) || [];
+                  const totalTags = (comp.matchedItems?.length || 0) + (comp.missingItems?.length || 0);
+                  const shownTags = matched.length + missing.length;
+                  const moreTags = totalTags - shownTags;
+
+                  return (
+                    <CategorySection key={key} onClick={() => setActiveCategoryDrawer(key)}>
+                      <CategoryHeader>
+                        <CategoryName>{label}</CategoryName>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <CategoryPoints>{comp.earnedPoints}/{comp.maxPoints}</CategoryPoints>
+                          <CategoryChevron className="cat-chevron">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
+                          </CategoryChevron>
+                        </div>
+                      </CategoryHeader>
+                      <CategoryBarTrack>
+                        <CategoryBarFill $percent={pct} $color={getBarColor(pct)} />
+                      </CategoryBarTrack>
+                      {(matched.length > 0 || missing.length > 0) && (
+                        <CategoryTags>
+                          {matched.map((item, i) => (
+                            <CategoryTag key={`m-${i}`} $type="matched">{item}</CategoryTag>
+                          ))}
+                          {missing.map((item, i) => (
+                            <CategoryTag key={`x-${i}`} $type="missing">{item}</CategoryTag>
+                          ))}
+                          {moreTags > 0 && (
+                            <CategoryTag $type="missing" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}>
+                              +{moreTags} more
+                            </CategoryTag>
+                          )}
+                        </CategoryTags>
+                      )}
+                    </CategorySection>
+                  );
+                })}
+
+                {appliedPenalties.length > 0 && (
+                  <PenaltiesSection>
+                    <PenaltySectionTitle>Penalties ({totalPenalty > 0 ? `−${Math.abs(totalPenalty)}` : totalPenalty})</PenaltySectionTitle>
+                    {appliedPenalties.map((p, i) => (
+                      <PenaltyRow key={i}>
+                        <PenaltyReason>{p.reason || p.description || p.condition || p.id}</PenaltyReason>
+                        <PenaltyDeduction $severity={p.severity}>
+                          −{Math.abs(p.pointsDeducted || p.deduction || 0)}
+                        </PenaltyDeduction>
+                      </PenaltyRow>
+                    ))}
+                  </PenaltiesSection>
+                )}
+
+                {verdictText && (
+                  <VerdictRow>
+                    <VerdictLabel>HR Assessment</VerdictLabel>
+                    <VerdictValue $color={verdictColor}>{verdictText}</VerdictValue>
+                  </VerdictRow>
+                )}
+              </InlineBreakdownCard>
+            );
+          })()}
 
           {/* Blurred CV Preview */}
           <BlurredPreviewCard onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}>
@@ -7625,6 +7970,249 @@ export default function ReportDetailPage() {
         fitScore={optimizedScore || 0}
         originalScore={report?.fit_score}
       />
+
+      {/* Category Detail Drawer */}
+      <Drawer isOpen={!!activeCategoryDrawer} onClose={() => setActiveCategoryDrawer(null)}>
+        {(() => {
+          const bd = report?.score_breakdown as ScoreBreakdown | null;
+          if (!bd?.components || !activeCategoryDrawer) return null;
+
+          const labelMap: Record<string, string> = {
+            hardSkills: 'Hard Skills', skillsMatch: 'Hard Skills',
+            experienceLevel: 'Experience', experienceMatch: 'Experience',
+            industryDomain: 'Industry & Domain', industryRelevance: 'Industry & Domain',
+            educationCerts: 'Education & Certs',
+            roleSpecific: 'Role-Specific',
+          };
+          const fallbackMap: Record<string, string> = {
+            hardSkills: 'skillsMatch', experienceLevel: 'experienceMatch',
+            industryDomain: 'industryRelevance',
+          };
+
+          const comp = (bd.components as Record<string, ScoreComponent | undefined>)[activeCategoryDrawer]
+            || (bd.components as Record<string, ScoreComponent | undefined>)[fallbackMap[activeCategoryDrawer] || ''];
+          if (!comp) return null;
+
+          const pct = comp.maxPoints > 0 ? Math.round((comp.earnedPoints / comp.maxPoints) * 100) : 0;
+          const barColor = pct >= 75 ? '#10b981' : pct >= 55 ? '#22c55e' : pct >= 35 ? '#f59e0b' : '#ef4444';
+          const label = labelMap[activeCategoryDrawer] || comp.name || activeCategoryDrawer;
+          const details = typeof comp.details === 'object' ? comp.details : null;
+          const detailStr = typeof comp.details === 'string' ? comp.details : null;
+
+          return (
+            <>
+              <DrawerHeader>
+                <DrawerTitle>{label}</DrawerTitle>
+                <DrawerDescription>
+                  Detailed breakdown of how your resume scores in this category
+                </DrawerDescription>
+              </DrawerHeader>
+              <DrawerBody>
+                <DrawerScoreHero>
+                  <DrawerScoreNumber $color={barColor}>{pct}%</DrawerScoreNumber>
+                  <DrawerScoreMeta>
+                    <DrawerScoreMetaLabel>{comp.earnedPoints} / {comp.maxPoints} points</DrawerScoreMetaLabel>
+                    <DrawerScoreMetaSub>
+                      {pct >= 75 ? 'Strong performance' : pct >= 55 ? 'Moderate performance' : pct >= 35 ? 'Needs improvement' : 'Significant gaps'}
+                    </DrawerScoreMetaSub>
+                  </DrawerScoreMeta>
+                </DrawerScoreHero>
+
+                {/* Structured details */}
+                {details && (
+                  <DrawerDetailSection>
+                    <DrawerDetailSectionTitle>Details</DrawerDetailSectionTitle>
+                    <DrawerDetailGrid>
+                      {details.requiredSkillsTotal != null && (
+                        <DrawerDetailStat>
+                          <DrawerDetailStatLabel>Required Skills</DrawerDetailStatLabel>
+                          <DrawerDetailStatValue $color={details.requiredSkillsMatched === details.requiredSkillsTotal ? '#10b981' : '#f59e0b'}>
+                            {details.requiredSkillsMatched} / {details.requiredSkillsTotal} matched
+                          </DrawerDetailStatValue>
+                        </DrawerDetailStat>
+                      )}
+                      {details.preferredSkillsTotal != null && details.preferredSkillsTotal > 0 && (
+                        <DrawerDetailStat>
+                          <DrawerDetailStatLabel>Preferred Skills</DrawerDetailStatLabel>
+                          <DrawerDetailStatValue>
+                            {details.preferredSkillsMatched} / {details.preferredSkillsTotal} matched
+                          </DrawerDetailStatValue>
+                        </DrawerDetailStat>
+                      )}
+                      {details.yearsRequired != null && (
+                        <DrawerDetailStat>
+                          <DrawerDetailStatLabel>Experience Required</DrawerDetailStatLabel>
+                          <DrawerDetailStatValue>{details.yearsRequired} years</DrawerDetailStatValue>
+                        </DrawerDetailStat>
+                      )}
+                      {details.yearsCandidate != null && (
+                        <DrawerDetailStat>
+                          <DrawerDetailStatLabel>Your Experience</DrawerDetailStatLabel>
+                          <DrawerDetailStatValue $color={(details.yearsCandidate ?? 0) >= (details.yearsRequired ?? 0) ? '#10b981' : '#f59e0b'}>
+                            {details.yearsCandidate} years
+                          </DrawerDetailStatValue>
+                        </DrawerDetailStat>
+                      )}
+                      {details.seniorityRequired && (
+                        <DrawerDetailStat>
+                          <DrawerDetailStatLabel>Required Seniority</DrawerDetailStatLabel>
+                          <DrawerDetailStatValue>{details.seniorityRequired}</DrawerDetailStatValue>
+                        </DrawerDetailStat>
+                      )}
+                      {details.seniorityCandidate && (
+                        <DrawerDetailStat>
+                          <DrawerDetailStatLabel>Your Level</DrawerDetailStatLabel>
+                          <DrawerDetailStatValue>{details.seniorityCandidate}</DrawerDetailStatValue>
+                        </DrawerDetailStat>
+                      )}
+                      {details.industryMatch && (
+                        <DrawerDetailStat>
+                          <DrawerDetailStatLabel>Industry Match</DrawerDetailStatLabel>
+                          <DrawerDetailStatValue>{details.industryMatch}</DrawerDetailStatValue>
+                        </DrawerDetailStat>
+                      )}
+                      {details.domainExperience && (
+                        <DrawerDetailStat>
+                          <DrawerDetailStatLabel>Domain Experience</DrawerDetailStatLabel>
+                          <DrawerDetailStatValue>{details.domainExperience}</DrawerDetailStatValue>
+                        </DrawerDetailStat>
+                      )}
+                      {details.educationMatch && (
+                        <DrawerDetailStat>
+                          <DrawerDetailStatLabel>Education</DrawerDetailStatLabel>
+                          <DrawerDetailStatValue>{details.educationMatch}</DrawerDetailStatValue>
+                        </DrawerDetailStat>
+                      )}
+                      {details.certMatch && (
+                        <DrawerDetailStat>
+                          <DrawerDetailStatLabel>Certifications</DrawerDetailStatLabel>
+                          <DrawerDetailStatValue>{details.certMatch}</DrawerDetailStatValue>
+                        </DrawerDetailStat>
+                      )}
+                    </DrawerDetailGrid>
+                  </DrawerDetailSection>
+                )}
+
+                {/* Plain text details */}
+                {detailStr && (
+                  <DrawerDetailSection>
+                    <DrawerDetailSectionTitle>Analysis</DrawerDetailSectionTitle>
+                    <div style={{ fontSize: '14px', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
+                      {detailStr}
+                    </div>
+                  </DrawerDetailSection>
+                )}
+
+                {/* Matched skills with evidence */}
+                {comp.matchedSkills && comp.matchedSkills.length > 0 && (
+                  <DrawerDetailSection>
+                    <DrawerDetailSectionTitle>Matched ({comp.matchedSkills.length})</DrawerDetailSectionTitle>
+                    {comp.matchedSkills.map((s, i) => (
+                      <DrawerGlassPill key={i} $glowColor="#10b981">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
+                          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-color)' }}>{s.skill}</span>
+                          {s.evidence && <DrawerSkillEvidence>{s.evidence}</DrawerSkillEvidence>}
+                        </div>
+                        <DrawerGlassBadge $color="#10b981">
+                          {s.credit >= 1 ? 'Full' : s.credit >= 0.5 ? 'Partial' : 'Low'}
+                        </DrawerGlassBadge>
+                      </DrawerGlassPill>
+                    ))}
+                  </DrawerDetailSection>
+                )}
+
+                {/* Fallback matched items (no evidence) */}
+                {!comp.matchedSkills?.length && comp.matchedItems && comp.matchedItems.length > 0 && (
+                  <DrawerDetailSection>
+                    <DrawerDetailSectionTitle>Matched ({comp.matchedItems.length})</DrawerDetailSectionTitle>
+                    {comp.matchedItems.map((item, i) => (
+                      <DrawerGlassPill key={i} $glowColor="#10b981">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <DrawerGlassDot $color="#10b981" />
+                          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{item}</span>
+                        </div>
+                        <DrawerGlassBadge $color="#10b981">Found</DrawerGlassBadge>
+                      </DrawerGlassPill>
+                    ))}
+                  </DrawerDetailSection>
+                )}
+
+                {/* Missing skills */}
+                {comp.missingSkills && comp.missingSkills.length > 0 && (
+                  <DrawerDetailSection>
+                    <DrawerDetailSectionTitle>Missing ({comp.missingSkills.length})</DrawerDetailSectionTitle>
+                    {comp.missingSkills.map((s, i) => (
+                      <DrawerGlassPill key={i} $glowColor={s.required ? '#ef4444' : '#f59e0b'}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <DrawerGlassDot $color={s.required ? '#ef4444' : '#f59e0b'} />
+                          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{s.skill}</span>
+                        </div>
+                        <DrawerGlassBadge $color={s.required ? '#ef4444' : '#f59e0b'}>
+                          {s.required ? 'Required' : 'Preferred'}
+                        </DrawerGlassBadge>
+                      </DrawerGlassPill>
+                    ))}
+                  </DrawerDetailSection>
+                )}
+
+                {/* Fallback missing items */}
+                {!comp.missingSkills?.length && comp.missingItems && comp.missingItems.length > 0 && (
+                  <DrawerDetailSection>
+                    <DrawerDetailSectionTitle>Missing ({comp.missingItems.length})</DrawerDetailSectionTitle>
+                    {comp.missingItems.map((item, i) => (
+                      <DrawerGlassPill key={i} $glowColor="#f59e0b">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <DrawerGlassDot $color="#f59e0b" />
+                          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{item}</span>
+                        </div>
+                        <DrawerGlassBadge $color="#f59e0b">Missing</DrawerGlassBadge>
+                      </DrawerGlassPill>
+                    ))}
+                  </DrawerDetailSection>
+                )}
+
+                {/* Requirements met/not met */}
+                {comp.requirementsMet && comp.requirementsMet.length > 0 && !comp.matchedItems?.length && (
+                  <DrawerDetailSection>
+                    <DrawerDetailSectionTitle>Requirements Met</DrawerDetailSectionTitle>
+                    {comp.requirementsMet.map((item, i) => (
+                      <DrawerGlassPill key={i} $glowColor="#10b981">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <DrawerGlassDot $color="#10b981" />
+                          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{item}</span>
+                        </div>
+                      </DrawerGlassPill>
+                    ))}
+                  </DrawerDetailSection>
+                )}
+
+                {comp.requirementsNotMet && comp.requirementsNotMet.length > 0 && !comp.missingItems?.length && (
+                  <DrawerDetailSection>
+                    <DrawerDetailSectionTitle>Requirements Not Met</DrawerDetailSectionTitle>
+                    {comp.requirementsNotMet.map((item, i) => (
+                      <DrawerGlassPill key={i} $glowColor="#ef4444">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <DrawerGlassDot $color="#ef4444" />
+                          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{item}</span>
+                        </div>
+                      </DrawerGlassPill>
+                    ))}
+                  </DrawerDetailSection>
+                )}
+
+                <DrawerGlassTip>
+                  Pro optimization can improve this category by restructuring your resume to better highlight relevant qualifications.
+                </DrawerGlassTip>
+              </DrawerBody>
+              <DrawerFooter>
+                <DrawerGlassCTAButton onClick={() => { setActiveCategoryDrawer(null); userCredits.canAnalyze ? setIsUpgradeConfirmModalOpen(true) : setIsBuyCreditsModalOpen(true); }}>
+                  Improve with Pro
+                </DrawerGlassCTAButton>
+              </DrawerFooter>
+            </>
+          );
+        })()}
+      </Drawer>
 
       {/* Keywords Drawer */}
       <Drawer isOpen={isKeywordsModalOpen} onClose={() => setIsKeywordsModalOpen(false)}>

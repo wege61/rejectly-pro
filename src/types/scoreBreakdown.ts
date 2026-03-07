@@ -227,19 +227,19 @@ export function normalizeScoreBreakdown(raw: ScoreBreakdown): ScoreBreakdown {
 
 // Helper function to get score color
 export function getScoreColor(score: number): string {
-  if (score >= 70) return "#10b981"; // green - excellent
-  if (score >= 55) return "#22c55e"; // light green - strong
-  if (score >= 40) return "#f59e0b"; // orange - moderate
-  if (score >= 25) return "#f97316"; // dark orange - weak
+  if (score >= 75) return "#10b981"; // green - excellent
+  if (score >= 60) return "#22c55e"; // light green - strong
+  if (score >= 45) return "#f59e0b"; // amber - moderate
+  if (score >= 30) return "#f97316"; // orange - weak
   return "#ef4444"; // red - poor
 }
 
 // Helper function to get score label
 export function getScoreLabel(score: number): string {
-  if (score >= 70) return "Excellent Match";
-  if (score >= 55) return "Strong Match";
-  if (score >= 40) return "Good Match";
-  if (score >= 25) return "Moderate Match";
+  if (score >= 75) return "Excellent Match";
+  if (score >= 60) return "Strong Match";
+  if (score >= 45) return "Good Match";
+  if (score >= 30) return "Moderate Match";
   return "Poor Match";
 }
 

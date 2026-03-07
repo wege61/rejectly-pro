@@ -124,8 +124,9 @@ export const getSeverityInfo = (severity?: Severity) => {
  * Get score label based on numeric score
  */
 export const getScoreLabel = (score: number): string => {
-  if (score >= 80) return "Excellent Match";
-  if (score >= 60) return "Good Match";
+  if (score >= 75) return "Excellent Match";
+  if (score >= 60) return "Strong Match";
+  if (score >= 45) return "Good Match";
   return "Needs Improvement";
 };
 

@@ -75,23 +75,27 @@ ${text}
   .join("\n")}
 ${optimizedCVWarning}
 =============================================================================
-🚨 CRITICAL ANTI-INFLATION RULES (READ 3 TIMES!)
+CRITICAL ANTI-INFLATION RULES
 =============================================================================
-⛔ ONLY count skills EXPLICITLY written in CV - never assume or infer
-⛔ ONLY count years of experience that are DOCUMENTED with dates
-⛔ NEVER give credit for "potential" or "transferable skills"
-⛔ NEVER round up experience years (2.5 years = 2 years, NOT 3)
-⛔ If CV says "familiar with X" - that's 0.5 credit, NOT full credit
-⛔ If skill is in CV but no evidence of USE - that's 0.5 credit
-⛔ Generic soft skills (team player, hard worker) = 0 points
-⛔ A keyword match is NOT the same as proven experience
+1. ONLY count skills EXPLICITLY written in CV - never assume or infer
+2. ONLY count years of experience that are DOCUMENTED with dates
+3. NEVER give credit for "potential" or "transferable skills"
+4. NEVER round up experience years (2.5 years = 2 years, NOT 3)
+5. If CV says "familiar with X" - that's 0.5 credit, NOT full credit
+6. If skill is in CV but no evidence of USE - that's 0.5 credit
+7. Generic soft skills (team player, hard worker) = 0 points in hard skills
+8. A keyword match is NOT the same as proven experience
 
-REALITY CHECK - Most CVs score 25-50%:
-- 70%+ = EXCEPTIONAL (top 5% of applicants)
-- 55-69% = STRONG (would interview)
-- 40-54% = MODERATE (maybe if desperate)
-- 25-39% = WEAK (significant gaps)
-- 0-24% = POOR (wrong field/career mismatch)
+REALISTIC SCORE DISTRIBUTION (calibrate your scoring to this):
+- 75-100% = EXCEPTIONAL - Near-perfect match, all key requirements met with evidence (top 5%)
+- 60-74% = STRONG - Solid match, most requirements met, minor gaps (top 20%)
+- 45-59% = MODERATE - Decent overlap, some important gaps remain (average)
+- 30-44% = WEAK - Significant skill/experience gaps (below average)
+- 0-29% = POOR - Wrong field or major career mismatch
+
+IMPORTANT: The median CV-job fit score should be around 40-50%.
+A score of 60%+ means the candidate genuinely meets MOST job requirements with documented evidence.
+Do NOT inflate scores. A 70% score means a recruiter would confidently invite this person to interview.
 
 =============================================================================
 STEP 1: EXTRACT JOB REQUIREMENTS (Be Exhaustive!)
@@ -294,37 +298,41 @@ Score 2 points for each requirement MET (with evidence).
 Score 0 for requirements NOT MET or unclear.
 
 =============================================================================
-STEP 3: APPLY AUTOMATIC PENALTIES
+STEP 3: APPLY TARGETED PENALTIES (ONLY FOR DEALBREAKER GAPS)
 =============================================================================
-After calculating category scores, apply these MANDATORY penalties:
+Penalties are ONLY for critical dealbreakers that the category scoring doesn't
+already capture. Do NOT double-penalize: if a gap already reduced a category
+score significantly, do NOT add a penalty for the same gap.
+
+RULE: Only apply a penalty if the issue represents a DEALBREAKER that would
+cause an HR recruiter to immediately disqualify the candidate, beyond what
+the category scores already reflect.
 
 ┌────────────────────────────────────────────┬──────────┬────────────┐
-│ Penalty Condition                          │ Deduction│ Severity   │
+│ Penalty Condition                          │ Deduction│ When to Apply                │
 ├────────────────────────────────────────────┼──────────┼────────────┤
-│ P1: Missing 60%+ of REQUIRED hard skills   │ -15 pts  │ CRITICAL   │
-│ P2: Missing 40-59% of REQUIRED hard skills │ -8 pts   │ MAJOR      │
-│ P3: Experience gap > 3 years               │ -10 pts  │ CRITICAL   │
-│ P4: Experience gap 2-3 years               │ -5 pts   │ MAJOR      │
-│ P5: Zero industry experience (if required) │ -8 pts   │ MAJOR      │
-│ P6: Missing REQUIRED certification         │ -5 pts   │ MINOR      │
-│ P7: 2+ level seniority mismatch (Jr→Sr)    │ -12 pts  │ CRITICAL   │
-│ P8: No evidence of claimed skills          │ -5 pts   │ MINOR      │
-│ P9: Career gap > 2 years unexplained       │ -3 pts   │ MINOR      │
+│ P1: Missing 70%+ of REQUIRED hard skills   │ -8 pts   │ Fundamental skills mismatch  │
+│ P2: Experience gap > 4 years               │ -6 pts   │ e.g., 1yr applying for 5yr+  │
+│ P3: 2+ level seniority mismatch (Jr→Sr)    │ -5 pts   │ Clear seniority mismatch     │
+│ P4: Missing REQUIRED certification         │ -3 pts   │ Only if cert is mandatory    │
+│ P5: Zero industry exp (if strongly req'd)  │ -3 pts   │ Only if industry is critical │
+│ P6: No evidence of claimed skills          │ -3 pts   │ Skills listed but never used │
 └────────────────────────────────────────────┴──────────┴────────────┘
 
 PENALTY RULES:
-- P1 and P2 are MUTUALLY EXCLUSIVE (apply only one)
-- P3 and P4 are MUTUALLY EXCLUSIVE (apply only one)
-- All other penalties can stack
-- Maximum total penalty: -40 points
+- Maximum total penalty: -15 points (penalties are surgical, not punitive)
+- Only apply penalties that represent ADDITIONAL disqualifying factors
+- If category score already reflects the gap (e.g., 8/35 in hard skills),
+  do NOT add P1 on top — the low score already communicates the gap
 - Minimum final score: 0 (never negative)
+- When in doubt, do NOT apply the penalty
 
 =============================================================================
 STEP 4: CALCULATE FINAL SCORE
 =============================================================================
 
 rawScore = Category1 + Category2 + Category3 + Category4 + Category5
-totalPenalties = Sum of all applicable penalties (max -40)
+totalPenalties = Sum of applicable penalties (max -15, only for dealbreakers)
 finalScore = max(0, rawScore - totalPenalties)
 
 =============================================================================
@@ -334,11 +342,11 @@ STEP 5: DETERMINE HR VERDICT
 ┌─────────────────┬────────────────────────────────────────────────────────┐
 │ Score Range     │ Verdict & Action                                       │
 ├─────────────────┼────────────────────────────────────────────────────────┤
-│ 70-100%         │ "would_interview" - Strong candidate, schedule now     │
-│ 55-69%          │ "lean_interview" - Good potential, consider if pool weak│
-│ 40-54%          │ "maybe_with_reservations" - Significant gaps, backup   │
-│ 25-39%          │ "likely_reject" - Major gaps, only if desperate        │
-│ 0-24%           │ "would_not_interview" - Wrong fit, do not proceed      │
+│ 75-100%         │ "would_interview" - Strong candidate, schedule now     │
+│ 60-74%          │ "lean_interview" - Good match, would consider          │
+│ 45-59%          │ "maybe_with_reservations" - Some gaps, backup option   │
+│ 30-44%          │ "likely_reject" - Significant gaps, unlikely to proceed│
+│ 0-29%           │ "would_not_interview" - Wrong fit, do not proceed      │
 └─────────────────┴────────────────────────────────────────────────────────┘
 
 =============================================================================
@@ -436,11 +444,11 @@ RESPONSE FORMAT (STRICT JSON)
   "penalties": [
     {
       "id": "P1",
-      "condition": "Missing 60%+ of required hard skills",
+      "condition": "Missing 70%+ of required hard skills",
       "applied": <true|false>,
       "deduction": <0 or penalty amount>,
       "severity": "critical",
-      "reason": "<specific reason if applied>"
+      "reason": "<specific reason if applied, or why NOT applied if category score already reflects the gap>"
     }
   ],
   "calculation": {
@@ -456,7 +464,7 @@ RESPONSE FORMAT (STRICT JSON)
     "criticalGaps": ["<gap 1>", "<gap 2>"]
   },
   "displayData": {
-    "scoreColor": "<#10b981 for 70+|#22c55e for 55-69|#f59e0b for 40-54|#f97316 for 25-39|#ef4444 for <25>",
+    "scoreColor": "<#10b981 for 75+|#22c55e for 60-74|#f59e0b for 45-59|#f97316 for 30-44|#ef4444 for <30>",
     "scoreLabel": "<Excellent Match|Strong Match|Good Match|Moderate Match|Weak Match|Poor Match>",
     "primaryGap": "<single most important improvement needed>"
   },
@@ -473,57 +481,92 @@ Before responding, VERIFY:
 □ educationCerts.earnedPoints ≤ 10
 □ roleSpecific.earnedPoints ≤ 10
 □ rawScore = sum of all earnedPoints (max 100)
-□ totalPenalties ≤ 40
+□ totalPenalties ≤ 15
 □ finalScore = rawScore - totalPenalties (min 0)
-□ P1 and P2 are mutually exclusive
-□ P3 and P4 are mutually exclusive
+□ No double-penalizing (if category score is already low, skip penalty)
 □ All percentages = (earnedPoints / maxPoints) × 100
+□ Final score falls within realistic distribution (median ~45%)
 
 =============================================================================
-REALISTIC SCORING EXAMPLES
+REALISTIC SCORING EXAMPLES (CALIBRATION REFERENCE)
 =============================================================================
-EXAMPLE 1: Strong Match (Score: 68%)
-- Senior Dev applying for Senior Dev role
-- Has 4/5 required skills with evidence
-- 5 years (meets requirement)
-- Same industry
-- Missing 1 preferred cert
-→ Skills: 28, Experience: 25, Industry: 18, Education: 7, Role: 8 = 86
-→ Penalty: -8 (missing cert was required)
-→ Final: 78%... wait, that's too high. Let me recalculate.
 
-Actually with missing 1/5 skills: Skills would be ~24, making total ~72-8 = 64%
+EXAMPLE 1: Strong Match (Score: 72%)
+- Senior React Dev applying for Senior Frontend Dev role
+- Has 5/6 required skills WITH project evidence (React, TypeScript, Node.js, Git, REST APIs)
+- Missing 1 required skill: GraphQL (not mentioned at all) = 0.0
+- Has 2/3 preferred skills (Testing, CI/CD)
+- 6 years experience (meets 5+ requirement), Senior title matches
+- Same industry (SaaS/Tech)
+- CS degree matches requirement
+→ Skills: (4.5/6)*28 + (2/3)*7 = 21 + 4.7 = 25.7
+→ Experience: 15 (meets years) + 10 (exact seniority) = 25
+→ Industry: 12 (exact match) + 6 (solid domain) = 18
+→ Education: 6 (exact degree) + 1 (related cert) = 7
+→ Role: 6 (3 of 5 requirements met)
+→ Raw: 25.7 + 25 + 18 + 7 + 6 = 81.7
+→ Penalties: -8 (missing GraphQL is a core requirement with no alternative)
+→ Final: 73% - "lean_interview"
 
-EXAMPLE 2: Career Changer (Score: 32%)
+EXAMPLE 2: Career Changer (Score: 18%)
 - Marketing Manager applying for Software Developer
-- Has 1/6 required skills (just "communication")
-- 0 years relevant dev experience
-- Different industry
-- No CS degree
-→ Skills: 5, Experience: 3, Industry: 2, Education: 2, Role: 4 = 16
-→ Penalty: -15 (missing 80%+ skills), -10 (experience gap)
-→ Final: max(0, 16-25) = 0%... but let's say they had some coding bootcamp
-→ With bootcamp: Skills: 10, Education: 3 → total 22, penalties -20 = 2%
+- Has 1/8 required technical skills (only basic HTML)
+- 0 years relevant dev experience, 5 years marketing
+- Different industry entirely
+- Business degree, no CS background, no bootcamp
+→ Skills: (0.5/8)*28 + (0/3)*7 = 1.75 + 0 = 1.75
+→ Experience: 0 (no relevant years) + 2 (two+ levels mismatch) = 2
+→ Industry: 2 (different industry) + 0 (no domain) = 2
+→ Education: 2 (any degree, not relevant) + 0 (no certs) = 2
+→ Role: 2 (only communication skill matches)
+→ Raw: 1.75 + 2 + 2 + 2 + 2 = 9.75
+→ Penalties: -0 (raw score already reflects the mismatch, no double penalty)
+→ Final: 10% - "would_not_interview"
 
-EXAMPLE 3: Junior for Senior Role (Score: 28%)
-- Junior Dev (1 year) applying for Senior Dev (5+ years)
-- Has 3/5 skills but only listed, not demonstrated
-- 1 year vs 5 required
-- Same industry
-→ Skills: 14 (partial credit), Experience: 8, Industry: 15, Education: 6, Role: 5 = 48
-→ Penalty: -12 (seniority mismatch), -5 (experience gap 2-3 yrs)
-→ Final: 48 - 17 = 31%
+EXAMPLE 3: Junior for Senior Role (Score: 35%)
+- Junior Dev (1.5 years) applying for Senior Dev (5+ years required)
+- Has 4/6 required skills but only 2 with project evidence, 2 just listed
+- 1.5 years vs 5 required = 3.5 year gap
+- Same industry (tech)
+- CS degree matches
+→ Skills: (2*1.0 + 2*0.5)/6 * 28 + (1/3)*7 = 14 + 2.3 = 16.3
+→ Experience: 3 (4+ years below) + 2 (two+ levels below) = 5
+→ Industry: 12 (same industry) + 3 (some domain exposure) = 15
+→ Education: 6 (CS degree) + 0 (no certs) = 6
+→ Role: 4 (2 of 5 requirements met)
+→ Raw: 16.3 + 5 + 15 + 6 + 4 = 46.3
+→ Penalties: -5 (seniority mismatch is a dealbreaker beyond what score shows)
+→ Final: 41% - "likely_reject"
+
+EXAMPLE 4: Good but Not Perfect Match (Score: 55%)
+- Mid-level Python Dev (3 years) applying for Backend Engineer (3-5 years)
+- Has 4/7 required skills with evidence (Python, PostgreSQL, Git, Linux)
+- Missing: Docker, Kubernetes, AWS (critical cloud skills)
+- 3 years meets minimum requirement, Mid-level matches
+- Related industry (e-commerce → fintech)
+- CS degree, no required AWS cert
+→ Skills: (4/7)*28 + (1/2)*7 = 16 + 3.5 = 19.5
+→ Experience: 15 (meets years) + 10 (level matches) = 25
+→ Industry: 5 (transferable) + 3 (some domain) = 8
+→ Education: 6 (CS degree) + 0 (missing AWS cert) = 6
+→ Role: 4 (Agile experience + English)
+→ Raw: 19.5 + 25 + 8 + 6 + 4 = 62.5
+→ Penalties: -3 (missing required AWS cert is a stated requirement)
+→ Final: 59.5% → 60% - "lean_interview"
 
 =============================================================================
 FINAL REMINDER
 =============================================================================
 You are an HR GATEKEEPER, not a career coach. Your job is to:
-✓ Accurately assess fit based on DOCUMENTED evidence
-✓ Apply penalties consistently
-✓ Give realistic scores (most candidates score 25-50%)
-✗ NOT give benefit of the doubt
-✗ NOT score based on potential
-✗ NOT inflate scores to be nice
+1. Accurately assess fit based on DOCUMENTED evidence only
+2. Follow the mathematical formulas exactly — show your work in the details
+3. Give realistic scores (median should be ~45%, 60%+ is genuinely strong)
+4. Apply penalties ONLY for dealbreakers not already reflected in category scores
+5. Never inflate scores to be encouraging — honesty helps candidates improve
+6. Never deflate scores to seem strict — accuracy is the goal
+
+CONSISTENCY RULE: If you scored the same CV against two similar jobs,
+the scores should be within 5 points of each other. The formulas ensure this.
 
 Respond with ONLY the JSON object. No markdown, no explanations.`;
 }

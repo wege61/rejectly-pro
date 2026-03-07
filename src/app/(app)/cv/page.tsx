@@ -113,10 +113,10 @@ const ATSScoreBadge = styled.div<{ $score: number }>`
   font-weight: 600;
   
   color: ${({ $score }) => {
-    if ($score >= 70) return 'var(--primary-500)';
-    if ($score >= 41 && $score < 70) return '#2a57a0ff';
-    if ($score <= 40) return '#f97316';
-    return '#ef4444';
+    if ($score >= 75) return 'var(--primary-500)';
+    if ($score >= 60) return '#2a57a0ff';
+    if ($score >= 45) return '#EAB308';
+    return '#f97316';
   }};
   
 `;

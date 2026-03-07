@@ -198,8 +198,8 @@ export async function POST(request: NextRequest) {
     const scoreBreakdownCompletion = await openai.chat.completions.create({
       model: AI_MODEL,
       messages: [{ role: "user", content: scoreBreakdownPrompt }],
-      temperature: 0.5,
-      max_tokens: 2500,
+      temperature: 0.2, // Very low for consistent, deterministic scoring
+      max_tokens: 4000,
       response_format: { type: "json_object" },
     });
 
@@ -243,8 +243,8 @@ export async function POST(request: NextRequest) {
       const breakdownCompletion = await openai.chat.completions.create({
         model: AI_MODEL,
         messages: [{ role: "user", content: breakdownPrompt }],
-        temperature: 0.7,
-        max_tokens: 1500,
+        temperature: 0.4,
+        max_tokens: 2500,
         response_format: { type: "json_object" },
       });
 

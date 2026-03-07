@@ -32,14 +32,15 @@
       "Bash(node -e:*)",
       "Bash(npx next build:*)",
       "Bash(node:*)",
-      "Bash(pnpm add:*)",
-      "Bash(pnpm security:audit:*)",
-      "Bash(pnpm build:*)",
-      "Bash(pnpm audit:*)",
-      "Bash(pnpm update:*)",
-      "Bash(pnpm remove:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git stash && git pull origin main)",
+      "Bash(grep -n \"<<<<<<\" src/app/\\\\\\(app\\\\\\)/cover-letters/page.tsx src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx 2>/dev/null)",
+      "Bash(git checkout --theirs src/app/\\\\\\(app\\\\\\)/cover-letters/page.tsx)",
+      "Bash(git checkout --theirs src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx)",
+      "Bash(git add .claude/settings.local.json src/app/\\\\\\(app\\\\\\)/cover-letters/page.tsx src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx && git stash drop 2>&1)",
+      "Bash(git diff --staged src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx | head -100)",
+      "Bash(git checkout HEAD -- src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx)",
+      "Bash(git diff src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx)",
+      "Bash(git add src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx && git status --short 2>&1 | head -20)"
     ],
     "deny": [],
     "ask": []

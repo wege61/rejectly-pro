@@ -264,14 +264,14 @@ const PrimaryGap = styled.p`
 // --- Helpers ---
 
 const getScoreColor = (score: number): string => {
-  if (score >= 85) return "var(--primary-500, #35A29F)";
-  if (score >= 70) return "#2a57a0";
-  if (score >= 50) return "#EAB308";
+  if (score >= 75) return "var(--primary-500, #35A29F)";
+  if (score >= 60) return "#2a57a0";
+  if (score >= 45) return "#EAB308";
   return "#F97316";
 };
 
 const getProgressColor = (percentage: number): string => {
-  if (percentage >= 70) return "var(--primary-500, #35A29F)";
+  if (percentage >= 75) return "var(--primary-500, #35A29F)";
   if (percentage >= 50) return "#EAB308";
   return "#ef4444";
 };

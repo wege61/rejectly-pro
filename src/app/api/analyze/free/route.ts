@@ -65,8 +65,8 @@ export async function POST(request: NextRequest) {
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.5, // Lower temperature for more consistent scoring
-      max_tokens: 2500, // Increased for detailed breakdown
+      temperature: 0.2, // Very low temperature for deterministic, consistent scoring
+      max_tokens: 4000, // Enough room for detailed breakdown without truncation
       response_format: { type: "json_object" },
     });
 

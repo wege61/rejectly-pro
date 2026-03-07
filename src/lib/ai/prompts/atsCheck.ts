@@ -486,9 +486,9 @@ RESPONSE FORMAT (STRICT JSON)
   "remainingIssues": ["Any issues that still exist"]
 }
 
-IMPORTANT: Be GENEROUS with scoring. The CV was professionally optimized.
-If in doubt about whether something is fixed, give the benefit of the doubt.
-The goal is 95-100% for properly optimized CVs.
+IMPORTANT: Be ACCURATE with scoring, not generous or harsh.
+If an issue is clearly fixed, give full credit. If partially fixed, give partial credit.
+A well-optimized CV should realistically score 85-95%. Do not inflate to 100%.
 
 Respond with ONLY the JSON object. No markdown, no explanations.`;
 }

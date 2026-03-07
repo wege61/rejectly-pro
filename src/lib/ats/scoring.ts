@@ -30,10 +30,10 @@ export interface ScoreAnalysis {
 export function getPercentile(score: number): string {
   if (score >= 85) return "Top 5%";
   if (score >= 75) return "Top 10%";
-  if (score >= 70) return "Top 20%";
-  if (score >= 60) return "Top 35%";
-  if (score >= 55) return "Top 50%";
-  if (score >= 45) return "Below Average";
+  if (score >= 65) return "Top 20%";
+  if (score >= 55) return "Top 35%";
+  if (score >= 45) return "Top 50%";
+  if (score >= 35) return "Below Average";
   return "Bottom 25%";
 }
 
@@ -45,10 +45,10 @@ export function getPercentileMessage(score: number): string {
 
   if (score >= 85) return `Better than 95% of resumes`;
   if (score >= 75) return `Better than 90% of resumes`;
-  if (score >= 70) return `Better than 80% of resumes`;
-  if (score >= 60) return `Better than 65% of resumes`;
-  if (score >= 55) return `Better than 50% of resumes`;
-  if (score >= 45) return `In the middle 50%`;
+  if (score >= 65) return `Better than 80% of resumes`;
+  if (score >= 55) return `Better than 65% of resumes`;
+  if (score >= 45) return `Better than 50% of resumes`;
+  if (score >= 35) return `In the middle 50%`;
   return `Below 75% of resumes`;
 }
 
@@ -138,7 +138,7 @@ export function getScoreLabel(score: number): string {
   if (score >= 85) return "Excellent";
   if (score >= 70) return "Good";
   if (score >= 55) return "Fair";
-  if (score >= 40) return "Poor";
+  if (score >= 40) return "Needs Work";
   return "Critical";
 }
 
@@ -146,9 +146,10 @@ export function getScoreLabel(score: number): string {
  * Get score color
  */
 export function getScoreColor(score: number): string {
-  if (score >= 80) return "#10b981"; // green
-  if (score >= 60) return "#f59e0b"; // yellow/amber
-  if (score >= 40) return "#f97316"; // orange
+  if (score >= 75) return "#10b981"; // green
+  if (score >= 60) return "#22c55e"; // light green
+  if (score >= 45) return "#f59e0b"; // yellow/amber
+  if (score >= 30) return "#f97316"; // orange
   return "#ef4444"; // red
 }
 

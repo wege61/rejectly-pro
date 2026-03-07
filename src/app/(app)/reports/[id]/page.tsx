@@ -5321,6 +5321,15 @@ export default function ReportDetailPage() {
   const [atsReadabilityFindings, setAtsReadabilityFindings] = useState<ATSReadabilityFinding[]>([]);
   const [isLoadingAtsReadability, setIsLoadingAtsReadability] = useState(false);
 
+  // --- NEW BULLET ANALYSIS STATE ---
+  interface BulletAnalysisFinding {
+    original: string;
+    critique: string;
+    suggestion: string;
+  }
+  const [bulletAnalysisFindings, setBulletAnalysisFindings] = useState<BulletAnalysisFinding[]>([]);
+  const [isLoadingBulletAnalysis, setIsLoadingBulletAnalysis] = useState(false);
+
 
   const [originalCvText, setOriginalCvText] = useState<string | null>(null);
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
@@ -5387,6 +5396,34 @@ export default function ReportDetailPage() {
       }
     }
   }, [isAtsDrawerOpen, userState, report, atsReadabilityFindings.length]);
+
+  // Fetch Bullet Point analysis when drawer opens
+  useEffect(() => {
+    if (isBulletPointsDrawerOpen && userState === 'free' && report && !report.pro) {
+      if (bulletAnalysisFindings.length > 0) return;
+
+      const fetchBulletAnalysis = async () => {
+        setIsLoadingBulletAnalysis(true);
+        try {
+          const res = await fetch('/api/bullet-analysis', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reportId: report.id })
+          });
+          const data = await res.json();
+          if (data.success && data.findings) {
+            setBulletAnalysisFindings(data.findings);
+          }
+        } catch (error) {
+          console.error("Failed to fetch bullet analysis", error);
+        } finally {
+          setIsLoadingBulletAnalysis(false);
+        }
+      };
+
+      fetchBulletAnalysis();
+    }
+  }, [isBulletPointsDrawerOpen, userState, report, bulletAnalysisFindings.length]);
 
   // Fetch user credits
   const fetchCredits = async () => {
@@ -7773,19 +7810,41 @@ export default function ReportDetailPage() {
         </DrawerHeader>
         <DrawerBody>
           {userState === 'free' ? (
-            <>
-              {[
-                { title: 'Quantify Achievements', desc: 'Replace vague descriptions with specific numbers, percentages, and metrics that demonstrate your impact.', example: '"Managed team" → "Led a team of 8, increasing output by 23%"' },
-                { title: 'Use Action Verbs', desc: 'Start each bullet with a powerful action verb that immediately communicates your contribution.', example: '"Was responsible for" → "Spearheaded", "Orchestrated", "Delivered"' },
-                { title: 'Show Results, Not Tasks', desc: 'Focus on what you achieved, not just what you did. Hiring managers want to see outcomes.', example: '"Handled customer complaints" → "Resolved 50+ customer escalations monthly, maintaining 97% satisfaction"' },
-              ].map((tip, i) => (
-                <DrawerGlassCard key={i}>
-                  <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-color)', marginBottom: '8px' }}>{tip.title}</div>
-                  <div style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)', marginBottom: '12px' }}>{tip.desc}</div>
-                  <DrawerGlassExample>{tip.example}</DrawerGlassExample>
-                </DrawerGlassCard>
-              ))}
-            </>
+             <DrawerGlassCard style={{ padding: '0', overflow: 'hidden' }}>
+               {isLoadingBulletAnalysis ? (
+                 <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    <div style={{ display: 'inline-block', width: '24px', height: '24px', border: '3px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--text-color)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                    <div style={{ marginTop: '12px', fontSize: '14px', fontWeight: 500 }}>Analyzing bullet point impact...</div>
+                    <style dangerouslySetInnerHTML={{__html: `@keyframes spin { to { transform: rotate(360deg); } }`}} />
+                 </div>
+               ) : bulletAnalysisFindings.length > 0 ? (
+                 bulletAnalysisFindings.map((finding, index) => (
+                   <div key={index} style={{
+                     padding: '24px 20px',
+                     borderBottom: index < bulletAnalysisFindings.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                   }}>
+                     <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', marginBottom: '16px', fontStyle: 'italic', paddingLeft: '12px', borderLeft: '2px solid rgba(255,255,255,0.2)' }}>
+                       "{finding.original}"
+                     </div>
+                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', backgroundColor: 'rgba(245, 158, 11, 0.04)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(245, 158, 11, 0.1)' }}>
+                       <div style={{ marginTop: '2px', fontSize: '16px' }}>⚠️</div>
+                       <div>
+                         <div style={{ fontSize: '14.5px', color: '#fcd34d', fontWeight: 500, lineHeight: '1.5', marginBottom: '8px' }}>
+                           {finding.critique}
+                         </div>
+                         <div style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.5' }}>
+                           {finding.suggestion}
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 ))
+               ) : (
+                 <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    No specific bullet point issues found.
+                 </div>
+               )}
+             </DrawerGlassCard>
           ) : (
             <BulletList style={{ gap: '14px', paddingLeft: '24px' }}>
               {rewrittenBullets.map((bullet: string, index: number) => (

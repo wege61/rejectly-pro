@@ -109,106 +109,457 @@ const CheckCircleIcon = () => (
 );
 
 const Container = styled.div`
+  position: relative;
+  padding-top: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing["2xl"]};
+  padding-left: ${({ theme }) => theme.spacing["2xl"]};
+  padding-right: ${({ theme }) => theme.spacing["2xl"]};
   padding-bottom: 100px; /* Space for FAB */
+  overflow-x: hidden;
 
-  
   @media (max-width: 450px) {
     padding: ${({ theme }) => theme.spacing["lg"]};
     padding-top: 24px;
   }
 `;
 
-const TwoColumnLayout = styled.div`
-  display: grid;
-  grid-template-columns: 20% 1px 1fr;
-  gap: ${({ theme }) => theme.spacing.xl};
-  align-items: start;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: 1fr;
-    gap: ${({ theme }) => theme.spacing.lg};
-  }
-`;
-
-const ColumnDivider = styled.div`
-  width: 1px;
-  height: 100%;
-  min-height: 500px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    ${({ theme }) => theme.colors.border} 5%,
-    ${({ theme }) => theme.colors.border} 95%,
-    transparent 100%
-  );
-
-  @media (max-width: 1200px) {
-    display: none;
-  }
-`;
-
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-`;
-
-const ColumnHeader = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-`;
 
 const Header = styled.div`
   position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
-`;
-
-const TitleElements = styled.div``;
-
-const Title = styled.h1`
- font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  gap: 24px;
+  margin-bottom: 48px;
+  margin-top: 24px;
 
   @media (max-width: 768px) {
-    order: 1;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
   }
 `;
 
-const CreditsCardWrapper = styled.div``;
+const TitleElements = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 12px;
+`;
 
-const Description = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
+const Title = styled.h1`
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.1;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
+`;
+
+const Subtitle = styled.p`
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0;
 
   @media (max-width: 768px) {
     order: 3;
   }
 `;
 
+const CreditsCardWrapper = styled.div`
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: auto;
+    
+    > div {
+      width: auto;
+    }
+  }
+`;
+
+
+/* ── Liquid Glass column section wrapper (same pattern as Reports/ATS) ── */
+const ContentSection = styled.div`
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(18, 18, 22, 0.55);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35) 50%, transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
+`;
+
+const ContentHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+`;
+
+const ContentBody = styled.div`
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
 
 const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: -0.02em;
 `;
 
 const SectionDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
 `;
 
-const Grid = styled.div`
+/* ── Report filter tab strip (horizontal SCROLL) ── */
+const ReportFilterStrip = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  overflow-x: auto;
+  padding-top: 12px;
+  padding-bottom: 6px;
+  margin-bottom: 28px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+`;
+
+/* "All Reports" hub tab — visually distinct from individual report tabs */
+const AllReportsTab = styled.button<{ $isActive: boolean }>`
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 80px;
+  height: 80px;
+  border-radius: 22px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* distinct: soft white glass pill */
+  background: ${({ $isActive }) => $isActive
+    ? 'rgba(255,255,255,0.18)'
+    : 'rgba(255,255,255,0.06)'};
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid ${({ $isActive }) => $isActive
+    ? 'rgba(255,255,255,0.40)'
+    : 'rgba(255,255,255,0.12)'};
+  box-shadow: ${({ $isActive }) => $isActive
+    ? '0 4px 20px rgba(255,255,255,0.10), inset 0 1px 0 rgba(255,255,255,0.5)'
+    : '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)'};
+
+  &:hover {
+    background: rgba(255,255,255,0.14);
+    border-color: rgba(255,255,255,0.28);
+  }
+
+  /* Grid icon svg inside */
+  svg {
+    width: 22px;
+    height: 22px;
+    color: ${({ $isActive }) => $isActive ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.50)'};
+    transition: color 0.2s ease;
+  }
 `;
+
+const AllReportsLabel = styled.span<{ $isActive: boolean }>`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${({ $isActive }) => $isActive ? 'rgba(255,255,255,0.90)' : 'rgba(255,255,255,0.35)'};
+  transition: color 0.2s ease;
+`;
+
+const AllReportsCount = styled.span`
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  background: var(--accent);
+  border: 2px solid rgba(12, 12, 18, 0.9);
+  font-size: 9px;
+  font-weight: 800;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ReportFilterTab = styled.button<{ $isActive: boolean; $hasLetters: boolean }>`
+  flex-shrink: 0;
+  min-width: 180px;
+  max-width: 220px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+
+  background: ${({ $isActive }) => $isActive
+    ? 'rgba(var(--accent-rgb), 0.13)'
+    : 'rgba(30, 30, 40, 0.72)'};
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid ${({ $isActive }) => $isActive
+    ? 'rgba(var(--accent-rgb), 0.40)'
+    : 'rgba(255,255,255,0.10)'};
+  box-shadow:
+    0 2px 1px rgba(255,255,255,0.05) inset,
+    0 6px 24px rgba(0,0,0,0.45);
+
+  /* Specular top line when active */
+  ${({ $isActive }) => $isActive && `
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 15%; right: 15%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45) 50%, transparent);
+    }
+  `}
+
+  &:hover {
+    border-color: rgba(255,255,255,0.20);
+    box-shadow:
+      0 2px 1px rgba(255,255,255,0.07) inset,
+      0 12px 36px rgba(0,0,0,0.55);
+  }
+`;
+
+const ReportTabTop = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+`;
+
+const ReportTabScore = styled.span<{ $category: 'excellent' | 'good' | 'needsWork' }>`
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  color: ${({ $category }) => {
+    switch ($category) {
+      case 'excellent': return 'var(--primary-500)';
+      case 'good':      return '#3b82f6';
+      case 'needsWork': return '#f97316';
+    }
+  }};
+  &::after { content: '%'; font-size: 12px; margin-left: 1px; opacity: 0.7; }
+`;
+
+const ReportTabLetterCount = styled.span<{ $count: number }>`
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  letter-spacing: 0.03em;
+  background: ${({ $count }) => $count > 0
+    ? 'rgba(16, 185, 129, 0.18)'
+    : 'rgba(255,255,255,0.05)'};
+  border: 1px solid ${({ $count }) => $count > 0
+    ? 'rgba(16, 185, 129, 0.35)'
+    : 'rgba(255,255,255,0.08)'};
+  color: ${({ $count }) => $count > 0 ? '#34d399' : 'rgba(255,255,255,0.25)'};
+`;
+
+const ReportTabTitle = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.80);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+`;
+
+const ReportTabSubtitle = styled.div`
+  font-size: 10.5px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  svg { width: 10px; height: 10px; flex-shrink: 0; opacity: 0.7; }
+`;
+
+const ReportTabGenerateBtn = styled.button`
+  margin-top: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.5));
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.9), rgba(var(--accent-rgb), 0.6));
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+
+  &:active { transform: scale(0.98); }
+`;
+
+/* ── Cover letter grid: 3 columns desktop ── */
+const LetterGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+/* Source report tag on letter cards */
+const LetterSourceTag = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+  &::before {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.5;
+  }
+`;
+
+/* Filter active bar */
+const FilterBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(var(--accent-rgb), 0.07);
+  border: 1px solid rgba(var(--accent-rgb), 0.18);
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+`;
+
+const FilterClearButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255,255,255,0.4);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  &:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.07); }
+`;
+
+/* FAB for generate new */
+const FAB = styled.button`
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 60px;
+  height: 60px;
+  border-radius: 9999px;
+  z-index: 90;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.22) 0%,
+    rgba(255,255,255,0.0) 100%
+  ), rgba(var(--accent-rgb), 0.38);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 32px rgba(var(--accent-rgb), 0.4),
+    0 2px 8px rgba(0,0,0,0.25);
+  &:hover {
+    transform: scale(1.08) translateY(-3px);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.65),
+      0 16px 48px rgba(var(--accent-rgb), 0.5),
+      0 4px 16px rgba(0,0,0,0.3);
+  }
+  &:active { transform: scale(0.96); }
+  svg { width: 26px; height: 26px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); }
+  @media (max-width: 768px) {
+    bottom: 24px; right: 20px; width: 56px; height: 56px;
+  }
+`;
+
+const PlusIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
 
 // Mini Report Card Animations (matching reports page style)
 const floatAnimationMini = keyframes`
@@ -226,55 +577,470 @@ const scrollTextMini = keyframes`
   100% { transform: translateY(-50%); }
 `;
 
+/* ── Liquid Glass Empty State (matching Reports page) ── */
+const glowPulse = keyframes`
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%       { opacity: 0.55; transform: scale(1.06); }
+`;
+
+const floatOrb = keyframes`
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-18px) rotate(3deg); }
+  66%       { transform: translateY(8px) rotate(-2deg); }
+`;
+
+const shimmerSlide = keyframes`
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+`;
+
+const EmptyHero = styled.div`
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 36px 40px 44px;
+  text-align: center;
+
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(var(--accent-rgb), 0.10) 0%, transparent 70%),
+    rgba(16, 16, 22, 0.60);
+  backdrop-filter: blur(48px) saturate(180%);
+  -webkit-backdrop-filter: blur(48px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 32px 80px rgba(0,0,0,0.5);
+
+  @media (max-width: 768px) {
+    padding: 32px 20px 40px;
+  }
+`;
+
+const OrbA = styled.div`
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  top: -80px;
+  right: -60px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.14) 0%, transparent 70%);
+  animation: ${floatOrb} 9s ease-in-out infinite;
+  pointer-events: none;
+`;
+
+const OrbB = styled.div`
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  bottom: -60px;
+  left: -40px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.12) 0%, transparent 70%);
+  animation: ${floatOrb} 12s ease-in-out infinite reverse;
+  pointer-events: none;
+`;
+
+const HeroSpecular = styled.div`
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.40) 50%, transparent);
+  pointer-events: none;
+`;
+
+const HeroIconBadge = styled.div`
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 100%),
+    rgba(var(--accent-rgb), 0.20);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 28px rgba(var(--accent-rgb), 0.30),
+    0 3px 10px rgba(0,0,0,0.35);
+
+  svg {
+    width: 36px;
+    height: 36px;
+    color: rgba(255,255,255,0.92);
+    filter: drop-shadow(0 1px 4px rgba(var(--accent-rgb), 0.5));
+  }
+`;
+
+const HeroTitle = styled.h2`
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 10px;
+  color: rgba(255,255,255,0.95);
+
+  @media (max-width: 768px) { font-size: 22px; }
+`;
+
+const HeroSubtitle = styled.p`
+  font-size: 14px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.60;
+  max-width: 420px;
+  margin: 0 auto 24px;
+  letter-spacing: -0.01em;
+`;
+
+const StepsRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+  max-width: 580px;
+  margin-bottom: 28px;
+  position: relative;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+`;
+
+const StepConnector = styled.div`
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 100%);
+  margin-top: 22px;
+  flex-shrink: 1;
+
+  @media (max-width: 640px) { display: none; }
+`;
+
+const Step = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  width: 130px;
+
+  @media (max-width: 640px) {
+    width: 100%;
+    max-width: 260px;
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+  }
+`;
+
+const StepNum = styled.div<{ $n: 1 | 2 | 3 }>`
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+
+  background: ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(var(--accent-rgb), 0.18)';
+      case 2: return 'rgba(102, 126, 234, 0.18)';
+      case 3: return 'rgba(16, 185, 129, 0.18)';
+    }
+  }};
+  border: 1px solid ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'rgba(var(--accent-rgb), 0.35)';
+      case 2: return 'rgba(102, 126, 234, 0.35)';
+      case 3: return 'rgba(16, 185, 129, 0.35)';
+    }
+  }};
+  color: ${({ $n }) => {
+    switch ($n) {
+      case 1: return 'var(--accent)';
+      case 2: return '#818cf8';
+      case 3: return '#34d399';
+    }
+  }};
+`;
+
+const StepText = styled.div`
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.48);
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+  text-align: center;
+
+  @media (max-width: 640px) { text-align: left; }
+`;
+
+const HeroCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.22) 0%,
+    rgba(255,255,255,0.0) 100%
+  ), rgba(var(--accent-rgb), 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.55),
+    0 8px 32px rgba(var(--accent-rgb), 0.45),
+    0 2px 8px rgba(0,0,0,0.3);
+
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.70),
+      0 16px 56px rgba(var(--accent-rgb), 0.55),
+      0 4px 16px rgba(0,0,0,0.35);
+  }
+
+  &:active { transform: scale(0.98); }
+
+  svg { width: 20px; height: 20px; flex-shrink: 0; }
+`;
+
+const HeroCTASecondary = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.60);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.22);
+  }
+`;
+
+const HeroCTARow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+/* ── Inline empty state (inside ContentBody when letters = 0) ── */
+const InlineEmptyHero = styled.div`
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 52px 32px 56px;
+  text-align: center;
+
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(var(--accent-rgb), 0.08) 0%, transparent 70%),
+    rgba(16, 16, 22, 0.40);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 32px rgba(0,0,0,0.3);
+`;
+
+const InlineOrbA = styled.div`
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  top: -60px;
+  right: -40px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.10) 0%, transparent 70%);
+  animation: ${floatOrb} 9s ease-in-out infinite;
+  pointer-events: none;
+`;
+
+const InlineOrbB = styled.div`
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  bottom: -40px;
+  left: -20px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.09) 0%, transparent 70%);
+  animation: ${floatOrb} 12s ease-in-out infinite reverse;
+  pointer-events: none;
+`;
+
+const InlineHeroSpecular = styled.div`
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.30) 50%, transparent);
+  pointer-events: none;
+`;
+
+const InlineIconBadge = styled.div`
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 100%),
+    rgba(var(--accent-rgb), 0.16);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.45),
+    0 6px 22px rgba(var(--accent-rgb), 0.25),
+    0 2px 8px rgba(0,0,0,0.3);
+
+  svg {
+    width: 28px;
+    height: 28px;
+    color: rgba(255,255,255,0.88);
+    filter: drop-shadow(0 1px 3px rgba(var(--accent-rgb), 0.45));
+  }
+`;
+
+const InlineHeroTitle = styled.h3`
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  margin-bottom: 8px;
+  color: rgba(255,255,255,0.93);
+`;
+
+const InlineHeroSubtitle = styled.p`
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.60;
+  max-width: 380px;
+  margin: 0 auto 22px;
+  letter-spacing: -0.01em;
+`;
+
+const InlineCTAButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.20) 0%,
+    rgba(255,255,255,0.0) 100%
+  ), rgba(var(--accent-rgb), 0.70);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.50),
+    0 6px 24px rgba(var(--accent-rgb), 0.40),
+    0 2px 6px rgba(0,0,0,0.25);
+
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,0.65),
+      0 12px 40px rgba(var(--accent-rgb), 0.50),
+      0 3px 12px rgba(0,0,0,0.3);
+  }
+
+  &:active { transform: scale(0.98); }
+
+  svg { width: 16px; height: 16px; flex-shrink: 0; }
+`;
+
 // Mini Report Card Styled Components (matching reports page style - compact version)
-const MiniReportCard = styled.div<{ $isPremium: boolean }>`
+const MiniReportCard = styled.div<{ $isPremium: boolean; $isActive?: boolean; $hasLetters?: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 12px;
-  background: var(--bg-alt);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 140px;
 
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 8px 16px rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -15px 60px -15px rgba(255, 255, 255, 0.1) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+  /* Liquid Glass card */
+  background: ${({ $isActive }) => $isActive
+    ? 'rgba(var(--accent-rgb), 0.15)'
+    : 'rgba(30, 30, 40, 0.78)'};
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid ${({ $isActive }) => $isActive
+    ? 'rgba(var(--accent-rgb), 0.45)'
+    : 'rgba(255, 255, 255, 0.14)'};
+  box-shadow:
+    0 2px 1px rgba(255, 255, 255, 0.06) inset,
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.4);
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 2px 1px rgba(255, 255, 255, 0.08) inset,
+      0 16px 48px rgba(0, 0, 0, 0.65),
+      0 4px 16px rgba(0, 0, 0, 0.45);
   }
 
-  &:hover .mini-report-content {
-    transform: translateY(-24px);
-  }
-
-  &:hover .mini-report-cta {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  &:hover .mini-report-overlay {
-    background: rgba(0, 0, 0, 0.03);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover .mini-report-overlay {
-      background: rgba(255, 255, 255, 0.05);
-    }
-  }
+  &:hover .mini-report-content { transform: translateY(-24px); }
+  &:hover .mini-report-cta { transform: translateY(0); opacity: 1; }
 
   @media (max-width: 1024px) {
-    &:hover .mini-report-content {
-      transform: none;
-    }
+    &:hover .mini-report-content { transform: none; }
   }
 `;
 
@@ -369,6 +1135,7 @@ const MiniReportCTAContainer = styled.div`
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
+  background: linear-gradient(to top, rgba(30, 30, 40, 0.95) 60%, transparent);
 
   @media (max-width: 768px) {
     transform: translateY(0);
@@ -523,48 +1290,35 @@ const CoverLetterCard = styled.div<{ $tone: string }>`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border-radius: 12px;
-  background: var(--bg-alt);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-height: 160px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 210px;
 
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05),
-    0 8px 16px rgba(0, 0, 0, 0.05);
-
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 -15px 60px -15px rgba(255, 255, 255, 0.1) inset;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+  /* Liquid Glass card */
+  background: rgba(30, 30, 40, 0.78);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 2px 1px rgba(255, 255, 255, 0.06) inset,
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.4);
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 2px 1px rgba(255, 255, 255, 0.08) inset,
+      0 16px 48px rgba(0, 0, 0, 0.65),
+      0 4px 16px rgba(0, 0, 0, 0.45);
   }
 
-  &:hover .letter-content {
-    transform: translateY(-28px);
-  }
-
-  &:hover .letter-cta {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  &:hover .letter-overlay {
-    background: rgba(0, 0, 0, 0.03);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    &:hover .letter-overlay {
-      background: rgba(255, 255, 255, 0.05);
-    }
-  }
+  &:hover .letter-content { transform: translateY(-28px); }
+  &:hover .letter-cta { transform: translateY(0); opacity: 1; }
 
   @media (max-width: 1024px) {
-    &:hover .letter-content {
-      transform: none;
-    }
+    &:hover .letter-content { transform: none; }
   }
 `;
 
@@ -572,34 +1326,37 @@ const CoverLetterToneBadge = styled.div<{ $tone: string }>`
   position: absolute;
   top: 10px;
   right: 12px;
+  /* Liquid Glass pill */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   background: ${({ $tone }) => {
     switch ($tone) {
-      case 'professional':
-        return 'rgba(59, 130, 246, 0.15)';
-      case 'friendly':
-        return 'rgba(16, 185, 129, 0.15)';
-      case 'formal':
-        return 'rgba(139, 92, 246, 0.15)';
-      default:
-        return 'rgba(107, 114, 128, 0.15)';
+      case 'professional': return 'rgba(59, 130, 246, 0.12)';
+      case 'friendly':     return 'rgba(16, 185, 129, 0.12)';
+      case 'formal':       return 'rgba(139, 92, 246, 0.12)';
+      default:             return 'rgba(107, 114, 128, 0.12)';
+    }
+  }};
+  border: 1px solid ${({ $tone }) => {
+    switch ($tone) {
+      case 'professional': return 'rgba(59, 130, 246, 0.25)';
+      case 'friendly':     return 'rgba(16, 185, 129, 0.25)';
+      case 'formal':       return 'rgba(139, 92, 246, 0.25)';
+      default:             return 'rgba(107, 114, 128, 0.25)';
     }
   }};
   color: ${({ $tone }) => {
     switch ($tone) {
-      case 'professional':
-        return '#3b82f6';
-      case 'friendly':
-        return 'var(--success)';
-      case 'formal':
-        return '#8b5cf6';
-      default:
-        return '#6b7280';
+      case 'professional': return '#60a5fa';
+      case 'friendly':     return '#34d399';
+      case 'formal':       return '#a78bfa';
+      default:             return '#9ca3af';
     }
   }};
   padding: 4px 10px;
   font-size: 10px;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 9999px;
   z-index: 10;
   text-transform: capitalize;
 `;
@@ -672,6 +1429,7 @@ const CoverLetterCTAContainer = styled.div`
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
+  background: linear-gradient(to top, rgba(30, 30, 40, 0.95) 60%, transparent);
 
   @media (max-width: 768px) {
     transform: translateY(0);
@@ -685,14 +1443,25 @@ const CoverLetterCTAContainer = styled.div`
 const CoverLetterCTALink = styled.span`
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   color: var(--accent);
-  font-weight: 500;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(var(--accent-rgb), 0.12);
+  border: 1px solid rgba(var(--accent-rgb), 0.2);
+  transition: all 0.2s ease;
+
+  svg { width: 14px; height: 14px; }
 
   &:hover {
-    text-decoration: underline;
+    background: rgba(var(--accent-rgb), 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
+
+  &:active { transform: scale(0.98); }
 `;
 
 const CoverLetterActions = styled.div`
@@ -931,8 +1700,21 @@ export default function CoverLettersPage() {
   const [selectedLetterForEdit, setSelectedLetterForEdit] = useState<CoverLetter | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
+  // Active report filter (for right column)
+  const [filterReportId, setFilterReportId] = useState<string | null>(null);
+
   // User credits from context
   const { credits: userCredits } = useCredits();
+
+  // Derived values
+  const getCoverLetterCount = (reportId: string) =>
+    coverLetters.filter(l => l.report_id === reportId).length;
+
+  const filteredCoverLetters = filterReportId
+    ? coverLetters.filter(l => l.report_id === filterReportId)
+    : coverLetters;
+
+  const filterReport = filterReportId ? reports.find(r => r.id === filterReportId) : null;
 
   const fetchCoverLetters = useCallback(async () => {
     try {
@@ -981,6 +1763,9 @@ export default function CoverLettersPage() {
   const handleReportClick = (reportId: string) => {
     const report = reports.find(r => r.id === reportId);
     if (!report) return;
+
+    // Highlight this report and filter the right column
+    setFilterReportId(filterReportId === reportId ? null : reportId);
 
     if (report.is_premium) {
       setSelectedReportId(reportId);
@@ -1130,175 +1915,296 @@ export default function CoverLettersPage() {
     <Container>
       <Header>
         <TitleElements>
-        
-            <Title>Cover Letters</Title>
-            <Description>
-              Generate AI-powered cover letters from your reports and manage your applications.
-            </Description>
-            </TitleElements>
-          <CreditsCardWrapper>
+          <Title>Cover Letters</Title>
+          <Subtitle>
+            Generate AI-powered cover letters from your reports and manage your applications.
+          </Subtitle>
+        </TitleElements>
+        <CreditsCardWrapper>
           <CreditsCard />
         </CreditsCardWrapper>
-        
       </Header>
 
-      <TwoColumnLayout>
-        {/* Left Column - Reports (30%) */}
-        <Column>
-          <ColumnHeader>
-            <SectionTitle>Reports</SectionTitle>
-            <SectionDescription>
-              Select a report to generate a cover letter
-            </SectionDescription>
-          </ColumnHeader>
+      {/* ── No reports at all: full liquid glass hero ── */}
+      {reports.length === 0 && (
+        <EmptyHero>
+          <OrbA />
+          <OrbB />
+          <HeroSpecular />
 
-          {reports.length === 0 ? (
-            <Card variant="bordered">
-              <EmptyState
-                icon={<EmptyState.DocumentIcon />}
-                title="No reports yet"
-                description="Create your first analysis to start generating cover letters."
-                action={{
-                  label: "Create Analysis",
-                  onClick: () => window.location.href = "/analyze",
-                }}
-              />
-            </Card>
-          ) : (
-            <Grid>
-              {reports.map((report) => {
-                const getScoreCategory = (score: number) => {
-                  if (score >= 75) return 'excellent';
-                  if (score >= 45) return 'good';
-                  return 'needsWork';
-                };
+          <HeroIconBadge>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+          </HeroIconBadge>
 
-                return (
-                  <MiniReportCard
-                    key={report.id}
-                    $isPremium={report.is_premium}
-                    onClick={() => handleReportClick(report.id)}
+          <HeroTitle>Create your first cover letter</HeroTitle>
+          <HeroSubtitle>
+            Cover letters are generated from your Job Match reports. Run an analysis first, then come back here to craft a personalized letter in seconds.
+          </HeroSubtitle>
+
+          <StepsRow>
+            <Step>
+              <StepNum $n={1}>1</StepNum>
+              <StepText>Run a Job Match analysis on your CV</StepText>
+            </Step>
+            <StepConnector />
+            <Step>
+              <StepNum $n={2}>2</StepNum>
+              <StepText>Select a report and choose your tone</StepText>
+            </Step>
+            <StepConnector />
+            <Step>
+              <StepNum $n={3}>3</StepNum>
+              <StepText>AI generates your personalized letter</StepText>
+            </Step>
+          </StepsRow>
+
+          <HeroCTARow>
+            <HeroCTAButton onClick={() => router.push(ROUTES.APP.ANALYZE)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Start New Analysis
+            </HeroCTAButton>
+            <HeroCTASecondary onClick={() => router.push(ROUTES.APP.REPORTS)}>
+              View my reports
+            </HeroCTASecondary>
+          </HeroCTARow>
+        </EmptyHero>
+      )}
+
+      {/* ── Report tab strip ── */}
+      {reports.length > 0 && (
+        <ReportFilterStrip>
+          {/* "All" hub tab — visually distinct */}
+          <AllReportsTab
+            $isActive={!filterReportId}
+            onClick={() => setFilterReportId(null)}
+            title={`All ${reports.length} reports · ${coverLetters.length} total letters`}
+          >
+            {coverLetters.length > 0 && <AllReportsCount>{coverLetters.length}</AllReportsCount>}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+            </svg>
+            <AllReportsLabel $isActive={!filterReportId}>All</AllReportsLabel>
+          </AllReportsTab>
+
+          {/* One tab per report */}
+          {reports.map((report) => {
+            const getScoreCategory = (score: number) => {
+              if (score >= 70) return 'excellent' as const;
+              if (score >= 41) return 'good' as const;
+              return 'needsWork' as const;
+            };
+            const letterCount = getCoverLetterCount(report.id);
+            const isActive = filterReportId === report.id;
+
+            return (
+              <ReportFilterTab
+                key={report.id}
+                $isActive={isActive}
+                $hasLetters={letterCount > 0}
+                onClick={() => setFilterReportId(isActive ? null : report.id)}
+              >
+                <ReportTabTop>
+                  <ReportTabScore $category={getScoreCategory(report.fit_score)}>
+                    {report.fit_score}
+                  </ReportTabScore>
+                  <ReportTabLetterCount $count={letterCount}>
+                    {letterCount > 0 ? `${letterCount} ✓` : 'No letters'}
+                  </ReportTabLetterCount>
+                </ReportTabTop>
+                <ReportTabTitle>{report.job?.title || 'Job Analysis'}</ReportTabTitle>
+                <ReportTabSubtitle>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                  {report.cv?.title || 'Your CV'}
+                </ReportTabSubtitle>
+                {isActive && (
+                  <ReportTabGenerateBtn
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleReportClick(report.id);
+                    }}
                   >
-                    <MiniReportCardBackground cvTitle={report.cv?.title} />
-                    {report.is_premium && <MiniReportProBadge>PRO</MiniReportProBadge>}
+                    ✦ Write with this report
+                  </ReportTabGenerateBtn>
+                )}
+              </ReportFilterTab>
+            );
+          })}
+        </ReportFilterStrip>
+      )}
 
-                    <MiniReportCardContent>
-                      <MiniReportContentInner className="mini-report-content">
-                        <MiniReportScoreDisplay>
-                          <MiniReportScoreValue $category={getScoreCategory(report.fit_score)}>
-                            {report.fit_score}
-                          </MiniReportScoreValue>
-                        </MiniReportScoreDisplay>
-                        <MiniReportTitle>
-                          {report.job?.title || "Job Analysis"}
-                        </MiniReportTitle>
-                        <MiniReportMeta>
-                          {formatDate(report.created_at)}
-                        </MiniReportMeta>
-                      </MiniReportContentInner>
+      {/* ── Letters section (full width) ── */}
+      <ContentSection>
+        <ContentHeader>
+          <div>
+            <SectionTitle>
+              {filterReport
+                ? `Letters — ${filterReport.job?.title || 'Report'}`
+                : 'Your Cover Letters'}
+            </SectionTitle>
+            <SectionDescription>
+              {filterReport
+                ? `${filteredCoverLetters.length} letter${filteredCoverLetters.length !== 1 ? 's' : ''} · Click a tab above to switch report`
+                : `${coverLetters.length} total · click a report tab to filter`}
+            </SectionDescription>
+          </div>
+          {filterReport && (
+            <FilterClearButton onClick={() => setFilterReportId(null)}>
+              Show all ×
+            </FilterClearButton>
+          )}
+        </ContentHeader>
+        <ContentBody>
 
-                      <MiniReportCTAContainer className="mini-report-cta">
-                        <MiniReportCTALink>
-                          Generate Letter
-                          <ArrowRightIconMini />
-                        </MiniReportCTALink>
-                      </MiniReportCTAContainer>
-                    </MiniReportCardContent>
+          {/* Active filter bar */}
+          {filterReport && (
+            <FilterBar>
+              <span>✦ Filtered by <strong>{filterReport.job?.title || 'Report'}</strong> · {filterReport.fit_score}% fit score</span>
+              <FilterClearButton onClick={() => setFilterReportId(null)}>Clear ×</FilterClearButton>
+            </FilterBar>
+          )}
 
-                    <MiniReportOverlay className="mini-report-overlay" />
-                  </MiniReportCard>
+          {filteredCoverLetters.length === 0 ? (
+            <InlineEmptyHero>
+              <InlineOrbA />
+              <InlineOrbB />
+              <InlineHeroSpecular />
+
+              <InlineIconBadge>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+              </InlineIconBadge>
+
+              <InlineHeroTitle>
+                {filterReport
+                  ? `No letters for "${filterReport.job?.title || 'this report'}" yet`
+                  : 'No cover letters yet'}
+              </InlineHeroTitle>
+              <InlineHeroSubtitle>
+                {filterReport
+                  ? 'Use the "✦ Generate new letter →" button in the tab above to write your first personalized letter for this role.'
+                  : 'Select a report tab above to filter by job, then generate your first AI-powered cover letter.'}
+              </InlineHeroSubtitle>
+
+              {filterReport && (
+                <InlineCTAButton
+                  onClick={() => handleReportClick(filterReport.id)}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  Generate letter
+                </InlineCTAButton>
+              )}
+            </InlineEmptyHero>
+          ) : (
+            <LetterGrid>
+              {filteredCoverLetters.map((letter) => {
+                const sourceReport = reports.find(r => r.id === letter.report_id);
+                return (
+                  <CoverLetterCard
+                    key={letter.id}
+                    $tone={letter.tone}
+                    onClick={() => handleCardClick(letter)}
+                  >
+                    <CoverLetterBackground content={letter.content} />
+                    <CoverLetterToneBadge $tone={letter.tone}>
+                      {getToneLabel(letter.tone)}
+                    </CoverLetterToneBadge>
+
+                    <CoverLetterCardContent>
+                      <CoverLetterContentInner className="letter-content">
+                        {/* Source report link */}
+                        {sourceReport && (
+                          <LetterSourceTag>
+                            {sourceReport.job?.title || 'Report'} · {sourceReport.fit_score}% fit
+                          </LetterSourceTag>
+                        )}
+                        <CoverLetterTitle>
+                          {letter.job?.title || 'Cover Letter'}
+                        </CoverLetterTitle>
+                        <CoverLetterMeta>
+                          {formatDate(letter.created_at)}
+                        </CoverLetterMeta>
+                        <CoverLetterMetaRow>
+                          <CoverLetterMetaItem>
+                            {getWordCount(letter.content)} words
+                          </CoverLetterMetaItem>
+                          <CoverLetterMetaItem>
+                            {getLanguageLabel(letter.language)}
+                          </CoverLetterMetaItem>
+                        </CoverLetterMetaRow>
+                      </CoverLetterContentInner>
+
+                      <CoverLetterCTAContainer className="letter-cta" onClick={(e) => e.stopPropagation()}>
+                        <CoverLetterCTALink onClick={() => handleCardClick(letter)}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                          </svg>
+                          View / Edit
+                        </CoverLetterCTALink>
+                        <CoverLetterActions>
+                          <CoverLetterActionButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(letter.content);
+                              toast.success('Copied to clipboard!');
+                            }}
+                          >
+                            <CopyIcon /> Copy
+                          </CoverLetterActionButton>
+                          <CoverLetterActionButton
+                            $variant="danger"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(letter.id);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </CoverLetterActionButton>
+                        </CoverLetterActions>
+                      </CoverLetterCTAContainer>
+                    </CoverLetterCardContent>
+
+                    <CoverLetterOverlay className="letter-overlay" />
+                  </CoverLetterCard>
                 );
               })}
-            </Grid>
+            </LetterGrid>
           )}
-        </Column>
+        </ContentBody>
+      </ContentSection>
 
-        {/* Divider */}
-        <ColumnDivider />
+      {/* FAB — generate new cover letter */}
+      <FAB
+        onClick={() => {
+          if (filterReportId) {
+            handleReportClick(filterReportId);
+          } else {
+            // Open generator — user will pick a report inside
+            setIsGeneratorOpen(true);
+          }
+        }}
+      >
+        <PlusIcon />
+      </FAB>
 
-        {/* Right Column - Generated Cover Letters (70%) */}
-        <Column>
-          <ColumnHeader>
-            <SectionTitle>Your Cover Letters</SectionTitle>
-            <SectionDescription>
-              Click to view and edit
-            </SectionDescription>
-          </ColumnHeader>
-
-          {coverLetters.length === 0 ? (
-            <Card variant="bordered">
-              <EmptyState
-                icon={<EmptyState.DocumentIcon />}
-                title="No cover letters yet"
-                description="Click on a report to generate your first cover letter."
-              />
-            </Card>
-          ) : (
-            <Grid>
-              {coverLetters.map((letter) => (
-                <CoverLetterCard
-                  key={letter.id}
-                  $tone={letter.tone}
-                  onClick={() => handleCardClick(letter)}
-                >
-                  <CoverLetterBackground content={letter.content} />
-                  <CoverLetterToneBadge $tone={letter.tone}>
-                    {getToneLabel(letter.tone)}
-                  </CoverLetterToneBadge>
-
-                  <CoverLetterCardContent>
-                    <CoverLetterContentInner className="letter-content">
-                      <CoverLetterTitle>
-                        {letter.job?.title || "Cover Letter"}
-                      </CoverLetterTitle>
-                      <CoverLetterMeta>
-                        {formatDate(letter.created_at)}
-                      </CoverLetterMeta>
-                      <CoverLetterMetaRow>
-                        <CoverLetterMetaItem>
-                          {getWordCount(letter.content)} words
-                        </CoverLetterMetaItem>
-                        <CoverLetterMetaItem>
-                          {getLanguageLabel(letter.language)}
-                        </CoverLetterMetaItem>
-                      </CoverLetterMetaRow>
-                    </CoverLetterContentInner>
-
-                    <CoverLetterCTAContainer className="letter-cta" onClick={(e) => e.stopPropagation()}>
-                      <CoverLetterCTALink onClick={() => handleCardClick(letter)}>
-                        View & Edit
-                        <ArrowRightIconLetter />
-                      </CoverLetterCTALink>
-                      <CoverLetterActions>
-                        <CoverLetterActionButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(letter.content);
-                            toast.success("Copied to clipboard!");
-                          }}
-                        >
-                          <CopyIcon /> Copy
-                        </CoverLetterActionButton>
-                        <CoverLetterActionButton
-                          $variant="danger"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteClick(letter.id);
-                          }}
-                        >
-                          <DeleteIcon />
-                        </CoverLetterActionButton>
-                      </CoverLetterActions>
-                    </CoverLetterCTAContainer>
-                  </CoverLetterCardContent>
-
-                  <CoverLetterOverlay className="letter-overlay" />
-                </CoverLetterCard>
-              ))}
-            </Grid>
-          )}
-        </Column>
-      </TwoColumnLayout>
 
       {/* View Cover Letter Modal */}
       {selectedLetter && (

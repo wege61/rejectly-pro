@@ -5310,6 +5310,18 @@ export default function ReportDetailPage() {
   const [originalAtsScoreError, setOriginalAtsScoreError] = useState<boolean>(false);
   const [isLoadingAtsScore, setIsLoadingAtsScore] = useState(false);
   const [isLoadingOriginalAtsScore, setIsLoadingOriginalAtsScore] = useState(false);
+
+  // --- NEW ATS READABILITY STATE ---
+  interface ATSReadabilityFinding {
+    id: string;
+    label: string;
+    status: 'pass' | 'warning' | 'fail';
+    detail: string;
+  }
+  const [atsReadabilityFindings, setAtsReadabilityFindings] = useState<ATSReadabilityFinding[]>([]);
+  const [isLoadingAtsReadability, setIsLoadingAtsReadability] = useState(false);
+
+
   const [originalCvText, setOriginalCvText] = useState<string | null>(null);
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
@@ -5337,6 +5349,44 @@ export default function ReportDetailPage() {
       )
     : null;
   const scoreMessage = getScoreMessage(scoreRange, userState);
+
+  // Fetch ATS readability when drawer opens
+  useEffect(() => {
+    if (isAtsDrawerOpen && userState === 'free' && report && !report.pro) {
+      if (atsReadabilityFindings.length > 0) return;
+
+      const fetchReadability = async () => {
+        setIsLoadingAtsReadability(true);
+        try {
+          const res = await fetch('/api/ats-readability', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reportId: report.id })
+          });
+          const data = await res.json();
+          if (data.success && data.findings) {
+            setAtsReadabilityFindings(data.findings);
+            setReport(prev => prev ? { ...prev, ats_flags: data.findings } : null);
+          }
+        } catch (error) {
+          console.error("Failed to fetch ATS readability", error);
+        } finally {
+          setIsLoadingAtsReadability(false);
+        }
+      };
+
+      if (
+        report.ats_flags &&
+        Array.isArray(report.ats_flags) &&
+        report.ats_flags.length > 0 &&
+        typeof report.ats_flags[0] === 'object'
+      ) {
+        setAtsReadabilityFindings(report.ats_flags as any);
+      } else {
+        fetchReadability();
+      }
+    }
+  }, [isAtsDrawerOpen, userState, report, atsReadabilityFindings.length]);
 
   // Fetch user credits
   const fetchCredits = async () => {
@@ -7741,85 +7791,61 @@ export default function ReportDetailPage() {
               </div>
             </DrawerGlassScoreHero>
           )}
-          {atsFlags.length > 0 ? (
+          {userState === 'free' ? (
+             <DrawerGlassCard style={{ padding: '0', overflow: 'hidden' }}>
+               {isLoadingAtsReadability ? (
+                 <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    <div style={{ display: 'inline-block', width: '24px', height: '24px', border: '3px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--text-color)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                    <div style={{ marginTop: '12px', fontSize: '14px', fontWeight: 500 }}>Analyzing formatting engine...</div>
+                    <style dangerouslySetInnerHTML={{__html: `@keyframes spin { to { transform: rotate(360deg); } }`}} />
+                 </div>
+               ) : atsReadabilityFindings.length > 0 ? (
+                 atsReadabilityFindings.map((finding, index) => (
+                   <div key={index} style={{
+                     padding: '16px 20px',
+                     borderBottom: index < atsReadabilityFindings.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                     display: 'flex',
+                     alignItems: 'flex-start',
+                     gap: '14px',
+                     background: finding.status === 'fail' ? 'radial-gradient(ellipse at left, rgba(239, 68, 68, 0.05), transparent 70%)' :
+                                 finding.status === 'warning' ? 'radial-gradient(ellipse at left, rgba(245, 158, 11, 0.05), transparent 70%)' : 'transparent',
+                   }}>
+                     <div style={{
+                       fontSize: '18px',
+                       marginTop: '2px',
+                       flexShrink: 0,
+                       filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                     }}>
+                       {finding.status === 'pass' ? '✅' : finding.status === 'warning' ? '⚠️' : '❌'}
+                     </div>
+                     <div style={{ flex: 1 }}>
+                       <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-color)', marginBottom: '4px' }}>
+                         {finding.label}
+                       </div>
+                       <div style={{ fontSize: '13.5px', lineHeight: '1.6', color: 'var(--text-secondary)' }}>
+                         {finding.detail}
+                       </div>
+                     </div>
+                   </div>
+                 ))
+               ) : (
+                 <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    No specific ATS formatting issues found.
+                 </div>
+               )}
+             </DrawerGlassCard>
+          ) : atsFlags.length > 0 ? (
             <>
               {atsFlags.map((flag: string, index: number) => (
-                <DrawerGlassPill key={index} $glowColor={userState === 'free' ? '#f59e0b' : '#10b981'}>
+                <DrawerGlassPill key={index} $glowColor={'#10b981'}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                    <DrawerGlassDot $color={userState === 'free' ? '#f59e0b' : '#10b981'} style={{ marginTop: '6px' }} />
+                    <DrawerGlassDot $color={'#10b981'} style={{ marginTop: '6px' }} />
                     <span style={{ fontSize: '15px', lineHeight: '1.6', color: 'var(--text-color)' }}>{flag}</span>
                   </div>
                 </DrawerGlassPill>
               ))}
             </>
-          ) : userState === 'free' ? (() => {
-            const score = originalAtsScore ?? 50;
-            const factors: Array<{title: string; desc: string; severity: 'critical' | 'warning' | 'info'}> = [];
-
-            // Always show — these are ATS readability fundamentals
-            if (score < 70) {
-              factors.push({
-                title: 'Keyword Optimization',
-                desc: 'ATS systems scan for exact keyword matches from the job posting. Missing key terms means your resume may be filtered out before a human sees it.',
-                severity: score < 50 ? 'critical' : 'warning',
-              });
-            }
-
-            if (score < 80) {
-              factors.push({
-                title: 'Section Headers',
-                desc: 'ATS parsers expect standard section names like "Work Experience", "Education", and "Skills". Custom or creative headers may not be recognized.',
-                severity: score < 50 ? 'critical' : 'warning',
-              });
-            }
-
-            if (score < 60) {
-              factors.push({
-                title: 'Complex Formatting',
-                desc: 'Tables, columns, text boxes, and graphics can confuse ATS parsers. Simple single-column layouts are parsed most reliably.',
-                severity: 'critical',
-              });
-              factors.push({
-                title: 'File Parsing Issues',
-                desc: 'Some PDF generators create files that ATS systems struggle to read. Image-based PDFs, scanned documents, or heavily designed templates can cause text extraction failures.',
-                severity: 'critical',
-              });
-            }
-
-            if (score < 70) {
-              factors.push({
-                title: 'Contact Information Placement',
-                desc: 'Headers and footers are often skipped by ATS parsers. Contact details placed in these areas may not be captured.',
-                severity: 'warning',
-              });
-            }
-
-            factors.push({
-              title: 'Content Structure',
-              desc: 'ATS systems work best with clear chronological or functional formatting. Inconsistent date formats, missing job titles, or unclear role descriptions reduce parseability.',
-              severity: score < 50 ? 'warning' : 'info',
-            });
-
-            if (score >= 50) {
-              factors.push({
-                title: 'Special Characters & Fonts',
-                desc: 'Non-standard characters, icons, and uncommon fonts may not render correctly in ATS databases, causing garbled or missing text.',
-                severity: 'info',
-              });
-            }
-
-            return factors.map((factor, index) => (
-              <DrawerGlassCard key={index} style={{ gap: '6px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <DrawerGlassDot $color={factor.severity === 'critical' ? '#ef4444' : factor.severity === 'warning' ? '#f59e0b' : '#3b82f6'} />
-                  <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-color)' }}>{factor.title}</span>
-                </div>
-                <p style={{ fontSize: '13px', lineHeight: '1.65', color: 'var(--text-secondary)', margin: '0 0 0 22px' }}>
-                  {factor.desc}
-                </p>
-              </DrawerGlassCard>
-            ));
-          })() : (
+          ) : (
             <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--text-secondary)', textAlign: 'center', padding: '20px 0' }}>
               No specific ATS flags were detected for this resume.
             </p>

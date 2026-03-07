@@ -13,6 +13,7 @@ import { CVListSkeleton } from "@/components/skeletons/CVListSkeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { CreditsCard } from "@/components/dashboard/CreditsCard";
 
 // Icons
 const UploadIcon = () => (
@@ -174,62 +175,82 @@ type CVItem =
   | CVDocument
   | (OptimizedCV & { isOptimized: true; reportId: string });
 
-const PageContainer = styled.div`
+const Container = styled.div`
+  position: relative;
+  padding-top: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 36px 28px 120px;
+  padding-left: ${({ theme }) => theme.spacing["2xl"]};
+  padding-right: ${({ theme }) => theme.spacing["2xl"]};
+  padding-bottom: 100px; /* Space for FAB */
+  overflow-x: hidden;
 
-  @media (max-width: 768px) {
-    /* Floating pill nav is ~60px — just enough clearance */
-    padding: 70px 16px 120px;
+  @media (max-width: 450px) {
+    padding: ${({ theme }) => theme.spacing["lg"]};
+    padding-top: 24px;
   }
 `;
 
 const Header = styled.div`
-  margin-bottom: 32px;
-
-  @media (max-width: 768px) {
-    margin-bottom: 20px;
-  }
-`;
-
-const HeaderTop = styled.div`
+  position: relative;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 48px;
+  margin-top: 24px;
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    align-items: flex-start;
     gap: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 24px;
   }
 `;
 
-const HeaderContent = styled.div`
+const TitleElements = styled.div`
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  min-width: 0;
+  gap: 12px;
 `;
 
 const Title = styled.h1`
-  font-size: 34px;
+  font-size: 36px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.97);
-  margin-bottom: 8px;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.95);
   line-height: 1.1;
+  margin: 0;
 
   @media (max-width: 768px) {
-    font-size: 26px;
+    font-size: 24px;
+    margin-bottom: 4px;
   }
 `;
 
 const Subtitle = styled.p`
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.4);
-  line-height: 1.6;
-  max-width: 500px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
   letter-spacing: -0.01em;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    order: 3;
+  }
+`;
+
+const CreditsCardWrapper = styled.div`
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: auto;
+    
+    > div {
+      width: auto;
+    }
+  }
 `;
 
 // Content Section — Liquid Glass container
@@ -1952,18 +1973,20 @@ export default function CVPage() {
   }
 
   return (
-    <PageContainer>
-        <Header>
-          <HeaderTop>
-            <HeaderContent>
-              <Title>My Resumes</Title>
-              <Subtitle>
-                Manage your resumes and track optimized versions across different job applications.
-              </Subtitle>
-            </HeaderContent>
-          </HeaderTop>
-
-        </Header>
+    <Container>
+      <Header>
+        <TitleElements>
+          <Title>Resumes</Title>
+          <Subtitle>
+            Upload your base resumes. We support high-quality PDF extraction.
+          </Subtitle>
+        </TitleElements>
+        <CreditsCardWrapper>
+          <CreditsCard />
+        </CreditsCardWrapper>
+      </Header>
+      
+      {/* Tab Navigation wrapped over grid/table/list */}
 
         <HiddenInput
           id="cv-upload"
@@ -2423,6 +2446,6 @@ export default function CVPage() {
       >
         {isUploading ? <Spinner size="sm" /> : <UploadIcon />}
       </CVFAB>
-    </PageContainer>
+    </Container>
   );
 }

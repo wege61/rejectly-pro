@@ -16,28 +16,69 @@ import { ROUTES } from "@/lib/constants";
 import { CreditsCard } from "@/components/dashboard";
 
 const Container = styled.div`
-  max-width: 800px;
+  position: relative;
+  padding-top: 24px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing["2xl"]};
-  
+  padding-left: ${({ theme }) => theme.spacing["2xl"]};
+  padding-right: ${({ theme }) => theme.spacing["2xl"]};
+  padding-bottom: 100px; /* Space for FAB */
+  overflow-x: hidden;
+
   @media (max-width: 450px) {
     padding: ${({ theme }) => theme.spacing["lg"]};
-    padding-top: 32px;
+    padding-top: 24px;
   }
 `;
 
 const Header = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 48px;
+  margin-top: 24px;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+`;
+
+const TitleElements = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 12px;
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.1;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
 `;
 
 const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    order: 3;
+  }
 `;
 
 const Section = styled.section`
@@ -45,7 +86,15 @@ const Section = styled.section`
 `;
 
 const CreditsCardWrapper = styled.div`
-  max-width: 400px;
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: auto;
+    
+    > div {
+      width: auto;
+    }
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -156,17 +205,14 @@ export default function SettingsPage() {
   return (
     <Container>
       <Header>
-        <Title>Settings</Title>
-        <Subtitle>Manage your account settings and preferences</Subtitle>
-      </Header>
-
-      {/* Subscription & Credits */}
-      <Section>
-        <SectionTitle>Subscription & Credits</SectionTitle>
+        <TitleElements>
+          <Title>Settings</Title>
+          <Subtitle>Manage your account settings and preferences</Subtitle>
+        </TitleElements>
         <CreditsCardWrapper>
-        <CreditsCard />
+          <CreditsCard />
         </CreditsCardWrapper>
-      </Section>
+      </Header>
 
       <Section>
         <Card variant="bordered">

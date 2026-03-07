@@ -27,7 +27,7 @@ const getCreditVariant = (credits: number): CreditVariant => {
   if (credits <= 3) return 'low';
   if (credits <= 5) return 'medium';
   return 'high';
-};
+}; 
 
 const CardWrapper = styled.div<{ $variant: CreditVariant }>`
   display: inline-flex;
@@ -42,22 +42,28 @@ const CardWrapper = styled.div<{ $variant: CreditVariant }>`
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    transform: translateY(-2px);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
   @media (max-width: 640px) {
-    padding: 6px 6px 6px 16px;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px 16px 0 16px;
+    border-radius: 16px;
+    gap: 16px;
+    overflow: hidden;
   }
 `;
 
 const CardContent = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
 
   @media (max-width: 640px) {
     gap: 8px;
+    justify-content: center;
   }
 `;
 
@@ -71,6 +77,13 @@ const IconWrapper = styled.div`
     width: 20px;
     height: 20px;
   }
+
+  @media (max-width: 640px) {
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
 `;
 
 const ValueText = styled.div`
@@ -78,6 +91,10 @@ const ValueText = styled.div`
   font-weight: 700;
   color: white;
   letter-spacing: -0.02em;
+
+  @media (max-width: 640px) {
+    font-size: 14px;
+  }
 `;
 
 const TitleText = styled.div`
@@ -85,11 +102,10 @@ const TitleText = styled.div`
   font-weight: 500;
   color: rgba(255, 255, 255, 0.8);
   letter-spacing: -0.01em;
-  margin-right: 8px;
-
+  margin: 0 8px;
   @media (max-width: 640px) {
-    font-size: 12px;
-    margin-right: 4px;
+    font-size: 14px;
+    margin: 0;
   }
 `;
 
@@ -113,38 +129,34 @@ const ActionButton = styled.button`
   }
 
   @media (max-width: 640px) {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 12px;
+    font-size: 13px;
+    width: calc(100% + 32px); /* Compensate for wrapper padding */
+    margin: 0 -16px; /* Pull into padding area */
+    border-radius: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    background: rgba(255, 255, 255, 0.05);
     
     svg {
       width: 16px;
       height: 16px;
+    }
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: none; /* Disable scale on mobile for flush button */
     }
   }
 `;
 
 const ActionButtonText = styled.span`
   margin-right: 4px;
+  text-wrap: nowrap;
 `;
 
-const ArrowIcon = styled.div`
-  color: white;
-  display: flex;
-  align-items: center;
-  transition: transform 0.3s ease;
-
-  svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  @media (max-width: 640px) {
-    svg {
-      width: 16px;
-      height: 16px;
-    }
-  }
-`;
 
 const SkeletonWrapper = styled.div`
   min-width: 160px;
@@ -159,8 +171,9 @@ const SkeletonWrapper = styled.div`
   }
 
   @media (max-width: 640px) {
-    min-width: 140px;
-    height: 44px;
+    width: 100%;
+    height: 100px;
+    border-radius: 16px;
   }
 `;
 

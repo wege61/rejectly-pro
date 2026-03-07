@@ -5,33 +5,84 @@ import { useState, useEffect } from "react";
 import { OnboardingWizard } from "@/components/ui/OnboardingWizard";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
+import { CreditsCard } from "@/components/dashboard/CreditsCard";
 
 const Container = styled.div`
+  position: relative;
+  padding-top: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing["2xl"]};
+  padding-left: ${({ theme }) => theme.spacing["2xl"]};
+  padding-right: ${({ theme }) => theme.spacing["2xl"]};
+  padding-bottom: 100px; /* Space for FAB */
+  overflow-x: hidden;
+
+  @media (max-width: 450px) {
+    padding: ${({ theme }) => theme.spacing["lg"]};
+    padding-top: 24px;
+  }
 `;
 
 const Header = styled.div`
-  text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing["3xl"]};
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 48px;
+
+  @media (max-width: 768px) {
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+`;
+
+const TitleElements = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize["4xl"]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.1;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
 `;
 
 const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  max-width: 600px;
-  margin: 0 auto;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    order: 3;
+    font-size: 14px;
+  }
+`;
+
+const CreditsCardWrapper = styled.div`
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: auto;
+    
+    > div {
+      width: auto;
+    }
+  }
 `;
 
 export default function AnalyzePage() {
@@ -59,8 +110,13 @@ export default function AnalyzePage() {
     return (
       <Container>
         <Header>
-          <Title>Create New Analysis</Title>
-          <Subtitle>Loading...</Subtitle>
+          <TitleElements>
+            <Title>Create New Analysis</Title>
+            <Subtitle>Loading...</Subtitle>
+          </TitleElements>
+          <CreditsCardWrapper>
+            <CreditsCard />
+          </CreditsCardWrapper>
         </Header>
       </Container>
     );
@@ -70,11 +126,16 @@ export default function AnalyzePage() {
     <>
       <Container>
         <Header>
-          <Title>Create New Analysis</Title>
-          <Subtitle>
-            Upload your CV and select a job posting to generate your
-            personalized match report
-          </Subtitle>
+          <TitleElements>
+            <Title>Create New Analysis</Title>
+            <Subtitle>
+              Upload your CV and select a job posting to generate your
+              personalized match report
+            </Subtitle>
+          </TitleElements>
+          <CreditsCardWrapper>
+            <CreditsCard />
+          </CreditsCardWrapper>
         </Header>
 
       </Container>

@@ -1094,11 +1094,14 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 48px;
+  margin-top: 24px;
+
 
   @media (max-width: 768px) {
     align-items: flex-start;
     gap: 12px;
+    margin-bottom: 24px;
   }
 `;
 
@@ -1120,6 +1123,7 @@ const Title = styled.h1`
   letter-spacing: -0.03em;
   color: rgba(255, 255, 255, 0.95);
   line-height: 1.1;
+  margin: 0;
 
   @media (max-width: 768px) {
     font-size: 24px;
@@ -1132,18 +1136,18 @@ const TitleElements = styled.div`
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  gap: 12px;
 `;
 
 const Subtitle = styled.p`
-  font-size: 15px;
+  font-size: 15px;  
   color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
   letter-spacing: -0.01em;
-  margin-top: 4px;
+  margin: 0;
 
   @media (max-width: 768px) {
     order: 3;
-    font-size: 14px;
   }
 `;
 
@@ -1207,7 +1211,6 @@ const ViewAllGlassButton = styled.button`
   &:hover {
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     color: white;
   }

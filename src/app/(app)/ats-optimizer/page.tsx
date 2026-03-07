@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useCallback, useEffect } from "react";
 import { useCredits } from "@/contexts/CreditsContext";
 import { useRouter } from "next/navigation";
+import { CreditsCard } from "@/components/dashboard/CreditsCard";
 import {
   analyzeScore,
   getCategoryImpact,
@@ -238,40 +239,81 @@ const pulse = keyframes`
 `;
 
 const Container = styled.div`
+  position: relative;
+  padding-top: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 36px ${({ theme }) => theme.spacing["2xl"]} 120px;
+  padding-left: ${({ theme }) => theme.spacing["2xl"]};
+  padding-right: ${({ theme }) => theme.spacing["2xl"]};
+  padding-bottom: 100px; /* Space for FAB */
+  overflow-x: hidden;
 
-  @media (max-width: 768px) {
-    padding: 70px 16px 120px;
+  @media (max-width: 450px) {
+    padding: ${({ theme }) => theme.spacing["lg"]};
+    padding-top: 24px;
   }
 `;
 
 const Header = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing["xl"]};
-`;
-
-const HeaderContent = styled.div``;
-
-const Title = styled.h1`
-  font-size: 34px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.97);
-  margin-bottom: 8px;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 48px;
+  margin-top: 24px;
 
   @media (max-width: 768px) {
-    font-size: 26px;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+`;
+
+const TitleElements = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 12px;
+`;
+
+const Title = styled.h1`
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.1;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+    margin-bottom: 4px;
   }
 `;
 
 const Subtitle = styled.p`
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.4);
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
   letter-spacing: -0.01em;
-  max-width: 580px;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    order: 3;
+  }
+`;
+
+const CreditsCardWrapper = styled.div`
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: auto;
+    
+    > div {
+      width: auto;
+    }
+  }
 `;
 
 const OptimizedCVGrid = styled.div`
@@ -453,6 +495,65 @@ const ActionButton = styled.button<{ $variant?: 'danger' }>`
       color: #ef4444;
     }
   `}
+`;
+
+/* ── Jobs FAB — Liquid Glass, matches dashboard FAB ── */
+const JobFAB = styled.button`
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 60px;
+  height: 60px;
+  border-radius: 9999px;
+  z-index: 90;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.0) 100%
+  ), rgba(16, 185, 129, 0.38);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.55),
+    0 8px 32px rgba(16, 185, 129, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.25);
+
+  &:hover {
+    transform: scale(1.08) translateY(-3px);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.0) 100%
+    ), rgba(20, 195, 139, 0.58);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.65),
+      0 16px 48px rgba(16, 185, 129, 0.55),
+      0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active { transform: scale(0.96); }
+
+  svg {
+    width: 26px;
+    height: 26px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+
+  @media (max-width: 768px) {
+    bottom: 24px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+  }
 `;
 
 const Overlay = styled.div`
@@ -2703,14 +2804,21 @@ export default function DashboardATSOptimizerPage() {
       {step === 'upload' ? (
         <>
           <Header>
-            <HeaderContent>
+            <TitleElements>
               <Title>ATS Optimizer</Title>
               <Subtitle>
-                Upload your resume to check ATS compatibility and get an optimized version
+                Optimize your CV specifically for ATS systems using AI. We analyze keywords, formatting, and structure.
               </Subtitle>
-            </HeaderContent>
-            {/* FAB replaces the header button */}
+            </TitleElements>
+            <CreditsCardWrapper>
+              <CreditsCard />
+            </CreditsCardWrapper>
           </Header>
+          
+          {/* FAB replaces the header button */}
+          <JobFAB onClick={() => setIsUploadModalOpen(true)} title="Upload Resume">
+            <PlusIcon />
+          </JobFAB>
 
           {loadingHistory ? (
              <HistoryGridSkeleton />

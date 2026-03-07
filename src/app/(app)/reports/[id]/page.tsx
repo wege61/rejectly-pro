@@ -7679,21 +7679,69 @@ export default function ReportDetailPage() {
           </DrawerDescription>
         </DrawerHeader>
         <DrawerBody>
-          <DrawerGlassCard>
-            <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-color)', margin: 0 }}>
-              {report.summary_free
-                ?.replace(/[Tt]he candidate/g, 'You')
-                ?.replace(/[Tt]he candidate's/g, 'Your')
-                ?.replace(/[Tt]heir/g, 'your')
-                ?.replace(/[Tt]hey have/g, 'you have')
-                ?.replace(/[Tt]hey are/g, 'you are')
-              }
-            </p>
-          </DrawerGlassCard>
-          {userState === 'free' && (
-            <DrawerGlassTip>
-              💡 A strong summary is tailored to the specific role, highlights relevant achievements, and uses keywords from the job description. Pro generates this automatically.
-            </DrawerGlassTip>
+          {userState === 'free' ? (
+            <>
+              <DrawerGlassCard style={{ padding: '0', overflow: 'hidden' }}>
+                 <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                       <div style={{ padding: '6px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex' }}>
+                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                       </div>
+                       <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-color)' }}>Current Impression</span>
+                    </div>
+                 </div>
+                 <div style={{ padding: '20px', background: 'radial-gradient(ellipse at top right, rgba(255,255,255,0.03), transparent 70%)' }}>
+                    <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--text-secondary)', margin: 0, fontStyle: 'italic' }}>
+                      "{report.summary_free
+                        ?.replace(/[Tt]he candidate/g, 'You')
+                        ?.replace(/[Tt]he candidate's/g, 'Your')
+                        ?.replace(/[Tt]heir/g, 'your')
+                        ?.replace(/[Tt]hey have/g, 'you have')
+                        ?.replace(/[Tt]hey are/g, 'you are')
+                      }"
+                    </p>
+                 </div>
+              </DrawerGlassCard>
+
+              <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                 <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-color)', marginBottom: '4px', paddingLeft: '4px' }}>
+                    Why a Pro Summary makes the difference
+                 </div>
+                 
+                 <DrawerGlassPill $glowColor="#10b981">
+                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                     <DrawerGlassDot $color="#10b981" style={{ marginTop: '6px' }} />
+                     <span style={{ fontSize: '14.5px', lineHeight: '1.5', color: 'var(--text-color)' }}><strong>Hook the recruiter instantly</strong> with a targeted, metric-driven opening statement.</span>
+                   </div>
+                 </DrawerGlassPill>
+                 
+                 <DrawerGlassPill $glowColor="#8b5cf6">
+                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                     <DrawerGlassDot $color="#8b5cf6" style={{ marginTop: '6px' }} />
+                     <span style={{ fontSize: '14.5px', lineHeight: '1.5', color: 'var(--text-color)' }}><strong>Position your experience perfectly</strong> for this specific role's unique requirements.</span>
+                   </div>
+                 </DrawerGlassPill>
+                 
+                 <DrawerGlassPill $glowColor="#f59e0b">
+                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                     <DrawerGlassDot $color="#f59e0b" style={{ marginTop: '6px' }} />
+                     <span style={{ fontSize: '14.5px', lineHeight: '1.5', color: 'var(--text-color)' }}><strong>Bypass ATS filters</strong> with naturally woven job keywords in the critical top section.</span>
+                   </div>
+                 </DrawerGlassPill>
+              </div>
+            </>
+          ) : (
+            <DrawerGlassCard>
+              <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--text-color)', margin: 0 }}>
+                {report.summary_free
+                  ?.replace(/[Tt]he candidate/g, 'You')
+                  ?.replace(/[Tt]he candidate's/g, 'Your')
+                  ?.replace(/[Tt]heir/g, 'your')
+                  ?.replace(/[Tt]hey have/g, 'you have')
+                  ?.replace(/[Tt]hey are/g, 'you are')
+                }
+              </p>
+            </DrawerGlassCard>
           )}
         </DrawerBody>
         <DrawerFooter>

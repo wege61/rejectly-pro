@@ -50,17 +50,17 @@ export const getVisibleSections = (
 
   // Perfect match: pro optimized user with high score but no improvements made
   // This happens when the original CV was already excellent (e.g., 90-100% score)
-  const isPerfectMatch = isProOptimized && isHighScore && !hasOptimizedScore;
+  const isPerfectMatch = isProOptimized && isHighScore && !hasImprovements;
 
   return {
     // Score comparison: only when optimized and score improved
     showScoreComparison: isProOptimized && hasOptimizedScore,
 
     // Problem summary: only when optimized with improvements
-    showProblemSummary: isProOptimized && hasImprovements && hasOptimizedScore,
+    showProblemSummary: isProOptimized && hasImprovements,
 
     // Improvement breakdown (chart): only when optimized with improvements
-    showImprovementBreakdown: isProOptimized && hasImprovements && hasOptimizedScore,
+    showImprovementBreakdown: isProOptimized && hasImprovements,
 
     // Role recommendations: always for pro, highlighted for low scores
     showRoleRecommendations: !isFree,

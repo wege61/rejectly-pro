@@ -164,7 +164,7 @@ interface OptimizedCV {
   created_at: string;
   updated_at: string;
   job_title?: string;
-  fake_it_mode?: boolean;
+
   source?: string;
   before_score?: number;
   after_score?: number;
@@ -1732,7 +1732,7 @@ export default function CVPage() {
           *,
           reports:report_id (
             job_ids,
-            fake_it_mode
+
           )
         `)
         .eq("user_id", user.id)
@@ -1768,7 +1768,7 @@ export default function CVPage() {
             isOptimized: true as const,
             reportId: cv.report_id,
             job_title: jobTitle || undefined,
-            fake_it_mode: cv.reports?.fake_it_mode || false,
+
             source: cv.source || 'reports',
           };
         }),
@@ -2189,12 +2189,7 @@ export default function CVPage() {
                           {/* Date at the bottom for all cards */}
                           <CVCardDate>{formatDate(cv.created_at)}</CVCardDate>
 
-                          {/* Job Matched: Fake It badge */}
-                          {activeTab === 'job-matched' && optimizedCV && optimizedCV.fake_it_mode && (
-                            <CVCardMeta>
-                              <Badge size="sm" variant="warning">Fake It</Badge>
-                            </CVCardMeta>
-                          )}
+
                         </CVCardContentInner>
 
                         <CTAContainer className="cv-cta" onClick={(e) => e.stopPropagation()}>
@@ -2292,15 +2287,7 @@ export default function CVPage() {
                       {isATSOptimized ? (
                         <span style={{ color: "var(--success)" }}>ATS Optimized</span>
                       ) : isJobSpecific ? (
-                        <>
-                          <span style={{ color: "var(--primary-500)" }}>Job-Specific</span>
-                          {(cv as any).fake_it_mode && (
-                            <>
-                              <span>•</span>
-                              <span style={{ color: "#f59e0b" }}>Fake It</span>
-                            </>
-                          )}
-                        </>
+                        <span style={{ color: "var(--primary-500)" }}>Job-Specific</span>
                       ) : (
                         <span>Original</span>
                       )}
@@ -2355,11 +2342,7 @@ export default function CVPage() {
                        Optimized
                     </Badge>
                   )}
-                  {"isOptimized" in (previewCV || {}) && (previewCV as any).fake_it_mode && (
-                    <Badge size="sm" variant="warning">
-                      🎭 Fake It
-                    </Badge>
-                  )}
+
                 </CVPreviewTitle>
                 {"isOptimized" in (previewCV || {}) && (previewCV as any).job_title && (
                   <CVPreviewJobInfo>

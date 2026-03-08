@@ -1769,7 +1769,7 @@ interface Report {
   keywords: {
     missing?: string[];
   } | null;
-  fake_it_mode: boolean | null;
+
 }
 
 interface CoverLetter {
@@ -2204,7 +2204,7 @@ export default function DashboardPage() {
                         keywords={report.keywords?.missing}
                         summary={report.summary_free}
                       />
-                      {report.fake_it_mode && <RecentReportFakeItBanner>🎭 Fake It</RecentReportFakeItBanner>}
+
 
                       <RecentReportCardContent>
                         <RecentReportContentInner className="report-content">

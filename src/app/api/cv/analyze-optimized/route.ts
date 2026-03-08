@@ -141,7 +141,6 @@ export async function POST(request: NextRequest) {
         improvementBreakdown: report.improvement_breakdown,
         originalScore: report.fit_score,
         actualScoreDifference: report.optimized_score - report.fit_score,
-        fakeItMode: report.fake_it_mode || false,
         optimizedScoreBreakdown: report.optimized_score_breakdown || null,
         cached: true,
       });
@@ -164,7 +163,6 @@ export async function POST(request: NextRequest) {
     // Convert generated CV to text
     const optimizedCVText = convertCVToText(report.generated_cv as GeneratedCV);
     const originalScore = report.fit_score || 0;
-    const fakeItMode = report.fake_it_mode || false;
 
     // Fetch original CV FIRST (needed for scoring comparison)
     const { data: cvDoc, error: cvError } = await supabase
@@ -180,11 +178,10 @@ export async function POST(request: NextRequest) {
     // Generate detailed score breakdown for optimized CV
     // Pass optimization context to prevent score inflation
     console.log('📊 Generating optimized score breakdown with anti-inflation rules...');
-    console.log('📊 Context:', { isOptimizedCV: true, fakeItMode, originalScore });
+    console.log('📊 Context:', { isOptimizedCV: true, originalScore });
 
     const scoringOptions: ScoringOptions = {
       isOptimizedCV: true,
-      fakeItMode: fakeItMode,
       originalScore: originalScore,
       originalCVText: originalCVText
     };
@@ -221,7 +218,6 @@ export async function POST(request: NextRequest) {
       optimizedScore,
       actualScoreDifference,
       verdict: optimizedScoreBreakdown.assessment?.verdict,
-      fakeItMode,
       shouldGenerateImprovementBreakdown: actualScoreDifference > 0
     });
 
@@ -237,7 +233,7 @@ export async function POST(request: NextRequest) {
         (report.keywords as { missing?: string[] })?.missing || [],
         originalScore,
         optimizedScore,
-        fakeItMode
+        false // fakeItMode is retired
       );
 
       const breakdownCompletion = await openai.chat.completions.create({
@@ -293,7 +289,6 @@ export async function POST(request: NextRequest) {
       improvementBreakdown,
       originalScore,
       actualScoreDifference,
-      fakeItMode,
       optimizedScoreBreakdown,
       cached: false,
     });

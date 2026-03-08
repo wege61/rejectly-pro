@@ -1169,7 +1169,7 @@ interface Report {
   created_at: string;
   job_ids: string[];
   optimized_score: number | null;
-  fake_it_mode: boolean | null;
+
 }
 
 export default function ReportsPage() {
@@ -1416,7 +1416,7 @@ export default function ReportsPage() {
                           keywords={report.keywords?.missing}
                           summary={report.summary_free}
                         />
-                        {report.fake_it_mode && <FakeItBanner>🎭 Fake It</FakeItBanner>}
+
 
                         <CardContent>
                           <ContentInner className="report-content">

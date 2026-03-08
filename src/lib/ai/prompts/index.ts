@@ -19,7 +19,7 @@ export {
 } from './cvOptimization';
 
 // Fake Skills - Learning path recommendations
-export { generateFakeSkillsRecommendationsPrompt } from './fakeSkills';
+export { generateCareerRecommendationsPrompt } from './careerRecommendations';
 
 // Cover Letter - Generate personalized cover letters
 export { generateCoverLetterPrompt } from './coverLetter';

@@ -19,13 +19,14 @@ import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator
 import { ToolSuggestionModal } from "@/components/features/ToolSuggestionModal";
 import { CVCustomizationModal } from "@/components/features/CVCustomizationModal";
 import { ScoreBreakdownModal } from "@/components/features/ScoreBreakdownModal";
+import { CareerRecommendationsSection } from "@/components/reports/CareerRecommendationsSection";
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerBody, DrawerFooter } from "@/components/ui/Drawer";
 import { CreditsCard } from "@/components/dashboard";
 import { SharedPricingCards } from "@/components/billing/PricingCards";
 import { ToolSuggestionResponse } from "@/types/toolSuggestion";
 import { CVCustomizationOptions } from "@/types/cvCustomization";
 import { ScoreBreakdown, ScoreComponent } from "@/types/scoreBreakdown";
-import { PRICING } from "@/lib/constants";
+import { PRICING, ROUTES } from "@/lib/constants";
 import {
   Report,
   UserCredits,
@@ -1100,30 +1101,7 @@ const SecondaryActionLink = styled.button`
   }
 `;
 
-const FakeItFooter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.3);
-  margin-top: 8px;
 
-  button {
-    background: none;
-    border: none;
-    color: var(--accent);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 0;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
 
 // Stats Bento Grid - Dashboard style
 const StatsBentoGrid = styled.div`
@@ -2401,41 +2379,7 @@ const ClickableKeywordsCard = styled(Card)`
   }
 `;
 
-// Fake It Mode Warning Banner
-const FakeItModeWarning = styled.div`
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 
-  .warning-icon {
-    font-size: 24px;
-    flex-shrink: 0;
-  }
-
-  .warning-content {
-    flex: 1;
-  }
-
-  .warning-title {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 4px;
-    color: white;
-  }
-
-  .warning-text {
-    font-size: 13px;
-    opacity: 0.95;
-    line-height: 1.4;
-    color: white;
-  }
-`;
 
 // Problem Severity Badge
 const ProblemSeverityBadge = styled.span<{ $severity: "critical" | "important" | "minor" }>`
@@ -3772,126 +3716,7 @@ const PDFPreviewContainerDrawer = styled.div`
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 `;
 
-const FakeItToggleContainer = styled.div`
-  display: flex;
-  align-items: start;
-  gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => theme.spacing.lg};
-  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-  border-radius: ${({ theme }) => theme.radius.md};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
-  }
-`;
-
-const FakeItCheckbox = styled.input`
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: white;
-  margin-top: 2px;
-`;
-
-const FakeItContent = styled.div`
-  flex: 1;
-  color: white;
-`;
-
-const FakeItTitle = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-`;
-
-const FakeItDescription = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  opacity: 0.95;
-  line-height: 1.5;
-`;
-
-const CVGenerationSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xl};
-`;
-
-const CVGenerationIntro = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing.lg} 0;
-`;
-
-const IntroHeading = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.textPrimary};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-`;
-
-const IntroSubtext = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  line-height: 1.6;
-  max-width: 600px;
-  margin: 0 auto;
-`;
-
-const FeaturesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
-
-const FeatureCard = styled.div`
-  display: flex;
-  align-items: start;
-  gap: ${({ theme }) => theme.spacing.sm};
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.radius.md};
-  transition: all ${({ theme }) => theme.transitions.fast};
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary};
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px ${({ theme }) => theme.colors.primary}15;
-  }
-`;
-
-const FeatureIcon = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: ${({ theme }) => theme.radius.full};
-  background: var(--gradient-primary);
-  color: white;
-  font-size: 12px;
-  flex-shrink: 0;
-  margin-top: 2px;
-`;
-
-const FeatureText = styled.div`
-  color: ${({ theme }) => theme.colors.textPrimary};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  line-height: 1.5;
-`;
-
-const FakeItSection = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
 
 const GenerateCTAContainer = styled.div`
   display: flex;
@@ -3900,6 +3725,106 @@ const GenerateCTAContainer = styled.div`
   gap: ${({ theme }) => theme.spacing.md};
   padding-top: ${({ theme }) => theme.spacing.lg};
   border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const MotivationalQuote = styled.div`
+  margin-top: 12px;
+  font-size: 14px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 480px;
+  text-align: center;
+  position: relative;
+  
+  &::before, &::after {
+    content: '"';
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 18px;
+    font-family: serif;
+    margin: 0 4px;
+  }
+`;
+
+const MotivationalFooterWrapper = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.xl};
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  padding: 48px 32px;
+  text-align: center;
+  background: rgba(20, 20, 25, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+`;
+
+const AnimatedGradientBackground = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(53, 162, 159, 0.1) 40%, rgba(250, 204, 21, 0.08) 100%);
+  z-index: 0;
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(56, 189, 248, 0.2) 0%, transparent 40%);
+    animation: breatheGradient 10s ease-in-out infinite alternate;
+  }
+
+  @keyframes breatheGradient {
+    0% { transform: scale(0.8) translate(0%, 0%); opacity: 0.5; }
+    50% { transform: scale(1.1) translate(2%, 2%); opacity: 0.8; }
+    100% { transform: scale(1.3) translate(-2%, -2%); opacity: 1; }
+  }
+`;
+
+const MotivationalContent = styled.div`
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+`;
+
+const MotivationalTitle = styled.h3`
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+`;
+
+const MotivationalText = styled.p`
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+  max-width: 540px;
+  margin: 0;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const MotivationalLogo = styled.div`
+  font-weight: 800;
+  font-size: 16px;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 // Resume Actions - Minimal list style
@@ -6046,7 +5971,6 @@ export default function ReportDetailPage() {
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
   const [selectedImprovement, setSelectedImprovement] =
     useState<Improvement | null>(null);
-  const [fakeItMode, setFakeItMode] = useState(false);
   const [isCoverLetterModalOpen, setIsCoverLetterModalOpen] = useState(false);
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   const [isBuyCreditsModalOpen, setIsBuyCreditsModalOpen] = useState(false);
@@ -6094,11 +6018,12 @@ export default function ReportDetailPage() {
 
   // Interview Prep state
   const [interviewPrep, setInterviewPrep] = useState<InterviewPrep | null>(null);
+  const [careerRecommendations, setCareerRecommendations] = useState<any>(null);
   const [interviewPrepTab, setInterviewPrepTab] = useState<'behavioral' | 'technical' | 'gaps' | 'closing'>('behavioral');
   const [expandedQuestionIndex, setExpandedQuestionIndex] = useState<number | null>(null);
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
-  const [pendingCVGeneration, setPendingCVGeneration] = useState<{ fakeItMode: boolean } | null>(null);
+  const [pendingCVGeneration, setPendingCVGeneration] = useState<boolean>(false);
   const [isCVCustomizationModalOpen, setIsCVCustomizationModalOpen] = useState(false);
   const [pendingAdditionalTools, setPendingAdditionalTools] = useState<string[]>([]);
   const [cvPhotoBase64, setCvPhotoBase64] = useState<string | null>(null);
@@ -6423,7 +6348,6 @@ export default function ReportDetailPage() {
 
       console.log("📊 Analysis result:", {
         ...result,
-        fakeItMode: result.fakeItMode,
         cached: result.cached,
         improvementBreakdownType: typeof result.improvementBreakdown,
         improvementBreakdownValue: result.improvementBreakdown,
@@ -6524,11 +6448,12 @@ export default function ReportDetailPage() {
           setJobPostingTitles(jobDocs.map((doc) => doc.title));
         }
       }
-
+      if (data.career_recommendations) {
+        setCareerRecommendations(data.career_recommendations);
+      }
       console.log("📋 Report loaded from database:", {
         reportId: data.id,
         hasGeneratedCV: !!data.generated_cv,
-        fakeItMode: data.fake_it_mode,
         optimizedScore: {
           type: typeof data.optimized_score,
           value: data.optimized_score,
@@ -6544,11 +6469,7 @@ export default function ReportDetailPage() {
 
       setReport(data);
 
-      // Load fake it mode from report
-      if (data.fake_it_mode !== undefined) {
-        setFakeItMode(data.fake_it_mode);
-        console.log('📌 Loaded fake_it_mode from database:', data.fake_it_mode);
-      }
+
 
       // Load cached analysis results from database if available
       const hasValidScore = typeof data.optimized_score === "number";
@@ -6584,7 +6505,6 @@ export default function ReportDetailPage() {
       if (hasValidScore) {
         console.log("✅ Loading from cache:", {
           score: data.optimized_score,
-          fakeItMode: data.fake_it_mode,
           breakdownCount: data.improvement_breakdown?.length ?? 0,
           breakdown: data.improvement_breakdown,
         });
@@ -6733,14 +6653,7 @@ export default function ReportDetailPage() {
     );
   };
 
-  const handleCreateFakeItReport = async () => {
-    if (!report || isGeneratingCV) return;
 
-    // Open customization modal instead of generating directly
-    setPendingCVGeneration({ fakeItMode: true });
-    setPendingAdditionalTools([]);
-    setIsCVCustomizationModalOpen(true);
-  };
 
   const handleUpgradeToPro = async () => {
     if (!report) return;
@@ -6776,7 +6689,7 @@ export default function ReportDetailPage() {
         setIsUpgrading(false);
 
         // Show tool suggestion modal instead of auto-generating CV
-        setPendingCVGeneration({ fakeItMode: false });
+        setPendingCVGeneration(true);
         setIsToolSuggestionModalOpen(true);
         const suggestions = await fetchToolSuggestions();
         setToolSuggestions(suggestions);
@@ -6839,7 +6752,7 @@ export default function ReportDetailPage() {
         },
         body: JSON.stringify({
           reportId: report.id,
-          fakeItMode: pendingCVGeneration?.fakeItMode ?? false,
+
           additionalTools,
           photoUrl,
           colorTemplate: customization?.colorTemplateKey,
@@ -6857,11 +6770,7 @@ export default function ReportDetailPage() {
           .single();
 
         if (updatedData) {
-          // Update fake_it_mode state from database
-          if (updatedData.fake_it_mode !== undefined) {
-            setFakeItMode(updatedData.fake_it_mode);
-            console.log('📌 Updated fake_it_mode after upgrade:', updatedData.fake_it_mode);
-          }
+
           setReport(updatedData);
           if (updatedData.interview_prep) {
             setInterviewPrep(updatedData.interview_prep);
@@ -7059,7 +6968,7 @@ export default function ReportDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reportId: report.id,
-          fakeItMode: report.fake_it_mode || false,
+
           forceRegenerate: true,
         }),
       });
@@ -7238,7 +7147,7 @@ export default function ReportDetailPage() {
 
   return (
     <Container>
-      <BackButton variant="ghost" size="sm" onClick={() => router.back()}>
+      <BackButton variant="ghost" size="sm" onClick={() => router.push(ROUTES.APP.DASHBOARD)}>
         ← Back
       </BackButton>
 
@@ -7593,7 +7502,13 @@ export default function ReportDetailPage() {
           {visibleSections?.showScoreComparison ? (
             <>We improved your match by <strong style={{ color: 'var(--primary-400)' }}>+{(optimizedScore! - report.fit_score).toFixed(1)} points</strong> through {missingKeywords.length > 0 ? `${missingKeywords.length} keyword additions` : 'keyword optimization'}{improvementBreakdown.length > 0 ? ` and ${improvementBreakdown.length} content rewrites` : ''}.{atsScore !== null && originalAtsScore !== null && atsScore > originalAtsScore ? ` ATS compatibility went from ${originalAtsScore}% to ${atsScore}%.` : ''}</>
           ) : (
-            <>{getScoreLabel(report.fit_score)}. {missingKeywords.length > 0 ? `${missingKeywords.length} critical keywords are missing from your resume.` : 'Your resume covers the key requirements.'}</>
+            <>
+              {getScoreLabel(report.fit_score)}. 
+              {report.generated_cv 
+                ? (missingKeywords.length > 0 ? ` We successfully integrated all missing keywords to strengthen your profile.` : ' Your profile is fully optimized for the key requirements.')
+                : (missingKeywords.length > 0 ? ` ${missingKeywords.length} critical ${missingKeywords.length === 1 ? 'keyword is' : 'keywords are'} missing from your resume.` : ' Your resume covers the key requirements.')
+              }
+            </>
           )}
         </ProHeroSummary>
 
@@ -7610,7 +7525,7 @@ export default function ReportDetailPage() {
               const response = await fetch('/api/cv/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ reportId: report.id, fakeItMode: false }),
+                body: JSON.stringify({ reportId: report.id }),
               });
               const cvResult = await response.json();
               if (!response.ok) throw new Error(cvResult.error || 'Failed to generate resume');
@@ -7662,12 +7577,7 @@ export default function ReportDetailPage() {
               </WhatChangedBadge>
             </WhatChangedHeader>
 
-            {report.fake_it_mode && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: 'rgba(234, 179, 8, 0.08)', borderRadius: '12px', marginBottom: '12px', fontSize: '13px', color: 'rgba(234, 179, 8, 0.8)' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="16" height="16"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-                Fake It Mode — be prepared to discuss added skills in interviews.
-              </div>
-            )}
+
 
             {[...improvementBreakdown]
               .sort((a, b) => b.impact - a.impact)
@@ -7764,7 +7674,14 @@ export default function ReportDetailPage() {
 
       {/* ====== INTERVIEW PREPARATION SECTION ====== */}
       {!visibleSections?.showSampleContent && userState === 'pro_optimized' && interviewPrep && (
-        <InterviewPrepSection>
+        <>
+          {/* Career Recommendations Component */}
+          {careerRecommendations && careerRecommendations.length > 0 && (
+            <CareerRecommendationsSection recommendations={careerRecommendations} />
+          )}
+
+          {/* Interview Prep Section */}
+          <InterviewPrepSection>
           <InterviewPrepHeader>
             <InterviewPrepTitle>Interview Preparation</InterviewPrepTitle>
             <InterviewPrepBadge>
@@ -7890,71 +7807,13 @@ export default function ReportDetailPage() {
                   </>
                 )}
               </InterviewPrepContent>
-        </InterviewPrepSection>
-      )}
+            </InterviewPrepSection>
+          </>
+        )}
 
       {/* PRO-only sections */}
       {!visibleSections?.showSampleContent && (
         <>
-          {report.fake_skills_recommendations &&
-            report.fake_skills_recommendations.length > 0 && (
-              <Section>
-                <Card variant="bordered">
-                  <Card.Header>
-                    <Card.Title>
-                      🎯 Learning Path - Turn Fake Skills into Real Ones!
-                    </Card.Title>
-                    <Card.Description>
-                      You&apos;ve added these skills to your resume. Now let's make
-                      them real! Follow these personalized learning paths to
-                      acquire these skills.
-                    </Card.Description>
-                  </Card.Header>
-                  <Card.Content>
-                    {report.fake_skills_recommendations.map(
-                      (recommendation, index) => (
-                        <LearningRecommendationCard key={index}>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              marginBottom: "8px",
-                            }}
-                          >
-                            <SkillCategory>
-                              {recommendation.category}
-                            </SkillCategory>
-                            <TimeEstimate>
-                              ⏱️ {recommendation.estimatedTime}
-                            </TimeEstimate>
-                          </div>
-                          <SkillTitle>{recommendation.skill}</SkillTitle>
-
-                          <LearningPathSection>
-                            <SectionTitle>📚 Learning Path</SectionTitle>
-                            <BulletList>
-                              {recommendation.learningPath.map((step, idx) => (
-                                <li key={idx}>{step}</li>
-                              ))}
-                            </BulletList>
-                          </LearningPathSection>
-
-                          <LearningPathSection>
-                            <SectionTitle>💡 Project Ideas</SectionTitle>
-                            <BulletList>
-                              {recommendation.projectIdeas.map((idea, idx) => (
-                                <li key={idx}>{idea}</li>
-                              ))}
-                            </BulletList>
-                          </LearningPathSection>
-                        </LearningRecommendationCard>
-                      )
-                    )}
-                  </Card.Content>
-                </Card>
-              </Section>
-            )}
-
           <Section>
             <GenerateResumeCard>
               <GenerateResumeHeader>
@@ -7991,7 +7850,6 @@ export default function ReportDetailPage() {
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
                               reportId: report.id,
-                              fakeItMode: false,
                             }),
                           });
 
@@ -8014,10 +7872,8 @@ export default function ReportDetailPage() {
                             if (updatedReport.interview_prep) {
                               setInterviewPrep(updatedReport.interview_prep);
                             }
-                            // Update fake_it_mode state from database
-                            if (updatedReport.fake_it_mode !== undefined) {
-                              setFakeItMode(updatedReport.fake_it_mode);
-                              console.log('📌 Updated fake_it_mode in modal:', updatedReport.fake_it_mode);
+                            if (updatedReport.career_recommendations) {
+                              setCareerRecommendations(updatedReport.career_recommendations);
                             }
 
                             // Generate PDF on client and save to optimized_cvs via API
@@ -8162,26 +8018,7 @@ export default function ReportDetailPage() {
                     </ResumeActionsList>
                   </GenerateResumeBody>
 
-                  {report?.pro && !report?.fake_it_mode && (
-                    <ResumeFooter
-                      $variant="accent"
-                      onClick={isGeneratingCV ? undefined : handleCreateFakeItReport}
-                      style={{ opacity: isGeneratingCV ? 0.5 : 1, cursor: isGeneratingCV ? 'not-allowed' : 'pointer' }}
-                    >
-                      <ResumeFooterIcon $color="#f59e0b">
-                        {isGeneratingCV ? <Spinner size="sm" /> : <SparklesIcon />}
-                      </ResumeFooterIcon>
-                      <ResumeFooterContent>
-                        <ResumeFooterTitle $color="#f59e0b">Try Fake It Mode</ResumeFooterTitle>
-                        <ResumeFooterDescription>Add missing skills with learning paths</ResumeFooterDescription>
-                      </ResumeFooterContent>
-                      <ResumeActionArrow>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{ color: '#f59e0b' }}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                        </svg>
-                      </ResumeActionArrow>
-                    </ResumeFooter>
-                  )}
+
                 </>
               )}
             </GenerateResumeCard>
@@ -9423,6 +9260,28 @@ export default function ReportDetailPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Motivational Footer */}
+      <MotivationalFooterWrapper>
+        <AnimatedGradientBackground />
+        <MotivationalContent>
+          <MotivationalTitle>
+            You've got this{report?.generated_cv?.contact?.name ? `, ${report.generated_cv.contact.name.split(' ')[0]}` : ''}.
+          </MotivationalTitle>
+          <MotivationalText>
+            Don't worry, the perfect role you are looking for is out there. Keep pushing forward—we're walking this path with you. The Rejectly.pro family is always by your side!
+          </MotivationalText>
+          <MotivationalQuote>
+            Success is not final, failure is not fatal: it is the courage to continue that counts.
+          </MotivationalQuote>
+          <MotivationalLogo>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" style={{ color: 'var(--primary-400)'}}>
+              <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z" clipRule="evenodd" />
+            </svg>
+            Rejectly.pro
+          </MotivationalLogo>
+        </MotivationalContent>
+      </MotivationalFooterWrapper>
 
     </Container>
   );

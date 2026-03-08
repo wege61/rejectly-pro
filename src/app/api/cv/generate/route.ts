@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { openai, AI_MODEL } from "@/lib/ai/client";
-import { generateOptimizedCVPrompt, generateFakeSkillsRecommendationsPrompt, generateInterviewPrepPrompt } from "@/lib/ai/prompts";
+import { generateOptimizedCVPrompt, generateCareerRecommendationsPrompt, generateInterviewPrepPrompt } from "@/lib/ai/prompts";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { postProcessCVForATS, GeneratedCVData } from "@/lib/ats/utils";
 
@@ -22,13 +22,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Get request body
-    const { reportId, fakeItMode = false, additionalTools = [], forceRegenerate = false, photoUrl, colorTemplate } = await request.json();
+    const { reportId, additionalTools = [], forceRegenerate = false, photoUrl, colorTemplate } = await request.json();
 
     console.log('🔍 CV Generation Request:', {
       reportId,
-      fakeItMode,
-      fakeItModeType: typeof fakeItMode,
-      fakeItModeValue: fakeItMode === true ? 'TRUE' : 'FALSE',
       additionalTools: additionalTools.length > 0 ? additionalTools : 'none',
       forceRegenerate
     });
@@ -57,7 +54,7 @@ export async function POST(request: NextRequest) {
     // Always regenerate if forceRegenerate is true
     const hasAdditionalTools = additionalTools && additionalTools.length > 0;
 
-    if (report.generated_cv && report.fake_it_mode === fakeItMode && !hasAdditionalTools && !forceRegenerate) {
+    if (report.generated_cv && !hasAdditionalTools && !forceRegenerate) {
       console.log('✅ CV already generated with same settings, returning cached version');
       return NextResponse.json({
         success: true,
@@ -72,12 +69,6 @@ export async function POST(request: NextRequest) {
 
     // Log regeneration reason
     if (report.generated_cv) {
-      if (report.fake_it_mode !== fakeItMode) {
-        console.log('🔄 Regenerating CV with different fake_it_mode:', {
-          old: report.fake_it_mode,
-          new: fakeItMode
-        });
-      }
       if (hasAdditionalTools) {
         console.log('🔧 Regenerating CV with additional tools:', additionalTools);
       }
@@ -114,28 +105,6 @@ export async function POST(request: NextRequest) {
       atsFlags: report.ats_flags || [],
     };
 
-    // Generate fake skills recommendations if fake it mode is enabled
-    let fakeSkillsRecommendations = null;
-    if (fakeItMode && analysisResults.missingKeywords.length > 0) {
-      const recommendationsPrompt = generateFakeSkillsRecommendationsPrompt(
-        analysisResults.missingKeywords,
-        jobDocs.map((job) => job.text)
-      );
-
-      const recommendationsCompletion = await openai.chat.completions.create({
-        model: AI_MODEL,
-        messages: [{ role: "user", content: recommendationsPrompt }],
-        temperature: 0.7,
-        max_tokens: 2500,
-        response_format: { type: "json_object" },
-      });
-
-      const recommendationsResult = JSON.parse(
-        recommendationsCompletion.choices[0].message.content || "{}"
-      );
-
-      fakeSkillsRecommendations = recommendationsResult.recommendations || [];
-    }
 
     // Extract achievements and metrics from original CV
     const cvText = report.cv.text;
@@ -185,7 +154,7 @@ export async function POST(request: NextRequest) {
       report.cv.text,
       jobDocs.map((job: { text: string }) => job.text),
       analysisResults,
-      fakeItMode,
+      false, // fakeItMode is retired
       additionalTools,
       extractedMetrics,
       achievementsSection,
@@ -232,17 +201,14 @@ export async function POST(request: NextRequest) {
     })), null, 2));
 
     // Save generated CV to database (always succeeds)
-    const updateData: { generated_cv: any; fake_it_mode: boolean } = {
+    const updateData: { generated_cv: any } = {
       generated_cv: generatedCV,
-      fake_it_mode: fakeItMode,
     };
 
     console.log('💾 Saving to database:', {
       reportId,
-      fakeItMode,
       updateData: {
         hasGeneratedCV: !!updateData.generated_cv,
-        fakeItMode: updateData.fake_it_mode
       }
     });
 
@@ -250,7 +216,7 @@ export async function POST(request: NextRequest) {
       .from("reports")
       .update(updateData)
       .eq("id", reportId)
-      .select('id, fake_it_mode, generated_cv')
+      .select('id, generated_cv')
       .single();
 
     if (updateError) {
@@ -260,26 +226,9 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Successfully saved to database:', {
       reportId: updatedReport.id,
-      fakeItMode: updatedReport.fake_it_mode,
       hasGeneratedCV: !!updatedReport.generated_cv
     });
 
-    // Try to save fake skills recommendations (optional - may fail if column doesn't exist)
-    if (fakeSkillsRecommendations && fakeSkillsRecommendations.length > 0) {
-      try {
-        await supabase
-          .from("reports")
-          .update({
-            fake_skills_recommendations: fakeSkillsRecommendations,
-          })
-          .eq("id", reportId);
-        console.log('✅ Fake skills recommendations saved successfully');
-      } catch (fakeSkillsError) {
-        // Column doesn't exist yet - that's okay, user needs to run migration
-        console.log('⚠️ Could not save fake skills recommendations (migration not run yet):', fakeSkillsError);
-        // Don't fail the request - CV generation still succeeded
-      }
-    }
 
     // Try to clear analysis cache (optional - may not exist in older DB schemas)
     try {
@@ -294,6 +243,37 @@ export async function POST(request: NextRequest) {
       // Ignore if columns don't exist yet - cache clearing is optional
       console.log("Cache clearing skipped (columns may not exist yet):", cacheError);
     }
+
+    // Generate career recommendations in background (non-blocking)
+    const careerRecommendationsPromise = (async () => {
+      try {
+        const careerPrompt = generateCareerRecommendationsPrompt(
+          report.cv.text,
+          jobDocs.map((job: { text: string }) => job.text)
+        );
+
+        const careerCompletion = await openai.chat.completions.create({
+          model: AI_MODEL,
+          messages: [{ role: "user", content: careerPrompt }],
+          temperature: 0.6,
+          max_tokens: 3000,
+          response_format: { type: "json_object" },
+        });
+
+        const careerResult = JSON.parse(careerCompletion.choices[0].message.content || "{}");
+
+        if (careerResult && careerResult.recommendations) {
+          await supabase
+            .from("reports")
+            .update({ career_recommendations: careerResult.recommendations })
+            .eq("id", reportId);
+          console.log('✅ Career recommendations generated and saved');
+          return careerResult.recommendations;
+        }
+      } catch (careerError) {
+        console.log('⚠️ Career recommendations generation failed (non-blocking):', careerError);
+      }
+    })();
 
     // Generate interview prep in background (non-blocking)
     const interviewPrepPromise = (async () => {
@@ -445,14 +425,15 @@ export async function POST(request: NextRequest) {
       console.log('PDF generation for My CVs failed:', pdfError);
     }
 
-    // Wait for interview prep to finish before responding
-    const interviewPrep = await interviewPrepPromise;
+    // Wait for interview prep and career recommendations to finish before responding
+    const [interviewPrep, careerRecommendations] = await Promise.all([interviewPrepPromise, careerRecommendationsPromise]);
 
     return NextResponse.json({
       success: true,
       message: "CV generated successfully",
       cv: generatedCV,
       interview_prep: interviewPrep,
+      career_recommendations: careerRecommendations
     });
   } catch (error) {
     console.error("CV generation error:", error);

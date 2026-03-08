@@ -64,6 +64,10 @@ const DrawerContainer = styled(motion.div)`
   border-top: 1px solid rgba(255, 255, 255, 0.18);
   overflow: hidden;
 
+  @media (max-width: 768px) {
+    max-height: 85dvh; /* Prevents the drawer from touching the top notch on mobile */
+  }
+
   /* Specular top glow — liquid glass shine */
   &::before {
     content: '';
@@ -95,8 +99,9 @@ const DrawerContainer = styled(motion.div)`
 const Handle = styled.div`
   display: flex;
   justify-content: center;
-  padding: 12px 0 8px;
+  padding: 20px 0 16px; /* Larger padding for better touch target on mobile */
   cursor: grab;
+  touch-action: none; /* Crucial for preventing mobile browsers from hijacking the vertical scroll */
 
   &:active {
     cursor: grabbing;

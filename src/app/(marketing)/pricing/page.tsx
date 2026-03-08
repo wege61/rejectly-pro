@@ -76,12 +76,29 @@ const PricingGrid = styled.div`
 `;
 
 const PricingCard = styled.div<{ $featured?: boolean }>`
-  background: var(--bg-alt);
-  border: 1px solid ${({ $featured }) => $featured ? "var(--text-color)" : "var(--border-color)"};
-  border-radius: 16px;
+  background: ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.04)" : "rgba(255, 255, 255, 0.02)"};
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.08)"};
+  border-radius: 24px;
   padding: 40px;
   position: relative;
-  transition: all 0.2s ease;
+  transform: ${({ $featured }) => $featured 
+    ? "scale(1.05)"
+    : "scale(1)"};
+
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: ${({ $featured }) => $featured 
+    ? "inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 255, 255, 0.03)"
+    : "inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 4px 24px rgba(0, 0, 0, 0.3)"};
+
+  &:hover {
+    background: ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.06)" : "rgba(255, 255, 255, 0.04)"};
+    border-color: ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.3)" : "rgba(255, 255, 255, 0.15)"};
+    box-shadow: ${({ $featured }) => $featured 
+      ? "inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 255, 255, 0.05)"
+      : "inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4)"};
+  }
 
   @media (max-width: 768px) {
     padding: 32px;

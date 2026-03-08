@@ -5,9 +5,31 @@ import Image from "next/image";
 import { ROUTES } from "@/lib/constants";
 
 const SectionWrapper = styled.section`
+  position: relative;
+  isolation: isolate;
   background: var(--bg-color);
   padding: 96px 24px;
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  overflow: hidden;
+
+  /* Ambient Apple Aurora Background */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 80vw;
+    max-width: 1200px;
+    max-height: 1200px;
+    background: radial-gradient(circle at 30% 30%, rgba(94, 234, 212, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 70% 70%, rgba(14, 165, 233, 0.15) 0%, transparent 40%);
+    filter: blur(120px);
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 50%;
+  }
 
   @media (max-width: 768px) {
     padding: 64px 16px;
@@ -23,12 +45,30 @@ const CTABox = styled.div`
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: var(--bg-alt);
   padding: 64px 24px 0;
-  border-radius: 24px;
+  border-radius: 32px;
+  
+  /* Apple Liquid Glass Effect */
+  background: rgba(150, 150, 150, 0.05);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.2), 
+    0 24px 64px rgba(0, 0, 0, 0.4);
 
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  outline: 1px solid rgba(0, 0, 0, 0.05);
+  /* Subtle inner glow replacing the GradientCircle */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.1), transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+  }
 
   @media (min-width: 640px) {
     padding: 64px 64px 0;
@@ -38,29 +78,6 @@ const CTABox = styled.div`
     display: flex;
     gap: 80px;
     padding: 0 96px;
-  }
-`;
-
-const GradientCircle = styled.svg`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: -1;
-  width: 1024px;
-  height: 1024px;
-  transform: translateY(-50%);
-  mask-image: radial-gradient(closest-side, white, transparent);
-  -webkit-mask-image: radial-gradient(closest-side, white, transparent);
-
-  @media (min-width: 640px) {
-    left: 100%;
-    margin-left: -320px;
-  }
-
-  @media (min-width: 1024px) {
-    left: 50%;
-    margin-left: 0;
-    transform: translateX(-50%) translateY(0);
   }
 `;
 
@@ -194,17 +211,38 @@ const AppScreenshot = styled.div`
   left: 0;
   width: 912px;
   max-width: none;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px 0 0 0;
+  background: rgba(20, 20, 20, 0.9);
+  padding-top: 24px;
+  padding-left: 24px;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-    0 20px 40px rgba(0, 0, 0, 0.3);
+    -20px -20px 60px rgba(0, 0, 0, 0.5),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.15);
   overflow: hidden;
+  
+  /* Mac window top bar mockup */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: 10px;
+    background-image: 
+      radial-gradient(circle at 5px 5px, #ff5f56 5px, transparent 6px),
+      radial-gradient(circle at 20px 5px, #ffbd2e 5px, transparent 6px),
+      radial-gradient(circle at 35px 5px, #27c93f 5px, transparent 6px);
+    background-size: 40px 10px;
+    background-repeat: no-repeat;
+  }
 
   img {
     width: 100%;
     height: auto;
     display: block;
+    border-radius: 8px 0 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
   }
 `;
 
@@ -213,21 +251,6 @@ export function SecondaryCTA() {
     <SectionWrapper>
       <Container>
         <CTABox>
-          <GradientCircle viewBox="0 0 1024 1024" aria-hidden="true">
-            <circle
-              r={512}
-              cx={512}
-              cy={512}
-              fill="url(#gradient-cta)"
-              fillOpacity="0.7"
-            />
-            <defs>
-              <radialGradient id="gradient-cta">
-                <stop stopColor="#35A29F" />
-                <stop offset={1} stopColor="#0B666A" />
-              </radialGradient>
-            </defs>
-          </GradientCircle>
 
           <ContentSection>
             <Title>
@@ -250,7 +273,7 @@ export function SecondaryCTA() {
           <ImageSection>
             <AppScreenshot>
               <Image
-                src="/dashboard-screenshot.png"
+                src="/dashboard-screenshot.jpg"
                 alt="Rejectly app screenshot showing resume analysis dashboard"
                 width={1824}
                 height={1080}

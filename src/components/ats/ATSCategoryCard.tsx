@@ -24,10 +24,10 @@ interface ATSCategoryCardProps {
 }
 
 const getScoreColor = (percentage: number) => {
-  if (percentage >= 85) return "#34C759"; // Apple Green
-  if (percentage >= 70) return "#007AFF"; // Apple Blue
-  if (percentage >= 50) return "#FF9500"; // Apple Orange
-  return "#FF3B30"; // Apple Red
+  if (percentage >= 85) return "var(--primary-500)"; // Apple Green
+  if (percentage >= 70) return "#2A57A0"; // Apple Blue
+  if (percentage >= 50) return "#EAB308"; // Apple Orange
+  return "#F97316"; // Apple Red
 };
 
 const CheckIcon = () => (
@@ -109,20 +109,31 @@ const CollapsedCard = styled(motion.div)`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  overflow: hidden;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(40px) saturate(140%);
-  -webkit-backdrop-filter: blur(40px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+
+  /* Liquid Glass card — stronger contrast (Matched to Job Posting Cards) */
+  background: rgba(30, 30, 40, 0.78);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 2px 1px rgba(255, 255, 255, 0.06) inset,
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+
   cursor: pointer;
   min-height: 180px;
   padding: 24px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: background 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.04);
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 2px 1px rgba(255, 255, 255, 0.08) inset,
+      0 20px 56px rgba(0, 0, 0, 0.65),
+      0 6px 20px rgba(0, 0, 0, 0.45);
   }
 `;
 
@@ -170,13 +181,20 @@ const ExpandedCard = styled(motion.div)`
   max-height: 90%;
   display: flex;
   flex-direction: column;
-  background: rgba(30, 30, 40, 0.6);
-  backdrop-filter: blur(40px) saturate(150%);
-  -webkit-backdrop-filter: blur(40px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
+
+  /* Liquid Glass card — stronger contrast (Matched to Job Posting Cards) */
+  background: rgba(30, 30, 40, 0.78);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 2px 1px rgba(255, 255, 255, 0.06) inset,
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
   @media (max-width: 640px) {
     height: 100%;
@@ -477,7 +495,6 @@ export function ATSCategoryCard({
               <CloseButton
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0, transition: { duration: 0.05 } }}
                 onClick={() => setIsExpanded(false)}
               >
                 <CloseIcon />
@@ -512,7 +529,7 @@ export function ATSCategoryCard({
                     <IssueCount $hasIssues={true} $color="#FF3B30">{issues.length} issues</IssueCount>
                   )}
                   {issues.length === 0 && passes.length > 0 && (
-                    <IssueCount $hasIssues={false} $color="#34C759">All passed</IssueCount>
+                    <IssueCount $hasIssues={false} $color="var(--primary-500)">All passed</IssueCount>
                   )}
                 </CategoryMeta>
               </ExpandedHeader>
@@ -521,7 +538,6 @@ export function ATSCategoryCard({
                 layout
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
               >
                 {changes.length > 0 ? (
                   <>
@@ -707,10 +723,10 @@ export function ATSCategoryCard({
           >
             {earnedPoints}/{maxPoints} pts
             {issues.length > 0 && (
-              <IssueCount $hasIssues={true} $color="#FF3B30">{issues.length} issues</IssueCount>
+              <IssueCount $hasIssues={true} $color="#F97316">{issues.length} issues</IssueCount>
             )}
             {issues.length === 0 && passes.length > 0 && (
-              <IssueCount $hasIssues={false} $color="#34C759">All passed</IssueCount>
+              <IssueCount $hasIssues={false} $color="var(--primary-500)">All passed</IssueCount>
             )}
           </CategoryMeta>
         </div>

@@ -634,7 +634,7 @@ const ReportCard = styled.div`
   min-height: 200px;
 
   /* Liquid Glass card — stronger contrast */
-  background: rgba(30, 30, 40, 0.78);
+  background: rgba(24, 24, 24, 0.4);
   backdrop-filter: blur(30px) saturate(160%);
   -webkit-backdrop-filter: blur(30px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -816,7 +816,7 @@ const CTAContainer = styled.div`
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
-  background: linear-gradient(to top, rgba(30, 30, 40, 0.95) 60%, transparent);
+  background: linear-gradient(to top, rgba(24, 24, 24, 0.95) 60%, transparent);
 
   @media (max-width: 768px) {
     padding: 0;

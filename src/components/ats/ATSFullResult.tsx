@@ -186,7 +186,6 @@ const PotentialBadge = styled.div`
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 9999px;
   font-size: 14px;
@@ -196,7 +195,7 @@ const PotentialBadge = styled.div`
 
 const PotentialValue = styled.span`
   font-weight: 700;
-  color: #059669;
+  color: var(--primary-500);
 `;
 
 // Section layout
@@ -263,9 +262,9 @@ const ActionIcon = styled.div<{ $severity: string }>`
   color: ${({ $severity }) => {
     switch ($severity) {
       case "critical":
-      case "high": return "#FF3B30";
-      case "medium": return "#FF9500";
-      case "low": return "#34C759";
+      case "high": return "#F97316";
+      case "medium": return "#EAB308";
+      case "low": return "var(--primary-500)";
       default: return "#fff";
     }
   }};
@@ -443,11 +442,11 @@ export function ATSFullResult({
         </Section>
       )}
 
-      {/* Categories - Health Stack (Only for Initial Report) */}
+      {/* Categories - Grid (Only for Initial Report) */}
       {!isOptimized && (
         <Section>
           <SectionTitle>Category Breakdown</SectionTitle>
-          <HealthStack>
+          <TwoColumnGrid>
             <ATSCategoryCard
               name="Format"
               earnedPoints={categories.format.earnedPoints}
@@ -480,7 +479,7 @@ export function ATSFullResult({
               passes={categories.readability.passes}
               changes={changes}
             />
-          </HealthStack>
+          </TwoColumnGrid>
         </Section>
       )}
 

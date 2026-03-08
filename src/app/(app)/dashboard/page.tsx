@@ -14,41 +14,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { CreditsCard } from "@/components/dashboard";
+import { PieChart, Settings2, FileUser } from "lucide-react";
 
 // Icons
-const ReportsIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{ width: '32px', height: '32px' }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-    />
-  </svg>
-);
+const ReportsIcon = () => <PieChart size={32} strokeWidth={1.5} />;
 
-const CVIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{ width: '32px', height: '32px' }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-    />
-  </svg>
-);
+const ResumeIcon = () => <FileUser size={32} strokeWidth={1.5} />;
 
 const JobsIcon = () => (
   <svg
@@ -84,22 +55,7 @@ const CoverLettersIcon = () => (
   </svg>
 );
 
-const ATSOptimizerIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    style={{ width: '32px', height: '32px' }}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
-    />
-  </svg>
-);
+const ATSOptimizerIcon = () => <Settings2 size={32} strokeWidth={1.5} />;
 
 const ArrowRightIcon = () => (
   <svg
@@ -120,6 +76,16 @@ const ArrowRightIcon = () => (
 const marqueeAnimation = keyframes`
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+`;
+
+const verticalMarqueeAnimation = keyframes`
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+`;
+
+const verticalMarqueeReverseAnimation = keyframes`
+  0% { transform: translateY(-50%); }
+  100% { transform: translateY(0); }
 `;
 
 const fadeInUp = keyframes`
@@ -148,6 +114,11 @@ const ReportListContainer = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 200px;
+  animation: ${verticalMarqueeReverseAnimation} 35s linear infinite;
+
+  &:hover {
+    animation-play-state: paused;
+  }
 
   @media (max-width: 640px) {
     width: 160px;
@@ -155,14 +126,11 @@ const ReportListContainer = styled.div`
   }
 `;
 
-const ReportItem = styled.div<{ $delay: number }>`
+const ReportItem = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
   padding: 12px;
-  animation: ${fadeInUp} 0.5s ease-out forwards;
-  animation-delay: ${({ $delay }) => $delay}s;
-  opacity: 0;
   transition: all 0.2s ease;
   filter: blur(0.5px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -250,8 +218,8 @@ const reportItems = [
 const ReportsBackground = () => (
   <ReportsBackgroundWrapper>
     <ReportListContainer>
-      {reportItems.map((item, idx) => (
-        <ReportItem key={idx} $delay={idx * 0.15}>
+      {[...reportItems, ...reportItems, ...reportItems].map((item, idx) => (
+        <ReportItem key={idx}>
           <ReportItemHeader>
             <ReportItemInfo>
               <ReportItemTitle>{item.title}</ReportItemTitle>
@@ -428,20 +396,22 @@ const JobListContainer = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 170px;
+  animation: ${verticalMarqueeAnimation} 30s linear infinite;
+
+  &:hover {
+    animation-play-state: paused;
+  }
 
   @media (max-width: 640px) {
     width: 140px;
   }
 `;
 
-const JobCardMini = styled.div<{ $delay: number }>`
+const JobCardMini = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
   padding: 10px 12px;
-  animation: ${fadeInUp} 0.5s ease-out forwards;
-  animation-delay: ${({ $delay }) => $delay}s;
-  opacity: 0;
   filter: blur(0.5px);
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -491,8 +461,8 @@ const jobData = [
 const JobsBackground = () => (
   <JobsBackgroundWrapper>
     <JobListContainer>
-      {jobData.map((job, idx) => (
-        <JobCardMini key={idx} $delay={idx * 0.12}>
+      {[...jobData, ...jobData, ...jobData].map((job, idx) => (
+        <JobCardMini key={idx}>
           <JobCardHeader>
             <div>
               <JobCardTitle>{job.title}</JobCardTitle>
@@ -517,21 +487,23 @@ const LetterStack = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 165px;
+  animation: ${verticalMarqueeAnimation} 36s linear infinite;
+
+  &:hover {
+    animation-play-state: paused;
+  }
 
   @media (max-width: 640px) {
     width: 135px;
   }
 `;
 
-const LetterCardMini = styled.div<{ $delay: number; $tone: string }>`
+const LetterCardMini = styled.div<{ $tone: string }>`
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
   padding: 10px 12px;
   padding-left: 14px;
-  animation: ${fadeInUp} 0.5s ease-out forwards;
-  animation-delay: ${({ $delay }) => $delay}s;
-  opacity: 0;
   filter: blur(0.5px);
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -611,8 +583,8 @@ const letterData = [
 const CoverLettersBackground = () => (
   <CoverLettersBackgroundWrapper>
     <LetterStack>
-      {letterData.map((letter, idx) => (
-        <LetterCardMini key={idx} $delay={idx * 0.12} $tone={letter.tone}>
+      {[...letterData, ...letterData, ...letterData].map((letter, idx) => (
+        <LetterCardMini key={idx} $tone={letter.tone}>
           <LetterCardHeader>
             <div>
               <LetterTitle>{letter.title}</LetterTitle>
@@ -640,20 +612,22 @@ const ATSOptimizedStack = styled.div`
   flex-direction: column;
   gap: 8px;
   width: 180px;
+  animation: ${verticalMarqueeReverseAnimation} 40s linear infinite;
+
+  &:hover {
+    animation-play-state: paused;
+  }
 
   @media (max-width: 640px) {
     width: 150px;
   }
 `;
 
-const ATSOptimizedCardMini = styled.div<{ $delay: number; $scoreImprovement: number }>`
+const ATSOptimizedCardMini = styled.div<{ $scoreImprovement: number }>`
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
   padding: 10px 12px;
-  animation: ${fadeInUp} 0.5s ease-out forwards;
-  animation-delay: ${({ $delay }) => $delay}s;
-  opacity: 0;
   filter: blur(0.5px);
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -726,8 +700,8 @@ const atsOptimizedData = [
 const ATSOptimizerBackground = () => (
   <ATSOptimizerBackgroundWrapper>
     <ATSOptimizedStack>
-      {atsOptimizedData.map((item, idx) => (
-        <ATSOptimizedCardMini key={idx} $delay={idx * 0.12} $scoreImprovement={item.after - item.before}>
+      {[...atsOptimizedData, ...atsOptimizedData, ...atsOptimizedData].map((item, idx) => (
+        <ATSOptimizedCardMini key={idx} $scoreImprovement={item.after - item.before}>
           <ATSOptimizedCardHeader>
             <div>
               <ATSOptimizedCardTitle>{item.name}</ATSOptimizedCardTitle>
@@ -984,7 +958,7 @@ const RecentReportKeywordBadge = styled.span<{ $delay: number }>`
   border-radius: 4px;
   border: 1px solid rgba(var(--accent-rgb), 0.1);
   animation: ${fadeInUp} 0.4s ease-out forwards;
-  animation-delay: ${({ $delay }) => $delay}s, ${({ $delay }) => $delay + 0.4}s;
+  animation-delay: ${({ $delay }) => $delay}s;
   opacity: 0;
 `;
 
@@ -1167,9 +1141,7 @@ const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 12px;
 `;
 
 const SectionTitle = styled.h2`
@@ -2071,7 +2043,7 @@ export default function DashboardPage() {
             <BentoCard
               name="Resumes Uploaded"
               className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3"
-              Icon={CVIcon}
+              Icon={ResumeIcon}
               description="Manage your uploaded resumes"
               href={ROUTES.APP.CV}
               cta="View Resumes"

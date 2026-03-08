@@ -137,35 +137,107 @@ const ExpandedCardContainer = styled(motion.div)`
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt2};
-  border-radius: ${({ theme }) => theme.radius.lg};
-  box-shadow: ${({ theme }) => theme.shadow.xl};
+  position: relative;
+  border-radius: 20px;
   overflow: hidden;
+
+  /* Apple Liquid Glass core */
+  background: rgba(22, 22, 26, 0.78);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+
+  /* ── Specular light refraction ─── */
+  /* Top highlight — light hits the glass from above */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 60%,
+      rgba(255, 255, 255, 0.25) 80%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Right-edge refraction — light exits through the glass face */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
 `;
 
 const ExpandedCardHeader = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 28px 24px 16px;
+  position: relative;
+  z-index: 2;
 `;
 
 const ExpandedCardBody = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
+  padding: 16px 24px 28px;
   overflow-y: auto;
-  flex: 1;
-`;
-
-const ExpandedCardFooter = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  position: relative;
+  z-index: 2;
   display: flex;
-  justify-content: flex-end;
-  gap: ${({ theme }) => theme.spacing.sm};
+  flex-direction: column;
+  gap: 24px;
 `;
 
 const ExpandedFormGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
+
+  /* Glass-like inputs */
+  input, textarea {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &:focus {
+      background: rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  label {
+    color: rgba(255, 255, 255, 0.9);
+  }
 `;
 
 // Job card with motion - Bento style
@@ -918,22 +990,28 @@ const CloseButton = styled(motion.button)`
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 102;
+  transition: all 0.2s ease;
+
+  /* Liquid Glass theme */
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.surfaceHover};
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.22);
   }
 
   svg {
     width: 16px;
     height: 16px;
-    color: ${({ theme }) => theme.colors.textSecondary};
+    color: rgba(255, 255, 255, 0.85);
   }
 `;
 
@@ -1504,6 +1582,7 @@ export default function JobsPage() {
                     fontWeight: 600,
                     marginBottom: "4px",
                     margin: 0,
+                    color: "var(--text-color)",
                   }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 >
@@ -1514,7 +1593,7 @@ export default function JobsPage() {
                   layoutId={`description-${activeJob.id}-${id}`}
                   style={{
                     fontSize: "0.875rem",
-                    color: "#6b7280",
+                    color: "var(--text-secondary)",
                     margin: 0,
                     marginTop: "4px",
                   }}
@@ -1559,16 +1638,16 @@ export default function JobsPage() {
                       helperText={`${editDescription.length} characters`}
                     />
                   </ExpandedFormGroup>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
+                    <Button variant="ghost" onClick={handleCloseEdit}>
+                      Cancel
+                    </Button>
+                    <Button variant="primary" onClick={handleEditSubmit} isLoading={isEditLoading}>
+                      {isEditLoading ? "Updating..." : "Update Job"}
+                    </Button>
+                  </div>
                 </motion.div>
               </ExpandedCardBody>
-              <ExpandedCardFooter>
-                <Button variant="ghost" onClick={handleCloseEdit}>
-                  Cancel
-                </Button>
-                <Button onClick={handleEditSubmit} isLoading={isEditLoading}>
-                  Update Job
-                </Button>
-              </ExpandedCardFooter>
             </ExpandedCardContainer>
           </ExpandedCardOverlay>
         )}

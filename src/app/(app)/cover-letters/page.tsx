@@ -191,20 +191,50 @@ const CreditsCardWrapper = styled.div`
 /* ── Liquid Glass column section wrapper (same pattern as Reports/ATS) ── */
 const ContentSection = styled.div`
   position: relative;
-  border-radius: 24px;
+  border-radius: 18px;
   overflow: hidden;
-  background: rgba(18, 18, 22, 0.55);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
+
+  /* Apple Liquid Glass core */
+  background: rgba(22, 22, 26, 0.78);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
 
   &::before {
     content: '';
     position: absolute;
-    top: 0; left: 10%; right: 10%;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35) 50%, transparent);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 60%,
+      rgba(255, 255, 255, 0.25) 80%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
     pointer-events: none;
     z-index: 1;
   }
@@ -214,27 +244,33 @@ const ContentHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 28px 24px 16px;
+  position: relative;
+  z-index: 2;
 `;
 
 const ContentBody = styled.div`
-  padding: 16px;
+  padding: 16px 24px 28px;
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 24px;
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 15px;
+  font-size: 1.25rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-  letter-spacing: -0.02em;
+  color: var(--text-color);
+  letter-spacing: -0.01em;
+  margin: 0 0 4px 0;
 `;
 
 const SectionDescription = styled.p`
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.48);
+  font-weight: 500;
+  margin: 0;
 `;
 
 /* ── Report filter tab strip (horizontal SCROLL) ── */
@@ -321,7 +357,7 @@ const AllReportsCount = styled.span`
 
 const ReportFilterTab = styled.button<{ $isActive: boolean; $hasLetters: boolean }>`
   flex-shrink: 0;
-  min-width: 180px;
+  min-width: 200px;
   max-width: 220px;
   padding: 14px 16px;
   border-radius: 18px;
@@ -489,6 +525,7 @@ const LetterSourceTag = styled.div`
 /* Filter active bar */
 const FilterBar = styled.div`
   display: flex;
+  max-width: 300px;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
@@ -605,6 +642,7 @@ const EmptyHero = styled.div`
   gap: 0;
   padding: 36px 40px 44px;
   text-align: center;
+  margin-bottom: 24px;
 
   background:
     radial-gradient(ellipse 70% 50% at 50% 0%, rgba(var(--accent-rgb), 0.10) 0%, transparent 70%),
@@ -2052,8 +2090,8 @@ export default function CoverLettersPage() {
           <div>
             <SectionTitle>
               {filterReport
-                ? `Letters — ${filterReport.job?.title || 'Report'}`
-                : 'Your Cover Letters'}
+                ? `Cover Letters for ${filterReport.job?.title || 'Report'}`
+                : 'Cover Letters'}
             </SectionTitle>
             <SectionDescription>
               {filterReport
@@ -2072,7 +2110,7 @@ export default function CoverLettersPage() {
           {/* Active filter bar */}
           {filterReport && (
             <FilterBar>
-              <span>✦ Filtered by <strong>{filterReport.job?.title || 'Report'}</strong> · {filterReport.fit_score}% fit score</span>
+              <span>Filtered by <strong>{filterReport.job?.title || 'Report'}</strong> · {filterReport.fit_score}% fit score</span>
               <FilterClearButton onClick={() => setFilterReportId(null)}>Clear ×</FilterClearButton>
             </FilterBar>
           )}

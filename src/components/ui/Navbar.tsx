@@ -5,6 +5,7 @@ import styled, { keyframes } from "styled-components";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
+import { Target, SlidersHorizontal, Wand2 } from "lucide-react";
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -412,34 +413,7 @@ const CloseIcon = () => (
   </svg>
 );
 
-{/* SF Symbols-inspired: target — Job Match & Optimize */}
-const ChartIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-    <circle cx="12" cy="12" r="9" />
-    <circle cx="12" cy="12" r="5" />
-    <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-  </svg>
-);
-
-{/* SF Symbols-inspired: slider.horizontal.3 — ATS Optimizer */}
-const ScanIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-    <line x1="3" y1="6" x2="21" y2="6" strokeLinecap="round" />
-    <line x1="3" y1="12" x2="21" y2="12" strokeLinecap="round" />
-    <line x1="3" y1="18" x2="21" y2="18" strokeLinecap="round" />
-    <circle cx="8" cy="6" r="2" fill="var(--bg-color, white)" />
-    <circle cx="16" cy="12" r="2" fill="var(--bg-color, white)" />
-    <circle cx="10" cy="18" r="2" fill="var(--bg-color, white)" />
-  </svg>
-);
-
-{/* SF Symbols-inspired: pencil.and.list — Cover Letters */}
-const SparklesIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.1 2.1 0 112.97 2.97L8.5 17.81l-4 1 1-4 11.362-11.323z" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4 20h16" />
-  </svg>
-);
+// Removed SF Symbols-inspired icons (Target, SlidersHorizontal, Wand2 are now imported from lucide-react)
 
 // Dropdown Layout
 const DropdownContainerBox = styled.div`
@@ -560,21 +534,21 @@ export function Navbar() {
                       <DropdownMainSection>
                         <SectionTitle>Main Tools</SectionTitle>
                         <ProductItemWrapper href={ROUTES.APP.REPORTS}>
-                          <ProductItemIcon><ChartIcon /></ProductItemIcon>
+                          <ProductItemIcon><Target strokeWidth={1.5} /></ProductItemIcon>
                           <ProductItemContent>
                             <ProductItemTitle>Job Match & Optimize</ProductItemTitle>
                             <ProductItemDescription>Analyze how well your resume matches a job posting and generate a targeted version to boost your chances.</ProductItemDescription>
                           </ProductItemContent>
                         </ProductItemWrapper>
                         <ProductItemWrapper href={ROUTES.APP.ATS_OPTIMIZER}>
-                          <ProductItemIcon><ScanIcon /></ProductItemIcon>
+                          <ProductItemIcon><SlidersHorizontal strokeWidth={1.5} /></ProductItemIcon>
                           <ProductItemContent>
                             <ProductItemTitle>ATS Optimizer</ProductItemTitle>
                             <ProductItemDescription>Upload your resume to check ATS compatibility and get an optimized version.</ProductItemDescription>
                           </ProductItemContent>
                         </ProductItemWrapper>
                         <ProductItemWrapper href={ROUTES.APP.COVER_LETTERS}>
-                          <ProductItemIcon><SparklesIcon /></ProductItemIcon>
+                          <ProductItemIcon><Wand2 strokeWidth={1.5} /></ProductItemIcon>
                           <ProductItemContent>
                             <ProductItemTitle>Cover Letters</ProductItemTitle>
                             <ProductItemDescription>Generate AI-powered cover letters from your reports and manage your applications.</ProductItemDescription>

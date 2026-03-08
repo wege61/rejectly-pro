@@ -339,7 +339,7 @@ const OptimizedCVCard = styled.div`
   min-height: 200px;
 
   /* Liquid Glass card */
-  background: rgba(30, 30, 40, 0.78);
+  background: rgba(24, 24, 24, 0.4);
   backdrop-filter: blur(30px) saturate(160%);
   -webkit-backdrop-filter: blur(30px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -393,15 +393,15 @@ const ContentInner = styled.div`
   @media (max-width: 1024px) {
     transform: none !important;
   }
-`;
+`; 
 
 const ScoreValue = styled.span<{ $score: number }>`
   font-size: 48px;
   font-weight: 700;
   color: ${({ $score }) =>
-    $score >= 80 ? "#10b981" :
-    $score >= 60 ? "#f59e0b" :
-    $score >= 40 ? "#f97316" : "#ef4444"};
+    $score >= 85 ? "var(--primary-500)" :
+    $score >= 70 ? "#2A57A0" :
+    $score >= 50 ? "#EAB308" : "#F97316"};
   line-height: 1;
 
   &::after {
@@ -438,7 +438,7 @@ const CTAContainer = styled.div`
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
-  background: linear-gradient(to top, rgba(30, 30, 40, 0.95) 60%, transparent);
+  background: linear-gradient(to top, rgba(24, 24, 24, 0.95) 60%, transparent);
 
   @media (max-width: 768px) {
     padding: 0;
@@ -776,9 +776,9 @@ const MetricProgress = styled.div<{ $score: number; $max: number }>`
   width: ${({ $score, $max }) => ($score / $max) * 100}%;
   background: ${({ $score, $max }) => {
     const percentage = ($score / $max) * 100;
-    return percentage >= 80 ? "#10b981" :
-           percentage >= 60 ? "#f59e0b" :
-           percentage >= 40 ? "#f97316" : "#ef4444";
+    return percentage >= 80 ? "var(--primary-500)" :
+           percentage >= 60 ? "#2A57A0" :
+           percentage >= 40 ? "#EAB308" : "#F97316";
   }};
   border-radius: 4px;
   transition: width 0.5s ease;
@@ -1482,22 +1482,50 @@ const PDFViewer = styled.iframe`
 const HistorySection = styled.div`
   margin-top: 32px;
   position: relative;
-  border-radius: 24px;
+  border-radius: 18px;
   overflow: hidden;
 
-  /* Liquid Glass wrapper */
-  background: rgba(18, 18, 22, 0.55);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  /* Apple Liquid Glass core */
+  background: rgba(22, 22, 26, 0.78);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
 
   &::before {
     content: '';
     position: absolute;
-    top: 0; left: 10%; right: 10%;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35) 50%, transparent);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 60%,
+      rgba(255, 255, 255, 0.25) 80%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
     pointer-events: none;
     z-index: 1;
   }
@@ -1507,15 +1535,17 @@ const HistorySectionHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 28px 24px 16px;
+  position: relative;
+  z-index: 2;
 `;
 
 const HistoryTitle = styled.h3`
-  font-size: 16px;
+  font-size: 1.25rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-  letter-spacing: -0.02em;
+  color: var(--text-color);
+  letter-spacing: -0.01em;
+  margin: 0;
 `;
 
 const HistoryGrid = styled.div`

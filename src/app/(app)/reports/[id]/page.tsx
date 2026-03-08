@@ -32,6 +32,7 @@ import {
   Improvement,
   RoleRecommendation,
   FakeSkillRecommendation,
+  InterviewPrep,
   ScoreRange,
   UserState,
   getScoreRange,
@@ -4476,6 +4477,430 @@ const BreakdownFooterValue = styled.span`
   color: var(--primary-500);
 `;
 
+// ==========================================
+// INTERVIEW PREPARATION SECTION
+// ==========================================
+const InterviewPrepSection = styled.div`
+  position: relative;
+  margin-bottom: 32px;
+  border-radius: 28px;
+  background: rgba(15, 15, 18, 0.55);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    background: radial-gradient(ellipse 70% 100% at 50% 0%, rgba(102, 126, 234, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+`;
+
+const InterviewPrepHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 28px 0;
+  flex-wrap: wrap;
+  gap: 12px;
+`;
+
+const InterviewPrepTitle = styled.h3`
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.4px;
+  margin: 0;
+`;
+
+const InterviewPrepSubtitle = styled.p`
+  padding: 8px 28px 24px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.5;
+  margin: 0;
+`;
+
+const InterviewPrepBadge = styled.div`
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary-400);
+  padding: 5px 14px;
+  background: rgba(var(--primary-rgb, 59, 130, 246), 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(var(--primary-rgb, 59, 130, 246), 0.15);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+`;
+
+const InterviewPrepTabBar = styled.div`
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  margin: 0 20px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const InterviewPrepTabButton = styled.button<{ $active?: boolean }>`
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: ${p => p.$active ? '#ffffff' : 'rgba(255, 255, 255, 0.4)'};
+  background: ${p => p.$active ? 'rgba(255, 255, 255, 0.08)' : 'transparent'};
+  border: ${p => p.$active ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid transparent'};
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  letter-spacing: -0.1px;
+  box-shadow: ${p => p.$active ? 'inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.15)' : 'none'};
+
+  &:hover {
+    color: ${p => p.$active ? '#ffffff' : 'rgba(255, 255, 255, 0.6)'};
+    background: ${p => p.$active ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)'};
+  }
+`;
+
+const InterviewPrepContent = styled.div`
+  position: relative;
+  margin: 0 12px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 18px;
+  min-height: 100px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+`;
+
+const InterviewTabDescription = styled.div`
+  padding: 18px 22px 4px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.35);
+  line-height: 1.5;
+`;
+
+const InterviewQuestionCard = styled.div`
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const InterviewQuestionHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 22px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  @media (max-width: 640px) {
+    padding: 16px 18px;
+  }
+`;
+
+const InterviewQuestionNumber = styled.div`
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.2);
+  min-width: 24px;
+  padding-top: 2px;
+`;
+
+const InterviewQuestionText = styled.div`
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+`;
+
+const InterviewQuestionWhy = styled.div`
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 4px;
+  font-weight: 400;
+`;
+
+const InterviewExpandIcon = styled.div<{ $isOpen?: boolean }>`
+  color: rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  padding-top: 2px;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: rotate(${p => p.$isOpen ? '90deg' : '0deg'});
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const InterviewAnswerPanel = styled.div<{ $isOpen?: boolean }>`
+  max-height: ${p => p.$isOpen ? '800px' : '0'};
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+`;
+
+const InterviewAnswerInner = styled.div`
+  padding: 0 22px 22px 62px;
+
+  @media (max-width: 640px) {
+    padding: 0 18px 18px 18px;
+  }
+`;
+
+const STARGrid = styled.div`
+  display: grid;
+  gap: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+`;
+
+const STARItem = styled.div<{ $color?: string }>`
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const STARLabel = styled.div<{ $color?: string }>`
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: ${p => p.$color || 'rgba(255, 255, 255, 0.3)'};
+  min-width: 80px;
+  padding: 11px 14px;
+  background: ${p => p.$color ? `${p.$color}08` : 'rgba(255, 255, 255, 0.02)'};
+
+  @media (max-width: 640px) {
+    min-width: 64px;
+    font-size: 10px;
+    padding: 10px 12px;
+  }
+`;
+
+const STARText = styled.div`
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 11px 14px;
+
+  @media (max-width: 640px) {
+    padding: 10px 12px;
+  }
+`;
+
+const TechnicalPrepCard = styled.div`
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (max-width: 640px) {
+    padding: 16px 18px;
+  }
+`;
+
+const TechnicalQuestion = styled.div`
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  margin-bottom: 4px;
+`;
+
+const TechnicalWhy = styled.div`
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 12px;
+`;
+
+const TechnicalPrep = styled.div`
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 14px 18px;
+  background: rgba(var(--primary-rgb, 59, 130, 246), 0.04);
+  border-radius: 14px;
+  border: 1px solid rgba(var(--primary-rgb, 59, 130, 246), 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+`;
+
+const TechnicalPrepLabel = styled.div`
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--primary-400);
+  margin-bottom: 6px;
+  opacity: 0.6;
+`;
+
+const GapWarningCard = styled.div`
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (max-width: 640px) {
+    padding: 16px 18px;
+  }
+`;
+
+const GapTopic = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(245, 158, 11, 0.85);
+  margin-bottom: 6px;
+`;
+
+const GapQuestion = styled.div`
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  margin-bottom: 10px;
+`;
+
+const GapStrategy = styled.div`
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 14px 18px;
+  background: rgba(245, 158, 11, 0.03);
+  border-radius: 14px;
+  border: 1px solid rgba(245, 158, 11, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+`;
+
+const GapStrategyLabel = styled.div`
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(245, 158, 11, 0.6);
+  margin-bottom: 6px;
+`;
+
+const ClosingQuestionItem = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 22px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const ClosingBullet = styled.div`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-400);
+  flex-shrink: 0;
+  margin-top: 7px;
+  opacity: 0.7;
+`;
+
+const InterviewPrepLoadingState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 16px;
+`;
+
+const InterviewPrepLoadingText = styled.div`
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.4);
+`;
+
+const InterviewPrepGenerateButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 20px 20px;
+  padding: 20px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  letter-spacing: -0.1px;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    opacity: 0.4;
+  }
+`;
+
 // Generate Resume Card - FixesCard tarzında
 const GenerateResumeCard = styled.div`
   border-radius: 16px;
@@ -5666,6 +6091,11 @@ export default function ReportDetailPage() {
 
 
   const [originalCvText, setOriginalCvText] = useState<string | null>(null);
+
+  // Interview Prep state
+  const [interviewPrep, setInterviewPrep] = useState<InterviewPrep | null>(null);
+  const [interviewPrepTab, setInterviewPrepTab] = useState<'behavioral' | 'technical' | 'gaps' | 'closing'>('behavioral');
+  const [expandedQuestionIndex, setExpandedQuestionIndex] = useState<number | null>(null);
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
   const [pendingCVGeneration, setPendingCVGeneration] = useState<{ fakeItMode: boolean } | null>(null);
@@ -6146,6 +6576,11 @@ export default function ReportDetailPage() {
         hasOriginalAtsScore: data.cv && typeof data.cv.ats_score === 'number'
       });
 
+      // Load cached interview prep
+      if (data.interview_prep) {
+        setInterviewPrep(data.interview_prep);
+      }
+
       if (hasValidScore) {
         console.log("✅ Loading from cache:", {
           score: data.optimized_score,
@@ -6428,6 +6863,9 @@ export default function ReportDetailPage() {
             console.log('📌 Updated fake_it_mode after upgrade:', updatedData.fake_it_mode);
           }
           setReport(updatedData);
+          if (updatedData.interview_prep) {
+            setInterviewPrep(updatedData.interview_prep);
+          }
 
           // Generate PDF on client and save to optimized_cvs via API
           if (updatedData.generated_cv) {
@@ -6634,6 +7072,9 @@ export default function ReportDetailPage() {
 
       // Update local state with new CV
       setReport((prev) => prev ? { ...prev, generated_cv: data.cv } : null);
+      if (data.interview_prep) {
+        setInterviewPrep(data.interview_prep);
+      }
 
       // Generate and preview the new PDF
       let regenPhoto: string | undefined = cvPhotoBase64 || undefined;
@@ -7175,7 +7616,12 @@ export default function ReportDetailPage() {
               if (!response.ok) throw new Error(cvResult.error || 'Failed to generate resume');
               const supabase = createClient();
               const { data: updatedReport } = await supabase.from('reports').select('*').eq('id', report.id).single();
-              if (updatedReport) setReport(updatedReport);
+              if (updatedReport) {
+                setReport(updatedReport);
+                if (updatedReport.interview_prep) {
+                  setInterviewPrep(updatedReport.interview_prep);
+                }
+              }
             } catch (err) {
               console.error(err);
             } finally {
@@ -7203,55 +7649,7 @@ export default function ReportDetailPage() {
         </Section>
       )}
 
-      {/* ATS Optimized Card - For high-score users showing what was done */}
-      {visibleSections?.showPerfectMatch && !isAnalyzingOptimized && (
-        <Section>
-          <ATSOptimizedCard>
-            <ATSOptimizedHeader>
-              <ATSOptimizedTitleSection>
-                <ATSOptimizedTitle>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style={{ width: 28, height: 28 }}>
-                    <path fillRule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
-                  </svg>
-                  Resume Optimized & ATS-Ready
-                </ATSOptimizedTitle>
-                <ATSOptimizedSubtitle>
-                  Your resume has been professionally optimized with ATS-friendly formatting and enhanced language
-                </ATSOptimizedSubtitle>
-              </ATSOptimizedTitleSection>
 
-              <ATSScoreBadge>
-                <div className="score-number">{report.fit_score}%</div>
-                <div className="score-label">Match Score</div>
-              </ATSScoreBadge>
-            </ATSOptimizedHeader>
-
-            <ATSFeaturesList>
-              <ATSFeatureItem>
-                <CheckCircleFilledIcon />
-                <span>ATS-Friendly Formatting</span>
-              </ATSFeatureItem>
-              <ATSFeatureItem>
-                <CheckCircleFilledIcon />
-                <span>Optimized Keywords</span>
-              </ATSFeatureItem>
-              <ATSFeatureItem>
-                <CheckCircleFilledIcon />
-                <span>Professional Language</span>
-              </ATSFeatureItem>
-              <ATSFeatureItem>
-                <CheckCircleFilledIcon />
-                <span>Achievement-Focused Bullets</span>
-              </ATSFeatureItem>
-            </ATSFeaturesList>
-
-            <ATSResultMessage>
-              <CheckCircleFilledIcon />
-              Your resume is ready to apply! Download it below or generate a cover letter.
-            </ATSResultMessage>
-          </ATSOptimizedCard>
-        </Section>
-      )}
 
       {/* ====== SECTION 2: What We Changed ====== */}
       {visibleSections?.showProblemSummary &&
@@ -7362,6 +7760,137 @@ export default function ReportDetailPage() {
             )}
           </TabContent>
         </DetailPanel>
+      )}
+
+      {/* ====== INTERVIEW PREPARATION SECTION ====== */}
+      {!visibleSections?.showSampleContent && userState === 'pro_optimized' && interviewPrep && (
+        <InterviewPrepSection>
+          <InterviewPrepHeader>
+            <InterviewPrepTitle>Interview Preparation</InterviewPrepTitle>
+            <InterviewPrepBadge>
+              {interviewPrep.behavioral.length + interviewPrep.technical.length + interviewPrep.gapWarnings.length} topics
+            </InterviewPrepBadge>
+          </InterviewPrepHeader>
+
+          <InterviewPrepSubtitle>
+            Personalized questions and strategies based on your experience and this role.
+          </InterviewPrepSubtitle>
+
+              <InterviewPrepTabBar>
+                <InterviewPrepTabButton $active={interviewPrepTab === 'behavioral'} onClick={() => { setInterviewPrepTab('behavioral'); setExpandedQuestionIndex(null); }}>
+                  Behavioral
+                </InterviewPrepTabButton>
+                <InterviewPrepTabButton $active={interviewPrepTab === 'technical'} onClick={() => { setInterviewPrepTab('technical'); setExpandedQuestionIndex(null); }}>
+                  Technical
+                </InterviewPrepTabButton>
+                {interviewPrep.gapWarnings.length > 0 && (
+                  <InterviewPrepTabButton $active={interviewPrepTab === 'gaps'} onClick={() => { setInterviewPrepTab('gaps'); setExpandedQuestionIndex(null); }}>
+                    Weak Spots
+                  </InterviewPrepTabButton>
+                )}
+                <InterviewPrepTabButton $active={interviewPrepTab === 'closing'} onClick={() => { setInterviewPrepTab('closing'); setExpandedQuestionIndex(null); }}>
+                  Ask Them
+                </InterviewPrepTabButton>
+              </InterviewPrepTabBar>
+
+              <InterviewPrepContent>
+                {interviewPrepTab === 'behavioral' && (
+                  <>
+                    <InterviewTabDescription>
+                      You have strong experiences to draw from. Tap any question to see a ready-made answer built from your background.
+                    </InterviewTabDescription>
+                    {interviewPrep.behavioral.map((q, i) => (
+                      <InterviewQuestionCard key={i}>
+                        <InterviewQuestionHeader onClick={() => setExpandedQuestionIndex(expandedQuestionIndex === i ? null : i)}>
+                          <InterviewQuestionNumber>{String(i + 1).padStart(2, '0')}</InterviewQuestionNumber>
+                          <InterviewQuestionText>
+                            {q.question}
+                            <InterviewQuestionWhy>{q.why}</InterviewQuestionWhy>
+                          </InterviewQuestionText>
+                          <InterviewExpandIcon $isOpen={expandedQuestionIndex === i}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            </svg>
+                          </InterviewExpandIcon>
+                        </InterviewQuestionHeader>
+                        <InterviewAnswerPanel $isOpen={expandedQuestionIndex === i}>
+                          <InterviewAnswerInner>
+                            <STARGrid>
+                              <STARItem $color="#3b82f6">
+                                <STARLabel $color="#3b82f6">Situation</STARLabel>
+                                <STARText>{q.answerFramework.situation}</STARText>
+                              </STARItem>
+                              <STARItem $color="#8b5cf6">
+                                <STARLabel $color="#8b5cf6">Task</STARLabel>
+                                <STARText>{q.answerFramework.task}</STARText>
+                              </STARItem>
+                              <STARItem $color="#10b981">
+                                <STARLabel $color="#10b981">Action</STARLabel>
+                                <STARText>{q.answerFramework.action}</STARText>
+                              </STARItem>
+                              <STARItem $color="#f59e0b">
+                                <STARLabel $color="#f59e0b">Result</STARLabel>
+                                <STARText>{q.answerFramework.result}</STARText>
+                              </STARItem>
+                            </STARGrid>
+                          </InterviewAnswerInner>
+                        </InterviewAnswerPanel>
+                      </InterviewQuestionCard>
+                    ))}
+                  </>
+                )}
+
+                {interviewPrepTab === 'technical' && (
+                  <>
+                    <InterviewTabDescription>
+                      Your technical foundation is solid. Here are the topics most likely to come up — review these and you will walk in confident.
+                    </InterviewTabDescription>
+                    {interviewPrep.technical.map((q, i) => (
+                      <TechnicalPrepCard key={i}>
+                        <TechnicalQuestion>{q.question}</TechnicalQuestion>
+                        <TechnicalWhy>{q.why}</TechnicalWhy>
+                        <TechnicalPrep>
+                          <TechnicalPrepLabel>Your game plan</TechnicalPrepLabel>
+                          {q.preparation}
+                        </TechnicalPrep>
+                      </TechnicalPrepCard>
+                    ))}
+                  </>
+                )}
+
+                {interviewPrepTab === 'gaps' && (
+                  <>
+                    <InterviewTabDescription>
+                      Every candidate has gaps — what matters is how you frame them. These strategies turn potential weaknesses into signs of growth.
+                    </InterviewTabDescription>
+                    {interviewPrep.gapWarnings.map((g, i) => (
+                      <GapWarningCard key={i}>
+                        <GapTopic>{g.topic}</GapTopic>
+                        <GapQuestion>{g.likelyQuestion}</GapQuestion>
+                        <GapStrategy>
+                          <GapStrategyLabel>How to own it</GapStrategyLabel>
+                          {g.strategy}
+                        </GapStrategy>
+                      </GapWarningCard>
+                    ))}
+                  </>
+                )}
+
+                {interviewPrepTab === 'closing' && (
+                  <>
+                    <InterviewTabDescription>
+                      End on a high note. These questions show you have done your homework and are genuinely excited about this opportunity.
+                    </InterviewTabDescription>
+                    {interviewPrep.closingQuestions.map((q, i) => (
+                      <ClosingQuestionItem key={i}>
+                        <ClosingBullet />
+                        <span>{q}</span>
+                      </ClosingQuestionItem>
+                    ))}
+                  </>
+                )}
+              </InterviewPrepContent>
+        </InterviewPrepSection>
       )}
 
       {/* PRO-only sections */}
@@ -7482,6 +8011,9 @@ export default function ReportDetailPage() {
 
                           if (updatedReport) {
                             setReport(updatedReport);
+                            if (updatedReport.interview_prep) {
+                              setInterviewPrep(updatedReport.interview_prep);
+                            }
                             // Update fake_it_mode state from database
                             if (updatedReport.fake_it_mode !== undefined) {
                               setFakeItMode(updatedReport.fake_it_mode);

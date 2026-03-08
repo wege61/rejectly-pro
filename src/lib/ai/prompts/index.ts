@@ -27,6 +27,9 @@ export { generateCoverLetterPrompt } from './coverLetter';
 // Scoring - Systematic match scoring
 export { generateSystematicScoringPrompt, type ScoringOptions } from './scoring';
 
+// Interview Preparation - Generate interview questions and answer frameworks
+export { generateInterviewPrepPrompt } from './interviewPrep';
+
 // ATS Check - ATS compatibility analysis and optimization
 export {
   generateATSCheckPrompt,

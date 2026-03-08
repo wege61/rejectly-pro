@@ -40,7 +40,9 @@
       "Bash(git diff --staged src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx | head -100)",
       "Bash(git checkout HEAD -- src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx)",
       "Bash(git diff src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx)",
-      "Bash(git add src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx && git status --short 2>&1 | head -20)"
+      "Bash(git add src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx && git status --short 2>&1 | head -20)",
+      "Bash(head:*)",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx tsc:*)"
     ],
     "deny": [],
     "ask": []

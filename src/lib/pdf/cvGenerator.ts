@@ -13,6 +13,44 @@ const FONTS = {
   small: 9,
 };
 
+// Language-aware section labels
+const LABELS = {
+  en: {
+    professionalSummary: 'Professional Summary',
+    professionalExperience: 'Professional Experience',
+    education: 'Education',
+    skills: 'Skills',
+    technicalSkills: 'Technical Skills:',
+    softSkills: 'Soft Skills:',
+    certifications: 'Certifications',
+    languages: 'Languages',
+    titleConnector: ' at ',
+  },
+  tr: {
+    professionalSummary: 'Profesyonel Özet',
+    professionalExperience: 'İş Deneyimi',
+    education: 'Eğitim',
+    skills: 'Beceriler',
+    technicalSkills: 'Teknik Beceriler:',
+    softSkills: 'Kişisel Beceriler:',
+    certifications: 'Sertifikalar',
+    languages: 'Diller',
+    titleConnector: ', ',
+  },
+};
+
+/**
+ * Detect language from CV summary text.
+ * Checks for Turkish-specific characters and common Turkish words.
+ */
+function detectCVLanguage(cv: GeneratedCV): 'tr' | 'en' {
+  const text = [cv.summary, ...(cv.experience?.[0]?.bullets || [])].join(' ').toLowerCase();
+  const turkishChars = /[şçğıöüŞÇĞİÖÜ]/;
+  const turkishWords = /\b(ve|ile|için|olan|bir|bu|da|de|olarak|süreç|yönet|müşteri|sağla|artır)\b/i;
+  if (turkishChars.test(text) || turkishWords.test(text)) return 'tr';
+  return 'en';
+}
+
 export interface CVPDFOptions {
   colorTemplate?: string;
   photoBase64?: string;
@@ -190,12 +228,16 @@ export async function generateCVPDF(
   doc.line(margin, yPosition, pageWidth - margin, yPosition);
   yPosition += 8;
 
+  // Detect language for localized labels
+  const lang = detectCVLanguage(cv);
+  const L = LABELS[lang];
+
   // 2. PROFESSIONAL SUMMARY
   const summaryStartY = yPosition;
   doc.setFont("Roboto", "bold");
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
-  doc.text("Professional Summary", margin, yPosition);
+  doc.text(L.professionalSummary, margin, yPosition);
   yPosition += 6;
 
   doc.setFont("Roboto", "normal");
@@ -217,7 +259,7 @@ export async function generateCVPDF(
   doc.setFont("Roboto", "bold");
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
-  doc.text("Professional Experience", margin, yPosition);
+  doc.text(L.professionalExperience, margin, yPosition);
   yPosition += 6;
 
   cv.experience.forEach((exp) => {
@@ -231,7 +273,7 @@ export async function generateCVPDF(
     if (typeof doc.setCharSpace === 'function') {
       doc.setCharSpace(0);
     }
-    doc.text(`${exp.title} at ${exp.company}`, margin, yPosition);
+    doc.text(`${exp.title}${L.titleConnector}${exp.company}`, margin, yPosition);
     yPosition += 5;
 
     doc.setFont("Roboto", "normal");
@@ -278,7 +320,7 @@ export async function generateCVPDF(
   doc.setFont("Roboto", "bold");
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
-  doc.text("Education", margin, yPosition);
+  doc.text(L.education, margin, yPosition);
   yPosition += 6;
 
   cv.education.forEach((edu) => {
@@ -323,14 +365,14 @@ export async function generateCVPDF(
   doc.setFont("Roboto", "bold");
   doc.setFontSize(FONTS.subheading);
   doc.setTextColor(COLORS.primary);
-  doc.text("Skills", margin, yPosition);
+  doc.text(L.skills, margin, yPosition);
   yPosition += 6;
 
   // Technical Skills
   doc.setFontSize(FONTS.body);
   doc.setTextColor(COLORS.text);
   doc.setFont("Roboto", "bold");
-  doc.text("Technical Skills:", margin, yPosition);
+  doc.text(L.technicalSkills, margin, yPosition);
   yPosition += 5;
 
   doc.setFont("Roboto", "normal");
@@ -346,7 +388,7 @@ export async function generateCVPDF(
 
   // Soft Skills
   doc.setFont("Roboto", "bold");
-  doc.text("Soft Skills:", margin, yPosition);
+  doc.text(L.softSkills, margin, yPosition);
   yPosition += 5;
 
   doc.setFont("Roboto", "normal");
@@ -371,7 +413,7 @@ export async function generateCVPDF(
     doc.setFont("Roboto", "bold");
     doc.setFontSize(FONTS.subheading);
     doc.setTextColor(COLORS.primary);
-    doc.text("Certifications", margin, yPosition);
+    doc.text(L.certifications, margin, yPosition);
     yPosition += 6;
 
     cv.certifications.forEach((cert) => {
@@ -402,7 +444,7 @@ export async function generateCVPDF(
     doc.setFont("Roboto", "bold");
     doc.setFontSize(FONTS.subheading);
     doc.setTextColor(COLORS.primary);
-    doc.text("Languages", margin, yPosition);
+    doc.text(L.languages, margin, yPosition);
     yPosition += 6;
 
     doc.setFont("Roboto", "normal");

@@ -17,7 +17,8 @@ export function generateOptimizedCVPrompt(
   fakeItMode: boolean = false,
   additionalTools: string[] = [],
   extractedMetrics: string[] = [],
-  achievementsSection: string = ''
+  achievementsSection: string = '',
+  outputLanguage: string = 'English'
 ): string {
   const metricsWarning = extractedMetrics.length > 0 ? `
 🚨🚨🚨 MANDATORY METRICS - THESE MUST ALL APPEAR IN YOUR OUTPUT! 🚨🚨🚨
@@ -41,6 +42,15 @@ Integrate these into the relevant job experience bullets!
 ` : '';
 
   return `You are an expert CV writer and ATS optimization specialist. Create a fully optimized, ATS-friendly CV based on the original CV, target job postings, and analysis results.
+
+================================================================================
+OUTPUT LANGUAGE: ${outputLanguage.toUpperCase()}
+================================================================================
+You MUST write ALL text values (summary, bullets, skills, dates) in ${outputLanguage}.
+JSON keys remain in English. Everything else MUST be in ${outputLanguage}.
+${outputLanguage !== 'English' ? `Dates: use ${outputLanguage} month names (NOT English month names).
+For current positions: use the equivalent of "Present" in ${outputLanguage}.` : ''}
+================================================================================
 
 ${metricsWarning}
 ${achievementsWarning}
@@ -181,7 +191,11 @@ IMPORTANT INSTRUCTIONS:
 - Add a compelling professional summary tailored to target jobs
 - Organize skills by relevance to target roles
 - Keep formatting clean and ATS-friendly
-- CRITICAL: Order work experience in REVERSE CHRONOLOGICAL order (most recent job FIRST, oldest job LAST). This is the standard CV format expected by recruiters and ATS systems.
+- CRITICAL: Order work experience in REVERSE CHRONOLOGICAL order (most recent job FIRST, oldest job LAST)
+
+=============================================================================
+REMINDER: Write ALL content in ${outputLanguage}.
+=============================================================================
 
 =============================================================================
 PROFESSIONAL SUMMARY GUIDE (3-4 powerful sentences)
@@ -268,11 +282,11 @@ Your optimized CV must pass Workday, Greenhouse, Lever, and Taleo parsing:
 □ NO emojis or unicode symbols in output
 □ Keep bullet points concise (max 120 characters, 1-2 lines each)
 
-📋 SECTION HEADERS (Workday/Taleo require EXACT names):
-□ Use EXACTLY: "Professional Summary" (not "About Me" or "Profile")
-□ Use EXACTLY: "Professional Experience" or "Work Experience" (not "Career Journey")
-□ Use EXACTLY: "Education" (not "Academic Background")
-□ Use EXACTLY: "Skills" or "Technical Skills" (not "Expertise" or "Toolbox")
+📋 SECTION HEADERS:
+Note: The JSON keys ("summary", "experience", etc.) stay in English — they are field names.
+But the TEXT CONTENT inside those fields must match the CV's language.
+For English CVs, follow standard ATS header conventions.
+For non-English CVs, write content naturally in that language.
 
 📋 KEYWORD OPTIMIZATION (Greenhouse frequency scoring):
 □ Key skills mentioned 2-3 times across CV (summary + skills + experience)
@@ -289,7 +303,9 @@ Your optimized CV must pass Workday, Greenhouse, Lever, and Taleo parsing:
 □ Greenhouse and Lever do NOT recognize unexpanded abbreviations!
 
 📋 DATE FORMAT (All ATS):
-□ Use standard date format: "Month YYYY" (e.g., "January 2020")
+□ Use standard date format: "Month YYYY"
+□ For ENGLISH CVs: "January 2020", "March 2024"
+□ For TURKISH CVs: "Ocak 2020", "Mart 2024" (use Turkish month names: Ocak, Şubat, Mart, Nisan, Mayıs, Haziran, Temmuz, Ağustos, Eylül, Ekim, Kasım, Aralık)
 □ Use 4-digit year consistently throughout
 □ Reverse chronological order (most recent job FIRST)
 
@@ -343,8 +359,8 @@ Respond in JSON format:
       "title": "Job Title",
       "company": "Company Name",
       "location": "City, Country",
-      "startDate": "Month YYYY",
-      "endDate": "Month YYYY", // or "Present"
+      "startDate": "Month YYYY", // Turkish: "Ocak 2025", English: "January 2025"
+      "endDate": "Month YYYY", // or "Present" (Turkish: "Devam Ediyor")
       "bullets": [
         "Achievement-focused bullet point with quantifiable results...",
         "Another bullet incorporating keywords and STAR format...",
@@ -403,7 +419,8 @@ ${fakeItMode ? `
 - Enhance wording and presentation, not fabricate facts
 - Ensure every experience bullet demonstrates impact
 - Professional summary should be compelling
-- All dates MUST be in "Month YYYY" format (e.g., "January 2020", "June 2023")
+- All dates MUST use month names in the CV's language (Turkish: "Ocak 2025", English: "January 2025")
+- For Turkish CVs, use "Devam Ediyor" instead of "Present" for current positions
 - Keep professional tone throughout
 - Use standard ASCII characters only (avoid special Unicode symbols, emojis, or fancy characters)
 - Use simple quotes (""), not smart quotes or other variants
@@ -443,6 +460,7 @@ ${fakeItMode ? '□ All missing keywords aggressively added per Fake It Mode' : 
 □ ALL original achievements preserved and integrated
 □ JSON is valid and complete
 □ ATS checklist requirements met
+□ LANGUAGE CHECK: Output language matches the original CV language (NOT English unless inputs are English!)
 
 ⚠️ CRITICAL CHECK: Compare your output to the original CV.
 If the summary and bullets look almost identical → YOU FAILED. Rewrite them!

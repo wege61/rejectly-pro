@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { openai, AI_MODEL } from "@/lib/ai/client";
-import { generateOptimizedCVPrompt, generateFakeSkillsRecommendationsPrompt } from "@/lib/ai/prompts";
+import { generateOptimizedCVPrompt, generateFakeSkillsRecommendationsPrompt, generateInterviewPrepPrompt } from "@/lib/ai/prompts";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { postProcessCVForATS, GeneratedCVData } from "@/lib/ats/utils";
 
@@ -171,20 +171,36 @@ export async function POST(request: NextRequest) {
     console.log('📊 Extracted metrics from CV:', extractedMetrics);
     console.log('🏆 Achievements section found:', achievementsSection ? 'YES' : 'NO');
 
+    // Detect output language from job posting text
+    const jobTextsCombined = jobDocs.map((job: { text: string }) => job.text).join(' ');
+    const detectedLocale = detectLocale(jobTextsCombined);
+    const LOCALE_TO_LANGUAGE: Record<string, string> = {
+      'en': 'English', 'tr': 'Turkish', 'de': 'German', 'fr': 'French', 'es': 'Spanish',
+    };
+    const outputLanguage = LOCALE_TO_LANGUAGE[detectedLocale] || 'English';
+    console.log('🌍 Detected job posting language:', outputLanguage, `(locale: ${detectedLocale})`);
+
     // Generate optimized CV using AI
     const prompt = generateOptimizedCVPrompt(
       report.cv.text,
-      jobDocs.map((job) => job.text),
+      jobDocs.map((job: { text: string }) => job.text),
       analysisResults,
       fakeItMode,
       additionalTools,
       extractedMetrics,
-      achievementsSection
+      achievementsSection,
+      outputLanguage
     );
 
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,
-      messages: [{ role: "user", content: prompt }],
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert CV writer. You MUST write the entire CV in ${outputLanguage}. Every text value — summary, bullets, skills, dates — must be in ${outputLanguage}. JSON keys stay in English.`
+        },
+        { role: "user", content: prompt }
+      ],
       temperature: 0.85,
       max_tokens: 8000,
       response_format: { type: "json_object" },
@@ -196,6 +212,10 @@ export async function POST(request: NextRequest) {
 
     // Post-process CV for ATS compliance (expand abbreviations, normalize dates, clean special chars)
     const generatedCV = postProcessCVForATS(rawGeneratedCV as GeneratedCVData);
+
+    // Localize dates based on job posting language
+    const jobTextsForLocale = jobDocs.map((j: { text: string }) => j.text).join(' ');
+    localizeCVDates(generatedCV, jobTextsForLocale);
 
     // Add customization options to generated CV
     if (photoUrl) {
@@ -274,6 +294,58 @@ export async function POST(request: NextRequest) {
       // Ignore if columns don't exist yet - cache clearing is optional
       console.log("Cache clearing skipped (columns may not exist yet):", cacheError);
     }
+
+    // Generate interview prep in background (non-blocking)
+    const interviewPrepPromise = (async () => {
+      try {
+        // Build weak categories from score breakdown
+        const weakCategories: string[] = [];
+        if (report.score_breakdown?.components) {
+          const components = report.score_breakdown.components as Record<string, { earnedPoints?: number; maxPoints?: number }>;
+          for (const [key, comp] of Object.entries(components)) {
+            if (comp && comp.maxPoints && comp.earnedPoints !== undefined) {
+              const pct = (comp.earnedPoints / comp.maxPoints) * 100;
+              if (pct < 60) {
+                weakCategories.push(key);
+              }
+            }
+          }
+        }
+
+        const missingKeywords = (report.keywords as { missing?: string[] })?.missing || [];
+
+        const interviewPrompt = generateInterviewPrepPrompt(
+          report.cv.text,
+          jobDocs.map((job: { text: string }) => job.text),
+          missingKeywords,
+          {
+            fitScore: report.fit_score,
+            weakCategories,
+          }
+        );
+
+        const interviewCompletion = await openai.chat.completions.create({
+          model: AI_MODEL,
+          messages: [{ role: "user", content: interviewPrompt }],
+          temperature: 0.4,
+          max_tokens: 4000,
+          response_format: { type: "json_object" },
+        });
+
+        const interviewResult = JSON.parse(interviewCompletion.choices[0].message.content || "{}");
+
+        if (interviewResult.behavioral && interviewResult.technical) {
+          await supabase
+            .from("reports")
+            .update({ interview_prep: interviewResult })
+            .eq("id", reportId);
+          console.log('✅ Interview prep generated and saved');
+          return interviewResult;
+        }
+      } catch (interviewError) {
+        console.log('⚠️ Interview prep generation failed (non-blocking):', interviewError);
+      }
+    })();
 
     // Generate PDF and save to optimized_cvs table for My CVs page
     try {
@@ -373,10 +445,14 @@ export async function POST(request: NextRequest) {
       console.log('PDF generation for My CVs failed:', pdfError);
     }
 
+    // Wait for interview prep to finish before responding
+    const interviewPrep = await interviewPrepPromise;
+
     return NextResponse.json({
       success: true,
       message: "CV generated successfully",
       cv: generatedCV,
+      interview_prep: interviewPrep,
     });
   } catch (error) {
     console.error("CV generation error:", error);
@@ -387,5 +463,129 @@ export async function POST(request: NextRequest) {
       { error: `Failed to generate CV: ${errorMessage}` },
       { status: 500 }
     );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Locale-aware date post-processor
+// Uses Intl.DateTimeFormat so it works for ANY language, not just Turkish.
+// ---------------------------------------------------------------------------
+const EN_MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+const PRESENT_MAP: Record<string, string> = {
+  tr: 'Devam Ediyor',
+  de: 'Bis heute',
+  fr: "Aujourd'hui",
+  es: 'Actualidad',
+  it: 'Presente',
+  pt: 'Presente',
+  nl: 'Heden',
+  ru: 'По настоящее время',
+  ar: 'حتى الآن',
+};
+
+/** Detect locale from CV text content. Returns BCP-47 locale string. */
+function detectLocale(text: string): string {
+  // Turkish
+  if (/[şçğıöüŞÇĞİÖÜ]/.test(text) || /\b(ve|ile|için|olan|olarak|müşteri|sağla)\b/i.test(text)) return 'tr';
+  // German
+  if (/[äöüßÄÖÜ]/.test(text) || /\b(und|mit|für|bei|das|ein|sind)\b/i.test(text)) return 'de';
+  // French
+  if (/[àâéèêëïîôùûüÿçœæ]/i.test(text) || /\b(et|avec|pour|dans|les|des|une)\b/i.test(text)) return 'fr';
+  // Spanish
+  if (/[ñ¿¡áéíóú]/i.test(text) || /\b(y|con|para|por|los|las|una)\b/i.test(text)) return 'es';
+  // Default
+  return 'en';
+}
+
+/** Build a map of English month name → localized month name for the given locale. */
+function buildMonthMap(locale: string): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (let m = 0; m < 12; m++) {
+    const date = new Date(2024, m, 1);
+    const localized = new Intl.DateTimeFormat(locale, { month: 'long' }).format(date);
+    // Capitalize first letter
+    const capitalized = localized.charAt(0).toUpperCase() + localized.slice(1);
+    map[EN_MONTHS[m]] = capitalized;
+  }
+  return map;
+}
+
+/** Replace English dates in a single string with localized dates. */
+function localizeDateString(str: string, monthMap: Record<string, string>, presentText: string): string {
+  let result = str;
+  // Only match English month names followed by a space+year (e.g. "May 2025")
+  // This prevents matching "May" inside already-localized "Mayıs"
+  for (const [en, localized] of Object.entries(monthMap)) {
+    result = result.replace(new RegExp(`${en}(\\s+\\d{4})`, 'g'), `${localized}$1`);
+    // Also handle month at end of string (rare, but possible)
+    result = result.replace(new RegExp(`${en}$`, 'g'), localized);
+  }
+  // "Present" → localized (whole word only)
+  result = result.replace(/\bPresent\b/g, presentText);
+  return result;
+}
+
+/** Post-process all date fields in a generated CV to use locale-appropriate month names. */
+function localizeCVDates(cv: GeneratedCVData, jobPostingText: string): void {
+  const locale = detectLocale(jobPostingText);
+  if (locale === 'en') return; // No conversion needed
+
+  const monthMap = buildMonthMap(locale);
+  const presentText = PRESENT_MAP[locale] || 'Present';
+
+  // Localize experience dates
+  if (cv.experience) {
+    for (const exp of cv.experience) {
+      if (exp.startDate) exp.startDate = localizeDateString(exp.startDate, monthMap, presentText);
+      if (exp.endDate) exp.endDate = localizeDateString(exp.endDate, monthMap, presentText);
+    }
+  }
+
+  // Localize education dates
+  if (cv.education) {
+    for (const edu of cv.education) {
+      if (edu.graduationDate) edu.graduationDate = localizeDateString(edu.graduationDate, monthMap, presentText);
+    }
+  }
+
+  // Localize certification dates
+  if (cv.certifications) {
+    for (const cert of cv.certifications) {
+      if (cert.date) cert.date = localizeDateString(cert.date, monthMap, presentText);
+    }
+  }
+
+  // Sort experience in reverse chronological order (most recent first)
+  if (cv.experience && cv.experience.length > 1) {
+    const monthOrder = EN_MONTHS.reduce((acc, m, i) => { acc[m.toLowerCase()] = i; return acc; }, {} as Record<string, number>);
+    // Also add localized month names to the order map
+    for (const [en, loc] of Object.entries(monthMap)) {
+      monthOrder[loc.toLowerCase()] = monthOrder[en.toLowerCase()];
+    }
+
+    const parseDate = (dateStr: string): number => {
+      if (!dateStr) return 0;
+      // "Present" or localized equivalent = far future
+      if (dateStr === 'Present' || dateStr === presentText) return 99999999;
+      // Try to parse "Month YYYY" in any language
+      const parts = dateStr.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        const monthIdx = monthOrder[parts[0].toLowerCase()] ?? -1;
+        const year = parseInt(parts[parts.length - 1], 10) || 0;
+        return year * 100 + monthIdx;
+      }
+      return 0;
+    };
+
+    cv.experience.sort((a, b) => {
+      const endA = parseDate(a.endDate || '');
+      const endB = parseDate(b.endDate || '');
+      if (endA !== endB) return endB - endA; // Most recent end date first
+      return parseDate(b.startDate || '') - parseDate(a.startDate || ''); // Tie-break by start date
+    });
   }
 }

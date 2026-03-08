@@ -39,6 +39,37 @@ export interface FakeSkillRecommendation {
   estimatedTime: string;
 }
 
+// Interview preparation data
+export interface InterviewPrepQuestion {
+  question: string;
+  why: string;
+  answerFramework: {
+    situation: string;
+    task: string;
+    action: string;
+    result: string;
+  };
+}
+
+export interface InterviewPrepTechnical {
+  question: string;
+  why: string;
+  preparation: string;
+}
+
+export interface InterviewPrepGapWarning {
+  topic: string;
+  likelyQuestion: string;
+  strategy: string;
+}
+
+export interface InterviewPrep {
+  behavioral: InterviewPrepQuestion[];
+  technical: InterviewPrepTechnical[];
+  gapWarnings: InterviewPrepGapWarning[];
+  closingQuestions: string[];
+}
+
 // Main report interface
 export interface Report {
   id: string;
@@ -76,6 +107,7 @@ export interface Report {
   optimized_score_breakdown: ScoreBreakdown | null;
   ats_score_optimized: number | null;
   ats_breakdown_optimized: any | null;
+  interview_prep: InterviewPrep | null;
   created_at: string;
 }
 

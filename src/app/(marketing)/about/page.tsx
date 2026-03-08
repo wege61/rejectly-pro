@@ -1,6 +1,7 @@
 "use client";
 
 import styled from "styled-components";
+import { motion } from "framer-motion";
 import { Footer } from "@/components/ui/Footer";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
@@ -118,8 +119,67 @@ const AboutBentoCard = styled.div<{ $position?: 'story' | 'mission' | 'vision' }
 const AboutBentoCardInner = styled.div<{ $position?: 'story' | 'mission' | 'vision' }>`
   position: absolute;
   inset: 1px;
+  overflow: hidden;
+
+  /* Apple Liquid Glass core */
+  background: rgba(24, 24, 24, 0.6);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Specular light refraction ─── */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 50%,
+      rgba(255, 255, 255, 0.25) 60%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(32, 32, 32, 0.7);
+    box-shadow:
+      0 20px 56px rgba(0, 0, 0, 0.65),
+      0 6px 20px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
   border-radius: calc(24px - 1px);
-  background: var(--bg-alt);
 
   ${({ $position }) => $position === 'story' && `
     @media (min-width: 1024px) {
@@ -611,8 +671,67 @@ const BentoCard = styled.div<{ $position?: 'left-tall' | 'right-tall' | 'top-mid
 const BentoCardInner = styled.div<{ $position?: 'left-tall' | 'right-tall' | 'top-middle' | 'bottom-middle' | 'bottom-left' | 'bottom-right' }>`
   position: absolute;
   inset: 1px;
+  overflow: hidden;
+
+  /* Apple Liquid Glass core */
+  background: rgba(24, 24, 24, 0.6);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Specular light refraction ─── */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 50%,
+      rgba(255, 255, 255, 0.25) 60%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(32, 32, 32, 0.7);
+    box-shadow:
+      0 20px 56px rgba(0, 0, 0, 0.65),
+      0 6px 20px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
   border-radius: calc(24px - 1px);
-  background: var(--bg-alt);
 
   ${({ $position }) => $position === 'left-tall' && `
     @media (min-width: 1024px) {
@@ -1227,33 +1346,108 @@ const AccuracyStatValue = styled.span`
   color: #10b981;
 `;
 
+const AuroraBackgroundContainer = styled.div`
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  
+  --aurora: repeating-linear-gradient(100deg, #3b82f6 10%, #a5b4fc 15%, #93c5fd 20%, #ddd6fe 25%, #60a5fa 30%);
+  --dark-gradient: repeating-linear-gradient(100deg, #000 0%, #000 7%, transparent 10%, transparent 12%, #000 16%);
+  /* For light mode, though mostly dark theme is active in this section */
+  --white-gradient: repeating-linear-gradient(100deg, #fff 0%, #fff 7%, transparent 10%, transparent 12%, #fff 16%);
+`;
+
+const AuroraEffect = styled.div`
+  position: absolute;
+  inset: -10px;
+  opacity: 0.5; /* Increased opacity to highlight aurora on black bg */
+  filter: blur(10px) invert(0); 
+  will-change: transform;
+  
+  [data-theme="dark"] &,
+  @media (prefers-color-scheme: dark) {
+    background-image: var(--dark-gradient), var(--aurora);
+    filter: blur(10px);
+  }
+
+  [data-theme="light"] & {
+    background-image: var(--white-gradient), var(--aurora);
+    filter: blur(10px) invert(1);
+  }
+
+  mask-image: radial-gradient(ellipse at 100% 0%, black 10%, transparent 70%);
+
+  background-image: var(--dark-gradient), var(--aurora);
+  background-size: 300% 200%;
+  background-position: 50% 50%, 50% 50%;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--dark-gradient), var(--aurora);
+    background-size: 200% 100%;
+    background-attachment: fixed;
+    mix-blend-mode: difference;
+    animation: aurora-anim 60s linear infinite;
+
+    [data-theme="light"] & {
+      background-image: var(--white-gradient), var(--aurora);
+    }
+  }
+
+  @keyframes aurora-anim {
+    from {
+      background-position: 50% 50%, 50% 50%;
+    }
+    to {
+      background-position: 350% 50%, 350% 50%;
+    }
+  }
+`;
+
 const TeamSection = styled.section`
   position: relative;
   width: 100vw;
-  margin-left: calc(-50vw + 50%);
+  margin-left: -50vw;
+  left: 50%;
   margin-bottom: 120px;
-  padding: 64px 48px;
+  padding: 80px 24px;
   text-align: center;
   overflow: hidden;
 
-  /* bento-like surface */
-  background: linear-gradient(
-      135deg,
-      rgba(99, 102, 241, 0.06) 0%,
-      rgba(16, 185, 129, 0.06) 100%
-    ),
-    var(--bg-alt);
+  /* Apple Liquid Glass Section Surface */
+  background: #000000;
+  backdrop-filter: blur(80px) saturate(200%);
+  -webkit-backdrop-filter: blur(80px) saturate(200%);
 
-  /* bento hairline */
-  outline: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  /* Top/Bottom Specular borders */
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
-  @media (prefers-color-scheme: dark) {
-    outline-color: rgba(255, 255, 255, 0.15);
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.15) 40%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0.15) 60%,
+      transparent 100%
+    );
+    z-index: 1;
   }
 
   @media (max-width: 768px) {
-    padding: 40px 24px;
+    padding: 60px 16px;
     margin-bottom: 80px;
   }
 `;
@@ -1278,19 +1472,18 @@ const TeamInner = styled.div`
 `;
 
 const TeamTitle = styled.h2`
-  font-size: 36px;
+  font-size: 48px;
   font-weight: 800;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   letter-spacing: -0.02em;
 
-  /* keep your gradient text, but align with bento palette */
-  background: linear-gradient(135deg, var(--success) 0%, var(--primary-500) 100%);
+  background: linear-gradient(180deg, #FFFFFF 0%, #A1A1AA 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 
   @media (max-width: 768px) {
-    font-size: 28px;
+    font-size: 36px;
   }
 `;
 
@@ -1321,34 +1514,59 @@ const TeamStats = styled.div`
 
 const StatCard = styled.div`
   position: relative;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(24, 24, 24, 0.4);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
   border-radius: 24px;
-  padding: 24px 20px;
+  padding: 32px 24px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
-  /* bento hairline + soft shadow */
-  outline: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
-  @media (prefers-color-scheme: dark) {
-    background: rgba(255, 255, 255, 0.04);
-    outline-color: rgba(255, 255, 255, 0.12);
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      transparent 100%
+    );
+    z-index: 1;
+  }
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: rgba(30, 30, 30, 0.5);
   }
 `;
 
 const StatNumber = styled.div`
-  font-size: 44px;
-  font-weight: 900;
-  letter-spacing: -0.03em;
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -2px;
   margin-bottom: 8px;
 
-  background: linear-gradient(135deg, var(--accent) 0%, var(--primary-200) 100%);
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.15));
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   @media (max-width: 768px) {
-    font-size: 40px;
+    font-size: 44px;
   }
 `;
 
@@ -1746,7 +1964,9 @@ export default function AboutPage() {
         </Section>
 
         <TeamSection>
-  <TeamAmbient />
+  <AuroraBackgroundContainer>
+    <AuroraEffect />
+  </AuroraBackgroundContainer>
   <TeamInner>
     <TeamTitle>Built by Job Seekers, For Job Seekers</TeamTitle>
     <TeamText>
@@ -1756,22 +1976,53 @@ export default function AboutPage() {
       tools for your career success.
     </TeamText>
 
-    <TeamStats>
-      <StatCard>
-        <StatNumber>50K+</StatNumber>
-        <StatLabel>Resumes Analyzed</StatLabel>
-      </StatCard>
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      variants={{
+        hidden: { opacity: 0 },
+        visible: {
+          opacity: 1,
+          transition: { staggerChildren: 0.15 }
+        }
+      }}
+    >
+      <TeamStats as={motion.div}>
+        <StatCard
+          as={motion.div}
+          variants={{
+            hidden: { opacity: 0, y: 30 },
+            visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
+          }}
+        >
+          <StatNumber>50K+</StatNumber>
+          <StatLabel>Resumes Analyzed</StatLabel>
+        </StatCard>
 
-      <StatCard>
-        <StatNumber>85%</StatNumber>
-        <StatLabel>Interview Rate Increase</StatLabel>
-      </StatCard>
+        <StatCard
+          as={motion.div}
+          variants={{
+            hidden: { opacity: 0, y: 30 },
+            visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
+          }}
+        >
+          <StatNumber>85%</StatNumber>
+          <StatLabel>Interview Rate Increase</StatLabel>
+        </StatCard>
 
-      <StatCard>
-        <StatNumber>24/7</StatNumber>
-        <StatLabel>AI-Powered Support</StatLabel>
-      </StatCard>
-    </TeamStats>
+        <StatCard
+          as={motion.div}
+          variants={{
+            hidden: { opacity: 0, y: 30 },
+            visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
+          }}
+        >
+          <StatNumber>24/7</StatNumber>
+          <StatLabel>AI-Powered Support</StatLabel>
+        </StatCard>
+      </TeamStats>
+    </motion.div>
   </TeamInner>
 </TeamSection>
 

@@ -83,6 +83,8 @@ const Subtitle = styled.p`
 
 const Section = styled.section`
   margin-bottom: ${({ theme }) => theme.spacing["2xl"]};
+    max-width: 800px;
+
 `;
 
 const CreditsCardWrapper = styled.div`
@@ -107,10 +109,131 @@ const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
+
+  /* Glass-like inputs */
+  input {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &:focus:not(:disabled) {
+      background: rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  label {
+    color: rgba(255, 255, 255, 0.9);
+  }
 `;
 
-const DangerZone = styled(Card)`
-  border-color: ${({ theme }) => theme.colors.error};
+const GlassCard = styled.div`
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+
+  /* Apple Liquid Glass core */
+  background: rgba(22, 22, 26, 0.78);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+
+  /* ── Specular light refraction ─── */
+  /* Top highlight — light hits the glass from above */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 60%,
+      rgba(255, 255, 255, 0.25) 80%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Right-edge refraction — light exits through the glass face */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+`;
+
+const GlassCardHeader = styled.div`
+  padding: 28px 24px 16px;
+  position: relative;
+  z-index: 2;
+`;
+
+const GlassCardTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: var(--text-color);
+  letter-spacing: -0.01em;
+`;
+
+const GlassCardDescription = styled.p`
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.48);
+  margin: 0;
+  font-weight: 500;
+`;
+
+const GlassCardContent = styled.div`
+  padding: 16px 24px 28px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+const DangerZone = styled(GlassCard)`
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(239, 68, 68, 0.1);
 `;
 
 const DangerTitle = styled.h3`
@@ -215,14 +338,14 @@ export default function SettingsPage() {
       </Header>
 
       <Section>
-        <Card variant="bordered">
-          <Card.Header>
-            <Card.Title>Profile Information</Card.Title>
-            <Card.Description>
+        <GlassCard>
+          <GlassCardHeader>
+            <GlassCardTitle>Profile Information</GlassCardTitle>
+            <GlassCardDescription>
               Update your account profile information
-            </Card.Description>
-          </Card.Header>
-          <Card.Content>
+            </GlassCardDescription>
+          </GlassCardHeader>
+          <GlassCardContent>
             <FormGroup>
               <Input
                 label="Name"
@@ -240,26 +363,26 @@ export default function SettingsPage() {
                 fullWidth
               />
             </FormGroup>
-          </Card.Content>
-          <Card.Footer>
-            <Button
-              onClick={handleUpdateProfile}
-              isLoading={isLoading}
-              disabled={!name}
-            >
-              Save Changes
-            </Button>
-          </Card.Footer>
-        </Card>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
+                <Button
+                  onClick={handleUpdateProfile}
+                  isLoading={isLoading}
+                  disabled={!name}
+                >
+                  Save Changes
+                </Button>
+              </div>
+          </GlassCardContent>
+        </GlassCard>
       </Section>
 
       <Section>
-        <Card variant="bordered">
-          <Card.Header>
-            <Card.Title>Password</Card.Title>
-            <Card.Description>Change your password</Card.Description>
-          </Card.Header>
-          <Card.Content>
+        <GlassCard>
+          <GlassCardHeader>
+            <GlassCardTitle>Password</GlassCardTitle>
+            <GlassCardDescription>Change your password</GlassCardDescription>
+          </GlassCardHeader>
+          <GlassCardContent>
             <FormGroup>
               <Input
                 label="Current Password"
@@ -287,27 +410,27 @@ export default function SettingsPage() {
                 fullWidth
               />
             </FormGroup>
-          </Card.Content>
-          <Card.Footer>
-            <Button
-              variant="secondary"
-              onClick={handleUpdatePassword}
-              isLoading={isUpdatingPassword}
-              disabled={!currentPassword || !newPassword || !confirmPassword}
-            >
-              Update Password
-            </Button>
-          </Card.Footer>
-        </Card>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
+                <Button
+                  variant="secondary"
+                  onClick={handleUpdatePassword}
+                  isLoading={isUpdatingPassword}
+                  disabled={!currentPassword || !newPassword || !confirmPassword}
+                >
+                  Update Password
+                </Button>
+              </div>
+          </GlassCardContent>
+        </GlassCard>
       </Section>
 
       <Section>
-        <Card variant="bordered">
-          <Card.Header>
-            <Card.Title>Language & Region</Card.Title>
-            <Card.Description>Set your preferred language</Card.Description>
-          </Card.Header>
-          <Card.Content>
+        <GlassCard>
+          <GlassCardHeader>
+            <GlassCardTitle>Language & Region</GlassCardTitle>
+            <GlassCardDescription>Set your preferred language</GlassCardDescription>
+          </GlassCardHeader>
+          <GlassCardContent>
             <Input
               label="Language"
               value="English (EN)"
@@ -315,14 +438,14 @@ export default function SettingsPage() {
               helperText="More languages coming soon"
               fullWidth
             />
-          </Card.Content>
-        </Card>
+          </GlassCardContent>
+        </GlassCard>
       </Section>
 
       <Section>
         <SectionTitle style={{ color: "#ef4444" }}>Danger Zone</SectionTitle>
-        <DangerZone variant="bordered">
-          <Card.Content>
+        <DangerZone>
+          <GlassCardContent>
             <DangerTitle>Delete Account</DangerTitle>
             <DangerDescription>
               Once you delete your account, there is no going back. All your
@@ -332,7 +455,7 @@ export default function SettingsPage() {
             <Button variant="danger" onClick={() => setIsDeleteModalOpen(true)}>
               Delete My Account
             </Button>
-          </Card.Content>
+          </GlassCardContent>
         </DangerZone>
       </Section>
 

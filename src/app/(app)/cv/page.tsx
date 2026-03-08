@@ -1145,7 +1145,7 @@ const ActionButton = styled.button<{ $variant?: 'danger' }>`
 const PreviewLink = styled.button`
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   color: var(--accent);
   font-weight: 500;
   font-size: 14px;
@@ -1160,8 +1160,8 @@ const PreviewLink = styled.button`
   }
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
     transition: transform 0.2s ease;
   }
 

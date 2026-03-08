@@ -1472,12 +1472,14 @@ const TestimonialText = styled.p`
 `;
 
 const TestimonialHighlight = styled.div`
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  margin-left: auto;
+  margin-right: auto;
   gap: 6px;
-  background: rgba(34, 197, 94, 0.08); /* Tailwind green-500 matching */
+  background: rgba(78, 180, 175, 0.08);
   border: 1px solid rgba(34, 197, 94, 0.2);
-  color: #22c55e;
+  color: var(--text-color);
 
   padding: 8px 16px;
   border-radius: 9999px;
@@ -1513,6 +1515,10 @@ const PricingCard = styled.div<{ $featured?: boolean }>`
   border-radius: 24px;
   padding: 40px;
   position: relative;
+  transform: ${({ $featured }) => $featured 
+    ? "scale(1.05)"
+    : "scale(1)"};
+
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: ${({ $featured }) => $featured 
     ? "inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 255, 255, 0.03)"
@@ -1524,7 +1530,6 @@ const PricingCard = styled.div<{ $featured?: boolean }>`
     box-shadow: ${({ $featured }) => $featured 
       ? "inset 0 1px 2px rgba(255, 255, 255, 0.3), 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 255, 255, 0.05)"
       : "inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4)"};
-    transform: translateY(-4px);
   }
 
   @media (max-width: 768px) {
@@ -1790,28 +1795,66 @@ const PricingRefreshIcon = () => (
 );
 
 // ==================== FAQ ====================
+const FAQSectionWrapper = styled.div`
+  position: relative;
+  isolation: isolate;
+  
+  /* Ambient Apple Aurora Background */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(94, 234, 212, 0.15) 0%, transparent 60%);
+    filter: blur(100px);
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 50%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0%;
+    right: 10%;
+    width: 50%;
+    height: 50%;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, transparent 60%);
+    filter: blur(80px);
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 50%;
+  }
+`;
+
 const FAQList = styled.div`
   max-width: 800px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  position: relative;
+  z-index: 10;
 `;
 
 const FAQItem = styled.div<{ $isOpen?: boolean }>`
-  background: var(--bg-alt);
-  border-radius: 12px;
+  background: rgba(150, 150, 150, 0.05);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-radius: 16px;
   overflow: hidden;
-  transition: all 0.3s ease;
-
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  outline: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.1);
 
   ${({ $isOpen }) =>
     $isOpen &&
     `
-    border-color: var(--primary-500);
-    box-shadow: 0 4px 12px rgba(var(--primary-500-rgb), 0.1);
+    background: rgba(150, 150, 150, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.2);
   `}
 `;
 
@@ -1849,9 +1892,17 @@ const FAQQuestionText = styled.span`
 `;
 
 const FAQQuestionIcon = styled.span<{ $isOpen?: boolean }>`
-  font-size: 24px;
-  color: var(--primary-500);
-  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 300;
+  color: ${({ $isOpen }) => ($isOpen ? "var(--bg-color)" : "var(--text-secondary)")};
+  background: ${({ $isOpen }) => ($isOpen ? "var(--text-color)" : "rgba(255, 255, 255, 0.05)")};
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
   flex-shrink: 0;
 `;
@@ -2836,11 +2887,23 @@ export default function Page() {
       ),
     },
     {
-      src: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800&auto=format&fit=crop",
+      src: "/reports-list.png",
       title: "Sniper-Targeted Job Matching",
       category: "Find Your Fit",
       content: (
         <div>
+          <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
+            <img 
+              src="/reports-list.png" 
+              alt="AI Job Matching Dashboard Dashboard List" 
+              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }} 
+            />
+            <img 
+              src="/reports-detail.png" 
+              alt="Detailed Match Analysis View" 
+              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }} 
+            />
+          </div>
           <p>Stop applying blindly and praying for a response. Our AI finds jobs where you have an unfair advantage.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
             <li>Hard metric match score for every job posting</li>
@@ -2853,11 +2916,23 @@ export default function Page() {
       ),
     },
     {
-      src: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=800&auto=format&fit=crop",
+      src: "/cover-letters-list.png",
       title: "1-Click Tailored Cover Letters",
       category: "Stop Staring at Blank Pages",
       content: (
         <div>
+          <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
+            <img 
+              src="/cover-letters-list.png" 
+              alt="Cover Letters Dashboard" 
+              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }} 
+            />
+            <img 
+              src="/cover-letters-detail.png" 
+              alt="Generated Cover Letter Detail View" 
+              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }} 
+            />
+          </div>
           <p>The days of generic &quot;To whom it may concern&quot; letters are over. Generate hyper-personalized letters instantly.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
             <li>Professionally written in 30 seconds</li>
@@ -2883,6 +2958,40 @@ export default function Page() {
             <li>Export to PDF, Word, or plain text exactly as needed</li>
           </ul>
           <p style={{ marginTop: '16px' }}>Built from the ground up to slip past the robot gatekeepers.</p>
+        </div>
+      ),
+    },
+    {
+      src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=800&auto=format&fit=crop",
+      title: "Zero-Friction Resume Builder",
+      category: "Craft Your Masterpiece",
+      content: (
+        <div>
+          <p>Don&apos;t have a resume yet? Construct a world-class professional profile from the ground up without the headache.</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Smart content suggestions tailored to your target role</li>
+            <li>Real-time ATS score updates as you type</li>
+            <li>Pixel-perfect templates that stand out to recruiters</li>
+            <li>Effortless drag-and-drop section management</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Turn a blank page into your next job offer.</p>
+        </div>
+      ),
+    },
+    {
+      src: "https://uploads.dailydot.com/2025/01/anne-hathaway-zoom-meme.jpg?q=65&auto=format&w=1600&ar=2:1&fit=crop",
+      title: "Hyper-Realistic AI Mock Interviews",
+      category: "Own The Room",
+      content: (
+        <div>
+          <p>Don&apos;t practice on real opportunities. Our AI grills you exactly like a seasoned hiring manager would.</p>
+          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
+            <li>Dynamic questions generated directly from the job description</li>
+            <li>Real-time feedback on your tone, pacing, and filler words</li>
+            <li>Frameworks for tackling behavioral &quot;curveball&quot; questions</li>
+            <li>Confidence scoring to ensure you sound like the expert you are</li>
+          </ul>
+          <p style={{ marginTop: '16px' }}>Walk into every interview knowing you&apos;ve already passed the hardest one.</p>
         </div>
       ),
     },
@@ -3704,12 +3813,7 @@ export default function Page() {
 
       {/* PRICING - SIMPLIFIED */}
       <Section id="pricing">
-        <SectionHeader>
-          <SectionTitle>Simple and transparent pricing</SectionTitle>
-          <SectionSubtitle>
-            Affordable plans to help you succeed
-          </SectionSubtitle>
-        </SectionHeader>
+       
 
         {/* THE TRUE COST (PROVOCATIVE SALES SECTION) */}
         <ProvocationSection>
@@ -3744,7 +3848,7 @@ export default function Page() {
             <RejectlyColumn>
               <div className="glow" />
               <div className="title">With Rejectly.pro</div>
-              <div className="price">$2<span>/analysis</span></div>
+              <div className="price">$2<span>/pro analysis</span></div>
               <ul>
                 <li>
                   <CheckIcon />
@@ -3840,12 +3944,13 @@ export default function Page() {
 
       {/* FAQ */}
       <Section id="faq">
-        <SectionHeader>
-          <SectionTitle>Frequently asked questions</SectionTitle>
-          <SectionSubtitle>Everything you need to know</SectionSubtitle>
-        </SectionHeader>
+        <FAQSectionWrapper>
+          <SectionHeader>
+            <SectionTitle>Frequently asked questions</SectionTitle>
+            <SectionSubtitle>Everything you need to know</SectionSubtitle>
+          </SectionHeader>
 
-        <FAQList>
+          <FAQList>
           {faqs.map((faq, index) => (
             <FAQItem key={index} $isOpen={openFaq === index}>
               <FAQQuestion
@@ -3870,6 +3975,7 @@ export default function Page() {
             <ArrowRightIcon />
           </FAQButton>
         </FAQButtonContainer>
+        </FAQSectionWrapper>
       </Section>
 
       <Divider />

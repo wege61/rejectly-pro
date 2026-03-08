@@ -30,7 +30,7 @@ const StyledButton = styled.button<{
   gap: ${({ theme }) => theme.spacing.sm};
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
   font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-radius: 9999px;
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.normal};
   white-space: nowrap;
@@ -76,7 +76,6 @@ const StyledButton = styled.button<{
           &:hover:not(:disabled) {
             background-color: var(--surface-hover);
             border-color: var(--border-color);
-            transform: translateY(-1px);
             box-shadow: ${theme.shadow.sm};
           }
 
@@ -86,17 +85,23 @@ const StyledButton = styled.button<{
         `;
       case "ghost":
         return css`
-          background-color: transparent;
-          color: var(--text-secondary);
-          border: none;
+          background: rgba(150, 150, 150, 0.08);
+          backdrop-filter: blur(40px) saturate(200%);
+          -webkit-backdrop-filter: blur(40px) saturate(200%);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: var(--text-color);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
 
           &:hover:not(:disabled) {
-            background-color: var(--surface-hover);
+            background: rgba(150, 150, 150, 0.16);
+            border-color: rgba(255, 255, 255, 0.28);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 0, 0, 0.1);
             color: var(--text-color);
           }
 
           &:active:not(:disabled) {
-            background-color: var(--surface-color);
+            transform: translateY(0);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
           }
         `;
       case "danger":
@@ -125,7 +130,6 @@ const StyledButton = styled.button<{
           -webkit-backdrop-filter: blur(12px) saturate(160%);
 
           &:hover:not(:disabled) {
-            transform: translateY(-2px);
             background: linear-gradient(135deg, rgba(63, 172, 169, 1) 0%, rgba(21, 112, 116, 1) 100%);
             box-shadow: 0 12px 40px rgba(53, 162, 159, 0.3);
             border-color: rgba(53, 162, 159, 0.8);
@@ -146,7 +150,6 @@ const StyledButton = styled.button<{
           -webkit-backdrop-filter: blur(12px) saturate(160%);
 
           &:hover:not(:disabled) {
-            transform: translateY(-2px);
             background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
             border-color: rgba(255, 255, 255, 0.2);
@@ -160,18 +163,29 @@ const StyledButton = styled.button<{
         `;
       default: // primary
         return css`
-          background-color: var(--landing-button);
-          color: white;
-          border: none;
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+            rgba(238, 90, 90, 0.82);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+          color: #FFFFFF;
+          border: 1px solid rgba(255, 255, 255, 0.28);
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.5),
+            0 8px 32px rgba(238, 90, 90, 0.35);
 
           &:hover:not(:disabled) {
-            background-color: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: ${theme.shadow.md};
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 100%),
+              rgba(238, 90, 90, 0.92);
+            box-shadow:
+              inset 0 1px 0 rgba(255, 255, 255, 0.65),
+              0 8px 32px rgba(238, 90, 90, 0.5);
           }
 
           &:active:not(:disabled) {
             transform: translateY(0);
+            box-shadow:
+              inset 0 1px 0 rgba(255, 255, 255, 0.4),
+              0 4px 16px rgba(238, 90, 90, 0.25);
           }
         `;
     }

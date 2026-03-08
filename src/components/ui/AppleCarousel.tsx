@@ -328,8 +328,11 @@ const CardImage = styled.img<{ $isLoading: boolean }>`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(1.05); /* Slight zoom-in to remove background letterboxing on wide images */
   transition: all 0.3s ease;
   filter: ${({ $isLoading }) => $isLoading ? 'blur(8px)' : 'blur(0)'};
+  mask-image: linear-gradient(to top, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, black 40%, transparent 100%);
 `;
 
 // Carousel Component

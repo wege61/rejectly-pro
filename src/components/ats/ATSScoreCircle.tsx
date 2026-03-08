@@ -10,10 +10,10 @@ interface ATSScoreCircleProps {
 }
 
 const getScoreTheme = (score: number) => {
-  if (score >= 85) return { color: "#34C759", label: "Excellent", description: "Highly ATS Compatible" }; // Apple Green
-  if (score >= 70) return { color: "#007AFF", label: "Good", description: "Minor parsing issues" }; // Apple Blue
-  if (score >= 50) return { color: "#FF9500", label: "Fair", description: "Data extraction at risk" }; // Apple Orange
-  return { color: "#FF3B30", label: "Poor", description: "Severe parsing blocks" }; // Apple Red
+  if (score >= 85) return { color: "var(--primary-500)", label: "Excellent", description: "Highly ATS Compatible" }; // Apple Green
+  if (score >= 70) return { color: "#2A57A0", label: "Good", description: "Minor parsing issues" }; // Apple Blue
+  if (score >= 50) return { color: "#EAB308", label: "Fair", description: "Data extraction at risk" }; // Apple Orange
+  return { color: "#F97316", label: "Poor", description: "Severe parsing blocks" }; // Apple Red
 };
 
 const fillAnimation = keyframes`

@@ -57,51 +57,139 @@ const HeroSubtitle = styled.p`
 const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  max-width: 900px;
+  gap: 24px;
+  max-width: 1000px;
   margin: 0 auto;
+  position: relative;
+  z-index: 10;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 16px;
+    padding: 0 16px;
   }
 `;
 
 const StatCard = styled.div`
-  background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.08) 0%, rgba(var(--primary-700-rgb), 0.08) 100%);
-  border: 1px solid var(--primary-200);
-  border-radius: 16px;
-  padding: 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
+  border-radius: 24px;
+  overflow: hidden;
+
+  /* Apple Liquid Glass core */
+background: rgba(24, 24, 24, 0.6);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  padding: 40px 24px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Specular light refraction ─── */
+  /* Top highlight — light hits the glass from above */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1.5px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.3) 40%,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0.3) 60%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Right-edge refraction — light exits through the glass face */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(32, 32, 32, 0.7);
+    box-shadow:
+      0 20px 56px rgba(0, 0, 0, 0.65),
+      0 6px 20px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
 `;
 
 const StatNumber = styled.div`
-  font-size: 42px;
-  font-weight: 900;
-  background: var(--landing-button);
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 2px 12px rgba(255, 255, 255, 0.1));
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
   @media (max-width: 768px) {
-    font-size: 36px;
+    font-size: 48px;
   }
 `;
 
 const StatLabel = styled.div`
-  font-size: 15px;
-  color: var(--text-secondary);
-  font-weight: 500;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 `;
 
 const ProcessSection = styled.section`
-  padding: 80px 24px;
-  max-width: 1200px;
-  margin: 0 auto;
+  /* Full viewport width breakout */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding: 80px 0;
+  overflow: hidden;
 
   @media (max-width: 768px) {
-    padding: 60px 16px;
+    padding: 60px 0;
+  }
+`;
+
+const ProcessSectionContent = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
   }
 `;
 
@@ -162,16 +250,65 @@ const BentoGrid = styled.div`
 
 const BentoCard = styled.div<{ $span?: "tall" | "normal"; $position?: "left" | "right" | "top" | "bottom" }>`
   position: relative;
-  background: var(--bg-alt);
   border-radius: 24px;
   overflow: hidden;
-  transition: all 0.3s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  outline: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Apple Liquid Glass core */
+  background: rgba(24, 24, 24, 0.6);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* ── Specular light refraction ─── */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 50%,
+      rgba(255, 255, 255, 0.25) 60%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px) scale(1.01);
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(32, 32, 32, 0.7);
+    box-shadow:
+      0 20px 56px rgba(0, 0, 0, 0.65),
+      0 6px 20px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   @media (min-width: 1024px) {
@@ -312,11 +449,23 @@ export default function HowItWorksPage() {
       ),
     },
     {
-      src: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800&auto=format&fit=crop",
+      src: "/reports-list.png",
       title: "Smart Job Matching",
       category: "Find Your Fit",
       content: (
         <div>
+          <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
+            <img 
+              src="/reports-list.png" 
+              alt="AI Job Matching Dashboard List" 
+              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }} 
+            />
+            <img 
+              src="/reports-detail.png" 
+              alt="Detailed Match Analysis View" 
+              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }} 
+            />
+          </div>
           <p>Stop applying blindly. Our AI finds jobs where your skills actually match what employers are looking for.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
             <li>Match score for every job posting</li>
@@ -329,14 +478,26 @@ export default function HowItWorksPage() {
       ),
     },
     {
-      src: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=800&auto=format&fit=crop",
-      title: "Cover Letter Generator",
-      category: "One Click",
+      src: "/cover-letters-list.png",
+      title: "1-Click Tailored Cover Letters",
+      category: "Personalized Outreach",
       content: (
         <div>
-          <p>One click. Personalized letter. Tailored to the job description and your unique experience.</p>
+          <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
+            <img 
+              src="/cover-letters-list.png" 
+              alt="Cover Letters Dashboard" 
+              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }} 
+            />
+            <img 
+              src="/cover-letters-detail.png" 
+              alt="Generated Cover Letter Detail View" 
+              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }} 
+            />
+          </div>
+          <p>Stand out from the crowd with cover letters that actually sound like you and address the specific role.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Professionally written in seconds</li>
+            <li>Instantly generated from your optimized resume</li>
             <li>Matches the job requirements perfectly</li>
             <li>Highlights your most relevant achievements</li>
             <li>Multiple tone options (formal, creative, casual)</li>
@@ -462,12 +623,14 @@ export default function HowItWorksPage() {
       </HeroSection>
 
       <ProcessSection>
-        <SectionHeader>
-          <SectionTitle>Everything you need.</SectionTitle>
-          <SectionSubtitle>
-            Everything works together to get you hired.
-          </SectionSubtitle>
-        </SectionHeader>
+        <ProcessSectionContent>
+          <SectionHeader>
+            <SectionTitle>Everything you need.</SectionTitle>
+            <SectionSubtitle>
+              Everything works together to get you hired.
+            </SectionSubtitle>
+          </SectionHeader>
+        </ProcessSectionContent>
 
         <Carousel
           items={featureCards.map((card, index) => (

@@ -126,6 +126,9 @@ export interface ATSCheckResult {
   // Abbreviation expansion check (critical for Greenhouse/Lever)
   abbreviationCheck?: AbbreviationCheck;
 
+  // Metric extraction questions for optimization
+  metricQuestions?: { id: string; original_bullet: string; question: string }[] | null;
+
   // Unlock status
   isPro: boolean;
 }

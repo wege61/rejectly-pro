@@ -237,16 +237,22 @@ export function normalizeScoreBreakdown(raw: ScoreBreakdown): ScoreBreakdown {
     let derivedPoints: number | null = null;
 
     // Experience: earnedPoints = yearsScore + seniorityScore
-    if (d.yearsScore != null && d.seniorityScore != null) {
-      derivedPoints = d.yearsScore + d.seniorityScore;
-    }
-    // Experience edge case: when yearsRequired=0, yearsScore should be 15
-    else if (d.yearsRequired != null && d.seniorityScore != null) {
-      let yearsScore = d.yearsScore ?? 0;
-      if (d.yearsRequired === 0 && (d.yearsCandidate ?? 0) >= 0) {
-        yearsScore = 15; // Requirement is met trivially
+    if (comp.name === 'Experience Level' || comp.name === 'Experience Match') {
+      // OVERRIDE: If the AI hallucinates points for 0 relevant years, crush it.
+      if (d.yearsCandidate === 0) {
+        d.yearsScore = 0;
+        d.seniorityScore = 0;
+        d.seniorityCandidate = "none";
+        derivedPoints = 0;
+      } else if (d.yearsScore != null && d.seniorityScore != null) {
+        derivedPoints = d.yearsScore + d.seniorityScore;
+      } else if (d.yearsRequired != null && d.seniorityScore != null) {
+        let yearsScore = d.yearsScore ?? 0;
+        if (d.yearsRequired === 0 && (d.yearsCandidate ?? 0) > 0) {
+          yearsScore = 15; // Requirement is met trivially
+        }
+        derivedPoints = yearsScore + d.seniorityScore;
       }
-      derivedPoints = yearsScore + d.seniorityScore;
     }
 
     // Industry: earnedPoints = industryScore + domainScore

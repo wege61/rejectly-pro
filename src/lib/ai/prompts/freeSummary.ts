@@ -33,13 +33,18 @@ ${text}
   .join("\n")}
 
 =============================================================================
-CRITICAL ANTI-HALLUCINATION RULES
+CRITICAL ANTI-HALLUCINATION & RELEVANCE RULES
 =============================================================================
 ⛔ ONLY reference skills, experiences, and achievements EXPLICITLY written in the CV
 ⛔ NEVER invent years of experience - if CV says "2 years" you say "2 years"
 ⛔ NEVER add technologies or skills not mentioned in the CV
 ⛔ Every claim must be traceable to a specific line in the CV
 ⛔ If CV is vague, acknowledge limitation rather than filling gaps
+
+🎯 REALISTIC RELEVANCE CHECK (CRITICAL FOR HR ACCURACY):
+- Just because a candidate has "a certificate" does NOT mean they meet the requirement. A scuba diving certificate is worth 0 points for a Software Engineering role. ONLY count certificates that are DIRECTLY related to the target job.
+- Just because a candidate has "5 years of experience" does NOT mean they have 5 years of RELEVANT experience. 5 years in retail is worth 0 years of experience for a Financial Analyst role.
+- Before giving credit for experience or certificates, ask yourself: "Would a real HR manager consider this relevant to the required daily tasks of this specific job?" If no, ignore it completely.
 
 =============================================================================
 SCORING GUIDELINES (STRICT HR STANDARDS)
@@ -60,11 +65,11 @@ Below 20%: NO MATCH - Wrong career path entirely
 =============================================================================
 STRICT SCORING RULES
 =============================================================================
-⚠️ AUTOMATIC PENALTIES (Apply these BEFORE calculating final score):
+⚠️ REALISTIC PENALTIES (Apply these BEFORE calculating final score):
 - Missing 50%+ of REQUIRED skills → Cap at 45%
-- Experience gap >3 years below requirement → Subtract 20 points
-- No industry experience when required → Subtract 15 points
-- Missing critical certification (if mandatory) → Subtract 10 points
+- Experience gap >3 years below requirement (counting ONLY relevant experience) → Subtract 20 points
+- Entirely different industry with zero transferable core skills → Subtract 15 points
+- Missing critical/mandatory certification (e.g., CPA for an Accountant) → Subtract 10 points
 
 📊 CALCULATION:
 - Required Skills Match: 45% weight (MOST IMPORTANT)

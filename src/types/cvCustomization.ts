@@ -18,4 +18,5 @@ export interface CVCustomizationOptions {
   photoUrl?: string | null;
   photoBase64?: string | null;
   colorTemplateKey?: string;
+  userProvidedMetrics?: Record<string, string>;
 }

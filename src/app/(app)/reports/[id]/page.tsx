@@ -17,6 +17,7 @@ import { GeneratedCV } from "@/types/cv";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { CoverLetterGenerator } from "@/components/features/CoverLetterGenerator";
 import { ToolSuggestionModal } from "@/components/features/ToolSuggestionModal";
+import { MetricQuestionsModal } from "@/components/features/MetricQuestionsModal";
 import { CVCustomizationModal } from "@/components/features/CVCustomizationModal";
 import { ScoreBreakdownModal } from "@/components/features/ScoreBreakdownModal";
 import { CareerRecommendationsSection } from "@/components/reports/CareerRecommendationsSection";
@@ -6024,8 +6025,10 @@ export default function ReportDetailPage() {
   const [toolSuggestions, setToolSuggestions] = useState<ToolSuggestionResponse | null>(null);
   const [isLoadingToolSuggestions, setIsLoadingToolSuggestions] = useState(false);
   const [pendingCVGeneration, setPendingCVGeneration] = useState<boolean>(false);
+  const [isMetricQuestionsModalOpen, setIsMetricQuestionsModalOpen] = useState(false);
   const [isCVCustomizationModalOpen, setIsCVCustomizationModalOpen] = useState(false);
   const [pendingAdditionalTools, setPendingAdditionalTools] = useState<string[]>([]);
+  const [pendingMetrics, setPendingMetrics] = useState<Record<string, string>>({});
   const [cvPhotoBase64, setCvPhotoBase64] = useState<string | null>(null);
   const [isUpgradeConfirmModalOpen, setIsUpgradeConfirmModalOpen] = useState(false);
   const wasGeneratingRef = useRef(false);
@@ -6035,6 +6038,9 @@ export default function ReportDetailPage() {
     canAnalyze: false,
   });
 
+  // Failsafe wrapper for legacy DB records where AI previously generated a lower optimized score
+  const displayOptimizedScore = optimizedScore !== null && report ? Math.max(optimizedScore, report.fit_score) : optimizedScore;
+
   // Computed values for systematic rendering
   const scoreRange: ScoreRange = report ? getScoreRange(report.fit_score) : "medium";
   const userState: UserState = report ? getUserState(report) : "free";
@@ -6043,7 +6049,7 @@ export default function ReportDetailPage() {
         scoreRange,
         userState,
         improvementBreakdown.length > 0,
-        optimizedScore !== null && optimizedScore > report.fit_score
+        displayOptimizedScore !== null && displayOptimizedScore > report.fit_score
       )
     : null;
   const scoreMessage = getScoreMessage(scoreRange, userState);
@@ -6752,13 +6758,15 @@ export default function ReportDetailPage() {
         },
         body: JSON.stringify({
           reportId: report.id,
-
           additionalTools,
           photoUrl,
           colorTemplate: customization?.colorTemplateKey,
+          userProvidedMetrics: pendingMetrics,
           forceRegenerate: true,
         }),
       });
+      
+      console.log("🚀 Firing Generate CV API with pendingMetrics:", pendingMetrics);
 
       if (cvResponse.ok) {
         // Refresh report to get generated_cv
@@ -6887,30 +6895,50 @@ export default function ReportDetailPage() {
     }
   };
 
-  // Handle tool selection confirm from modal -> open customization modal
+  // Handle tool selection confirm from modal -> open metric questions
   const handleToolSuggestionConfirm = (selectedTools: string[]) => {
+    console.log("🛠️ handleToolSuggestionConfirm called, opening MetricQuestionsModal");
     setIsToolSuggestionModalOpen(false);
     setToolSuggestions(null);
     setPendingAdditionalTools(selectedTools);
-    setIsCVCustomizationModalOpen(true);
+    setIsMetricQuestionsModalOpen(true);
   };
 
-  // Handle skip from tool suggestion modal -> open customization modal
+  // Handle skip from tool suggestion modal -> open metric questions
   const handleToolSuggestionSkip = () => {
+    console.log("⏭️ handleToolSuggestionSkip called, opening MetricQuestionsModal");
     setIsToolSuggestionModalOpen(false);
     setToolSuggestions(null);
     setPendingAdditionalTools([]);
+    setIsMetricQuestionsModalOpen(true);
+  };
+
+  // Handle metric questions confirm -> open customization modal
+  const handleMetricQuestionsConfirm = (metrics: Record<string, string>) => {
+    console.log("✅ handleMetricQuestionsConfirm called with metrics:", metrics);
+    setPendingMetrics(metrics);
+    setIsMetricQuestionsModalOpen(false);
+    setIsCVCustomizationModalOpen(true);
+  };
+
+  // Handle metric questions skip -> open customization modal
+  const handleMetricQuestionsSkip = () => {
+    console.log("⏭️ handleMetricQuestionsSkip called");
+    setPendingMetrics({});
+    setIsMetricQuestionsModalOpen(false);
     setIsCVCustomizationModalOpen(true);
   };
 
   // Handle CV customization confirm -> generate CV
   const handleCVCustomizationConfirm = async (options: CVCustomizationOptions) => {
+    console.log("✅ handleCVCustomizationConfirm called, closing modal");
     setIsCVCustomizationModalOpen(false);
     await completeUpgradeWithCV(pendingAdditionalTools, options);
   };
 
   // Handle skip from CV customization modal
   const handleCVCustomizationSkip = async () => {
+    console.log("⏭️ handleCVCustomizationSkip called, closing modal");
     setIsCVCustomizationModalOpen(false);
     await completeUpgradeWithCV(pendingAdditionalTools);
   };
@@ -7147,7 +7175,7 @@ export default function ReportDetailPage() {
 
   return (
     <Container>
-      <BackButton variant="ghost" size="sm" onClick={() => router.push(ROUTES.APP.DASHBOARD)}>
+      <BackButton variant="ghost" size="sm" onClick={() => router.push(ROUTES.APP.REPORTS)}>
         ← Back
       </BackButton>
 
@@ -7218,7 +7246,7 @@ export default function ReportDetailPage() {
             <ProHeroSummary>
               Your resume matches <strong style={{ color: 'var(--text-color)' }}>{report.fit_score}%</strong> of the job requirements.
               {missingKeywords.length > 0 ? (<> Missing <strong style={{ color: '#f59e0b' }}>{missingKeywords.length} critical keywords</strong>.</>) : null}
-              {' '}Pro optimization can boost your score to <strong style={{ color: '#10b981' }}>95%+</strong>.
+              {' '}Pro optimization can boost your score to <strong style={{ color: '#10b981' }}>{Math.min(95, Math.ceil(report.fit_score + (missingKeywords.length > 0 ? missingKeywords.length * 3 : 15)))}%+</strong>.
             </ProHeroSummary>
 
             {/* Centralized CTA */}
@@ -7230,20 +7258,7 @@ export default function ReportDetailPage() {
             </ProHeroCTA>
           </ProHeroSection>
 
-          {/* Interview Probability */}
-          <InterviewProbabilityPill>
-            <ProbabilityItem>
-              <ProbabilityValue $color={report.fit_score >= 75 ? '#10b981' : report.fit_score >= 45 ? '#f59e0b' : '#ef4444'}>
-                ~{Math.min(Math.max(Math.round(report.fit_score * 0.3), 5), 40)}%
-              </ProbabilityValue>
-              <ProbabilityLabel>Interview Chance</ProbabilityLabel>
-            </ProbabilityItem>
-            <ProbabilityArrow>→</ProbabilityArrow>
-            <ProbabilityItem $isGhost>
-              <ProbabilityValue $color="#10b981">~65%+</ProbabilityValue>
-              <ProbabilityLabel>After Pro</ProbabilityLabel>
-            </ProbabilityItem>
-          </InterviewProbabilityPill>
+
 
           {/* Score Breakdown */}
           {(() => {
@@ -7464,11 +7479,11 @@ export default function ReportDetailPage() {
               <ProHeroScoreValue
                 $isPrimary
                 $color={(() => {
-                  const s = optimizedScore ?? report.fit_score;
+                  const s = displayOptimizedScore ?? report.fit_score;
                   return s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2a57a0ff' : s >= 50 ? '#EAB308' : '#F97316';
                 })()}
               >
-                {visibleSections?.showScoreComparison ? optimizedScore : report.fit_score}%
+                {visibleSections?.showScoreComparison ? displayOptimizedScore : report.fit_score}%
               </ProHeroScoreValue>
             </div>
             <ProHeroScoreLabel $isPrimary>Match Score</ProHeroScoreLabel>
@@ -7500,7 +7515,7 @@ export default function ReportDetailPage() {
         {/* AI-Generated One Sentence Summary */}
         <ProHeroSummary>
           {visibleSections?.showScoreComparison ? (
-            <>We improved your match by <strong style={{ color: 'var(--primary-400)' }}>+{(optimizedScore! - report.fit_score).toFixed(1)} points</strong> through {missingKeywords.length > 0 ? `${missingKeywords.length} keyword additions` : 'keyword optimization'}{improvementBreakdown.length > 0 ? ` and ${improvementBreakdown.length} content rewrites` : ''}.{atsScore !== null && originalAtsScore !== null && atsScore > originalAtsScore ? ` ATS compatibility went from ${originalAtsScore}% to ${atsScore}%.` : ''}</>
+            <>We improved your match by <strong style={{ color: 'var(--primary-400)' }}>+{(displayOptimizedScore! - report.fit_score).toFixed(1)} points</strong> through {missingKeywords.length > 0 ? `${missingKeywords.length} keyword additions` : 'keyword optimization'}{improvementBreakdown.length > 0 ? ` and ${improvementBreakdown.length} content rewrites` : ''}.{atsScore !== null && originalAtsScore !== null && atsScore > originalAtsScore ? ` ATS compatibility went from ${originalAtsScore}% to ${atsScore}%.` : ''}</>
           ) : (
             <>
               {getScoreLabel(report.fit_score)}. 
@@ -7548,6 +7563,88 @@ export default function ReportDetailPage() {
           </ProHeroCTA>
         )}
       </ProHeroSection>
+
+      {/* Optimized Score Breakdown */}
+      {report.generated_cv && report.optimized_score_breakdown && !isAnalyzingOptimized && (() => {
+        const bd = report.optimized_score_breakdown as ScoreBreakdown | null;
+        if (!bd?.components) return null;
+
+        const categories = [
+          { key: 'hardSkills', fallback: 'skillsMatch', label: 'Hard Skills' },
+          { key: 'experienceLevel', fallback: 'experienceMatch', label: 'Experience' },
+          { key: 'industryDomain', fallback: 'industryRelevance', label: 'Industry & Domain' },
+          { key: 'educationCerts', fallback: 'educationCerts', label: 'Education & Certs' },
+          { key: 'roleSpecific', fallback: null, label: 'Role-Specific' },
+        ] as const;
+
+        const getBarColor = (pct: number) =>
+          pct >= 75 ? '#10b981' : pct >= 55 ? '#22c55e' : pct >= 35 ? '#f59e0b' : '#ef4444';
+
+        return (
+          <InlineBreakdownCard style={{ marginTop: '24px' }}>
+            <div style={{ padding: '0 4px' }}>
+              <BreakdownHeader>
+                <BreakdownTitle>Optimized Score Breakdown <span style={{fontSize: '11px', padding: '2px 6px', background: 'rgba(16,185,129,0.1)', color: '#10b981', borderRadius: '4px', marginLeft: '8px', verticalAlign: 'middle'}}>PRO</span></BreakdownTitle>
+                <BreakdownTitle style={{ color: 'var(--text-secondary)' }}>
+                  Total {displayOptimizedScore || report.fit_score}/100
+                </BreakdownTitle>
+              </BreakdownHeader>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {categories.map((cat, idx) => {
+                  const comp = (bd.components[cat.key as keyof typeof bd.components] ||
+                    (cat.fallback ? (bd.components as any)[cat.fallback] : null)) as any;
+                  if (!comp) return null;
+
+                  const maxPts = comp.maxPoints || 0;
+                  const earned = comp.earnedPoints || 0;
+                  const pct = comp.percentage || (maxPts > 0 ? (earned / maxPts) * 100 : 0);
+
+                  // Extract original points for comparison
+                  const origBd = report.score_breakdown as ScoreBreakdown | null;
+                  let originalEarned = 0;
+                  if (origBd?.components) {
+                    const origComp = (origBd.components[cat.key as keyof typeof origBd.components] ||
+                      (cat.fallback ? (origBd.components as any)[cat.fallback] : null)) as any;
+                    if (origComp) originalEarned = origComp.earnedPoints || 0;
+                  }
+                  
+                  const diff = parseFloat((earned - originalEarned).toFixed(1));
+
+                  return (
+                    <CategorySection 
+                      key={idx} 
+                      onClick={() => setActiveCategoryDrawer(cat.key as any)}
+                    >
+                      <CategoryHeader>
+                        <CategoryName>{cat.label}</CategoryName>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {diff > 0 && (
+                            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--primary-400)', background: 'rgba(59, 130, 246, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
+                              +{diff} pts
+                            </span>
+                          )}
+                          <CategoryPoints>{earned}/{maxPts}</CategoryPoints>
+                          <CategoryChevron className="cat-chevron">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
+                          </CategoryChevron>
+                        </div>
+                      </CategoryHeader>
+                      <CategoryBarTrack>
+                        <CategoryBarFill $percent={pct} $color={getBarColor(pct)} />
+                      </CategoryBarTrack>
+                    </CategorySection>
+                  );
+                })}
+              </div>
+              
+              <DiagnosisFooter>
+                Detailed breakdown of how your optimized resume scores in each category
+              </DiagnosisFooter>
+            </div>
+          </InlineBreakdownCard>
+        );
+      })()}
       </>
       )}
 
@@ -8348,6 +8445,18 @@ export default function ReportDetailPage() {
         suggestions={toolSuggestions}
       />
 
+      {/* Metric Questions Modal */}
+      <MetricQuestionsModal
+        isOpen={isMetricQuestionsModalOpen}
+        onClose={() => {
+          setIsMetricQuestionsModalOpen(false);
+          setPendingCVGeneration(null);
+        }}
+        onConfirm={handleMetricQuestionsConfirm}
+        onSkip={handleMetricQuestionsSkip}
+        metricQuestions={report?.metric_questions}
+      />
+
       {/* CV Customization Modal */}
       <CVCustomizationModal
         isOpen={isCVCustomizationModalOpen}
@@ -8442,6 +8551,7 @@ export default function ReportDetailPage() {
                   };
                   const certLabels: Record<string, { label: string; icon: string; color: string }> = {
                     all:     { label: 'All required certifications', icon: '✅', color: '#10b981' },
+                    none_required: { label: 'No certifications required', icon: '✅', color: '#10b981' },
                     some:    { label: 'Some certifications matched', icon: '🟡', color: '#f59e0b' },
                     related: { label: 'Related certifications', icon: '📋', color: '#22c55e' },
                     none:    { label: 'No relevant certifications', icon: '—', color: 'var(--text-tertiary)' },
@@ -8485,6 +8595,7 @@ export default function ReportDetailPage() {
                               <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-color)' }}>{certInfo.label}</span>
                               <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
                                 {details.certMatch === 'all' ? 'All certifications required by the job are present'
+                                  : details.certMatch === 'none_required' ? 'This role does not require any specific certifications'
                                   : details.certMatch === 'some' ? 'Some of the required certifications are present'
                                   : details.certMatch === 'related' ? 'You have related industry certifications'
                                   : details.certMatch === 'none' ? 'No certifications were found or none are required'
@@ -8651,20 +8762,23 @@ export default function ReportDetailPage() {
                 )}
 
                 {/* Fallback matched items (no evidence) */}
-                {!comp.matchedSkills?.length && comp.matchedItems && comp.matchedItems.length > 0 && (
-                  <DrawerDetailSection>
-                    <DrawerDetailSectionTitle>Matched ({comp.matchedItems.length})</DrawerDetailSectionTitle>
-                    {comp.matchedItems.map((item, i) => (
-                      <DrawerGlassPill key={i} $glowColor="#10b981">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <DrawerGlassDot $color="#10b981" />
-                          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{item}</span>
-                        </div>
-                        <DrawerGlassBadge $color="#10b981">Found</DrawerGlassBadge>
-                      </DrawerGlassPill>
-                    ))}
-                  </DrawerDetailSection>
-                )}
+                {!comp.matchedSkills?.length && (comp.matchedItems?.length || comp.requirementsMet?.length) ? (() => {
+                  const arr = (comp.matchedItems?.length ? comp.matchedItems : comp.requirementsMet) || [];
+                  return arr.length > 0 ? (
+                    <DrawerDetailSection>
+                      <DrawerDetailSectionTitle>Matched ({arr.length})</DrawerDetailSectionTitle>
+                      {arr.map((item: any, i: number) => (
+                        <DrawerGlassPill key={i} $glowColor="#10b981">
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <DrawerGlassDot $color="#10b981" />
+                            <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{item}</span>
+                          </div>
+                          <DrawerGlassBadge $color="#10b981">Found</DrawerGlassBadge>
+                        </DrawerGlassPill>
+                      ))}
+                    </DrawerDetailSection>
+                  ) : null;
+                })() : null}
 
                 {/* Missing skills */}
                 {comp.missingSkills && comp.missingSkills.length > 0 && (
@@ -8685,49 +8799,23 @@ export default function ReportDetailPage() {
                 )}
 
                 {/* Fallback missing items */}
-                {!comp.missingSkills?.length && comp.missingItems && comp.missingItems.length > 0 && (
-                  <DrawerDetailSection>
-                    <DrawerDetailSectionTitle>Missing ({comp.missingItems.length})</DrawerDetailSectionTitle>
-                    {comp.missingItems.map((item, i) => (
-                      <DrawerGlassPill key={i} $glowColor="#f59e0b">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <DrawerGlassDot $color="#f59e0b" />
-                          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{item}</span>
-                        </div>
-                        <DrawerGlassBadge $color="#f59e0b">Missing</DrawerGlassBadge>
-                      </DrawerGlassPill>
-                    ))}
-                  </DrawerDetailSection>
-                )}
-
-                {/* Requirements met/not met */}
-                {comp.requirementsMet && comp.requirementsMet.length > 0 && !comp.matchedItems?.length && (
-                  <DrawerDetailSection>
-                    <DrawerDetailSectionTitle>Requirements Met</DrawerDetailSectionTitle>
-                    {comp.requirementsMet.map((item, i) => (
-                      <DrawerGlassPill key={i} $glowColor="#10b981">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <DrawerGlassDot $color="#10b981" />
-                          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{item}</span>
-                        </div>
-                      </DrawerGlassPill>
-                    ))}
-                  </DrawerDetailSection>
-                )}
-
-                {comp.requirementsNotMet && comp.requirementsNotMet.length > 0 && !comp.missingItems?.length && (
-                  <DrawerDetailSection>
-                    <DrawerDetailSectionTitle>Requirements Not Met</DrawerDetailSectionTitle>
-                    {comp.requirementsNotMet.map((item, i) => (
-                      <DrawerGlassPill key={i} $glowColor="#ef4444">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <DrawerGlassDot $color="#ef4444" />
-                          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{item}</span>
-                        </div>
-                      </DrawerGlassPill>
-                    ))}
-                  </DrawerDetailSection>
-                )}
+                {!comp.missingSkills?.length && (comp.missingItems?.length || comp.requirementsNotMet?.length) ? (() => {
+                  const arr = (comp.missingItems?.length ? comp.missingItems : comp.requirementsNotMet) || [];
+                  return arr.length > 0 ? (
+                    <DrawerDetailSection>
+                      <DrawerDetailSectionTitle>Missing ({arr.length})</DrawerDetailSectionTitle>
+                      {arr.map((item: any, i: number) => (
+                        <DrawerGlassPill key={i} $glowColor="#ef4444">
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <DrawerGlassDot $color="#ef4444" />
+                            <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-color)' }}>{item}</span>
+                          </div>
+                          <DrawerGlassBadge $color="#ef4444">Missing</DrawerGlassBadge>
+                        </DrawerGlassPill>
+                      ))}
+                    </DrawerDetailSection>
+                  ) : null;
+                })() : null}
 
                 <DrawerGlassTip>
                   Pro optimization can improve this category by restructuring your resume to better highlight relevant qualifications.

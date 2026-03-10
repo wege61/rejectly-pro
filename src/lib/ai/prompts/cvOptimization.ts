@@ -18,8 +18,20 @@ export function generateOptimizedCVPrompt(
   additionalTools: string[] = [],
   extractedMetrics: string[] = [],
   achievementsSection: string = '',
-  outputLanguage: string = 'English'
+  outputLanguage: string = 'English',
+  userProvidedMetrics?: Record<string, string>
 ): string {
+  const userMetricsWarning = userProvidedMetrics && Object.keys(userProvidedMetrics).length > 0 ? `
+🎯🎯🎯 USER PROVIDED METRICS - MUST INTEGRATE! 🎯🎯🎯
+================================================================================
+The user was asked to provide specific metrics for some of their original bullet points.
+Here are the answers they provided:
+${Object.entries(userProvidedMetrics).map(([id, answer]) => `- For bullet ID ${id}: User answered "${answer}"`).join('\n')}
+
+You MUST use these numbers to enhance the corresponding bullet points in the CV! Do not ignore them.
+================================================================================
+` : '';
+
   const metricsWarning = extractedMetrics.length > 0 ? `
 🚨🚨🚨 MANDATORY METRICS - THESE MUST ALL APPEAR IN YOUR OUTPUT! 🚨🚨🚨
 ================================================================================
@@ -54,6 +66,7 @@ For current positions: use the equivalent of "Present" in ${outputLanguage}.` : 
 
 ${metricsWarning}
 ${achievementsWarning}
+${userMetricsWarning}
 
 ORIGINAL CV:
 """
@@ -166,6 +179,7 @@ If the original has an "ACHIEVEMENTS" section:
 ✅ TRANSFORM every experience bullet - add metrics, results, impact
 ✅ PRESERVE ALL original metrics and achievements (integrate them better!)
 ✅ REORGANIZE skills by relevance to the target job
+✅ STRICTLY PRESERVE all original technical keywords (if original says "React", do not rephrase to "frontend framework")
 ✅ ENHANCE wording with stronger action verbs throughout
 ✅ IMPROVE ATS compatibility with better formatting
 
@@ -176,7 +190,7 @@ Everything else should be dramatically improved.
 
 MANDATORY TRANSFORMATIONS:
 1. Summary → Rewrite with powerful opening, include TOP achievements (NO clichés!)
-2. Each bullet → Integrate original metrics + add estimated metrics where missing
+2. Each bullet → Integrate original metrics + emphasize qualitative impact and scope where metrics are absent (NO FAKE METRICS!)
 3. Achievements → Weave into experience bullets where they belong (don't lose them!)
 4. Skills → Reorganize by job relevance, group logically
 5. Action verbs → Replace weak verbs (managed, helped, worked) with strong ones (spearheaded, pioneered, drove, accelerated)
@@ -186,7 +200,7 @@ TASK: Create a SIGNIFICANTLY IMPROVED CV that PRESERVES all original achievement
 
 IMPORTANT INSTRUCTIONS:
 - Extract and preserve ALL personal information (name, email, phone, location, LinkedIn, portfolio)
-- Rewrite experience bullets to be achievement-focused with quantifiable results
+- Rewrite experience bullets to focus on scope and impact (use metrics ONLY if present in original)
 - Ensure proper ATS formatting (no tables, clear sections, standard fonts)
 - Add a compelling professional summary tailored to target jobs
 - Organize skills by relevance to target roles
@@ -236,35 +250,32 @@ EVERY bullet must be rewritten to be more impactful.
 - If a bullet exceeds 120 chars → SPLIT into TWO separate bullets!
 - Count characters BEFORE submitting your response!
 
-TRANSFORMATION FORMULA:
-[Strong Action Verb] + [Specific Action] + [Quantified Result/Impact]
+TRANSFORMATION FORMULA (STRICT STAR METHOD):
+[Strong Action Verb] + [Specific Action (Action)] + [Context/Scope/Job Relevance (Situation/Task)] + [Measurable/Qualitative Impact (Result)]
+
+CRITICAL RULE: You MUST inject context or scope. If the original bullet lacks it, use the TARGET JOB POSTING to infer relevant context (e.g., "for an enterprise SaaS platform", "within a high-volume sales environment"). Do not leave the action bare.
 
 WEAK → STRONG EXAMPLES:
 
-❌ "Responsible for customer support"
-✅ "Resolved 50+ customer inquiries daily, achieving 98% satisfaction rating" (72 chars ✓)
-
+If metrics exist in original CV:
 ❌ "Worked on web development projects"
-✅ "Developed 5 web applications using React, serving 10,000+ monthly users" (75 chars ✓)
+✅ "Developed 5 web applications using React, serving 10K+ monthly users" (75 chars ✓)
 
-❌ "Managed social media accounts"
-✅ "Grew social media following by 150% across 3 platforms" (58 chars ✓)
-✅ "Generated 2M+ impressions, driving 25% increase in website traffic" (68 chars ✓)
-[Note: Split into 2 bullets to keep both under 120 chars]
+If NO metrics exist in original CV (DO NOT FABRICATE):
+❌ "Responsible for customer support"
+✅ "Proactively managed complex inquiries and optimized resolution workflows" (72 chars ✓)
 
 ❌ "Helped with data analysis"
-✅ "Analyzed 100K+ records using Python and SQL for cost-saving insights" (71 chars ✓)
+✅ "Analyzed complex datasets using Python and SQL to drive strategic insights" (76 chars ✓)
 
 ❌ "Optimized service processes"
-✅ "Streamlined service workflows, reducing wait times by 35%" (59 chars ✓)
+✅ "Streamlined service workflows, significantly accelerating delivery times" (74 chars ✓)
 
-🎯 METRIC ESTIMATION RULES:
-If exact numbers aren't in the CV, use reasonable estimates:
-- Customer interactions → "50+", "100+", "500+"
-- Team size → "team of 4-6", "cross-functional teams of 10+"
-- Satisfaction → "95%+", "97%+"
-- Improvement → "20%", "35%", "2x"
-- Revenue/Cost → "$50K+", "$100K+"
+🎯 NO FAKE METRICS POLICY (CRITICAL):
+If exact numbers aren't in the original CV, DO NOT invent or estimate them (no fake percentages like 98%, no fake amounts like $50K, no fake counts like 50+).
+Instead, focus on "How" and "Scope" using strong action verbs:
+- Show methodology: Use tools, frameworks, and processes (e.g., "leveraging CRM systems").
+- Provide scope context instead of fake numbers: "large-scale", "cross-functional", "end-to-end", "enterprise-grade", "critical".
 
 💪 STRONG ACTION VERBS TO USE:
 Spearheaded, Orchestrated, Transformed, Accelerated, Pioneered, Championed, Architected, Streamlined, Drove, Delivered, Achieved, Generated, Increased, Reduced, Optimized
@@ -362,7 +373,7 @@ Respond in JSON format:
       "startDate": "Month YYYY", // Turkish: "Ocak 2025", English: "January 2025"
       "endDate": "Month YYYY", // or "Present" (Turkish: "Devam Ediyor")
       "bullets": [
-        "Achievement-focused bullet point with quantifiable results...",
+        "Achievement-focused bullet point demonstrating scope and impact...",
         "Another bullet incorporating keywords and STAR format...",
         "Third bullet demonstrating impact and skills..."
       ]
@@ -435,9 +446,11 @@ Before responding, verify:
 □ Job titles, company names, and employment dates
 □ Education details
 
-🏆 ACHIEVEMENTS CHECK (CRITICAL - DO NOT SKIP!):
+🏆 ACHIEVEMENTS AND KEYWORDS CHECK (CRITICAL - DO NOT SKIP!):
 □ Count ALL metrics in original CV (percentages, money, counts, rankings, time periods)
 □ Count ALL metrics in your optimized CV
+□ Verify EVERY ORIGINAL METRIC is present!
+□ Verify EVERY ORIGINAL TECHNICAL KEYWORD from the original text is preserved exactly (so the ATS score does not drop!).
 □ Optimized count must be >= original count (ZERO metrics can be lost!)
 □ Verify ALL metric types are preserved: volumes, revenue, rankings, time periods, satisfaction scores
 □ If original had ACHIEVEMENTS section → EACH item must be in a relevant experience bullet

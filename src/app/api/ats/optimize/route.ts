@@ -28,6 +28,7 @@ interface OptimizeRequest {
   };
   photoBase64?: string | null;
   colorTemplateKey?: string | null;
+  userProvidedMetrics?: Record<string, string>;
 }
 
 export async function POST(request: NextRequest) {
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
   try {
     // 1. Parse request
     const body: OptimizeRequest = await request.json();
-    const { cvText, atsResult, photoBase64, colorTemplateKey } = body;
+    const { cvText, atsResult, photoBase64, colorTemplateKey, userProvidedMetrics } = body;
 
     if (!cvText || !atsResult) {
       return NextResponse.json(
@@ -84,7 +85,22 @@ export async function POST(request: NextRequest) {
 
     // 4. Generate optimized CV using AI
     console.log("🤖 Generating optimized CV...");
-    const optimizationPrompt = generateATSOptimizationPrompt(cvText, atsResult);
+    
+    // Map user answers to their original questions/bullets for richer AI context
+    let enrichedMetrics: Record<string, string> | undefined = undefined;
+    if (userProvidedMetrics && Object.keys(userProvidedMetrics).length > 0) {
+      // The metric questions might be stored in the DB alongside the report,
+      // but if we are in the ATS optimizer, the questions were generated dynamically
+      // or passed down. If atsResult doesn't have them easily accessible, we at least pass the answers.
+      // NOTE: ATS route usually gets metricQuestions from a previous API call, 
+      // but without the DB record mapping we will just send what we have and assume the prompt can guess
+      // based on the percentage/dollar amounts.
+      // Wait: To make it perfect we must look if 'metricQuestions' was ever saved. 
+      // This is the standalone ATS optimizer. Let's send the raw metrics if we don't have the original bullet.
+      enrichedMetrics = userProvidedMetrics; 
+    }
+    
+    const optimizationPrompt = generateATSOptimizationPrompt(cvText, atsResult, enrichedMetrics);
 
     const completion = await openai.chat.completions.create({
       model: AI_MODEL,

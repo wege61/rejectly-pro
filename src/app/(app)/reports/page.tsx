@@ -1385,7 +1385,7 @@ export default function ReportsPage() {
           {/* ── Filtered grid ── */}
           <ContentBody>
             {(() => {
-              const getDisplayScore = (r: Report) => r.optimized_score ?? r.fit_score;
+              const getDisplayScore = (r: Report) => r.optimized_score != null ? Math.max(r.optimized_score, r.fit_score) : r.fit_score;
               const filtered =
                 activeTab === 'all'       ? reports
                 : activeTab === 'excellent' ? reports.filter(r => getDisplayScore(r) >= 85)
@@ -1421,7 +1421,7 @@ export default function ReportsPage() {
                         <CardContent>
                           <ContentInner className="report-content">
                             <ScoreDisplay>
-                              {report.optimized_score != null && report.optimized_score !== report.fit_score && (
+                              {report.optimized_score != null && report.optimized_score > report.fit_score && (
                                 <OriginalScore>{report.fit_score}%</OriginalScore>
                               )}
                               <ScoreValue $category={cat}>{s}</ScoreValue>

@@ -141,6 +141,7 @@ interface ATSResult {
       quantifiedAchievements: number;
     };
   };
+  metricQuestions?: { id: string; original_bullet: string; question: string }[] | null;
   atsCompatibility?: {
     workday: string;
     greenhouse: string;
@@ -2597,7 +2598,7 @@ export default function DashboardATSOptimizerPage() {
       const analyzeResponse = await fetch("/api/ats/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cvText: cv.text }),
+        body: JSON.stringify({ cvText: cv.text, useAI: true }),
       });
 
       if (!analyzeResponse.ok) {
@@ -2676,7 +2677,7 @@ export default function DashboardATSOptimizerPage() {
       const analyzeResponse = await fetch("/api/ats/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cvText: parsedText }),
+        body: JSON.stringify({ cvText: parsedText, useAI: true }),
       });
 
       if (!analyzeResponse.ok) {
@@ -3320,6 +3321,15 @@ export default function DashboardATSOptimizerPage() {
         onConfirm={handleCustomizationConfirm}
         onSkip={handleCustomizationSkip}
         documentId={currentDocumentId || undefined}
+        metricQuestions={
+          atsResult?.metricQuestions || [
+            {
+              id: "test_ats_1",
+              original_bullet: "Organized a team.",
+              question: "How many people were in the team?"
+            }
+          ]
+        }
       />
 
       {/* Floating Action Button */}

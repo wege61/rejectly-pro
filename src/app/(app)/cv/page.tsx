@@ -1731,8 +1731,7 @@ export default function CVPage() {
         .select(`
           *,
           reports:report_id (
-            job_ids,
-
+            job_ids
           )
         `)
         .eq("user_id", user.id)

@@ -182,7 +182,7 @@ This is where MOST CVs fail. 99.7% of recruiters use keyword filters (Jobscan 20
 
 CONTENT QUALITY SIGNALS:
 □ Action verbs start each bullet (Led, Developed, Managed, Implemented, Spearheaded)
-□ Quantified achievements present (%, $, numbers, metrics)
+□ Achievements focus on impact (quantified IF numbers exist, qualitative IF not)
 □ Results-oriented language (achieved, increased, reduced, delivered, generated)
 □ Industry keywords used naturally in context (not just listed)
 
@@ -338,8 +338,29 @@ RESPONSE FORMAT (STRICT JSON)
   "abbreviationCheck": {
     "expandedCorrectly": ["<abbreviations that have full form, e.g. 'AWS (Amazon Web Services)'>"],
     "needsExpansion": ["<abbreviations used without full form - CRITICAL for Greenhouse/Lever>"]
-  }
+  },
+  "metricQuestions": [
+    {
+      "id": "<unique_id_like_mq1>",
+      "original_bullet": "<exact text of the original CV bullet that lacks metrics>",
+      "question": "<short, friendly question asking the user to provide the missing number/metric>",
+      "options": ["<logical option 1>", "<logical option 2>", "<logical option 3>", "<logical option 4>"]
+    }
+  ]
 }
+
+=============================================================================
+FIELD INSTRUCTIONS
+=============================================================================
+### metricQuestions (0 to 2 items max)
+Identify the 1 or 2 most critical experience bullets in the original CV that sound impressive but lack ANY quantifiable metrics.
+CRITICAL RULE: DO NOT select a bullet if it ALREADY contains ANY numbers, $, %, data points, or timeframes (e.g., "$50k+", "2,500 vehicles", "3 months"). ONLY select purely qualitative bullets.
+Create a VERY SHORT, PUNCHY, AND DIRECT question (max 4-6 words when possible). DO NOT restate what the user did. Just ask for the missing number.
+- "id": A simple unique string like "metric_1"
+- "original_bullet": The exact text from their CV.
+- "question": Ultra-short and direct. (e.g., "By how much?", "How many tickets daily?", "What was the budget?", "How many users?")
+- "options": An array of 3 or 4 logical, realistic options the user can just click on. (e.g. for a budget question: ["Under $10k", "$10k - $50k", "$50k - $250k", "Over $250k"])
+If the CV already has great metrics everywhere, return an empty array [].
 
 =============================================================================
 ATS COMPATIBILITY RATING RULES
@@ -505,7 +526,8 @@ export function generateATSOptimizationPrompt(
     };
     topIssues: { issue: string; suggestion: string; category: string }[];
     quickWins: string[];
-  }
+  },
+  userProvidedMetrics?: Record<string, string>
 ): string {
   const allIssues = [
     ...atsResult.categories.format.issues.map(i => ({ ...i, category: 'format' })),
@@ -517,6 +539,17 @@ export function generateATSOptimizationPrompt(
   return `You are a world-class CV optimization expert. Your ONLY goal is to transform this CV to achieve a PERFECT 95-100% ATS compatibility score.
 
 🎯 TARGET: 95-100% ATS SCORE - ACCEPT NOTHING LESS!
+
+${userProvidedMetrics && Object.keys(userProvidedMetrics).length > 0 ? `
+🎯🎯🎯 USER PROVIDED METRICS - MUST INTEGRATE! 🎯🎯🎯
+================================================================================
+The user was asked to provide specific metrics for some of their original bullet points.
+Here are the answers they provided:
+${Object.entries(userProvidedMetrics).map(([id, answer]) => `- For bullet ID ${id}: User answered "${answer}"`).join('\n')}
+
+You MUST use these numbers to enhance the corresponding bullet points in the CV! Do not ignore them.
+================================================================================
+` : ''}
 
 =============================================================================
 ORIGINAL CV (SCORE: ${atsResult.overallScore}/100 - UNACCEPTABLE!)
@@ -578,9 +611,13 @@ STRUCTURE (Target: 25/25 points):
 
 KEYWORDS & CONTENT (Target: 30/30 points):
 ✅ EVERY bullet starts with STRONG action verb
-✅ EVERY bullet has QUANTIFIED results (%, $, numbers)
+✅ EVERY bullet demonstrates concrete IMPACT (qualitative scope or actual metrics)
 ✅ Industry keywords appear in CONTEXT (not just listed)
 ✅ Same key skills mentioned 2-3 times across CV (summary + skills + experience)
+🚨 CRITICAL: PRESERVE EXACT TECHNICAL KEYWORDS
+- If the original mentions "React", do NOT rewrite it as "frontend framework"
+- If it mentions "Python", do NOT rewrite as "scripting language"
+- The ATS scores based on exact matches. You MUST preserve all original hard skills exactly as written!
 
 🚨 CRITICAL: ABBREVIATION EXPANSION (Greenhouse/Lever REQUIREMENT)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -624,25 +661,27 @@ READABILITY (Target: 20/20 points):
 =============================================================================
 🔥 AGGRESSIVE BULLET TRANSFORMATION (MANDATORY FOR EVERY BULLET)
 =============================================================================
-FORMULA: [Power Verb] + [Specific Action] + [Metric/Result]
+FORMULA: [Power Verb] + [Specific Action] + [Metric/Result OR Qualitative Scope]
 
 TRANSFORM EXAMPLES (Keep bullets concise - max 120 characters!):
-❌ "Responsible for customer service"
-✅ "Resolved 50+ customer inquiries daily, achieving 98% satisfaction rating"
-
+If metrics exist in original CV:
 ❌ "Worked on sales"
 ✅ "Generated $250K+ revenue by closing 30+ enterprise deals"
 
+If NO metrics exist in original CV (DO NOT FABRICATE):
+❌ "Responsible for customer service"
+✅ "Proactively managed complex inquiries and optimized resolution workflows"
+
 ❌ "Managed team"
-✅ "Led cross-functional team of 8, delivering 15 projects on-time"
+✅ "Led cross-functional team, delivering multiple strategic projects on-time"
 
 ❌ "Did marketing"
-✅ "Executed 20+ campaigns across 5 channels, driving 150% lead increase"
+✅ "Executed multi-channel campaigns, significantly expanding audience reach"
 
 ❌ "Helped with projects"
-✅ "Spearheaded 12 initiatives, resulting in $500K savings and 25% efficiency gain"
+✅ "Spearheaded key initiatives, resulting in major efficiency gains"
 
-CRITICAL: Keep bullets SHORT and PUNCHY. One metric per bullet is enough!
+CRITICAL: Keep bullets SHORT and PUNCHY. One metric (if known) per bullet is enough! If NO metrics exist, focus on "How" and "Scope" (enterprise-grade, cross-functional) rather than hallucinating numbers!
 
 POWER VERBS TO USE (START EVERY BULLET WITH ONE OF THESE):
 Spearheaded, Orchestrated, Pioneered, Accelerated, Transformed, Championed,
@@ -747,18 +786,13 @@ FORMAT IN JSON:
 }
 
 =============================================================================
-📊 METRIC ESTIMATION RULES (ADD METRICS EVERYWHERE!)
+🚫 NO FAKE METRICS POLICY (CRITICAL)
 =============================================================================
-If original CV lacks specific numbers, ADD REASONABLE ESTIMATES:
-
-- Customer interactions → "50+", "100+", "200+ daily"
-- Team size → "team of 5", "cross-functional teams of 10+"
-- Satisfaction → "95%+", "98%", "4.8/5.0 rating"
-- Improvement → "25%", "40%", "2x", "3x"
-- Revenue/Cost → "$50K+", "$100K+", "$1M+"
-- Time savings → "reduced by 30%", "saved 10+ hours weekly"
-- Volume → "processed 500+", "managed 1000+"
-- Projects → "delivered 15+", "launched 10"
+If original CV lacks specific numbers, DO NOT invent or estimate them:
+- Focus on qualitative impact and scope ("large-scale", "enterprise-grade")
+- Describe the methodology and tools used ("leveraging CRM systems")
+- Highlight cross-functional collaboration and business alignment
+- Emphasize successful delivery rather than fake percentages.
 
 =============================================================================
 📝 PROFESSIONAL SUMMARY (REWRITE COMPLETELY)
@@ -799,8 +833,8 @@ RESPONSE FORMAT (STRICT JSON)
       "endDate": "Present",
       "bullets": [
         "Power verb + specific action + quantified result (metric)",
-        "Another achievement with numbers/percentages",
-        "Third bullet demonstrating measurable impact",
+        "Another achievement demonstrating scale or scope",
+        "Third bullet demonstrating clear business impact",
         "Fourth bullet with business outcome"
       ]
     }
@@ -867,7 +901,7 @@ Include 10-15 changes minimum!
 □ Job titles in format: "[Title] at [Company]" (NOT "Title | Company")
 □ ALL dates in "Month YYYY" format (e.g., "January 2020", NOT "Jan 2020" or "January 20")
 □ EVERY bullet starts with power verb
-□ EVERY bullet has a metric/number
+□ Bullets feature metrics/numbers OR strong qualitative scope if numbers are absent
 □ EVERY bullet is SHORT (max 120 characters, 1-2 lines) - COUNT THE CHARACTERS!
 □ 3-5 bullets per job
 □ 10-15 HARD/Technical skills listed (MINIMUM 10!)
@@ -903,7 +937,7 @@ Include 10-15 changes minimum!
     ❌ "graduationDate": "2018" (MADE UP - use null!)
 12. NEVER invent GPA, honors, or details not in the original CV
 13. NEVER add certifications or courses the person didn't list
-14. You CAN estimate metrics for experience bullets (that's expected)
+14. You CANNOT estimate metrics for experience bullets (no fake metrics!)
 15. You CANNOT fabricate factual data like dates, degrees, or institutions
 
 ⚠️ CRITICAL CHECK BEFORE SUBMITTING:

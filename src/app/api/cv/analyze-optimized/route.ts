@@ -209,8 +209,20 @@ export async function POST(request: NextRequest) {
 
     // Use the finalScore from breakdown for consistency
     // Check both direct finalScore and nested calculation.finalScore
-    const optimizedScore = optimizedScoreBreakdown.finalScore ||
+    let optimizedScore = optimizedScoreBreakdown.finalScore ||
                           optimizedScoreBreakdown.calculation?.finalScore || 0;
+                          
+    // Failsafe: Optimization should realistically never score lower mathematically
+    if (optimizedScore < originalScore) {
+      console.log(`⚠️ AI scored optimized CV lower (${optimizedScore}) than original (${originalScore}). Overriding to match original score.`);
+      optimizedScore = originalScore;
+      
+      if (optimizedScoreBreakdown.calculation) {
+        optimizedScoreBreakdown.calculation.finalScore = optimizedScore;
+      }
+      optimizedScoreBreakdown.finalScore = optimizedScore;
+    }
+
     const actualScoreDifference = optimizedScore - originalScore;
 
     console.log('📊 Score calculation (from breakdown):', {

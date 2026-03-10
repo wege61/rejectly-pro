@@ -20,16 +20,23 @@ export function generateSystematicScoringPrompt(
   const { isOptimizedCV = false, fakeItMode = false, originalScore = 0, originalCVText = '' } = options;
 
   // Generate optimized CV warning section if applicable
-  // ONLY add restrictions for Fake It Mode - Honest Mode should be scored normally
-  const optimizedCVWarning = (isOptimizedCV && fakeItMode) ? `
+  let optimizedCVWarning = '';
+  if (isOptimizedCV) {
+    optimizedCVWarning = `
 =============================================================================
-⚠️ FAKE IT MODE WARNING ⚠️
+⚠️ OPTIMIZED CV SCORING RULES ⚠️
 =============================================================================
-This CV was optimized with "Fake It Mode" - keywords were added aggressively
-even though the candidate may have NO REAL EXPERIENCE with them.
+This CV has been OPTIMIZED by an expert system.
+The original version of this CV scored: ${originalScore}%
 
-Original CV scored: ${originalScore}%
+CRITICAL RULE: The final score for this optimized CV MUST logically be GREATER THAN OR EQUAL TO the original score (${originalScore}%). 
+The optimization process improves impact, adds metrics, and enhances ATS readability. It NEVER removes qualifications.
+When evaluating categories, ensure your rigorous mathematical calculation naturally yields a score >= ${originalScore}%.
+If your strict calculation falls below the original score, you are missing context or being punitively strict. Recalibrate your points upwards to reflect the optimized phrasing.
+`;
 
+    if (fakeItMode) {
+      optimizedCVWarning += `
 FAKE IT MODE SCORING RULES:
 - Skills in skills section WITHOUT job history evidence = 0.5 credit (not full)
 - Skills WITH job history evidence = full credit (these are real)
@@ -37,14 +44,16 @@ FAKE IT MODE SCORING RULES:
 - Maximum realistic improvement: +25 points from original score
 - If original was 0-20%, optimized should realistically be 20-40%
 - If original was 20-40%, optimized should realistically be 40-55%
-
+`;
+    }
+    
+    optimizedCVWarning += `
 ORIGINAL CV FOR REFERENCE:
 """
 ${originalCVText}
 """
-
-Score based on what's ACTUALLY demonstrated, not just keywords listed.
-` : '';
+`;
+  }
 
   return `You are a SENIOR HR RECRUITER at a Fortune 500 company screening 500+ applications daily.
 You have ZERO tolerance for unqualified candidates. Your job is to OBJECTIVELY score CV-to-job fit.
@@ -179,6 +188,9 @@ Measures years of RELEVANT experience and seniority match.
 
 STEP 2A: Extract required years from job posting
 STEP 2B: Calculate candidate's RELEVANT years (not total career years!)
+⚠️ ONLY count years where the daily professional scope closely matches the target role. 
+⚠️ CRITICAL RELEVANCE RULE: Do NOT count generic "crossover" skills as relevant professional experience. For example, a Barista does "customer service", but that does NOT count as 1 year of experience for a Corporate Customer Experience / CX Center role. 5 years as a retail worker = 0 years for a corporate marketing role. Be strict.
+⭐ JUNIOR EXCEPTION: For entry-level (0-2 years) corporate roles, academic projects, internships, and teaching assistant roles DO count as relevant experience.
 STEP 2C: Determine seniority match
 
 YEARS SCORING TABLE:
@@ -193,9 +205,9 @@ YEARS SCORING TABLE:
 │ No relevant experience          │ 0               │
 └─────────────────────────────────┴─────────────────┘
 
-⚠️ EDGE CASE: If the job does NOT specify a years requirement (yearsRequired=0),
-the candidate AUTOMATICALLY gets 15/15 for years. Having ANY experience when
-none is required means the candidate fully meets the requirement.
+⚠️ EDGE CASE: If the job does NOT specify a years requirement (yearsRequired=0):
+- If the candidate has ANY RELEVANT experience (including Junior Exceptions like internships), they get 15/15.
+- If the candidate ONLY has completely UNRELATED experience (e.g., 5 years Barista applying for Software Engineer), they get 0/15 points. Do NOT credit unrelated years just because the job asks for 0.
 
 SENIORITY MATCH TABLE:
 ┌─────────────────────────────────┬─────────────────┐
@@ -206,6 +218,7 @@ SENIORITY MATCH TABLE:
 │ One level above (Sr→Mid)        │ 8               │
 │ Two+ levels below (Jr→Sr)       │ 2               │
 │ Two+ levels above (Lead→Jr)     │ 4               │
+│ Completely irrelevant field     │ 0               │
 └─────────────────────────────────┴─────────────────┘
 
 SENIORITY DETECTION:
@@ -213,12 +226,23 @@ SENIORITY DETECTION:
 - MID: 2-5 years, standard titles without Junior/Senior
 - SENIOR: 5+ years, titles with "Senior", "Lead", "Principal"
 - MANAGER: Any management title, team leadership
+- NONE: Candidate has 0 years of experience in the target industry/role (e.g., career switchers with completely unrelated past jobs).
 
 ⚠️ MANDATORY DERIVATION RULE FOR THIS CATEGORY:
 You MUST set earnedPoints = yearsScore + seniorityScore from the details.
 Exact values MUST come from the tables above — no arbitrary adjustments.
-If yearsRequired=0 and candidate has any experience → yearsScore=15.
-If seniorityRequired matches seniorityCandidate → seniorityScore=10.
+
+CRITICAL ZERO-EXPERIENCE RULE:
+If the candidate has ZERO relevant professional experience in the precise target industry (e.g. a Barista applying to a Tech or Corporate role):
+1. yearsCandidate MUST be 0
+2. yearsScore MUST be 0 (Even if yearsRequired is 0, DO NOT give 15 points for unrelated work)
+3. seniorityCandidate MUST be "none"
+4. seniorityScore MUST be 0
+5. earnedPoints MUST be 0
+
+ONLY if the candidate has AT LEAST SOME relevant experience (or qualifies for the Junior Exception via related internships):
+- If yearsRequired=0 → yearsScore=15.
+- If seniorityRequired matches seniorityCandidate → seniorityScore=10.
 
 EXAMPLE:
 Job requires: "Senior Developer, 5+ years experience"
@@ -228,13 +252,13 @@ Years: 3 vs 5 required = 2 years below → 9 points
 Seniority: Mid applying for Senior = One level below → 6 points
 Total: 9 + 6 = 15 points (out of 25)
 
-EXAMPLE (Edge case - no years specified):
-Job posting: "Junior Barista" (no years requirement)
-CV shows: 1 year experience, Junior level
+EXAMPLE (Edge case - no years specified, unrelated background):
+Job posting: "Junior Software Engineer" (no years requirement)
+CV shows: 4 years experience as a "Barista", completely unrelated.
 
-Years: yearsRequired=0, yearsCandidate=1 → Meets/exceeds → 15 points
-Seniority: Junior→Junior = Exact match → 10 points
-Total: 15 + 10 = 25 points (out of 25) ← THIS IS CORRECT!
+Years: yearsRequired=0, but candidate ONLY has unrelated experience → yearsCandidate=0, yearsScore=0
+Seniority: 0 relevant years means no valid seniority → seniorityCandidate="none", seniorityScore=0
+Total: 0 + 0 = 0 points (out of 25) ← THIS IS CORRECT!
 
 =============================================================================
 CATEGORY 3: INDUSTRY & DOMAIN (20 points max)
@@ -249,8 +273,9 @@ INDUSTRY MATCH TABLE:
 │ RELATED: Adjacent (Banking→FinTech)     │ 8               │
 │ TRANSFERABLE: Some overlap (Retail→Ecom)│ 5               │
 │ DIFFERENT: Minimal relevance            │ 2               │
-│ NONE: Completely unrelated              │ 0               │
+│ NONE: Completely unrelated field        │ 0               │
 └─────────────────────────────────────────┴─────────────────┘
+⭐ JUNIOR EXCEPTION: For entry-level roles, academic environments (Universities) or personal project work count as "RELATED: Adjacent" (8 points) to Software/Tech industries, not NONE.
 
 DOMAIN EXPERTISE TABLE:
 ┌─────────────────────────────────────────┬─────────────────┐
@@ -290,30 +315,32 @@ CERTIFICATION SCORING:
 │ Certification Match                     │ Points (of 4)   │
 ├─────────────────────────────────────────┼─────────────────┤
 │ Has ALL required certifications         │ 4               │
+│ NO certifications required by job       │ 4               │
 │ Has SOME required certifications        │ 2               │
 │ Has related (not required) certs        │ 1               │
-│ No relevant certifications              │ 0               │
+│ No relevant generalizations             │ 0               │
 └─────────────────────────────────────────┴─────────────────┘
+└─────────────────────────────────────────┴─────────────────┘
+⭐ EXCEPTION: If the job description does NOT require or prefer any certifications, automatically award 4/4 points for Certification Match (set certMatch to "none_required"). Do not penalize candidates for lacking something that isn't asked for.
+
+⚠️ MANDATORY DERIVATION RULE FOR THIS CATEGORY:
+You MUST set earnedPoints = educationScore + certificationScore.
+Exact values MUST come from the tables above — no arbitrary adjustments.
+Example: Degree match (6) + No certs required (4) = 10 points.
 
 =============================================================================
 CATEGORY 5: ROLE-SPECIFIC REQUIREMENTS (10 points max)
-=============================================================================
-Special requirements mentioned in job posting.
+Special requirements and soft skills mentioned in the job posting.
 
-CHECK EACH (2 points each, max 10):
-□ Language requirements (e.g., "Fluent English required")
-□ Location/timezone requirements
-□ Security clearance requirements
-□ Specific methodology experience (Agile, Scrum, etc.)
-□ Team size experience (if specified)
-□ Client-facing experience (if required)
-□ Remote work experience (if relevant)
-□ Leadership/mentoring experience
-□ Specific tool proficiency (Jira, Confluence, etc.)
-□ Communication skills evidence
+MANDATORY RULE: You MUST identify EXACTLY 5 key role-specific requirements (e.g., "English Fluency", "Shift work flexibility", "Client-facing communication", "Leadership", "Team player") from the job post.
+If the job posting is brief, infer standard professional expectations for the role (e.g., "Problem solving", "Adaptability") to reach exactly 5.
 
-Score 2 points for each requirement MET (with evidence).
-Score 0 for requirements NOT MET or unclear.
+For EACH of the 5 requirements:
+- If the CV shows clear evidence: Add to "requirementsMet" (worth 2 points).
+- If the CV lacks evidence: Add to "requirementsNotMet" (worth 0 points).
+
+The combined length of "requirementsMet" and "requirementsNotMet" MUST be exactly 5.
+earnedPoints MUST equal the number of items in "requirementsMet" multiplied by 2.
 
 =============================================================================
 STEP 3: APPLY TARGETED PENALTIES (ONLY FOR DEALBREAKER GAPS)
@@ -330,10 +357,10 @@ the category scores already reflect.
 │ Penalty Condition                          │ Deduction│ When to Apply                │
 ├────────────────────────────────────────────┼──────────┼────────────┤
 │ P1: Missing 70%+ of REQUIRED hard skills   │ -8 pts   │ Fundamental skills mismatch  │
-│ P2: Experience gap > 4 years               │ -6 pts   │ e.g., 1yr applying for 5yr+  │
+│ P2: Ex. gap > 4 years (relevant only)      │ -6 pts   │ e.g., 1yr applying for 5yr+  │
 │ P3: 2+ level seniority mismatch (Jr→Sr)    │ -5 pts   │ Clear seniority mismatch     │
 │ P4: Missing REQUIRED certification         │ -3 pts   │ Only if cert is mandatory    │
-│ P5: Zero industry exp (if strongly req'd)  │ -3 pts   │ Only if industry is critical │
+│ P5: Completely out-of-field application    │ -12 pts  │ No overlap in skills/field   │
 │ P6: No evidence of claimed skills          │ -3 pts   │ Skills listed but never used │
 └────────────────────────────────────────────┴──────────┴────────────┘
 
@@ -394,14 +421,14 @@ RESPONSE FORMAT (STRICT JSON)
     "hardSkills": {
       "name": "Hard Skills Match",
       "maxPoints": 35,
-      "earnedPoints": <0-35>,
-      "percentage": <0-100>,
       "details": {
         "requiredSkillsTotal": <number>,
         "requiredSkillsMatched": <number with decimals for partial>,
         "preferredSkillsTotal": <number>,
         "preferredSkillsMatched": <number with decimals for partial>
       },
+      "earnedPoints": <0-35>,
+      "percentage": <0-100>,
       "matchedSkills": [
         {"skill": "Python", "evidence": "3 years in backend roles", "credit": 1.0},
         {"skill": "Django", "evidence": "Listed in skills section", "credit": 0.5}
@@ -414,49 +441,49 @@ RESPONSE FORMAT (STRICT JSON)
     "experienceLevel": {
       "name": "Experience Level",
       "maxPoints": 25,
-      "earnedPoints": <0-25>,
-      "percentage": <0-100>,
       "details": {
         "yearsRequired": <number>,
         "yearsCandidate": <number>,
         "yearsGap": <number>,
-        "yearsScore": <0-15>,
+        "yearsScore": <0-15 (CRITICAL: MUST be 0 if yearsCandidate=0 and background is unrelated)>,
         "seniorityRequired": "<level>",
-        "seniorityCandidate": "<level>",
-        "seniorityScore": <0-10>
-      }
+        "seniorityCandidate": "<level (CRITICAL: MUST be 'none' if yearsCandidate=0 and background is unrelated)>",
+        "seniorityScore": <0-10 (CRITICAL: MUST be 0 if yearsCandidate=0 and background is unrelated)>
+      },
+      "earnedPoints": <0-25>,
+      "percentage": <0-100>
     },
     "industryDomain": {
       "name": "Industry & Domain",
       "maxPoints": 20,
-      "earnedPoints": <0-20>,
-      "percentage": <0-100>,
       "details": {
         "industryMatch": "<exact|related|transferable|different|none>",
         "industryScore": <0-12>,
         "domainExperience": "<deep|solid|some|none>",
         "domainScore": <0-8>
-      }
+      },
+      "earnedPoints": <0-20>,
+      "percentage": <0-100>
     },
     "educationCerts": {
       "name": "Education & Certifications",
       "maxPoints": 10,
-      "earnedPoints": <0-10>,
-      "percentage": <0-100>,
       "details": {
         "educationMatch": "<exact|related|any|none|bootcamp>",
         "educationScore": <0-6>,
-        "certMatch": "<all|some|related|none>",
+        "certMatch": "<all|none_required|some|related|none>",
         "certScore": <0-4>
-      }
+      },
+      "earnedPoints": <0-10>,
+      "percentage": <0-100>
     },
     "roleSpecific": {
       "name": "Role-Specific Requirements",
       "maxPoints": 10,
-      "earnedPoints": <0-10>,
-      "percentage": <0-100>,
       "requirementsMet": ["English fluency", "Agile experience"],
-      "requirementsNotMet": ["Security clearance"]
+      "requirementsNotMet": ["Security clearance"],
+      "earnedPoints": <0-10>,
+      "percentage": <0-100>
     }
   },
   "penalties": [

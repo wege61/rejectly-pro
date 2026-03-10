@@ -1,0 +1,75 @@
+{
+  "contact": {
+    "name": "Alex Taylor",
+    "email": "alex.t@email.com",
+    "phone": "123-456-7890",
+    "location": "City, Country",
+    "linkedin": "",
+    "portfolio": ""
+  },
+  "summary": "Software Developer with over 3 years of experience in coding and frontend development. Developed user-friendly applications and streamlined processes, enhancing team productivity. Proficient in JavaScript with a commitment to continuous learning and collaboration in agile environments.",
+  "experience": [
+    {
+      "title": "Coder",
+      "company": "Tech Start Ltd",
+      "location": "City, Country",
+      "startDate": "January 2022",
+      "endDate": "Present",
+      "bullets": [
+        "Developed responsive applications leveraging JavaScript, enhancing user engagement.",
+        "Optimized application performance, resulting in improved loading times across devices.",
+        "Collaborated in team meetings to design and implement better user interfaces."
+      ]
+    },
+    {
+      "title": "IT Guy",
+      "company": "Some Business Inc",
+      "location": "City, Country",
+      "startDate": "January 2020",
+      "endDate": "January 2022",
+      "bullets": [
+        "Resolved technical issues for staff, improving overall IT support satisfaction.",
+        "Updated website HTML, enhancing site functionality and user experience.",
+        "Facilitated onboarding for new employees, streamlining email set-up processes."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Degree in Information Technology",
+      "institution": "College",
+      "location": "City, Country",
+      "graduationDate": "Year",
+      "details": ""
+    }
+  ],
+  "skills": {
+    "technical": [
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "UI/UX Design",
+      "Agile Methodologies",
+      "Version Control (Git)",
+      "Responsive Design",
+      "Web Development",
+      "Database Management",
+      "Problem Solving",
+      "Collaboration",
+      "Debugging"
+    ],
+    "soft": [
+      "Teamwork",
+      "Communication",
+      "Adaptability",
+      "Critical Thinking"
+    ]
+  },
+  "certifications": [],
+  "languages": [
+    {
+      "language": "Spanish",
+      "proficiency": "Professional"
+    }
+  ]
+}

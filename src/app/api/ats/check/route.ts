@@ -564,6 +564,7 @@ async function handleAIBasedATSCheck(cvText: string): Promise<NextResponse> {
         expandedCorrectly: [],
         needsExpansion: [],
       },
+      metricQuestions: aiResult.metricQuestions || [],
       atsCompatibility: aiResult.atsCompatibility,
       isPro: false,
     };

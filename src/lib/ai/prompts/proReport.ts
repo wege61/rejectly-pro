@@ -93,6 +93,14 @@ RESPONSE FORMAT (STRICT JSON)
     "<specific, actionable tip 1>",
     "<specific, actionable tip 2>",
     "<specific, actionable tip 3>"
+  ],
+  "metricQuestions": [
+    {
+      "id": "<unique_id_like_mq1>",
+      "original_bullet": "<exact text of the original CV bullet that lacks metrics>",
+      "question": "<short, friendly question asking the user to provide the missing number/metric>",
+      "options": ["<logical option 1>", "<logical option 2>", "<logical option 3>", "<logical option 4>"]
+    }
   ]
 }
 
@@ -143,6 +151,16 @@ Types of ATS flags:
 4. Experience bullet improvements for ATS parsing
 5. Job title alignment suggestions
 
+### metricQuestions (0 to 2 items max)
+Identify the 1 or 2 most critical experience bullets in the original CV that sound impressive but lack ANY quantifiable metrics.
+CRITICAL RULE: DO NOT select a bullet if it ALREADY contains ANY numbers, $, %, data points, or timeframes (e.g., "$50k+", "2,500 vehicles", "3 months"). ONLY select purely qualitative bullets.
+Create a VERY SHORT, PUNCHY, AND DIRECT question (max 4-6 words when possible). DO NOT restate what the user did. Just ask for the missing number.
+- "id": A simple unique string like "metric_1"
+- "original_bullet": The exact text from their CV.
+- "question": Ultra-short and direct. (e.g., "By how much?", "How many tickets daily?", "What was the budget?", "How many users?")
+- "options": An array of 3 or 4 logical, realistic options the user can just click on. (e.g. for a budget question: ["Under $10k", "$10k - $50k", "$50k - $250k", "Over $250k"])
+If the CV already has great metrics everywhere, return an empty array [].
+
 =============================================================================
 QUALITY CHECKLIST (STRICT HR VALIDATION)
 =============================================================================
@@ -151,6 +169,7 @@ QUALITY CHECKLIST (STRICT HR VALIDATION)
 □ ATS flags address specific issues in THIS CV
 □ No invented skills, metrics, or experiences
 □ Recommendations actionable and specific
+□ Metric questions (if any) target the most important vague achievements
 
 🔴 ROLE RECOMMENDATION VALIDATION:
 □ Are most role fits in the 50-70% range (realistic)?

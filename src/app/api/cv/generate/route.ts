@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get request body
-    const { reportId, additionalTools = [], forceRegenerate = false, photoUrl, colorTemplate } = await request.json();
+    const { reportId, additionalTools = [], forceRegenerate = false, photoUrl, colorTemplate, userProvidedMetrics } = await request.json();
 
     console.log('🔍 CV Generation Request:', {
       reportId,
@@ -148,6 +148,24 @@ export async function POST(request: NextRequest) {
     };
     const outputLanguage = LOCALE_TO_LANGUAGE[detectedLocale] || 'English';
     console.log('🌍 Detected job posting language:', outputLanguage, `(locale: ${detectedLocale})`);
+    
+    // Map user answers to their original questions/bullets for richer AI context
+    let enrichedMetrics: Record<string, string> | undefined = undefined;
+    if (userProvidedMetrics && Object.keys(userProvidedMetrics).length > 0) {
+      enrichedMetrics = {};
+      const originalQuestions = report.metric_questions || [];
+      
+      for (const [id, answer] of Object.entries(userProvidedMetrics)) {
+        const matchingQuestion = originalQuestions.find((q: any) => q.id === id);
+        if (matchingQuestion) {
+          enrichedMetrics[id] = `Original Bullet: "${matchingQuestion.original_bullet}" -> User's Metric Added: "${answer}"`;
+        } else {
+          enrichedMetrics[id] = answer as string;
+        }
+      }
+    }
+    
+    console.log('💡 Enriched Metrics for AI:', enrichedMetrics || 'None');
 
     // Generate optimized CV using AI
     const prompt = generateOptimizedCVPrompt(
@@ -158,7 +176,8 @@ export async function POST(request: NextRequest) {
       additionalTools,
       extractedMetrics,
       achievementsSection,
-      outputLanguage
+      outputLanguage,
+      enrichedMetrics
     );
 
     const completion = await openai.chat.completions.create({

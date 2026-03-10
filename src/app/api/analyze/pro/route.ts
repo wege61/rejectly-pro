@@ -118,6 +118,7 @@ export async function POST(request: NextRequest) {
         summary_pro: result,
         role_fit: result.roleRecommendations,
         ats_flags: result.atsFlags,
+        metric_questions: result.metricQuestions || [],
         pro: true,
       })
       .eq("id", reportId)
@@ -135,6 +136,7 @@ export async function POST(request: NextRequest) {
         rewrittenBullets: result.rewrittenBullets || [],
         roleRecommendations: result.roleRecommendations || [],
         atsFlags: result.atsFlags || [],
+        metricQuestions: result.metricQuestions || [],
       },
     });
   } catch (error) {

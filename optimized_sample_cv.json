@@ -1,0 +1,66 @@
+{
+  "contact": {
+    "name": "Ahsen Yilmaz",
+    "email": "ahsen.yilmaz@example.com",
+    "phone": "+1234567890",
+    "location": "Istanbul, Turkey",
+    "linkedin": "linkedin.com/in/ahsenyilmaz"
+  },
+  "summary": "Frontend Developer with 5+ years of experience in building scalable web applications. Successfully developed 5+ web applications using React, serving over 10K monthly users. Proficient in Next.js and Tailwind CSS, optimizing performance and user experience. Committed to driving team success through innovative solutions and agile methodologies.",
+  "experience": [
+    {
+      "title": "Software Developer",
+      "company": "E-Ticaret Solutions A.S.",
+      "location": "Istanbul, Turkey",
+      "startDate": "January 2021",
+      "endDate": "Present",
+      "bullets": [
+        "Spearheaded migration to Next.js, enhancing website performance and scalability.",
+        "Developed 5+ web applications using React, serving 10K+ monthly users.",
+        "Analyzed user behavior data, improving site navigation and customer satisfaction."
+      ]
+    },
+    {
+      "title": "Junior Web Developer",
+      "company": "Digital Agency Istanbul",
+      "location": "Istanbul, Turkey",
+      "startDate": "June 2018",
+      "endDate": "December 2020",
+      "bullets": [
+        "Pioneered responsive website designs, enhancing mobile accessibility.",
+        "Collaborated with senior developers to build WordPress themes, improving site load times by 30%.",
+        "Implemented Tailwind CSS to streamline UI design processes, leading to a more consistent user experience."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Bachelor of Science in Computer Engineering",
+      "institution": "Istanbul Technical University",
+      "location": "Istanbul, Turkey",
+      "graduationDate": "June 2018"
+    }
+  ],
+  "skills": {
+    "technical": [
+      "React",
+      "Next.js",
+      "Tailwind CSS",
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "Node.js",
+      "Redux",
+      "Agile Methodologies",
+      "RESTful APIs",
+      "Version Control (Git)",
+      "Testing Frameworks (Jest)"
+    ],
+    "soft": [
+      "Team Collaboration",
+      "Problem Solving",
+      "Adaptability",
+      "Effective Communication"
+    ]
+  }
+}

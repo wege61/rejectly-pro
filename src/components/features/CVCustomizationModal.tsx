@@ -193,6 +193,51 @@ const DropzoneArea = styled.div<{ $isDragActive: boolean }>`
   }
 `;
 
+const QuestionContainer = styled.div`
+  background: rgba(30,30,40,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+`;
+
+const OriginalBullet = styled.div`
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
+  margin-bottom: 12px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(255,255,255,0.2);
+`;
+
+const QuestionText = styled.div`
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+  margin-bottom: 12px;
+`;
+
+const QuestionInput = styled.input`
+  width: 100%;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 12px;
+  color: white;
+  font-size: 14px;
+  transition: all 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.05);
+  }
+
+  &::placeholder {
+    color: rgba(255,255,255,0.3);
+  }
+`;
+
 const LoadingState = styled.div`
   display: flex;
   align-items: center;
@@ -450,6 +495,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
 
   const handleConfirm = () => {
     const photo = getCurrentPhoto();
+    
     onConfirm({
       photoBase64: photo,
       colorTemplateKey: selectedTemplate,
@@ -607,7 +653,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <polyline points="16 16 12 12 8 16"/>
             <line x1="12" y1="12" x2="12" y2="21"/>
-            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 0 1 0 3 16.3"/>
+            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
           </svg>
         </GlassPrimaryButton>
       </Modal.Footer>

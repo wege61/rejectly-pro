@@ -108,6 +108,8 @@ export interface Report {
   ats_score_optimized: number | null;
   ats_breakdown_optimized: any | null;
   interview_prep: InterviewPrep | null;
+  metric_questions: { id: string; original_bullet: string; question: string }[] | null;
+  user_provided_metrics: Record<string, string> | null;
   created_at: string;
 }
 

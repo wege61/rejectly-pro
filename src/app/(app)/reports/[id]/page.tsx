@@ -3646,19 +3646,7 @@ const PDFViewerMobileFallback = styled.div`
   }
 `;
 
-const MobileFallbackIcon = styled.div`
-  width: 64px;
-  height: 64px;
-  border-radius: 20px;
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--primary-400);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
-`;
+
 
 const MobileFallbackTitle = styled.h4`
   font-size: 18px;
@@ -3798,6 +3786,12 @@ const PDFPreviewContainerDrawer = styled.div`
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 12px 48px rgba(0,0,0,0.3);
+
+  @media (max-width: 768px) {
+    aspect-ratio: auto;
+    min-height: 0;
+    height: fit-content;
+  }
 `;
 
 
@@ -8186,11 +8180,7 @@ export default function ReportDetailPage() {
                     title="Resume Preview"
                   />
                   <PDFViewerMobileFallback>
-                    <MobileFallbackIcon>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="32" height="32">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                      </svg>
-                    </MobileFallbackIcon>
+
                     <MobileFallbackTitle>Ready for Review</MobileFallbackTitle>
                     <MobileFallbackText>Mobile browsers don't support inline PDF rendering. Tap below to view your CV.</MobileFallbackText>
                     <ViewPDFButton href={pdfPreviewUrl} target="_blank" rel="noopener noreferrer">

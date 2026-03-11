@@ -3621,10 +3621,78 @@ const LoadingPlaceholder = styled.div`
   border-radius: 8px;
 `;
 
-const PDFViewer = styled.iframe`
+const PDFViewerDesktop = styled.iframe`
   width: 100%;
   height: 100%;
   border: none;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const PDFViewerMobileFallback = styled.div`
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px 24px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+`;
+
+const MobileFallbackIcon = styled.div`
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--primary-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+`;
+
+const MobileFallbackTitle = styled.h4`
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.2px;
+`;
+
+const MobileFallbackText = styled.p`
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+  max-width: 280px;
+`;
+
+const ViewPDFButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: white;
+  color: black;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
+  
+  &:active {
+    transform: scale(0.96);
+  }
 `;
 
 // Fix Details Drawer Styles
@@ -8112,10 +8180,27 @@ export default function ReportDetailPage() {
           <FixDrawerPreviewArea>
             <PDFPreviewContainerDrawer>
               {pdfPreviewUrl ? (
-                <PDFViewer
-                  src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                  title="Resume Preview"
-                />
+                <>
+                  <PDFViewerDesktop
+                    src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                    title="Resume Preview"
+                  />
+                  <PDFViewerMobileFallback>
+                    <MobileFallbackIcon>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="32" height="32">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                      </svg>
+                    </MobileFallbackIcon>
+                    <MobileFallbackTitle>Ready for Review</MobileFallbackTitle>
+                    <MobileFallbackText>Mobile browsers don't support inline PDF rendering. Tap below to view your CV.</MobileFallbackText>
+                    <ViewPDFButton href={pdfPreviewUrl} target="_blank" rel="noopener noreferrer">
+                      Open Resume PDF
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" width="18" height="18">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                      </svg>
+                    </ViewPDFButton>
+                  </PDFViewerMobileFallback>
+                </>
               ) : (
                 <div
                   style={{

@@ -152,7 +152,7 @@ const CloseButton = styled.button`
 `;
 
 const ModalBody = styled.div`
-  padding: 0;
+  padding: 0 24px 24px 24px;
   overflow-y: auto;
   flex: 1;
   display: flex;
@@ -173,16 +173,17 @@ const ModalBody = styled.div`
 
 const ModalFooter = styled.div`
   padding: 16px 24px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: ${({ theme }) => theme.spacing.sm};
+  gap: ${({ theme }) => theme.spacing.md};
 
   @media (max-width: 640px) {
-    padding: 14px 20px 20px;
-    flex-direction: column-reverse;
-    gap: 10px;
+    padding: 20px;
+    flex-direction: column;
+    gap: 12px;
 
     > button {
       width: 100%;

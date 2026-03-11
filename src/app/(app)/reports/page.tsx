@@ -1158,6 +1158,90 @@ const PlusIcon = () => (
   </svg>
 );
 
+
+const DeleteModalCancelBtn = styled.button`
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  flex: 1;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    border-top-color: rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const DeleteModalConfirmBtn = styled.button`
+  padding: 12px 24px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.5) 0%, rgba(185, 28, 28, 0.4) 100%);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(220, 38, 38, 0.4), 
+    inset 0 1px 2px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.7) 0%, rgba(185, 28, 28, 0.6) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 
+      0 12px 32px rgba(220, 38, 38, 0.5), 
+      inset 0 1px 2px rgba(255, 255, 255, 0.6),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 
+      0 4px 12px rgba(220, 38, 38, 0.3), 
+      inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+`;
+
 interface Report {
   id: string;
   fit_score: number;
@@ -1489,24 +1573,18 @@ export default function ReportsPage() {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="ghost"
+          <DeleteModalCancelBtn
             onClick={() => setDeleteModalOpen(false)}
             disabled={isDeleting}
           >
             Cancel
-          </Button>
-          <Button
-            variant="primary"
+          </DeleteModalCancelBtn>
+          <DeleteModalConfirmBtn
             onClick={handleDeleteConfirm}
-            isLoading={isDeleting}
-            style={{
-              background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
-              border: 'none',
-            }}
+            disabled={isDeleting}
           >
             {isDeleting ? 'Deleting...' : 'Delete Report'}
-          </Button>
+          </DeleteModalConfirmBtn>
         </Modal.Footer>
       </Modal>
     </Container>

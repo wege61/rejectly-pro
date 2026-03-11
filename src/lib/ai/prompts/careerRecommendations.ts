@@ -31,10 +31,10 @@ CRITICAL INSTRUCTIONS:
 - These recommendations MUST NOT be generic. "Learn React" is a bad recommendation. "Complete the 'Meta Front-End Developer Professional Certificate' on Coursera" is a good recommendation.
 - Provide actionable, complex PROJECT IDEAS. Not "Build a to-do app", but "Build a microservices-based e-commerce backend using Kubernetes and gRPC to demonstrate architectural scaling."
 - BE SPECIFIC to the industry.
-- DO NOT guess exact course URLs as they often lead to 404 errors. Instead, provide a PLATFORM SEARCH URL query for the exact course name. 
+  - DO NOT guess exact course URLs as they often lead to 404 errors. Instead, provide a PLATFORM SEARCH URL query for the exact course name. 
   - For Udemy: "https://www.udemy.com/courses/search/?q=Exact+Course+Name"
   - For Coursera: "https://www.coursera.org/search?query=Exact+Course+Name"
-  - For all other platforms, fallback to: "https://www.google.com/search?q=Exact+Course+Name+Platform"
+  - For all other platforms, do NOT provide a URL. Leave the url blank. Do NOT link to Google.
 - Respond ONLY with valid JSON. Do not include markdown formatting like \`\`\`json.
 
 The JSON MUST match this exact schema:

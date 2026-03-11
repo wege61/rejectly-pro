@@ -669,7 +669,8 @@ const ProHeroScoreRow = styled.div`
   flex-wrap: wrap;
 
   @media (max-width: 640px) {
-    gap: 32px;
+    gap: 24px;
+    flex-direction: column;
   }
 `;
 
@@ -730,6 +731,7 @@ const ProHeroSummary = styled.p`
   margin: 0 auto 32px;
   font-weight: 400;
   letter-spacing: -0.1px;
+  text-align: center;
 `;
 
 const ProHeroCTA = styled.button`

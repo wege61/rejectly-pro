@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import styled, { keyframes, css } from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/Badge";
 
 // --- Types ---
@@ -68,6 +69,12 @@ const HeaderSection = styled.div`
   align-items: center;
   gap: 16px;
   margin-bottom: 8px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
 `;
 
 const IconWrapper = styled.div`
@@ -93,6 +100,10 @@ const TitleBlock = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
+
+  @media (max-width: 768px) {
+    align-items: center;
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -122,6 +133,10 @@ const GlassCard = styled.div`
   padding: 32px;
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
 
   &::before {
     content: '';
@@ -154,6 +169,10 @@ const PathCard = styled.div`
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
 
   &:hover {
     transform: translateY(-4px);
@@ -220,23 +239,25 @@ const CourseGrid = styled.div`
   gap: 12px;
 `;
 
-const CourseRow = styled.a`
+const CourseRow = styled.a<{ $isClickable?: boolean }>`
   display: flex;
   align-items: flex-start;
   gap: 12px;
   padding: 12px;
   text-decoration: none;
-  cursor: pointer;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.04);
   border-radius: 12px;
   transition: all 0.2s ease;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-  }
+  ${({ $isClickable }) => $isClickable && `
+    cursor: pointer;
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+  `}
 `;
 
 const CourseIcon = styled.div`
@@ -313,6 +334,113 @@ const LightbulbIcon = () => (
   </svg>
 );
 
+const ChevronDownIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+);
+
+// --- Accordion Component for Projects ---
+const AccordionHeader = styled.button<{ $isOpen: boolean }>`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .accordion-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: #667eea;
+    }
+  }
+
+  .chevron {
+    width: 16px;
+    height: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0deg)")};
+  }
+`;
+
+const AccordionContent = styled(motion.div)`
+  overflow: hidden;
+`;
+
+const AccordionInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+`;
+
+function ProjectIdeasAccordion({ ideas }: { ideas: string[] }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!ideas || ideas.length === 0) return null;
+
+  return (
+    <ListSection>
+      <AccordionHeader $isOpen={isOpen} onClick={() => setIsOpen(!isOpen)}>
+        <div className="accordion-icon">
+          <LightbulbIcon /> Resume-Worthy Projects ({ideas.length})
+        </div>
+        <div className="chevron">
+          <ChevronDownIcon />
+        </div>
+      </AccordionHeader>
+
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <AccordionContent
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <AccordionInner>
+              {ideas.map((idea, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: "12px 16px",
+                    background: "rgba(255, 255, 255, 0.02)",
+                    borderLeft: "3px solid #667eea",
+                    borderRadius: "0 8px 8px 0",
+                    fontSize: "0.9rem",
+                    color: "rgba(255, 255, 255, 0.9)",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {idea}
+                </div>
+              ))}
+            </AccordionInner>
+          </AccordionContent>
+        )}
+      </AnimatePresence>
+    </ListSection>
+  );
+}
+
 export function CareerRecommendationsSection({ recommendations }: CareerRecommendationsReportProps) {
   if (!recommendations || recommendations.length === 0) return null;
 
@@ -344,26 +472,36 @@ export function CareerRecommendationsSection({ recommendations }: CareerRecommen
                     <BookIcon /> Recommended Courses
                   </ListTitle>
                   <CourseGrid>
-                    {rec.recommendedCourses.map((course, idx) => (
-                      <CourseRow key={idx} href={course.url || "#"} target={course.url ? "_blank" : undefined} rel={course.url ? "noopener noreferrer" : undefined}>
-                        <CourseIcon>
-                          <BookIcon />
-                        </CourseIcon>
-                        <CourseInfo>
-                          <CoursePlatform>{course.platform}</CoursePlatform>
-                          <CourseName>{course.name}</CourseName>
-                        </CourseInfo>
-                        {course.url && (
-                          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", color: "rgba(255,255,255,0.4)" }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                              <polyline points="15 3 21 3 21 9"></polyline>
-                              <line x1="10" y1="14" x2="21" y2="3"></line>
-                            </svg>
-                          </div>
-                        )}
-                      </CourseRow>
-                    ))}
+                    {rec.recommendedCourses.map((course, idx) => {
+                      const isClickable = !!course.url && !course.url.includes("google.com/search");
+                      return (
+                        <CourseRow 
+                          key={idx} 
+                          as={isClickable ? "a" : "div"}
+                          href={isClickable ? course.url : undefined} 
+                          target={isClickable ? "_blank" : undefined} 
+                          rel={isClickable ? "noopener noreferrer" : undefined}
+                          $isClickable={isClickable}
+                        >
+                          <CourseIcon>
+                            <BookIcon />
+                          </CourseIcon>
+                          <CourseInfo>
+                            <CoursePlatform>{course.platform}</CoursePlatform>
+                            <CourseName>{course.name}</CourseName>
+                          </CourseInfo>
+                          {isClickable && (
+                            <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", color: "rgba(255,255,255,0.4)" }}>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                              </svg>
+                            </div>
+                          )}
+                        </CourseRow>
+                      );
+                    })}
                   </CourseGrid>
                 </ListSection>
               )}
@@ -387,28 +525,7 @@ export function CareerRecommendationsSection({ recommendations }: CareerRecommen
                 </ListSection>
               )}
 
-              {rec.projectIdeas && rec.projectIdeas.length > 0 && (
-                <ListSection>
-                  <ListTitle>
-                    <LightbulbIcon /> Resume-Worthy Projects
-                  </ListTitle>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {rec.projectIdeas.map((idea, idx) => (
-                      <div key={idx} style={{
-                        padding: '12px 16px',
-                        background: 'rgba(255, 255, 255, 0.02)',
-                        borderLeft: '3px solid #667eea',
-                        borderRadius: '0 8px 8px 0',
-                        fontSize: '0.9rem',
-                        color: 'rgba(255, 255, 255, 0.9)',
-                        lineHeight: 1.5
-                      }}>
-                        {idea}
-                      </div>
-                    ))}
-                  </div>
-                </ListSection>
-              )}
+              <ProjectIdeasAccordion ideas={rec.projectIdeas || []} />
             </PathCard>
           ))}
         </PathsGrid>

@@ -19,6 +19,9 @@ interface DrawerHeaderProps {
 
 interface DrawerBodyProps {
   children: React.ReactNode;
+  style?: React.CSSProperties;
+  className?: string;
+  maxWidth?: string;
 }
 
 interface DrawerFooterProps {
@@ -135,7 +138,8 @@ const Header = styled.div`
   gap: 6px;
   padding: 0 24px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  max-width: 1200px;
+  max-width: min(90vw, 1000px);
+  width: 100%;
 `;
 
 const Title = styled.h2`
@@ -151,7 +155,8 @@ const Description = styled.p`
   font-size: 15px;
   color: rgba(255, 255, 255, 0.5);
   margin: 0 auto;
-  max-width: 1200px;
+  max-width: min(90vw, 1000px);
+  width: 100%;
   line-height: 1.5;
 `;
 
@@ -160,7 +165,8 @@ const BodyWrapper = styled.div`
   min-height: 0;
   overflow: hidden;
   position: relative;
-  max-width: 1200px;
+  max-width: min(90vw, 1000px);
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -218,12 +224,12 @@ const BodyWrapper = styled.div`
   }
 `;
 
-const Body = styled.div`
+const Body = styled.div<{ $maxWidth?: string }>`
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   margin: 0 auto;
-  max-width: 720px;
+  max-width: ${props => props.$maxWidth || '95vw'};
   width: 100%;
   padding: 28px 24px;
 
@@ -254,7 +260,7 @@ const Footer = styled.div`
   gap: 8px;
   padding: 20px 24px 28px;
   margin: 0 auto;
-  max-width: 1200px;
+  max-width: min(90vw, 1000px);
   width: 100%;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   `;
@@ -412,7 +418,7 @@ export function DrawerDescription({ children }: DrawerDescriptionProps) {
   return <Description>{children}</Description>;
 }
 
-export function DrawerBody({ children }: DrawerBodyProps) {
+export function DrawerBody({ children, style, className, maxWidth }: DrawerBodyProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
 
@@ -449,7 +455,9 @@ export function DrawerBody({ children }: DrawerBodyProps) {
 
   return (
     <BodyWrapper ref={wrapperRef}>
-      <Body ref={bodyRef}>{children}</Body>
+      <Body ref={bodyRef} style={style} className={className} $maxWidth={maxWidth}>
+        {children}
+      </Body>
     </BodyWrapper>
   );
 }

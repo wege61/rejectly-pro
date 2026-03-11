@@ -778,62 +778,65 @@ const ProHeroCTA = styled.button`
 `;
 
 // ==========================================
-// WHAT WE CHANGED — Merged Section
+// WHAT WE CHANGED — Merged Section (Premium Liquid Glass)
 // ==========================================
 const WhatChangedSection = styled.div`
   margin-bottom: 32px;
+  position: relative;
 `;
 
 const WhatChangedHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 12px;
+  margin-bottom: 24px;
 `;
 
 const WhatChangedTitle = styled.h3`
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 600;
-  color: #ffffff;
-  letter-spacing: -0.3px;
+  color: #fff;
+  letter-spacing: -0.01em;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 `;
 
 const WhatChangedBadge = styled.div`
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--primary-400);
-  padding: 5px 14px;
-  background: rgba(var(--primary-rgb, 59, 130, 246), 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  padding: 6px 14px;
+  background: rgba(59, 130, 246, 0.15);
   border-radius: 20px;
-  border: 1px solid rgba(var(--primary-rgb, 59, 130, 246), 0.15);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);
 `;
 
 const ChangeRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  background: rgba(15, 15, 18, 0.5);
+  gap: 20px;
+  padding: 20px 24px;
+  background: rgba(20, 20, 25, 0.6);
   backdrop-filter: blur(40px) saturate(200%);
   -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  margin-bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  margin-bottom: 12px;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
   &:hover {
-    background: rgba(15, 15, 18, 0.65);
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    transform: translateY(-1px);
+    background: rgba(30, 30, 38, 0.8);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   &:last-child {
@@ -842,42 +845,54 @@ const ChangeRow = styled.div`
 `;
 
 const ChangeImpact = styled.div<{ $color?: string }>`
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   color: ${p => p.$color || 'var(--primary-400)'};
-  min-width: 48px;
-  text-align: right;
+  min-width: 60px;
+  text-align: center;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
 `;
 
 const ChangeInfo = styled.div`
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;
 
 const ChangeCategory = styled.div`
   font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 2px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.2px;
 `;
 
 const ChangeProblem = styled.div`
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.5;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
 
 const ChangeArrow = styled.div`
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
+  transition: transform 0.2s ease;
+  
+  ${ChangeRow}:hover & {
+    color: var(--primary-400);
+    transform: translateX(4px);
+  }
+  
   svg {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
   }
 `;
 
@@ -3616,6 +3631,7 @@ const PDFViewer = styled.iframe`
 const FixDrawerTitleRow = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
   width: 100%;
 `;
@@ -3630,8 +3646,8 @@ const FixDrawerImpactBadge = styled.span`
   box-shadow: 0 0 12px rgba(52, 199, 89, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 `;
 
-const FixDrawerMeta = styled.div`
-  display: flex;
+const FixDrawerMeta = styled.span`
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   margin-top: 4px;
@@ -3657,15 +3673,15 @@ const FixDrawerSection = styled.span`
 const FixDrawerInfoArea = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 24px 28px;
-  max-width: 720px;
-  margin: 0 auto 16px;
+  gap: 12px;
+  padding: 16px 20px;
+  max-width: min(90vw, 1000px);
+  margin: 0 auto 12px;
   width: 100%;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(24px) saturate(150%);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
-  border-radius: 24px;
+  border-radius: 16px;
   box-shadow: 
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.02),
@@ -3675,46 +3691,45 @@ const FixDrawerInfoArea = styled.div`
 const FixDrawerInfoRow = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 `;
 
 const FixDrawerInfoLabel = styled.span`
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  margin-bottom: 2px;
+  margin-bottom: 0px;
 `;
 
 const FixDrawerInfoText = styled.p<{ $secondary?: boolean }>`
-  font-size: ${({ $secondary }) => $secondary ? '15px' : '16px'};
+  font-size: ${({ $secondary }) => $secondary ? '13px' : '14px'};
   font-weight: ${({ $secondary }) => $secondary ? '400' : '500'};
   color: ${({ $secondary }) => $secondary ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.95)'};
-  line-height: 1.5;
+  line-height: 1.4;
   margin: 0;
   letter-spacing: -0.2px;
 `;
 
 const FixDrawerPreviewArea = styled.div`
-  flex: 1;
-  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 24px 24px;
-  overflow: hidden;
+  padding: 0 16px 16px;
+  width: 100%;
 `;
 
 const PDFPreviewContainerDrawer = styled.div`
   width: 100%;
-  max-width: 600px;
-  height: 65vh;
+  max-width: min(90vw, 1000px);
+  aspect-ratio: 1 / 1.414; /* Standard A4 paper proportion */
+  height: auto;
+  min-height: 800px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   overflow: hidden;
-  background: rgba(15, 15, 18, 0.5);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.3);
 `;
 
 
@@ -7564,87 +7579,7 @@ export default function ReportDetailPage() {
         )}
       </ProHeroSection>
 
-      {/* Optimized Score Breakdown */}
-      {report.generated_cv && report.optimized_score_breakdown && !isAnalyzingOptimized && (() => {
-        const bd = report.optimized_score_breakdown as ScoreBreakdown | null;
-        if (!bd?.components) return null;
 
-        const categories = [
-          { key: 'hardSkills', fallback: 'skillsMatch', label: 'Hard Skills' },
-          { key: 'experienceLevel', fallback: 'experienceMatch', label: 'Experience' },
-          { key: 'industryDomain', fallback: 'industryRelevance', label: 'Industry & Domain' },
-          { key: 'educationCerts', fallback: 'educationCerts', label: 'Education & Certs' },
-          { key: 'roleSpecific', fallback: null, label: 'Role-Specific' },
-        ] as const;
-
-        const getBarColor = (pct: number) =>
-          pct >= 75 ? '#10b981' : pct >= 55 ? '#22c55e' : pct >= 35 ? '#f59e0b' : '#ef4444';
-
-        return (
-          <InlineBreakdownCard style={{ marginTop: '24px' }}>
-            <div style={{ padding: '0 4px' }}>
-              <BreakdownHeader>
-                <BreakdownTitle>Optimized Score Breakdown <span style={{fontSize: '11px', padding: '2px 6px', background: 'rgba(16,185,129,0.1)', color: '#10b981', borderRadius: '4px', marginLeft: '8px', verticalAlign: 'middle'}}>PRO</span></BreakdownTitle>
-                <BreakdownTitle style={{ color: 'var(--text-secondary)' }}>
-                  Total {displayOptimizedScore || report.fit_score}/100
-                </BreakdownTitle>
-              </BreakdownHeader>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {categories.map((cat, idx) => {
-                  const comp = (bd.components[cat.key as keyof typeof bd.components] ||
-                    (cat.fallback ? (bd.components as any)[cat.fallback] : null)) as any;
-                  if (!comp) return null;
-
-                  const maxPts = comp.maxPoints || 0;
-                  const earned = comp.earnedPoints || 0;
-                  const pct = comp.percentage || (maxPts > 0 ? (earned / maxPts) * 100 : 0);
-
-                  // Extract original points for comparison
-                  const origBd = report.score_breakdown as ScoreBreakdown | null;
-                  let originalEarned = 0;
-                  if (origBd?.components) {
-                    const origComp = (origBd.components[cat.key as keyof typeof origBd.components] ||
-                      (cat.fallback ? (origBd.components as any)[cat.fallback] : null)) as any;
-                    if (origComp) originalEarned = origComp.earnedPoints || 0;
-                  }
-                  
-                  const diff = parseFloat((earned - originalEarned).toFixed(1));
-
-                  return (
-                    <CategorySection 
-                      key={idx} 
-                      onClick={() => setActiveCategoryDrawer(cat.key as any)}
-                    >
-                      <CategoryHeader>
-                        <CategoryName>{cat.label}</CategoryName>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {diff > 0 && (
-                            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--primary-400)', background: 'rgba(59, 130, 246, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
-                              +{diff} pts
-                            </span>
-                          )}
-                          <CategoryPoints>{earned}/{maxPts}</CategoryPoints>
-                          <CategoryChevron className="cat-chevron">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" /></svg>
-                          </CategoryChevron>
-                        </div>
-                      </CategoryHeader>
-                      <CategoryBarTrack>
-                        <CategoryBarFill $percent={pct} $color={getBarColor(pct)} />
-                      </CategoryBarTrack>
-                    </CategorySection>
-                  );
-                })}
-              </div>
-              
-              <DiagnosisFooter>
-                Detailed breakdown of how your optimized resume scores in each category
-              </DiagnosisFooter>
-            </div>
-          </InlineBreakdownCard>
-        );
-      })()}
       </>
       )}
 
@@ -7668,25 +7603,33 @@ export default function ReportDetailPage() {
         !isAnalyzingOptimized && (
           <WhatChangedSection>
             <WhatChangedHeader>
-              <WhatChangedTitle>{improvementBreakdown.length} improvement{improvementBreakdown.length !== 1 ? 's' : ''} applied</WhatChangedTitle>
+              <WhatChangedTitle>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="20" height="20" className="text-blue-400">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                </svg>
+                {improvementBreakdown.length} improvement{improvementBreakdown.length !== 1 ? 's' : ''} applied
+              </WhatChangedTitle>
               <WhatChangedBadge>
-                +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10}% total impact
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="14" height="14">
+                  <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
+                </svg>
+                +{Math.round(improvementBreakdown.reduce((sum, imp) => sum + imp.impact, 0) * 10) / 10} pts total impact
               </WhatChangedBadge>
             </WhatChangedHeader>
-
-
 
             {[...improvementBreakdown]
               .sort((a, b) => b.impact - a.impact)
               .map((improvement, index) => (
               <ChangeRow key={index} onClick={() => handleImprovementClick(improvement)}>
-                <ChangeImpact>+{Math.round(improvement.impact * 10) / 10}%</ChangeImpact>
+                <ChangeImpact>+{Math.round(improvement.impact * 10) / 10} pts</ChangeImpact>
                 <ChangeInfo>
                   <ChangeCategory>{improvement.category}</ChangeCategory>
                   <ChangeProblem>{improvement.problem || improvement.action}</ChangeProblem>
                 </ChangeInfo>
                 <ChangeArrow>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
                 </ChangeArrow>
               </ChangeRow>
             ))}
@@ -8129,62 +8072,65 @@ export default function ReportDetailPage() {
           <DrawerTitle>
             {selectedImprovement ? (
               <FixDrawerTitleRow>
-                <span>Fix Details</span>
-                <FixDrawerImpactBadge>+{Math.round(selectedImprovement.impact * 10) / 10}%</FixDrawerImpactBadge>
+                <span style={{ marginRight: '4px' }}>Fix Details</span>
+                <FixDrawerImpactBadge>+{Math.round(selectedImprovement.impact * 10) / 10} pts</FixDrawerImpactBadge>
+                
+                <FixDrawerMeta style={{ marginTop: 0, marginLeft: '4px', paddingLeft: '16px', borderLeft: '1px solid rgba(255,255,255,0.1)' }}>
+                  <FixDrawerCategory>{selectedImprovement.category}</FixDrawerCategory>
+                  {selectedImprovement.section && (
+                    <FixDrawerSection>
+                      {selectedImprovement.section.charAt(0).toUpperCase() + selectedImprovement.section.slice(1)}
+                    </FixDrawerSection>
+                  )}
+                </FixDrawerMeta>
               </FixDrawerTitleRow>
             ) : (
               "Resume Preview"
             )}
           </DrawerTitle>
           {selectedImprovement && (
-            <DrawerDescription>
-              <FixDrawerMeta>
-                <FixDrawerCategory>{selectedImprovement.category}</FixDrawerCategory>
-                {selectedImprovement.section && (
-                  <FixDrawerSection>
-                    {selectedImprovement.section.charAt(0).toUpperCase() + selectedImprovement.section.slice(1)}
-                  </FixDrawerSection>
-                )}
-              </FixDrawerMeta>
+            <DrawerDescription style={{ display: 'none' }}>
+              Preview drawer for the applied fix.
             </DrawerDescription>
           )}
         </DrawerHeader>
 
-        {/* Fixed content area - not scrollable */}
-        {selectedImprovement && (
-          <FixDrawerInfoArea>
-            <FixDrawerInfoRow>
-              <FixDrawerInfoLabel>What to improve</FixDrawerInfoLabel>
-              <FixDrawerInfoText>{selectedImprovement.action}</FixDrawerInfoText>
-            </FixDrawerInfoRow>
-            <FixDrawerInfoRow>
-              <FixDrawerInfoLabel>Why it matters</FixDrawerInfoLabel>
-              <FixDrawerInfoText $secondary>{selectedImprovement.reason}</FixDrawerInfoText>
-            </FixDrawerInfoRow>
-          </FixDrawerInfoArea>
-        )}
+        <DrawerBody maxWidth="min(90vw, 1000px)" style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {selectedImprovement && (
+            <FixDrawerInfoArea>
+              <FixDrawerInfoRow>
+                <FixDrawerInfoLabel>What to improve</FixDrawerInfoLabel>
+                <FixDrawerInfoText>{selectedImprovement.action}</FixDrawerInfoText>
+              </FixDrawerInfoRow>
+              <FixDrawerInfoRow>
+                <FixDrawerInfoLabel>Why it matters</FixDrawerInfoLabel>
+                <FixDrawerInfoText $secondary>{selectedImprovement.reason}</FixDrawerInfoText>
+              </FixDrawerInfoRow>
+            </FixDrawerInfoArea>
+          )}
 
-        <FixDrawerPreviewArea>
-          <PDFPreviewContainerDrawer>
-            {pdfPreviewUrl ? (
-              <PDFViewer
-                src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-                title="Resume Preview"
-              />
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                }}
-              >
-                <Spinner size="lg" />
-              </div>
-            )}
-          </PDFPreviewContainerDrawer>
-        </FixDrawerPreviewArea>
+          <FixDrawerPreviewArea>
+            <PDFPreviewContainerDrawer>
+              {pdfPreviewUrl ? (
+                <PDFViewer
+                  src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                  title="Resume Preview"
+                />
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%",
+                  }}
+                >
+                  <Spinner size="lg" />
+                </div>
+              )}
+            </PDFPreviewContainerDrawer>
+          </FixDrawerPreviewArea>
+        </DrawerBody>
         <DrawerFooter>
           <ProHeroCTA onClick={handleDownloadCV} style={{ width: '340px', maxWidth: '95%' }}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">

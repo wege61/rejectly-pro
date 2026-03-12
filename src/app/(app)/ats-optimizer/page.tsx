@@ -2586,10 +2586,10 @@ export default function DashboardATSOptimizerPage() {
 
   // Fetch existing CVs when showing the list (in modal)
   useEffect(() => {
-    if (showExistingCVs && existingCVs.length === 0) {
+    if (isUploadModalOpen && existingCVs.length === 0) {
       fetchExistingCVs();
     }
-  }, [showExistingCVs]);
+  }, [isUploadModalOpen]);
 
   const fetchOptimizedHistory = async () => {
     try {

@@ -1,5 +1,11 @@
 import { openai, AI_MODEL } from "@/lib/ai/client";
+import rateLimit from "@/lib/rate-limit";
+import { isValidJobDescription } from "@/lib/ai/validator";
 
+const limiter = rateLimit({
+  interval: 60 * 60 * 1000, // 1 hour
+  uniqueTokenPerInterval: 500,
+});
 export async function POST(request: Request) {
   try {
     const { cvText, jobText } = await request.json();
@@ -7,6 +13,27 @@ export async function POST(request: Request) {
     if (!cvText || !jobText) {
       return Response.json(
         { error: "CV and job description required" },
+        { status: 400 }
+      );
+    }
+
+    // Rate limiting: max 5 requests per hour per IP
+    try {
+      const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
+      await limiter.check(5, ip);
+    } catch {
+      return Response.json(
+        { error: "Rate limit exceeded. Please try again later or sign up for unlimited analysis." },
+        { status: 429 }
+      );
+    }
+
+    // Validate the job description text using AI
+    const isValid = await isValidJobDescription(jobText);
+
+    if (!isValid) {
+      return Response.json(
+        { error: "The provided text doesn't look like a valid job description. Please provide a real job posting." },
         { status: 400 }
       );
     }

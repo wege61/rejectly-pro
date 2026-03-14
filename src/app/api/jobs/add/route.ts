@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isValidJobDescription } from "@/lib/ai/validator";
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,6 +32,16 @@ export async function POST(request: NextRequest) {
     if (jobText.length < 50) {
       return NextResponse.json(
         { error: "Job description too short (minimum 50 characters)" },
+        { status: 400 }
+      );
+    }
+
+    // Validate the job description text using AI
+    const isValid = await isValidJobDescription(jobText);
+
+    if (!isValid) {
+      return NextResponse.json(
+        { error: "The provided text doesn't look like a valid job description. Please provide a real job posting." },
         { status: 400 }
       );
     }

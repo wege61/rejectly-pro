@@ -3112,8 +3112,10 @@ export default function Page() {
 
       setStep("upload");
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to analyze. Please try again.";
       console.error("Analysis error:", error);
-      alert("Failed to analyze. Please try again.");
+      alert(errorMessage);
       setStep("upload");
     } finally {
       setIsAnalyzing(false);
@@ -3310,7 +3312,7 @@ export default function Page() {
             </HeroSubtitle>
 
             <ButtonGroup>
-              <PrimaryButton href={ROUTES.AUTH.SIGNUP}>
+              <PrimaryButton href="#demo">
                 Analyze for Free
               </PrimaryButton>
               <SecondaryButton href={ROUTES.PUBLIC.HOW_IT_WORKS}>

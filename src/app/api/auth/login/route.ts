@@ -3,6 +3,11 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { verifyTurnstileToken } from "@/lib/validations";
+import rateLimit from "@/lib/rate-limit";
+
+const limiter = rateLimit({
+  interval: 15 * 60 * 1000, // 15 minutes
+});
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -20,6 +25,17 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: result.error.issues[0]?.message || "Invalid request" },
         { status: 400 }
+      );
+    }
+
+    // Rate limiting: max 10 requests per 15 minutes per IP
+    try {
+      const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
+      await limiter.check(10, `login_${ip}`);
+    } catch {
+      return NextResponse.json(
+        { error: "Too many login attempts. Please try again after 15 minutes." },
+        { status: 429 }
       );
     }
 

@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { Camera, Upload, UserX, Check, Loader2 } from "lucide-react";
+import { Camera, Upload, UserX, Check, Loader2, Target } from "lucide-react";
 import { COLOR_TEMPLATES } from "@/lib/pdf/colorTemplates";
 import { CVCustomizationOptions } from "@/types/cvCustomization";
 
@@ -18,6 +18,11 @@ interface CVCustomizationModalProps {
   existingPhotoUrl?: string | null;
   existingPhotoBase64?: string | null;
   initialTemplate?: string;
+  metricQuestions?: {
+    id: string;
+    original_bullet: string;
+    question: string;
+  }[];
 }
 
 // --- Styled Components ---
@@ -408,6 +413,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
   existingPhotoUrl,
   existingPhotoBase64,
   initialTemplate,
+  metricQuestions,
 }) => {
   const [photoChoice, setPhotoChoice] = useState<PhotoChoice>("none");
   const [extractedPhoto, setExtractedPhoto] = useState<string | null>(null);
@@ -415,6 +421,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
   const [isExtractingPhoto, setIsExtractingPhoto] = useState(false);
   const [extractionDone, setExtractionDone] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("classic-blue");
+  const [metricAnswers, setMetricAnswers] = useState<Record<string, string>>({});
 
   // Reset state when modal opens or existing photo data changes
   useEffect(() => {
@@ -428,6 +435,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
       setUploadedPhoto(null);
       setExtractionDone(false);
       setSelectedTemplate(initialTemplate || "classic-blue");
+      setMetricAnswers({});
 
       // Try to extract photo from PDF
       if (documentId) {
@@ -499,6 +507,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
     onConfirm({
       photoBase64: photo,
       colorTemplateKey: selectedTemplate,
+      userProvidedMetrics: Object.keys(metricAnswers).length > 0 ? metricAnswers : undefined,
     });
   };
 
@@ -617,6 +626,35 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
               </PhotoPreviewRow>
             )}
           </PhotoSection>
+
+          {/* Metric Questions Section */}
+          {metricQuestions && metricQuestions.length > 0 && (
+            <div>
+              <SectionTitle>
+                <Target /> Impact Metrics
+              </SectionTitle>
+              <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.6)", marginBottom: "16px" }}>
+                Add specific numbers to your bullets to significantly increase your ATS score. Leave blank if you don't have the numbers.
+              </div>
+              {metricQuestions.map((mq) => (
+                <QuestionContainer key={mq.id}>
+                  <OriginalBullet>"{mq.original_bullet}"</OriginalBullet>
+                  <QuestionText>{mq.question}</QuestionText>
+                  <QuestionInput
+                    type="text"
+                    placeholder="e.g., 20%, 5 team members, $10k..."
+                    value={metricAnswers[mq.id] || ""}
+                    onChange={(e) =>
+                      setMetricAnswers((prev) => ({
+                        ...prev,
+                        [mq.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </QuestionContainer>
+              ))}
+            </div>
+          )}
 
           {/* Color Template Section */}
           <div>

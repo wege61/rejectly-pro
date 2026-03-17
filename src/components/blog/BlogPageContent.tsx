@@ -21,7 +21,7 @@ const Container = styled.div`
 
 const Content = styled.div`
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto 100px auto;
 `;
 
 // Mobile filter bar - horizontal scrolling chips

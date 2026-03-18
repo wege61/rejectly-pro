@@ -24,10 +24,9 @@ const Content = styled.div`
   margin: 0 auto 100px auto;
 `;
 
-// Mobile filter bar - horizontal scrolling chips
 const MobileFilterBar = styled.div`
   display: none;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 
   @media (max-width: 1024px) {
     display: block;
@@ -38,7 +37,7 @@ const FilterChipsContainer = styled.div`
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 8px;
+  padding-bottom: 4px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 
@@ -50,10 +49,9 @@ const FilterChipsContainer = styled.div`
 const FilterChip = styled.a<{ $active?: boolean }>`
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
+  padding: 7px 16px;
   border-radius: 20px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
   text-decoration: none;
@@ -63,16 +61,15 @@ const FilterChip = styled.a<{ $active?: boolean }>`
   ${({ $active }) =>
     $active
       ? `
-    background: var(--landing-button);
-    color: white;
+    background: var(--text-color);
+    color: var(--bg-color);
   `
       : `
-    background: var(--bg-alt);
+    background: rgba(128, 128, 128, 0.08);
     color: var(--text-secondary);
-    border: 1px solid var(--border-color);
 
     &:hover {
-      border-color: var(--landing-button);
+      background: rgba(128, 128, 128, 0.15);
       color: var(--text-color);
     }
   `}
@@ -80,7 +77,7 @@ const FilterChip = styled.a<{ $active?: boolean }>`
 
 const MainLayout = styled.div`
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr 260px;
   gap: 48px;
 
   @media (max-width: 1024px) {
@@ -101,28 +98,29 @@ const FilterInfo = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
-  padding: 16px 20px;
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  margin-bottom: 28px;
 
   p {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: var(--text-muted);
 
     strong {
       color: var(--text-color);
+      font-weight: 600;
     }
   }
 
   a {
-    font-size: 14px;
-    color: var(--primary-500);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
     text-decoration: none;
+    padding: 4px 12px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
 
     &:hover {
-      text-decoration: underline;
+      background: rgba(var(--accent-rgb), 0.08);
     }
   }
 `;
@@ -153,7 +151,6 @@ export function BlogPageContent({
   return (
     <Container>
       <Content>
-        {/* Mobile Filter Bar */}
         <MobileFilterBar>
           <FilterChipsContainer>
             <FilterChip href="/blog" $active={!activeCategory && !activeTag}>
@@ -176,20 +173,19 @@ export function BlogPageContent({
             {activeFilter && (
               <FilterInfo>
                 <p>
-                  Showing posts{" "}
                   {activeCategory && (
                     <>
-                      in category: <strong>{activeCategory}</strong>
+                      Filtered by <strong>{activeCategory}</strong>
                     </>
                   )}
                   {activeTag && (
                     <>
-                      tagged: <strong>{activeTag}</strong>
+                      Tagged <strong>{activeTag}</strong>
                     </>
                   )}
-                  {" "}({total} {total === 1 ? "post" : "posts"})
+                  {" "}&middot; {total} {total === 1 ? "post" : "posts"}
                 </p>
-                <a href="/blog">Clear filter</a>
+                <a href="/blog">Clear</a>
               </FilterInfo>
             )}
 

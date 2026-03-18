@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "Pricing - Affordable AI Resume Optimization | Rejectly.pro",
+  title: { absolute: "Pricing - Affordable AI Resume Optimization | Rejectly.pro" },
   description: "Simple, transparent pricing for AI resume optimization. Start at $2 for single analysis or get unlimited access for $12/month. No hidden fees, cancel anytime.",
   keywords: [
     "AI resume optimizer pricing",

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Free ATS Resume Score Checker | Check Your Resume Score Instantly",
+  title: { absolute: "Free ATS Resume Score Checker | Check Your Resume Score Instantly" },
   description:
     "Get your free ATS resume score in seconds. Our ATS score checker analyzes your resume against 40+ criteria used by Workday, Greenhouse, Taleo & Lever. Check your resume score now and see why 85% of resumes get rejected.",
   keywords: [
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     description:
       "Check your resume score against real ATS systems. 99% of Fortune 500 companies use ATS - only 15% of resumes pass. Find out where you stand.",
     type: "website",
-    url: "https://rejectly.app/ats-check",
+    url: "https://www.rejectly.pro/ats-check",
     images: [
       {
         url: "/og-ats-checker.jpg",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     images: ["/og-ats-checker.jpg"],
   },
   alternates: {
-    canonical: "https://rejectly.app/ats-check",
+    canonical: "https://www.rejectly.pro/ats-check",
   },
   robots: {
     index: true,
@@ -79,13 +79,6 @@ const jsonLd = {
     "Format and structure evaluation",
     "Actionable improvement suggestions",
   ],
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.8",
-    ratingCount: "2847",
-    bestRating: "5",
-    worstRating: "1",
-  },
 };
 
 const faqJsonLd = {

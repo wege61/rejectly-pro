@@ -42,7 +42,14 @@
       "Bash(git diff src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx)",
       "Bash(git add src/app/\\\\\\(app\\\\\\)/reports/\\\\[id\\\\]/page.tsx && git status --short 2>&1 | head -20)",
       "Bash(head:*)",
-      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx tsc:*)"
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx tsc:*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//Users/ozgunegeoner/repos/rejectly-pro/src/app/\\(marketing\\)/$f/**)",
+      "Bash(do)",
+      "Bash(file=\"/Users/ozgunegeoner/repos/rejectly-pro/src/app/\\(marketing\\)/$f/layout.tsx\")",
+      "Bash(sed -i '' 's/^  title: \"\"\\\\\\(.*\\\\\\)\"\",$/  title: { absolute: \"\"\\\\1\"\" },/' \"$file\")",
+      "Bash(echo \"✓ $f\")"
     ],
     "deny": [],
     "ask": []

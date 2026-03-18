@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "Terms of Service - User Agreement | Rejectly.pro",
+  title: { absolute: "Terms of Service - User Agreement | Rejectly.pro" },
   description: "Read Rejectly.pro terms of service. Understand your rights and responsibilities when using our AI resume optimization platform, billing, and account policies.",
   keywords: [
     "terms of service",

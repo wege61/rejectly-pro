@@ -41,7 +41,7 @@ export function WebSiteSchema() {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://www.rejectly.pro/?s={search_term_string}',
+        urlTemplate: 'https://www.rejectly.pro/blog?search={search_term_string}',
       },
       'query-input': 'required name=search_term_string',
     },
@@ -88,13 +88,6 @@ export function ProductSchema() {
           name: 'Pro Monthly',
         },
       ],
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      reviewCount: '127',
-      bestRating: '5',
-      worstRating: '1',
     },
     description: 'AI-powered resume optimization tool that analyzes your resume against job postings, identifies ATS compatibility issues, and provides actionable improvements to increase interview rates.',
     featureList: [

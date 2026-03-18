@@ -131,7 +131,7 @@ export function BreadcrumbSchema({ items }: { items: Array<{ name: string; url: 
 
   return (
     <Script
-      id="breadcrumb-schema"
+      id={`breadcrumb-schema-${items.length}`}
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />

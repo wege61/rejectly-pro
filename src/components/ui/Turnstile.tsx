@@ -89,8 +89,8 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
             onError={handleError}
             onExpire={handleExpire}
             options={{
-              theme,
-              size: "compact",
+              theme: theme === "auto" ? "dark" : theme,
+              size: "normal",
             }}
           />
           {error && <ErrorMessage>{error}</ErrorMessage>}

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - Data Protection & Security | Rejectly.pro",
+  title: { absolute: "Privacy Policy - Data Protection & Security | Rejectly.pro" },
   description: "Learn how Rejectly.pro protects your personal data. Our privacy policy covers data collection, AI processing, GDPR compliance, and your privacy rights.",
   keywords: [
     "privacy policy",

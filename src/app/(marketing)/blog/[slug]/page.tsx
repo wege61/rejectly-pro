@@ -50,7 +50,7 @@ export async function generateMetadata({
   ].filter(Boolean) as string[];
 
   return {
-    title: `${title} | Rejectly.pro Blog`,
+    title: { absolute: `${title} | Rejectly.pro Blog` },
     description,
     keywords,
     authors: [{ name: post.author_name, url: "https://www.rejectly.pro/about" }],

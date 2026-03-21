@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "How It Works - AI Resume Analysis Process | Rejectly.pro",
+  title: { absolute: "How It Works - AI Resume Analysis Process | Rejectly.pro" },
   description: "Learn how our AI analyzes your resume in 4 simple steps: Upload, get smart recommendations, generate cover letters, and download optimized resume. 30-second analysis.",
   keywords: [
     "AI resume analysis process",
@@ -32,6 +32,25 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://www.rejectly.pro/how-it-works",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@rejectlypro",
+    creator: "@rejectlypro",
+    title: "How It Works - AI Resume Analysis Process | Rejectly.pro",
+    description: "Learn how our AI analyzes your resume in 4 simple steps: Upload, get smart recommendations, generate cover letters, and download optimized resume.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 

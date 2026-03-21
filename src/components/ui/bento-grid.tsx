@@ -189,7 +189,7 @@ const StyledIcon = styled.div`
   transform-origin: left;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   color: var(--accent);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -218,7 +218,7 @@ const StyledIcon = styled.div`
 `;
 
 const ValueText = styled.span`
-  font-size: 56px;
+  font-size: 50px;
   font-weight: 700;
   letter-spacing: -0.05em;
   color: var(--accent);
@@ -240,6 +240,7 @@ const TitleText = styled.h3`
   letter-spacing: -0.02em;
   color: rgba(255, 255, 255, 0.95);
   margin-top: 4px;
+  margin-bottom: 8px;
 
   @media (max-width: 640px) {
     font-size: 16px;

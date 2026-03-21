@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "About - AI Resume Optimizer Company | Rejectly.pro",
+  title: { absolute: "About - AI Resume Optimizer Company | Rejectly.pro" },
   description: "Learn about Rejectly.pro, the AI-powered resume optimization platform helping 50K+ job seekers land their dream jobs. Our mission, values, and commitment to your success.",
   keywords: [
     "about Rejectly",

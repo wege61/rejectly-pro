@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "Features - GPT-4 Powered Resume Analysis Tools | Rejectly.pro",
+  title: { absolute: "Features - GPT-4 Powered Resume Analysis Tools | Rejectly.pro" },
   description: "Discover powerful AI resume features: ATS optimization, keyword analysis, professional rewriting, cover letter generation, and instant job matching. Try free demo now.",
   keywords: [
     "AI resume features",

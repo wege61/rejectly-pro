@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "name": "Rejectly.pro",
+  "description": "AI-powered resume optimization platform that analyzes resumes against job postings, beats ATS filters, and helps job seekers land more interviews.",
+  "url": "https://www.rejectly.pro",
+  "logo": "https://www.rejectly.pro/logo.png",
+  "contact_email": "support@rejectly.pro",
+  "legal_info_url": "https://www.rejectly.pro/terms",
+  "privacy_policy_url": "https://www.rejectly.pro/privacy",
+  "capabilities": {
+    "resume_analysis": {
+      "description": "Analyze a resume against a job posting to identify keyword gaps, ATS compatibility issues, and optimization opportunities",
+      "input": ["resume (PDF/DOCX/text)", "job description (text/URL)"],
+      "output": ["ATS compatibility score", "missing keywords", "optimized bullet points", "cover letter", "alternative role suggestions"]
+    },
+    "cover_letter_generation": {
+      "description": "Generate a personalized cover letter tailored to a specific job posting",
+      "input": ["resume", "job description"],
+      "output": ["personalized cover letter"]
+    },
+    "resume_building": {
+      "description": "Build an ATS-optimized resume with clean, professional templates",
+      "input": ["user profile data", "work experience", "skills"],
+      "output": ["ATS-optimized resume (PDF)"]
+    }
+  },
+  "supported_languages": "50+",
+  "pricing": {
+    "model": "credit-based and subscription",
+    "free_tier": true,
+    "plans": [
+      { "name": "Single", "price": "$2", "type": "one-time", "credits": 1 },
+      { "name": "Starter", "price": "$7", "type": "one-time", "credits": 10 },
+      { "name": "Pro", "price": "$12/month", "type": "subscription", "credits": "unlimited" }
+    ]
+  },
+  "human_interface": {
+    "type": "web",
+    "url": "https://www.rejectly.pro"
+  },
+  "machine_interface": {
+    "status": "coming_soon",
+    "description": "REST API for programmatic resume analysis — launching Q2 2026"
+  }
+}

@@ -285,6 +285,7 @@ export default function CVBuilderPage() {
   
   const [previewOpen, setPreviewOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 1024);
@@ -320,7 +321,16 @@ export default function CVBuilderPage() {
   // Fix hydration mismatch for Zustand persist
   useEffect(() => {
     setMounted(true);
+    // Show welcome modal only once per session
+    if (!sessionStorage.getItem('cv-builder-welcomed')) {
+      setShowWelcome(true);
+    }
   }, []);
+
+  const dismissWelcome = () => {
+    setShowWelcome(false);
+    sessionStorage.setItem('cv-builder-welcomed', 'true');
+  };
 
   if (!mounted) return null; // Prevent server-client mismatch rendering
 
@@ -332,6 +342,143 @@ export default function CVBuilderPage() {
   ];
 
   return (
+    <>
+      {/* Welcome Modal */}
+      {showWelcome && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'rgba(0, 0, 0, 0.75)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          padding: '24px',
+          animation: 'fadeInOverlay 0.4s ease',
+        }}>
+          <style>{`
+            @keyframes fadeInOverlay {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes slideUp {
+              from { opacity: 0; transform: translateY(30px) scale(0.96); }
+              to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+          `}</style>
+          <div style={{
+            maxWidth: '480px',
+            width: '100%',
+            background: 'rgba(20, 20, 25, 0.85)',
+            backdropFilter: 'blur(40px) saturate(200%)',
+            WebkitBackdropFilter: 'blur(40px) saturate(200%)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '24px',
+            padding: '48px 36px',
+            textAlign: 'center',
+            animation: 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+            boxShadow: '0 24px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+          }}>
+            {/* Icon */}
+            <div style={{
+              width: '72px',
+              height: '72px',
+              borderRadius: '20px',
+              background: 'linear-gradient(135deg, rgba(53, 162, 159, 0.2) 0%, rgba(11, 102, 106, 0.2) 100%)',
+              border: '1px solid rgba(53, 162, 159, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 24px',
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#35A29F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>
+                <path d="M14 2v6h6"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <line x1="10" y1="9" x2="8" y2="9"/>
+              </svg>
+            </div>
+
+            {/* Title */}
+            <h2 style={{
+              fontSize: '28px',
+              fontWeight: 700,
+              color: '#fff',
+              marginBottom: '12px',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.2,
+            }}>
+              Build Your Professional CV
+            </h2>
+            <p style={{
+              fontSize: '16px',
+              color: 'rgba(255, 255, 255, 0.55)',
+              lineHeight: 1.6,
+              marginBottom: '32px',
+            }}>
+              Create a stunning, job-ready resume in just a few minutes.
+            </p>
+
+            {/* Features */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '36px', textAlign: 'left' }}>
+              {[
+                { icon: '✦', text: 'Step-by-step guided builder — no design skills needed' },
+                { icon: '◎', text: 'ATS-optimized formatting that passes hiring systems' },
+                { icon: '↓', text: 'Download as a high-quality PDF instantly' },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '10px',
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '16px',
+                    flexShrink: 0,
+                    color: '#35A29F',
+                  }}>
+                    {item.icon}
+                  </div>
+                  <span style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.4 }}>
+                    {item.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <button
+              onClick={dismissWelcome}
+              style={{
+                width: '100%',
+                padding: '16px 32px',
+                fontSize: '16px',
+                fontWeight: 600,
+                color: '#fff',
+                background: 'linear-gradient(135deg, rgba(53, 162, 159, 0.9) 0%, rgba(11, 102, 106, 0.9) 100%)',
+                border: '1px solid rgba(53, 162, 159, 0.5)',
+                borderRadius: '14px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 8px 32px rgba(53, 162, 159, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              }}
+            >
+              Start Building →
+            </button>
+
+            <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.3)', marginTop: '16px' }}>
+              Free to use · No credit card required
+            </p>
+          </div>
+        </div>
+      )}
+
     <Container>
       <LeftPanel>
         <EditorBody>
@@ -505,6 +652,7 @@ export default function CVBuilderPage() {
       </Modal>
 
     </Container>
+    </>
   );
 }
 

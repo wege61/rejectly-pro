@@ -117,6 +117,7 @@ export const ROUTES = {
     BLOG: "/blog",
     BLOG_POST: (slug: string) => `/blog/${slug}`,
     ATS_CHECK: "/ats-check",
+    CV_BUILDER: "/cv-builder",
   },
   AUTH: {
     LOGIN: "/login",

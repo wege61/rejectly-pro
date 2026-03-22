@@ -5,7 +5,7 @@ import styled, { keyframes } from "styled-components";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
-import { Target, SlidersHorizontal, Wand2 } from "lucide-react";
+import { Target, SlidersHorizontal, Wand2, FileText } from "lucide-react";
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -554,6 +554,13 @@ export function Navbar() {
                             <ProductItemDescription>Generate AI-powered cover letters from your reports and manage your applications.</ProductItemDescription>
                           </ProductItemContent>
                         </ProductItemWrapper>
+                        <ProductItemWrapper href={ROUTES.PUBLIC.CV_BUILDER}>
+                          <ProductItemIcon><FileText strokeWidth={1.5} /></ProductItemIcon>
+                          <ProductItemContent>
+                            <ProductItemTitle>CV Builder</ProductItemTitle>
+                            <ProductItemDescription>Build a professional, ATS-friendly CV from scratch with smart suggestions and instant PDF export.</ProductItemDescription>
+                          </ProductItemContent>
+                        </ProductItemWrapper>
                       </DropdownMainSection>
 
                       <DropdownSideSection>
@@ -575,6 +582,7 @@ export function Navbar() {
 
             {/* Simple Links */}
             <MenuItemText href={ROUTES.PUBLIC.ATS_CHECK}>ATS Check</MenuItemText>
+            <MenuItemText href={ROUTES.PUBLIC.CV_BUILDER}>CV Builder</MenuItemText>
             <MenuItemText href={ROUTES.PUBLIC.HOW_IT_WORKS}>How it Works</MenuItemText>
             <MenuItemText href={ROUTES.PUBLIC.PRICING}>Pricing</MenuItemText>
             <MenuItemText href={ROUTES.PUBLIC.FAQ}>FAQ</MenuItemText>
@@ -605,6 +613,9 @@ export function Navbar() {
       <MobileMenu $isOpen={isMobileMenuOpen}>
         <MobileMenuItem href={ROUTES.PUBLIC.ATS_CHECK} onClick={closeMobileMenu}>
           ATS Check
+        </MobileMenuItem>
+        <MobileMenuItem href={ROUTES.PUBLIC.CV_BUILDER} onClick={closeMobileMenu}>
+          CV Builder
         </MobileMenuItem>
         <MobileMenuItem href={ROUTES.PUBLIC.HOW_IT_WORKS} onClick={closeMobileMenu}>
           How it Works

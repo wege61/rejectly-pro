@@ -122,6 +122,12 @@ export function Footer() {
                 <Link href={ROUTES.PUBLIC.PRICING}>Pricing</Link>
               </li>
               <li>
+                <Link href={ROUTES.PUBLIC.ATS_CHECK}>ATS Check</Link>
+              </li>
+              <li>
+                <Link href={ROUTES.PUBLIC.CV_BUILDER}>CV Builder</Link>
+              </li>
+              <li>
                 <Link href="/#demo">Demo</Link>
               </li>
             </ul>

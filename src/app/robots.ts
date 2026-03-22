@@ -10,6 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           '/',
           '/ats-check',
+          '/cv-builder',
           '/pricing',
           '/how-it-works',
           '/features',

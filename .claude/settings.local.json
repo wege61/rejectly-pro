@@ -58,7 +58,11 @@
       "WebFetch(domain:blog.logrocket.com)",
       "WebFetch(domain:designfast.io)",
       "WebFetch(domain:alastair.is)",
-      "WebFetch(domain:medium.com)"
+      "WebFetch(domain:medium.com)",
+      "Bash(brew install:*)",
+      "Bash(pdftoppm -v)",
+      "Bash(pdftotext \"/Users/ozgunegeoner/Downloads/siliconfriendly-rejectly.pro-L0.pdf\" -)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

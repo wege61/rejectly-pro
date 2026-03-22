@@ -1,8 +1,8 @@
 "use client";
 
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useState, useEffect, useRef, useId } from "react";
-import { motion, AnimatePresence, LayoutGroup } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 
 interface ATSCategoryCardProps {
   name: string;
@@ -23,6 +23,71 @@ interface ATSCategoryCardProps {
   }>;
 }
 
+// ─── Background animation ───────────────────────────────────────────────────
+
+const scrollUp = keyframes`
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+`;
+
+const CardBackground = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+
+  /* Fade left edge into card + fade bottom out */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, black 32%),
+    linear-gradient(to bottom, black 15%, black 55%, transparent 92%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, black 32%),
+    linear-gradient(to bottom, black 15%, black 55%, transparent 92%);
+  mask-composite: intersect;
+`;
+
+const ScrollTrack = styled.div<{ $duration: number; $paused: boolean }>`
+  display: flex;
+  flex-direction: column;
+  animation: ${scrollUp} ${({ $duration }) => $duration}s linear infinite;
+  animation-play-state: ${({ $paused }) => ($paused ? "paused" : "running")};
+`;
+
+const BgRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 6px 8px 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.025);
+`;
+
+const BgDot = styled.div<{ $isIssue: boolean }>`
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+  background: ${({ $isIssue }) =>
+    $isIssue ? "rgba(249, 115, 22, 0.5)" : "rgba(48, 209, 88, 0.4)"};
+`;
+
+const BgText = styled.span`
+  font-size: 11px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.14);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const getScoreColor = (percentage: number) => {
   if (percentage >= 85) return "var(--primary-500)"; // Apple Green
   if (percentage >= 70) return "#2A57A0"; // Apple Blue
@@ -30,24 +95,6 @@ const getScoreColor = (percentage: number) => {
   return "#F97316"; // Apple Red
 };
 
-const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-
-const XIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-
-const ArrowRightIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 12h14M12 5l7 7-7 7" />
-  </svg>
-);
 
 const CloseIcon = () => (
   <motion.svg
@@ -89,8 +136,7 @@ function useOutsideClick(ref: React.RefObject<HTMLDivElement | null>, callback: 
 const Overlay = styled(motion.div)`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.55);
   z-index: 10;
 `;
 
@@ -112,28 +158,64 @@ const CollapsedCard = styled(motion.div)`
   border-radius: 20px;
   overflow: hidden;
 
-  /* Liquid Glass card — stronger contrast (Matched to Job Posting Cards) */
-  background: rgba(30, 30, 40, 0.78);
-  backdrop-filter: blur(30px) saturate(160%);
-  -webkit-backdrop-filter: blur(30px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  /* Apple Liquid Glass core — matching sidebar */
+  background: rgba(22, 22, 26, 0.78);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 2px 1px rgba(255, 255, 255, 0.06) inset,
-    0 8px 32px rgba(0, 0, 0, 0.55),
-    0 2px 8px rgba(0, 0, 0, 0.4);
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
 
   cursor: pointer;
   min-height: 180px;
   padding: 24px;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
+  /* Specular light refraction — top highlight */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 60%,
+      rgba(255, 255, 255, 0.25) 80%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Right-edge refraction */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
   &:hover {
     transform: translateY(-5px);
-    border-color: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.14);
     box-shadow:
-      0 2px 1px rgba(255, 255, 255, 0.08) inset,
-      0 20px 56px rgba(0, 0, 0, 0.65),
-      0 6px 20px rgba(0, 0, 0, 0.45);
+      0 20px 56px rgba(0, 0, 0, 0.55),
+      0 6px 20px rgba(0, 0, 0, 0.35);
   }
 `;
 
@@ -160,7 +242,7 @@ const CTALink = styled.span<{ $color: string }>`
   display: flex;
   align-items: center;
   gap: 6px;
-  color: ${({ $color }) => $color};
+  color: var(--accent);
   font-weight: 500;
   font-size: 14px;
 `;
@@ -184,17 +266,54 @@ const ExpandedCard = styled(motion.div)`
   border-radius: 20px;
   overflow: hidden;
 
-  /* Liquid Glass card — stronger contrast (Matched to Job Posting Cards) */
-  background: rgba(30, 30, 40, 0.78);
-  backdrop-filter: blur(30px) saturate(160%);
-  -webkit-backdrop-filter: blur(30px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  /* Apple Liquid Glass core — matching sidebar */
+  background: rgba(22, 22, 26, 0.78);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 2px 1px rgba(255, 255, 255, 0.06) inset,
-    0 8px 32px rgba(0, 0, 0, 0.55),
-    0 2px 8px rgba(0, 0, 0, 0.4);
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
 
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Specular light refraction — top highlight */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 60%,
+      rgba(255, 255, 255, 0.25) 80%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Right-edge refraction */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
 
   @media (max-width: 640px) {
     height: 100%;
@@ -206,79 +325,81 @@ const ExpandedCard = styled(motion.div)`
 
 // Header section for expanded card
 const ExpandedHeader = styled.div`
-  padding: 32px 24px 24px;
+  padding: 28px 24px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 6px 1px rgba(0, 0, 0, 0.1);
+  gap: 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 `;
 
 const CloseButton = styled(motion.button)`
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 36px;
-  height: 36px;
+  top: 14px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.8);
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.55);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
+  transition: background 0.15s ease, color 0.15s ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.9);
   }
 `;
 
-// Score value - Apple style
+// Score value
 const ScoreValue = styled(motion.span)<{ $color: string; $size?: "small" | "large" }>`
-  font-size: ${({ $size }) => $size === "large" ? "48px" : "42px"};
+  font-size: ${({ $size }) => $size === "large" ? "52px" : "52px"};
   font-weight: 700;
   color: ${({ $color }) => $color};
   line-height: 1;
-  letter-spacing: -1px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: -1.5px;
 
   &::after {
     content: '%';
-    font-size: ${({ $size }) => $size === "large" ? "24px" : "20px"};
-    margin-left: 2px;
+    font-size: ${({ $size }) => $size === "large" ? "22px" : "18px"};
+    margin-left: 1px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0;
+    color: rgba(255, 255, 255, 0.4);
   }
 `;
 
 // Category name
 const CategoryName = styled(motion.h3)`
   font-weight: 600;
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.95);
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
   letter-spacing: -0.3px;
 `;
 
 // Category meta
 const CategoryMeta = styled(motion.p)`
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.38);
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
-  
+  gap: 6px;
 `;
 
 const IssueCount = styled.span<{ $hasIssues: boolean; $color: string }>`
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: ${({ $color }) => $color};
 `;
@@ -286,20 +407,18 @@ const IssueCount = styled.span<{ $hasIssues: boolean; $color: string }>`
 // Scrollable content area
 const ContentArea = styled(motion.div)`
   position: relative;
-  padding: 16px 24px 24px;
+  padding: 16px 20px 24px;
   overflow-y: auto;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   -webkit-overflow-scrolling: touch;
-
-  /* Thin scrollbar */
   scrollbar-width: thin;
-  scrollbar-color: var(--border-color, #e5e7eb) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
   }
 
   &::-webkit-scrollbar-track {
@@ -307,33 +426,27 @@ const ContentArea = styled(motion.div)`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--border-color, #e5e7eb);
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary, #6b7280);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
   }
 `;
 
 const Section = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  
+  gap: 4px;
 `;
 
 const SectionHeader = styled.div<{ $type: "issues" | "passes" }>`
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: ${({ $type }) => $type === "issues" ? "#F97316" : "var(--primary-500)"};
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  letter-spacing: 2px;
+  color: ${({ $type }) => $type === "issues"
+    ? "#F97316"
+    : "var(--primary-500)"};
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 `;
 
 const List = styled.ul`
@@ -342,17 +455,13 @@ const List = styled.ul`
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
 `;
 
 const IssueItem = styled.li`
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 10px 12px;
-  width: 95%;
-  margin: 0 auto;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  flex-direction: column;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
   &:last-child {
     border-bottom: none;
@@ -360,65 +469,94 @@ const IssueItem = styled.li`
 `;
 
 const PassItem = styled.li`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  width: 95%;
-  margin: 0 auto;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
   &:last-child {
     border-bottom: none;
   }
 `;
 
-const ItemIcon = styled.span<{ $type: "issue" | "pass" }>`
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--checkbox);
-  color: ${({ $type }) => $type === "issue" ? "#F97316" : "var(--primary-500)"};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 const ItemContent = styled.div`
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0;
 `;
 
 const ItemText = styled.span`
   font-size: 14px;
-  color: var(--text-color, #1f2937);
-  line-height: 1.5;
+  line-height: 1.45;
+`;
+
+const IssueText = styled(ItemText)`
+  color: rgba(255, 255, 255, 0.65);
+`;
+
+const PassText = styled(ItemText)`
+  color: rgba(255, 255, 255, 0.85);
 `;
 
 const ItemSuggestion = styled.span`
-  font-size: 13px;
-  color: var(--text-secondary, #6b7280);
-  line-height: 1.5;
-  padding-top: 4px;
-  background: var(--bg-color, #ffffff);
-  border-radius: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.32);
+  line-height: 1.45;
+  margin-top: 5px;
+  padding-left: 10px;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.08);
+  display: block;
 `;
 
-const SeverityDot = styled.span<{ $type: "issues" | "passes" }>`
-  width: 8px;
-  height: 8px;
-  background: ${({ $type }) => $type === "issues" ? "#F97316" : "var(--primary-500)"};
-  border-radius: 50%;
+// Optimization change rows
+const ChangeItem = styled.li`
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const ChangeRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+`;
+
+const ChangeBadge = styled.span<{ $role: "issue" | "fix" }>`
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: ${({ $role }) => $role === "issue"
+    ? "rgba(255, 69, 58, 0.65)"
+    : "rgba(48, 209, 88, 0.75)"};
+  min-width: 34px;
   flex-shrink: 0;
+  padding-top: 2px;
+`;
+
+const ChangeText = styled.span<{ $role: "issue" | "fix" }>`
+  font-size: 13px;
+  color: ${({ $role }) => $role === "issue"
+    ? "rgba(255, 255, 255, 0.5)"
+    : "rgba(255, 255, 255, 0.82)"};
+  line-height: 1.45;
+  flex: 1;
+`;
+
+const ChangeArrow = styled.div`
+  padding: 3px 0 3px 44px;
+  color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
 `;
 
 const EmptyState = styled.div`
-  padding: 20px;
+  padding: 32px 0;
   text-align: center;
-  color: var(--text-secondary, #6b7280);
+  color: rgba(255, 255, 255, 0.3);
   font-size: 14px;
 `;
 
@@ -471,14 +609,15 @@ export function ATSCategoryCard({
   }, [isExpanded]);
 
   return (
-    <LayoutGroup id={`ats-card-${id}`}>
-      {/* Overlay */}
+    <>
+      {/* Overlay — blur grows first, then modal fades in */}
       <AnimatePresence>
         {isExpanded && (
           <Overlay
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            animate={{ opacity: 1, backdropFilter: "blur(18px)" }}
+            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            transition={{ duration: 0.45, ease: [0.25, 0, 0, 1] }}
           />
         )}
       </AnimatePresence>
@@ -488,45 +627,36 @@ export function ATSCategoryCard({
         {isExpanded && (
           <ExpandedContainer>
             <ExpandedCard
-              layoutId={`card-${name}-${id}`}
               ref={expandedRef}
-              transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.3, delay: 0.12, ease: [0.25, 0, 0, 1] }}
             >
               <CloseButton
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                animate={{ opacity: 1, transition: { delay: 0.3, duration: 0.2 } }}
+                exit={{ opacity: 0 }}
                 onClick={() => setIsExpanded(false)}
               >
                 <CloseIcon />
               </CloseButton>
 
               <ExpandedHeader>
-                <motion.div
-                  layoutId={`score-${name}-${id}`}
-                  layout="position"
-                  transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                >
+                <div>
                   <ScoreValue $color={color} $size="large">
                     {percentage}
                   </ScoreValue>
-                </motion.div>
+                </div>
 
-                <CategoryName
-                  layoutId={`title-${name}-${id}`}
-                  layout="position"
-                  transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                >
+                <CategoryName>
                   {name}
                 </CategoryName>
 
-                <CategoryMeta
-                  layoutId={`meta-${name}-${id}`}
-                  layout="position"
-                  transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                >
+                <CategoryMeta>
                   {earnedPoints}/{maxPoints} pts
                   {issues.length > 0 && (
-                    <IssueCount $hasIssues={true} $color="#FF3B30">{issues.length} issues</IssueCount>
+                    <IssueCount $hasIssues={true} $color="#F97316">{issues.length} issues</IssueCount>
                   )}
                   {issues.length === 0 && passes.length > 0 && (
                     <IssueCount $hasIssues={false} $color="var(--primary-500)">All passed</IssueCount>
@@ -541,49 +671,37 @@ export function ATSCategoryCard({
               >
                 {changes.length > 0 ? (
                   <>
-                  {/* Show specific changes relevant to this category if we have them */}
-                   <Section>
-                    <SectionHeader $type="issues">
-                     Optimizations Made
-                    </SectionHeader>
-                    <List>
-                      {changes.filter(c => c.category.toLowerCase() === name.toLowerCase()).map((change, idx) => (
-                         <IssueItem key={idx} style={{ flexDirection: 'column', gap: 6 }}>
-                             {/* Before - Issue */}
-                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#dc2626', textTransform: 'uppercase', width: 40 }}>Issue</div>
-                                <div style={{ fontSize: 13, color: 'var(--text-color)', flex: 1 }}>{change.issue}</div>
-                             </div>
+                    <Section>
+                      <SectionHeader $type="issues">Optimizations Made</SectionHeader>
+                      <List>
+                        {changes.filter(c => c.category.toLowerCase() === name.toLowerCase()).map((change, idx) => (
+                          <ChangeItem key={idx}>
+                            <ChangeRow>
+                              <ChangeBadge $role="issue">Before</ChangeBadge>
+                              <ChangeText $role="issue">{change.issue}</ChangeText>
+                            </ChangeRow>
+                            <ChangeArrow>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <path d="M12 5v14M5 12l7 7 7-7"/>
+                              </svg>
+                            </ChangeArrow>
+                            <ChangeRow>
+                              <ChangeBadge $role="fix">After</ChangeBadge>
+                              <ChangeText $role="fix">{change.fix}</ChangeText>
+                            </ChangeRow>
+                          </ChangeItem>
+                        ))}
+                      </List>
+                    </Section>
 
-                             {/* Arrow down */}
-                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', paddingLeft: 48, opacity: 0.5 }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-                             </div>
-
-                             {/* After - Fixed */}
-                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
-                                <div style={{ fontSize: 11, fontWeight: 600, color: '#059669', textTransform: 'uppercase', width: 40 }}>Fixed</div>
-                                <div style={{ fontSize: 13, color: 'var(--text-color)', fontWeight: 500, flex: 1 }}>{change.fix}</div>
-                             </div>
-                         </IssueItem>
-                      ))}
-                    </List>
-                  </Section>
-
-                  {/* Show Issues that were NOT fixed (if any) */}
-                  {issues.length > 0 && (
+                    {issues.length > 0 && (
                       <Section>
-                        <SectionHeader $type="issues">
-                         Remaining Issues
-                        </SectionHeader>
+                        <SectionHeader $type="issues">Remaining Issues</SectionHeader>
                         <List>
                           {issues.map((issue, idx) => (
                             <IssueItem key={idx}>
-                              <ItemIcon $type="issue">
-                               <SeverityDot $type="issues" />
-                              </ItemIcon>
                               <ItemContent>
-                                <ItemText>{issue.issue}</ItemText>
+                                <IssueText>{issue.issue}</IssueText>
                                 {issue.recommendation && (
                                   <ItemSuggestion>{issue.recommendation}</ItemSuggestion>
                                 )}
@@ -592,69 +710,53 @@ export function ATSCategoryCard({
                           ))}
                         </List>
                       </Section>
-                   )}
+                    )}
 
-                  {/* Always show Passed Checks */}
-                  {passes.length > 0 && (
-                    <Section>
-                      <SectionHeader $type="passes">
-                       Passed checks
-                      </SectionHeader>
-                      <List>
-                        {passes.map((pass, idx) => (
-                          <PassItem key={idx}>
-                            <ItemIcon $type="pass">
-                              <SeverityDot $type="passes" />
-                            </ItemIcon>
-                            <ItemText>{pass}</ItemText>
-                          </PassItem>
-                        ))}
-                      </List>
-                    </Section>
-                  )}
+                    {passes.length > 0 && (
+                      <Section>
+                        <SectionHeader $type="passes">Passed Checks</SectionHeader>
+                        <List>
+                          {passes.map((pass, idx) => (
+                            <PassItem key={idx}>
+                              <PassText>{pass}</PassText>
+                            </PassItem>
+                          ))}
+                        </List>
+                      </Section>
+                    )}
                   </>
                 ) : (
                   <>
-                  {issues.length > 0 && (
-                    <Section>
-                      <SectionHeader $type="issues">
-                      Issues to fix
-                      </SectionHeader>
-                      <List>
-                        {issues.map((issue, idx) => (
-                          <IssueItem key={idx}>
-                            <ItemIcon $type="issue">
-                            <SeverityDot $type="issues" />
-                            </ItemIcon>
-                            <ItemContent>
-                              <ItemText>{issue.issue}</ItemText>
-                              {issue.recommendation && (
-                                <ItemSuggestion>{issue.recommendation}</ItemSuggestion>
-                              )}
-                            </ItemContent>
-                          </IssueItem>
-                        ))}
-                      </List>
-                    </Section>
-                  )}
+                    {issues.length > 0 && (
+                      <Section>
+                        <SectionHeader $type="issues">Issues to Fix</SectionHeader>
+                        <List>
+                          {issues.map((issue, idx) => (
+                            <IssueItem key={idx}>
+                              <ItemContent>
+                                <IssueText>{issue.issue}</IssueText>
+                                {issue.recommendation && (
+                                  <ItemSuggestion>{issue.recommendation}</ItemSuggestion>
+                                )}
+                              </ItemContent>
+                            </IssueItem>
+                          ))}
+                        </List>
+                      </Section>
+                    )}
 
-                  {passes.length > 0 && (
-                    <Section>
-                      <SectionHeader $type="passes">
-                      Passed checks
-                      </SectionHeader>
-                      <List>
-                        {passes.map((pass, idx) => (
-                          <PassItem key={idx}>
-                            <ItemIcon $type="pass">
-                              <SeverityDot $type="passes" />
-                            </ItemIcon>
-                            <ItemText>{pass}</ItemText>
-                          </PassItem>
-                        ))}
-                      </List>
-                    </Section>
-                  )}
+                    {passes.length > 0 && (
+                      <Section>
+                        <SectionHeader $type="passes">Passed Checks</SectionHeader>
+                        <List>
+                          {passes.map((pass, idx) => (
+                            <PassItem key={idx}>
+                              <PassText>{pass}</PassText>
+                            </PassItem>
+                          ))}
+                        </List>
+                      </Section>
+                    )}
                   </>
                 )}
 
@@ -669,58 +771,70 @@ export function ATSCategoryCard({
 
       {/* Collapsed Card - Always rendered */}
       <CollapsedCard
-        layoutId={`card-${name}-${id}`}
         onClick={() => {
-          setIsHovered(false);
-          setIsExpanded(true);
+          if (!isExpanded) {
+            setIsHovered(false);
+            setIsExpanded(true);
+          }
         }}
-        onHoverStart={() => setIsHovered(true)}
+        onHoverStart={() => !isExpanded && setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
         animate={{
-          y: isHovered ? -2 : 0,
-          boxShadow: isHovered
-            ? `0 12px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08)`
-            : `0 4px 24px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.05)`
+          opacity: isExpanded ? 0 : 1,
+          y: isHovered && !isExpanded ? -4 : 0,
         }}
-        transition={{
-          type: "tween",
-          duration: 0.3,
-          ease: "easeOut",
-        }}
+        style={{ pointerEvents: isExpanded ? 'none' : 'auto' }}
+        transition={{ type: "spring", stiffness: 400, damping: 35 }}
       >
+        {/* Background marquee — right 50%, reflects card content */}
+        {(issues.length > 0 || passes.length > 0) && (() => {
+          const allItems = [
+            ...issues.map(i => ({ text: i.issue, isIssue: true })),
+            ...passes.map(p => ({ text: p, isIssue: false })),
+          ];
+          const duration = Math.max(8, allItems.length * 2.2);
+          return (
+            <CardBackground>
+              <ScrollTrack $duration={duration} $paused={isHovered}>
+                {/* First pass */}
+                {allItems.map((item, i) => (
+                  <BgRow key={`a-${i}`}>
+                    <BgDot $isIssue={item.isIssue} />
+                    <BgText>{item.text}</BgText>
+                  </BgRow>
+                ))}
+                {/* Duplicate for seamless loop */}
+                {allItems.map((item, i) => (
+                  <BgRow key={`b-${i}`}>
+                    <BgDot $isIssue={item.isIssue} />
+                    <BgText>{item.text}</BgText>
+                  </BgRow>
+                ))}
+              </ScrollTrack>
+            </CardBackground>
+          );
+        })()}
+
         <CollapsedOverlay
           animate={{
             backgroundColor: isHovered
-              ? "rgba(255, 255, 255, 0.02)"
+              ? "rgba(255, 255, 255, 0.025)"
               : "rgba(0, 0, 0, 0)"
           }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         />
 
-        <motion.div
-          layoutId={`score-${name}-${id}`}
-          layout="position"
-          style={{ zIndex: 2 }}
-          transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-        >
+        <div style={{ zIndex: 2 }}>
           <ScoreValue $color={color} $size="small">
             {percentage}
           </ScoreValue>
-        </motion.div>
+        </div>
 
         <div style={{ marginTop: '12px', zIndex: 2, position: 'relative' }}>
-          <CategoryName
-            layoutId={`title-${name}-${id}`}
-            layout="position"
-            transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-          >
+          <CategoryName>
             {name}
           </CategoryName>
-          <CategoryMeta
-            layoutId={`meta-${name}-${id}`}
-            layout="position"
-            transition={{ type: "tween", duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-          >
+          <CategoryMeta>
             {earnedPoints}/{maxPoints} pts
             {issues.length > 0 && (
               <IssueCount $hasIssues={true} $color="#F97316">{issues.length} issues</IssueCount>
@@ -737,15 +851,17 @@ export function ATSCategoryCard({
             y: isMobile ? 0 : (isHovered ? 0 : "100%"),
             opacity: isMobile ? 1 : (isHovered ? 1 : 0)
           }}
-          transition={{ type: "tween", duration: 0.3 }}
+          transition={{ type: "spring", stiffness: 400, damping: 35 }}
         >
           <CTALink $color={color}>
             View Details
-            <ArrowRightIcon />
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </CTALink>
         </CollapsedCTA>
       </CollapsedCard>
-    </LayoutGroup>
+    </>
   );
 }
 

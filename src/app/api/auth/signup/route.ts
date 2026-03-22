@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     const { email, password, name, turnstileToken } = result.data;
 
     // Verify CAPTCHA if configured
-    if (process.env.TURNSTILE_SECRET_KEY) {
+    if (process.env.TURNSTILE_SECRET_KEY && process.env.NODE_ENV !== 'development') {
       if (!turnstileToken) {
         return NextResponse.json(
           { error: "CAPTCHA verification required" },

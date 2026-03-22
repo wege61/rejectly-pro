@@ -11,6 +11,7 @@ interface DrawerProps {
   onClose: () => void;
   children: React.ReactNode;
   shouldScaleBackground?: boolean;
+  floatingBar?: React.ReactNode;
 }
 
 interface DrawerHeaderProps {
@@ -296,7 +297,7 @@ function applyScaleBackground(scale: boolean) {
 }
 
 // Main Drawer Component
-export function Drawer({ isOpen, onClose, children, shouldScaleBackground = true }: DrawerProps) {
+export function Drawer({ isOpen, onClose, children, shouldScaleBackground = true, floatingBar }: DrawerProps) {
   const dragY = useRef(0);
   const scrollYRef = useRef(0);
   const wasOpenRef = useRef(false);
@@ -397,6 +398,7 @@ export function Drawer({ isOpen, onClose, children, shouldScaleBackground = true
             <ContentWrapper>
               {children}
             </ContentWrapper>
+            {floatingBar}
           </DrawerContainer>
         </>
       )}

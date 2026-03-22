@@ -3,8 +3,7 @@
 import styled from "styled-components";
 import { useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Modal } from "@/components/ui/Modal";
-import { Button } from "@/components/ui/Button";
+import { EditorModal, Body as EditorModalBody } from "@/components/ui/EditorModal";
 import { Camera, Upload, UserX, Check, Loader2, Target } from "lucide-react";
 import { COLOR_TEMPLATES } from "@/lib/pdf/colorTemplates";
 import { CVCustomizationOptions } from "@/types/cvCustomization";
@@ -134,7 +133,7 @@ const PhotoOption = styled.label<{ $isSelected: boolean }>`
     background: ${({ $isSelected }) =>
       $isSelected ? "rgba(var(--accent-rgb), 0.16)" : "rgba(255,255,255,0.06)"};
     border-color: ${({ $isSelected }) => ($isSelected ? "rgba(var(--accent-rgb), 0.6)" : "rgba(255,255,255,0.12)")};
-    transform: translateY(-1px);
+    
   }
 
   input {
@@ -302,7 +301,6 @@ const TemplateCard = styled.div<{ $isSelected: boolean; $color: string }>`
   &:hover {
     border-color: ${({ $color, $isSelected }) => ($isSelected ? $color : "rgba(255,255,255,0.2)")};
     background: rgba(255,255,255,0.06);
-    transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   }
 `;
@@ -348,58 +346,89 @@ const SelectedBadge = styled.div<{ $color: string }>`
   }
 `;
 
-const GlassPrimaryButton = styled.button`
-  display: inline-flex;
+
+const FloatingPlayerBar = styled.div`
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+
+  display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 28px;
-  border-radius: 9999px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  border: none;
-  color: white;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%), var(--accent);
-  box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.4), 0 8px 24px rgba(var(--accent-rgb), 0.4);
+  gap: 6px;
+  padding: 8px 8px 8px 16px;
+  border-radius: 100px;
+  white-space: nowrap;
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.5), 0 12px 32px rgba(var(--accent-rgb), 0.5);
-  }
-  
-  &:active {
-    transform: scale(0.98);
-  }
-
-  svg {
-    width: 18px;
-    height: 18px;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 100px;
+    background: rgba(150, 150, 150, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    z-index: -1;
   }
 `;
 
-const GlassSecondaryButton = styled.button`
+const PlayerBtn = styled.button<{ $variant?: 'primary' | 'default' | 'ghost' }>`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
-  border-radius: 9999px;
-  cursor: pointer;
+  padding: 10px 22px;
+  border-radius: 100px;
   font-size: 14px;
   font-weight: 500;
-  letter-spacing: -0.01em;
-  color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(16px);
-  transition: all 0.2s ease;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  letter-spacing: -0.1px;
 
-  &:hover {
-    color: rgba(255,255,255,0.95);
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.25);
-  }
+  ${({ $variant = 'default' }) => {
+    switch ($variant) {
+      case 'primary':
+        return `
+          background: var(--accent);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #ffffff;
+          font-weight: 600;
+          box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+          &:hover { opacity: 0.88; }
+          &:active { opacity: 0.75; }
+        `;
+      case 'ghost':
+        return `
+          background: transparent;
+          border: 1px solid transparent;
+          color: rgba(255, 255, 255, 0.5);
+          padding-left: 4px;
+          padding-right: 4px;
+          &:hover { color: rgba(255, 255, 255, 0.8); }
+          &:active { opacity: 0.6; }
+        `;
+      default:
+        return `
+          background: transparent;
+          border: 1px solid transparent;
+          color: rgba(255, 255, 255, 0.75);
+          &:hover { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.95); }
+          &:active { opacity: 0.6; }
+        `;
+    }
+  }}
+
+  svg { flex-shrink: 0; }
+`;
+
+const PlayerDivider = styled.div`
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 4px;
+  flex-shrink: 0;
 `;
 
 type PhotoChoice = "existing" | "extracted" | "upload" | "none";
@@ -513,19 +542,28 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
 
   const displayPhoto = getCurrentPhoto();
 
+  const floatingBar = (
+    <FloatingPlayerBar>
+      <PlayerBtn $variant="ghost" onClick={onSkip}>
+        Skip
+      </PlayerBtn>
+      <PlayerBtn $variant="primary" onClick={handleConfirm}>
+        Save &amp; Optimize
+        
+      </PlayerBtn>
+    </FloatingPlayerBar>
+  );
+
   return (
-    <Modal
+    <EditorModal
       isOpen={isOpen}
-      onClose={onClose}
-      title="Customize Your CV"
+      title="Customize Your Resume"
       description="Choose your photo and color theme before generating."
       size="lg"
-      showCloseButton={false}
-      closeOnBackdropClick={false}
-      closeOnEscape={false}
+      floatingBar={floatingBar}
     >
-      <Modal.Body>
-        <ModalContent>
+      <EditorModalBody>
+        <ModalContent style={{ paddingBottom: '88px' }}>
           {/* Photo Section */}
           <PhotoSection>
             <SectionTitle>
@@ -680,21 +718,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
             </TemplateGrid>
           </div>
         </ModalContent>
-      </Modal.Body>
-
-      <Modal.Footer>
-        <GlassSecondaryButton onClick={onSkip}>
-          Skip Customization
-        </GlassSecondaryButton>
-        <GlassPrimaryButton onClick={handleConfirm}>
-          Save & Optimize
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <polyline points="16 16 12 12 8 16"/>
-            <line x1="12" y1="12" x2="12" y2="21"/>
-            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
-          </svg>
-        </GlassPrimaryButton>
-      </Modal.Footer>
-    </Modal>
+      </EditorModalBody>
+    </EditorModal>
   );
 };

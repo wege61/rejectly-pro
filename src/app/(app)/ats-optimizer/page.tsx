@@ -19,6 +19,7 @@ import { ATSFullResult } from "@/components/ats";
 import { useCreditConfirm } from "@/hooks/useCreditConfirm";
 import { useAuth } from "@/hooks/useAuth";
 import { LoadingModal } from "@/components/ui/LoadingModal";
+import { Drawer, DrawerHeader, DrawerTitle, DrawerBody } from "@/components/ui/Drawer";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { CVCustomizationModal } from "@/components/features/CVCustomizationModal";
 import { CVCustomizationOptions } from "@/types/cvCustomization";
@@ -1550,20 +1551,207 @@ const SecondaryButton = styled.button`
   }
 `;
 
-// PDF Preview Modal Styled Components
-const PDFPreviewContainer = styled.div`
-  width: 100%;
-  height: 70vh;
-  min-height: 500px;
-  background: #f3f4f6;
-  border-radius: 8px;
-  overflow: hidden;
+// CV Preview Drawer — Floating Bar (liquid glass, three-layer Apple system)
+const CVDrawerFloatingBar = styled.div`
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+  isolation: isolate;
+
+  /* Layer 1 — Glass: blurs content behind the pill */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 100px;
+    background: rgba(28, 28, 38, 0.52);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+    z-index: -1;
+  }
+
+  /* Layer 2 — Specular: polished glass surface highlights */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.24),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.28),
+      inset 1px 0 rgba(255, 255, 255, 0.06),
+      inset -1px 0 rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+    z-index: 1;
+  }
 `;
 
-const PDFViewer = styled.iframe`
+const CVDrawerFloatingBtn = styled.button<{ $variant?: 'primary' | 'default' | 'ghost' }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  letter-spacing: -0.1px;
+
+  ${({ $variant = 'default' }) => {
+    switch ($variant) {
+      case 'primary':
+        return `
+          background: rgba(255, 255, 255, 0.14);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          color: rgba(255, 255, 255, 0.95);
+          &:hover { background: rgba(255, 255, 255, 0.2); }
+          &:active { opacity: 0.75; }
+        `;
+      case 'ghost':
+        return `
+          background: transparent;
+          border: 1px solid transparent;
+          color: rgba(255, 255, 255, 0.58);
+          &:hover { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); }
+          &:active { opacity: 0.6; }
+        `;
+      default:
+        return `
+          background: transparent;
+          border: 1px solid transparent;
+          color: rgba(255, 255, 255, 0.82);
+          &:hover { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.95); }
+          &:active { opacity: 0.6; }
+        `;
+    }
+  }}
+
+  svg { flex-shrink: 0; }
+`;
+
+const CVDrawerFloatingDivider = styled.div`
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.14);
+  margin: 0 4px;
+`;
+
+const CVDrawerPreviewArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px 16px;
+  width: 100%;
+`;
+
+const CVDrawerPDFContainer = styled.div`
+  width: 100%;
+  max-width: min(90vw, 1000px);
+  aspect-ratio: 1 / 1.414;
+  height: auto;
+  min-height: 800px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+
+  @media (max-width: 768px) {
+    aspect-ratio: auto;
+    min-height: 0;
+    height: fit-content;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+`;
+
+const CVDrawerPDFDesktop = styled.iframe`
   width: 100%;
   height: 100%;
   border: none;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const CVDrawerMobileFallback = styled.div`
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 32px 24px;
+  text-align: center;
+  gap: 0;
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+`;
+
+const CVDrawerMobileIconBadge = styled.div`
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.5);
+
+  svg { width: 22px; height: 22px; }
+`;
+
+const CVDrawerMobileTitle = styled.h4`
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+`;
+
+const CVDrawerMobileText = styled.p`
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 28px;
+  line-height: 1.6;
+  max-width: 240px;
+`;
+
+const CVDrawerOpenPDFBtn = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  background: white;
+  color: black;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.12);
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  svg { width: 15px; height: 15px; flex-shrink: 0; }
 `;
 
 
@@ -2387,106 +2575,6 @@ const ATSUploadPrimaryBtn = styled.button`
   svg { width: 18px; height: 18px; flex-shrink: 0; }
 `;
 
-// Preview Modal specific styles
-const PreviewModalOverlay = styled(motion.div)`
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(10, 10, 14, 0.4);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-
-  @media (max-width: 768px) {
-    padding: 0;
-    align-items: flex-end;
-  }
-`;
-
-const PreviewModalContent = styled(motion.div)`
-  width: 100%;
-  max-width: 900px;
-  height: 90vh;
-  margin: 0 auto;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-
-  /* Liquid Glass Base */
-  background: rgba(22, 22, 30, 0.7);
-  backdrop-filter: blur(40px) saturate(150%);
-  -webkit-backdrop-filter: blur(40px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
-  box-shadow: 
-    0 4px 1px rgba(255, 255, 255, 0.05) inset,
-    0 24px 64px rgba(0, 0, 0, 0.4),
-    0 12px 24px rgba(0, 0, 0, 0.2);
-
-  @media (max-width: 768px) {
-    height: 95vh;
-    border-radius: 28px 28px 0 0;
-    border-bottom: none;
-  }
-`;
-
-const PreviewModalBody = styled.div`
-  flex: 1;
-  padding: 0 24px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-
-  @media (max-width: 768px) {
-    padding: 0 16px;
-  }
-`;
-
-const PreviewModalFooter = styled.div`
-  padding: 24px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  background: rgba(10, 10, 14, 0.3);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-
-  @media (max-width: 768px) {
-    padding: 16px;
-    flex-direction: column;
-  }
-`;
-
-const PreviewSecondaryBtn = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 28px;
-  border-radius: 9999px;
-  font-size: 14.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
 
 // Floating Action Button for easy access to upload
 const FAB = styled.button`
@@ -3068,7 +3156,7 @@ export default function DashboardATSOptimizerPage() {
           {/* We might want a back button here to go back to grid */}
            {(step === 'result' || step === 'optimized') && (
              <div style={{ marginBottom: 20 }}>
-               <Button variant="ghost" onClick={handleReset}>
+               <Button variant="ghost" onClick={handleReset} style={{fontSize: "14px"}}>
                 ← Back to Dashboard
                </Button>
              </div>
@@ -3128,7 +3216,9 @@ export default function DashboardATSOptimizerPage() {
                     onPreview={handlePreviewCV}
                  />
                  <div style={{ textAlign: "center", marginTop: 24 }}>
-                   <SecondaryButton onClick={handleReset}>Optimize Another CV</SecondaryButton>
+                   <Button $variant="ghost" onClick={handleReset}>
+                     Optimize Another Resume
+                   </Button>
                  </div>
                </ResultsSection>
              )
@@ -3320,62 +3410,62 @@ export default function DashboardATSOptimizerPage() {
         ]}
       />
 
-       {/* CV Preview Modal */}
-       <AnimatePresence>
-        {isPreviewOpen && (
-          <PreviewModalOverlay
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={handleClosePreview}
-          >
-            <PreviewModalContent
-              onClick={(e) => e.stopPropagation()}
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            >
-              <ATSModalHeaderInner>
-                <ATSModalIconBadge>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                  </svg>
-                </ATSModalIconBadge>
-                <ATSModalHeadTitle>CV Preview</ATSModalHeadTitle>
-                <ATSModalHeadSub>Review your optimized resume before downloading</ATSModalHeadSub>
-                <ATSModalCloseBtn onClick={handleClosePreview} aria-label="Close">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                  </svg>
-                </ATSModalCloseBtn>
-              </ATSModalHeaderInner>
-
-              <PreviewModalBody>
-                 <PDFPreviewContainer style={{ height: '100%', borderRadius: '16px', overflow: 'hidden', background: 'white' }}>
-                   {pdfPreviewUrl ? (
-                     <iframe
-                       src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                       title="CV Preview"
-                       style={{ width: '100%', height: '100%', border: 'none' }}
-                     />
-                   ) : <div style={{ display:'flex', justifyContent:'center', alignItems:'center', height:'100%', color: 'black' }}><Spinner /></div>}
-                 </PDFPreviewContainer>
-              </PreviewModalBody>
-
-              <PreviewModalFooter>
-                <PreviewSecondaryBtn onClick={handleClosePreview}>Cancel</PreviewSecondaryBtn>
-                <ATSUploadPrimaryBtn onClick={handleDownloadCV} style={{ width: 'auto' }}>
-                  <DownloadIcon /> 
-                  Download PDF
-                </ATSUploadPrimaryBtn>
-              </PreviewModalFooter>
-            </PreviewModalContent>
-          </PreviewModalOverlay>
-        )}
-      </AnimatePresence>
+      {/* CV Preview Drawer */}
+      <Drawer
+        isOpen={isPreviewOpen}
+        onClose={handleClosePreview}
+        floatingBar={
+          <CVDrawerFloatingBar>
+            <CVDrawerFloatingBtn $variant="ghost" onClick={handleClosePreview}>
+              Done
+            </CVDrawerFloatingBtn>
+            <CVDrawerFloatingDivider />
+            <CVDrawerFloatingBtn $variant="primary" onClick={handleDownloadCV}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="14" height="14">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              Download
+            </CVDrawerFloatingBtn>
+          </CVDrawerFloatingBar>
+        }
+      >
+        <DrawerHeader>
+          <DrawerTitle>Resume Preview</DrawerTitle>
+        </DrawerHeader>
+        <DrawerBody maxWidth="min(90vw, 1000px)" style={{ padding: '20px 24px 96px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <CVDrawerPreviewArea>
+            <CVDrawerPDFContainer>
+              {pdfPreviewUrl ? (
+                <>
+                  <CVDrawerPDFDesktop
+                    src={`${pdfPreviewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                    title="Resume Preview"
+                  />
+                  <CVDrawerMobileFallback>
+                    <CVDrawerMobileIconBadge>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                      </svg>
+                    </CVDrawerMobileIconBadge>
+                    <CVDrawerMobileTitle>Ready for Review</CVDrawerMobileTitle>
+                    <CVDrawerMobileText>PDF preview isn't available on mobile. Open it in your browser to view and download.</CVDrawerMobileText>
+                    <CVDrawerOpenPDFBtn href={pdfPreviewUrl} target="_blank" rel="noopener noreferrer">
+                      Open Resume PDF
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                      </svg>
+                    </CVDrawerOpenPDFBtn>
+                  </CVDrawerMobileFallback>
+                </>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                  <Spinner size="lg" />
+                </div>
+              )}
+            </CVDrawerPDFContainer>
+          </CVDrawerPreviewArea>
+        </DrawerBody>
+      </Drawer>
 
       {/* Delete Confirmation Modal */}
       <Modal

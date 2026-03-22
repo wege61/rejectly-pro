@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const result = forgotPasswordSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
-        { error: result.error.errors[0]?.message || "Invalid request" },
+        { error: result.error.issues[0]?.message || "Invalid request" },
         { status: 400 }
       );
     }
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     const { email, turnstileToken } = result.data;
 
     // Verify CAPTCHA if configured
-    if (process.env.TURNSTILE_SECRET_KEY) {
+    if (process.env.TURNSTILE_SECRET_KEY && process.env.NODE_ENV !== 'development') {
       if (!turnstileToken) {
         return NextResponse.json(
           { error: "CAPTCHA verification required" },

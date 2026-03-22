@@ -198,7 +198,7 @@ function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) {
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && process.env.NODE_ENV !== 'development' && !turnstileToken) {
       setCaptchaError("Please complete the CAPTCHA verification.");
       return;
     }

@@ -49,7 +49,16 @@
       "Bash(do)",
       "Bash(file=\"/Users/ozgunegeoner/repos/rejectly-pro/src/app/\\(marketing\\)/$f/layout.tsx\")",
       "Bash(sed -i '' 's/^  title: \"\"\\\\\\(.*\\\\\\)\"\",$/  title: { absolute: \"\"\\\\1\"\" },/' \"$file\")",
-      "Bash(echo \"✓ $f\")"
+      "Bash(echo \"✓ $f\")",
+      "Bash(grep -n \"^const ScoreCard\" /Users/ozgunegeoner/repos/rejectly-pro/src/app/\\\\\\(app\\\\\\)/reports/[id]/page.tsx)",
+      "WebFetch(domain:css-tricks.com)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:kube.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:blog.logrocket.com)",
+      "WebFetch(domain:designfast.io)",
+      "WebFetch(domain:alastair.is)",
+      "WebFetch(domain:medium.com)"
     ],
     "deny": [],
     "ask": []

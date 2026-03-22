@@ -5,6 +5,7 @@ import { ATSScoreCircle } from "./ATSScoreCircle";
 import { ATSCategoryCard } from "./ATSCategoryCard";
 import { ATSParsingChecklist } from "./ATSParsingChecklist";
 import { ATSBeforeAfter } from "./ATSBeforeAfter";
+import { Button } from "../ui/Button";
 
 interface CategoryResult {
   name?: string;
@@ -85,27 +86,10 @@ const HeroSection = styled.div<{ $isOptimized?: boolean }>`
   align-items: center;
   gap: 24px;
   padding: 48px 32px;
-  border-radius: 24px;
-  background: ${({ $isOptimized }) => 
-    $isOptimized 
-      ? "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(30, 30, 40, 0.4) 100%)"
-      : "rgba(30, 30, 40, 0.4)"};
-  backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid ${({ $isOptimized }) => 
-    $isOptimized ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.08)"};
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 24px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  }
+  
 `;
 
 const HeroContent = styled.div`
@@ -118,7 +102,7 @@ const HeroContent = styled.div`
 `;
 
 const InsightMessage = styled.p`
-  font-size: 18px;
+  font-size: 16px;
   color: rgba(255, 255, 255, 0.85);
   line-height: 1.5;
   margin: 0;
@@ -141,44 +125,6 @@ const ButtonGroup = styled.div`
   }
 `;
 
-const Button = styled.button<{ $primary?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 32px;
-  border-radius: 9999px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  
-  ${({ $primary }) => $primary ? `
-    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%), var(--accent);
-    color: white;
-    border: none;
-    box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.4), 0 8px 24px rgba(var(--accent-rgb), 0.4);
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.5), 0 12px 32px rgba(var(--accent-rgb), 0.5);
-    }
-  ` : `
-    background: rgba(255,255,255,0.05);
-    color: rgba(255,255,255,0.9);
-    border: 1px solid rgba(255,255,255,0.12);
-    backdrop-filter: blur(10px);
-
-    &:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(255,255,255,0.25);
-    }
-  `}
-
-  &:active {
-    transform: scale(0.98);
-  }
-`;
 
 // Potential improvement inline
 const PotentialBadge = styled.div`
@@ -203,10 +149,11 @@ const Section = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-bottom: 32px;
 `;
 
 const SectionTitle = styled.h3`
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.95);
   margin: 0 0 8px 0;
@@ -380,17 +327,13 @@ export function ATSFullResult({
 
           <ButtonGroup>
             {isOptimized && (downloadUrl || onPreview) && (
-              <Button $primary onClick={onPreview}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-                Preview & Download CV
+              <Button variant="primary" onClick={onPreview}>
+                Preview & Download Resume
               </Button>
             )}
 
             {!isOptimized && onOptimize && (
-              <Button $primary onClick={onOptimize}>
+              <Button variant="primary" onClick={onOptimize}>
                 Optimize Resume Instantly
               </Button>
             )}

@@ -74,8 +74,8 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
       onExpire?.();
     }, [onExpire]);
 
-    // If no site key is configured, render nothing (skip CAPTCHA)
-    if (!siteKey) {
+    // If no site key is configured, or we are in development, render nothing (skip CAPTCHA)
+    if (!siteKey || process.env.NODE_ENV === 'development') {
       return null;
     }
 

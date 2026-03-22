@@ -616,48 +616,12 @@ const Grid = styled.div`
 // UNIFIED HERO SECTION — Apple-Level Focus
 // ==========================================
 const ProHeroSection = styled.div`
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 56px 32px 48px;
+  padding: 0 28px;
   margin-bottom: 32px;
-  background: rgba(15, 15, 18, 0.6);
-  backdrop-filter: blur(60px) saturate(200%);
-  -webkit-backdrop-filter: blur(60px) saturate(200%);
-  border-radius: 32px;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 200px;
-    background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 1px;
-    border-radius: 31px;
-    background: rgba(15, 15, 18, 0.35);
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  > * {
-    position: relative;
-    z-index: 1;
-  }
 `;
 
 const ProHeroScoreRow = styled.div`
@@ -714,19 +678,212 @@ const ProHeroScorePrev = styled.span`
 const ProHeroDivider = styled.div`
   width: 1px;
   height: 64px;
-  background: linear-gradient(180deg, rgba(102, 126, 234, 0.3) 0%, rgba(255, 255, 255, 0.06) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
 
   @media (max-width: 640px) {
     width: 48px;
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(102, 126, 234, 0.3) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
   }
 `;
+
+// ─── Score Cards (ATSScoreCircle-style, side-by-side) ──────────────────────
+
+const scoreCardReveal = keyframes`
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+`;
+
+const scoreProgressIn = keyframes`
+  from { width: 0%; }
+`;
+
+const scoreBadgePop = keyframes`
+  0%   { opacity: 0; transform: scale(0.8); }
+  60%  {             transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1);   }
+`;
+
+const HeroScoreCardsRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  max-width: 780px;
+  margin-bottom: 24px;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+`;
+
+const HeroScoreCard = styled.div<{ $color: string; $isPrimary?: boolean }>`
+  position: relative;
+  flex: ${({ $isPrimary }) => $isPrimary ? '1.25' : '1'};
+  overflow: hidden;
+  border-radius: 18px;
+  text-align: left;
+
+  background:
+    radial-gradient(
+      ellipse 110% 60% at 50% 130%,
+      ${({ $color }) => `${$color}14`},
+      transparent 65%
+    ),
+    rgba(22, 22, 26, 0.78);
+
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+
+  padding: ${({ $isPrimary }) => $isPrimary ? '28px 32px' : '22px 24px'};
+  animation: ${scoreCardReveal} 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 60%,
+      rgba(255, 255, 255, 0.25) 80%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @media (max-width: 640px) {
+    flex: unset;
+    width: 100%;
+  }
+`;
+
+const HeroScoreCardHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+`;
+
+const HeroScoreCardEyebrow = styled.span`
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.28);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+`;
+
+const HeroScoreCardBadge = styled.div<{ $color: string }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 100px;
+  background: ${({ $color }) => `${$color}18`};
+  border: 1px solid ${({ $color }) => `${$color}2E`};
+  flex-shrink: 0;
+  animation: ${scoreBadgePop} 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
+`;
+
+const HeroScoreCardBadgeDot = styled.div<{ $color: string }>`
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: ${({ $color }) => $color};
+  flex-shrink: 0;
+`;
+
+const HeroScoreCardBadgeText = styled.span<{ $color: string }>`
+  font-size: 11px;
+  font-weight: 600;
+  color: ${({ $color }) => $color};
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+`;
+
+const HeroScoreCardNumber = styled.div<{ $isPrimary?: boolean }>`
+  font-size: ${({ $isPrimary }) => $isPrimary ? '96px' : '72px'};
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -5px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+  background: linear-gradient(180deg, rgba(255,255,255,1) 40%, rgba(255,255,255,0.65) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: ${({ $isPrimary }) => $isPrimary ? '22px' : '16px'};
+  margin-top: ${({ $isPrimary }) => $isPrimary ? '4px' : '2px'};
+`;
+
+const HeroScoreCardTrack = styled.div`
+  width: 100%;
+  height: 3px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+  margin-bottom: 14px;
+`;
+
+const HeroScoreCardFill = styled.div<{ $color: string; $score: number }>`
+  height: 100%;
+  width: ${({ $score }) => $score}%;
+  border-radius: 100px;
+  background: ${({ $color }) => $color};
+  animation: ${scoreProgressIn} 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+`;
+
+const HeroScoreCardDesc = styled.p`
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.36);
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: 0.05px;
+`;
+
+const HeroScoreCardPrev = styled.span`
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.28);
+  text-decoration: line-through;
+  font-weight: 400;
+  margin-right: 10px;
+  letter-spacing: -2px;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.28);
+`;
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 const ProHeroSummary = styled.p`
   font-size: 16px;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 1);
   max-width: 520px;
   margin: 0 auto 32px;
   font-weight: 400;
@@ -739,8 +896,8 @@ const ProHeroCTA = styled.button`
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 18px 40px;
-  font-size: 16px;
+  padding: 18px 24px;
+  font-size: 15px;
   font-weight: 700;
   color: white;
   cursor: pointer;
@@ -756,16 +913,13 @@ const ProHeroCTA = styled.button`
     0 8px 32px rgba(238, 90, 90, 0.4);
 
   &:hover:not(:disabled) {
-    transform: translateY(-4px) scale(1.02);
+   
     box-shadow: 
       inset 0 1px 0 rgba(255, 255, 255, 0.6), 
       0 12px 40px rgba(238, 90, 90, 0.6);
     background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 100%), rgba(238, 90, 90, 1);
   }
 
-  &:active:not(:disabled) {
-    transform: translateY(0) scale(0.98);
-  }
 
   &:disabled {
     opacity: 0.6;
@@ -1012,29 +1166,43 @@ const KeywordTag = styled.span<{ $type?: 'added' | 'missing' }>`
   font-size: 13px;
   font-weight: 500;
   border-radius: 20px;
-  color: ${p => p.$type === 'added' ? 'var(--primary-400)' : 'rgba(255, 255, 255, 0.5)'};
-  background: ${p => p.$type === 'added' ? 'rgba(var(--primary-rgb, 59, 130, 246), 0.08)' : 'rgba(15, 15, 18, 0.5)'};
+  color: ${p => p.$type === 'added' ? 'var(--primary-400)' : 'rgba(236, 201, 75, 0.9)'};
+  background: ${p => p.$type === 'added' ? 'rgba(var(--primary-rgb, 59, 130, 246), 0.08)' : 'rgba(236, 201, 75, 0.12)'};
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid ${p => p.$type === 'added' ? 'rgba(var(--primary-rgb, 59, 130, 246), 0.18)' : 'rgba(255, 255, 255, 0.06)'};
+  border: 1px solid ${p => p.$type === 'added' ? 'rgba(var(--primary-rgb, 59, 130, 246), 0.18)' : 'rgba(236, 201, 75, 0.25)'};
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   transition: all 0.2s ease;
 
   &:hover {
-    border-color: ${p => p.$type === 'added' ? 'rgba(var(--primary-rgb, 59, 130, 246), 0.3)' : 'rgba(255, 255, 255, 0.1)'};
+    border-color: ${p => p.$type === 'added' ? 'rgba(var(--primary-rgb, 59, 130, 246), 0.3)' : 'rgba(236, 201, 75, 0.4)'};
   }
 `;
 
 const RoleItem = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 0;
+  padding: 14px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  border-radius: 8px;
 
   &:last-child {
     border-bottom: none;
   }
+`;
+
+const RoleBar = styled.div<{ $width: number; $color: string }>`
+  position: absolute;
+  inset: 0;
+  width: ${({ $width }) => $width}%;
+  background: ${({ $color }) => $color};
+  opacity: 0.08;
+  border-radius: 8px;
+  pointer-events: none;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 `;
 
 const TabRoleTitle = styled.div`
@@ -3639,50 +3807,66 @@ const PDFViewerMobileFallback = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding: 40px 24px;
+  padding: 32px 24px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.02);
+  gap: 0;
 
   @media (max-width: 768px) {
     display: flex;
   }
 `;
 
+const MobileFallbackIconBadge = styled.div`
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.5);
 
+  svg { width: 22px; height: 22px; }
+`;
 
 const MobileFallbackTitle = styled.h4`
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  color: white;
-  margin: 0 0 8px 0;
-  letter-spacing: -0.2px;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
 `;
 
 const MobileFallbackText = styled.p`
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0 0 32px 0;
-  line-height: 1.5;
-  max-width: 280px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 28px;
+  line-height: 1.6;
+  max-width: 240px;
 `;
 
 const ViewPDFButton = styled.a`
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px 32px;
+  gap: 8px;
+  padding: 13px 26px;
   background: white;
   color: black;
   border-radius: 100px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   text-decoration: none;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
-  
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.12);
+
   &:active {
     transform: scale(0.96);
   }
+
+  svg { width: 15px; height: 15px; flex-shrink: 0; }
 `;
 
 // Fix Details Drawer Styles
@@ -3793,7 +3977,107 @@ const PDFPreviewContainerDrawer = styled.div`
     aspect-ratio: auto;
     min-height: 0;
     height: fit-content;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
   }
+`;
+
+const DrawerFloatingBar = styled.div`
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+
+  /* Compositing group — keeps layers contained */
+  isolation: isolate;
+
+  /* Layer 1 — Glass: blurs the PDF behind the pill, adds dark tint */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 100px;
+    background: rgba(28, 28, 38, 0.52);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+    z-index: -1;
+  }
+
+  /* Layer 2 — Specular: polished glass surface (border + edge highlights) */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.24),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.28),
+      inset 1px 0 rgba(255, 255, 255, 0.06),
+      inset -1px 0 rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+    z-index: 1;
+  }
+`;
+
+const DrawerFloatingBtn = styled.button<{ $variant?: 'primary' | 'default' | 'ghost' }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  letter-spacing: -0.1px;
+
+  ${({ $variant = 'default' }) => {
+    switch ($variant) {
+      case 'primary':
+        return `
+          background: rgba(255, 255, 255, 0.14);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          color: rgba(255, 255, 255, 0.95);
+          &:hover { background: rgba(255, 255, 255, 0.2); }
+          &:active { opacity: 0.75; }
+        `;
+      case 'ghost':
+        return `
+          background: transparent;
+          border: 1px solid transparent;
+          color: rgba(255, 255, 255, 0.58);
+          &:hover { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); }
+          &:active { opacity: 0.6; }
+        `;
+      default:
+        return `
+          background: transparent;
+          border: 1px solid transparent;
+          color: rgba(255, 255, 255, 0.82);
+          &:hover { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.95); }
+          &:active { opacity: 0.6; }
+        `;
+    }
+  }}
+
+  svg { flex-shrink: 0; }
+`;
+
+const DrawerFloatingDivider = styled.div`
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.14);
+  margin: 0 4px;
 `;
 
 
@@ -4488,14 +4772,16 @@ const BreakdownFooterValue = styled.span`
 const InterviewPrepSection = styled.div`
   position: relative;
   margin-bottom: 32px;
-  border-radius: 28px;
-  background: rgba(15, 15, 18, 0.55);
+  overflow: hidden;
+  border-radius: 18px;
+
+  background: rgba(22, 22, 26, 0.78);
   backdrop-filter: blur(60px) saturate(200%);
   -webkit-backdrop-filter: blur(60px) saturate(200%);
-  border: 1px solid rgba(102, 126, 234, 0.15);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.07);
-  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
 
   &::before {
     content: '';
@@ -4503,14 +4789,33 @@ const InterviewPrepSection = styled.div`
     top: 0;
     left: 0;
     right: 0;
-    height: 160px;
-    background: radial-gradient(ellipse 70% 100% at 50% 0%, rgba(102, 126, 234, 0.06) 0%, transparent 70%);
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.45) 60%,
+      rgba(255, 255, 255, 0.25) 80%,
+      transparent 100%
+    );
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
   }
 
-  > * {
-    position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+    pointer-events: none;
     z-index: 1;
   }
 `;
@@ -4526,10 +4831,8 @@ const InterviewPrepHeader = styled.div`
 
 const InterviewPrepTitle = styled.h3`
   font-size: 20px;
-  font-weight: 700;
-  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
   letter-spacing: -0.4px;
   margin: 0;
 `;
@@ -4605,7 +4908,7 @@ const InterviewPrepContent = styled.div`
 `;
 
 const InterviewTabDescription = styled.div`
-  padding: 18px 22px 4px;
+  padding: 18px 22px ;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.35);
   line-height: 1.5;
@@ -4908,6 +5211,7 @@ const InterviewPrepGenerateButton = styled.button`
 
 // Generate Resume Card - FixesCard tarzında
 const GenerateResumeCard = styled.div`
+margin-top: 60px;
   border-radius: 16px;
   overflow: hidden;
 
@@ -4917,8 +5221,7 @@ const GenerateResumeHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 0 12px;
   gap: 16px;
 
   @media (max-width: 640px) {
@@ -4930,11 +5233,11 @@ const GenerateResumeHeader = styled.div`
 const GenerateResumeHeaderLeft = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 `;
 
 const GenerateResumeTitle = styled.h3`
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--text-color);
   margin: 0;
@@ -7287,39 +7590,51 @@ export default function ReportDetailPage() {
       {userState === 'free' ? (
         <>
           <ProHeroSection>
-            <ProHeroScoreRow>
-              {/* Match Score — Primary */}
-              <ProHeroScoreBlock $isPrimary>
-                <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                  <ProHeroScoreValue
-                    $isPrimary
-                    $color={(() => {
-                      const s = report.fit_score;
-                      return s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2a57a0ff' : s >= 50 ? '#EAB308' : '#F97316';
-                    })()}
-                  >
-                    {report.fit_score}%
-                  </ProHeroScoreValue>
-                </div>
-                <ProHeroScoreLabel $isPrimary>Match Score</ProHeroScoreLabel>
-              </ProHeroScoreBlock>
-
-              <ProHeroDivider />
+            <HeroScoreCardsRow>
+              {/* Match Score — Primary (larger) */}
+              {(() => {
+                const s = report.fit_score;
+                const color = s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2A57A0' : s >= 50 ? '#EAB308' : '#F97316';
+                const label = s >= 85 ? 'Strong Match' : s >= 70 ? 'Good Match' : s >= 50 ? 'Partial Match' : 'Weak Match';
+                const desc = s >= 85 ? 'Excellent fit for this role.' : s >= 70 ? 'Strong candidate with room to grow.' : s >= 50 ? 'Several key gaps to address.' : 'Resume needs significant alignment.';
+                return (
+                  <HeroScoreCard $color={color} $isPrimary>
+                    <HeroScoreCardHeader>
+                      <HeroScoreCardEyebrow>Match Score</HeroScoreCardEyebrow>
+                      <HeroScoreCardBadge $color={color}>
+                        <HeroScoreCardBadgeDot $color={color} />
+                        <HeroScoreCardBadgeText $color={color}>{label}</HeroScoreCardBadgeText>
+                      </HeroScoreCardBadge>
+                    </HeroScoreCardHeader>
+                    <HeroScoreCardNumber $isPrimary>{s}</HeroScoreCardNumber>
+                    <HeroScoreCardTrack><HeroScoreCardFill $color={color} $score={s} /></HeroScoreCardTrack>
+                    <HeroScoreCardDesc>{desc}</HeroScoreCardDesc>
+                  </HeroScoreCard>
+                );
+              })()}
 
               {/* ATS Score — Secondary */}
-              <ProHeroScoreBlock>
-                <ProHeroScoreValue
-                  $color={(() => {
-                    const s = originalAtsScore;
-                    if (s === null) return 'rgba(255,255,255,0.3)';
-                    return s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2a57a0ff' : s >= 50 ? '#EAB308' : '#F97316';
-                  })()}
-                >
-                  {isLoadingOriginalAtsScore ? '...' : originalAtsScore !== null ? `${originalAtsScore}%` : '--'}
-                </ProHeroScoreValue>
-                <ProHeroScoreLabel>ATS Score</ProHeroScoreLabel>
-              </ProHeroScoreBlock>
-            </ProHeroScoreRow>
+              {(() => {
+                const s = originalAtsScore;
+                const color = s === null ? 'rgba(255,255,255,0.3)' : s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2A57A0' : s >= 50 ? '#EAB308' : '#F97316';
+                const label = s === null ? '—' : s >= 85 ? 'ATS Ready' : s >= 70 ? 'Looking Good' : s >= 50 ? 'Needs Attention' : 'Not Ready';
+                const desc = s === null ? 'Calculating your ATS compatibility.' : s >= 85 ? 'Your resume passes automated screening.' : s >= 70 ? 'A few tweaks could push you higher.' : s >= 50 ? 'Several issues are affecting your score.' : 'Your resume needs significant improvements.';
+                return (
+                  <HeroScoreCard $color={color}>
+                    <HeroScoreCardHeader>
+                      <HeroScoreCardEyebrow>ATS Score</HeroScoreCardEyebrow>
+                      <HeroScoreCardBadge $color={color}>
+                        <HeroScoreCardBadgeDot $color={color} />
+                        <HeroScoreCardBadgeText $color={color}>{label}</HeroScoreCardBadgeText>
+                      </HeroScoreCardBadge>
+                    </HeroScoreCardHeader>
+                    <HeroScoreCardNumber>{isLoadingOriginalAtsScore ? '—' : s !== null ? s : '—'}</HeroScoreCardNumber>
+                    <HeroScoreCardTrack><HeroScoreCardFill $color={color} $score={s ?? 0} /></HeroScoreCardTrack>
+                    <HeroScoreCardDesc>{desc}</HeroScoreCardDesc>
+                  </HeroScoreCard>
+                );
+              })()}
+            </HeroScoreCardsRow>
 
             {/* AI Insight */}
             <ProHeroSummary>
@@ -7548,48 +7863,57 @@ export default function ReportDetailPage() {
         <>
       {/* ====== UNIFIED HERO — One Focal Point ====== */}
       <ProHeroSection>
-        <ProHeroScoreRow>
-          {/* Match Score — Primary */}
-          <ProHeroScoreBlock $isPrimary>
-            <div style={{ display: 'flex', alignItems: 'baseline' }}>
-              {visibleSections?.showScoreComparison && (
-                <ProHeroScorePrev>{report.fit_score}%</ProHeroScorePrev>
-              )}
-              <ProHeroScoreValue
-                $isPrimary
-                $color={(() => {
-                  const s = displayOptimizedScore ?? report.fit_score;
-                  return s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2a57a0ff' : s >= 50 ? '#EAB308' : '#F97316';
-                })()}
-              >
-                {visibleSections?.showScoreComparison ? displayOptimizedScore : report.fit_score}%
-              </ProHeroScoreValue>
-            </div>
-            <ProHeroScoreLabel $isPrimary>Match Score</ProHeroScoreLabel>
-          </ProHeroScoreBlock>
-
-          <ProHeroDivider />
+        <HeroScoreCardsRow>
+          {/* Match Score — Primary (larger) */}
+          {(() => {
+            const s = visibleSections?.showScoreComparison ? (displayOptimizedScore ?? report.fit_score) : report.fit_score;
+            const color = s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2A57A0' : s >= 50 ? '#EAB308' : '#F97316';
+            const label = s >= 85 ? 'Strong Match' : s >= 70 ? 'Good Match' : s >= 50 ? 'Partial Match' : 'Weak Match';
+            const desc = s >= 85 ? 'Excellent fit for this role.' : s >= 70 ? 'Strong candidate with room to grow.' : s >= 50 ? 'Several key gaps to address.' : 'Resume needs significant alignment.';
+            return (
+              <HeroScoreCard $color={color} $isPrimary>
+                <HeroScoreCardHeader>
+                  <HeroScoreCardEyebrow>Match Score</HeroScoreCardEyebrow>
+                  <HeroScoreCardBadge $color={color}>
+                    <HeroScoreCardBadgeDot $color={color} />
+                    <HeroScoreCardBadgeText $color={color}>{label}</HeroScoreCardBadgeText>
+                  </HeroScoreCardBadge>
+                </HeroScoreCardHeader>
+                <HeroScoreCardNumber $isPrimary>
+                  {visibleSections?.showScoreComparison && (
+                    <HeroScoreCardPrev>{report.fit_score}</HeroScoreCardPrev>
+                  )}
+                  {s}
+                </HeroScoreCardNumber>
+                <HeroScoreCardTrack><HeroScoreCardFill $color={color} $score={s} /></HeroScoreCardTrack>
+                <HeroScoreCardDesc>{desc}</HeroScoreCardDesc>
+              </HeroScoreCard>
+            );
+          })()}
 
           {/* ATS Score — Secondary */}
-          <ProHeroScoreBlock>
-            <ProHeroScoreValue
-              $color={(() => {
-                const s = report.pro && report.generated_cv ? atsScore : originalAtsScore;
-                if (s === null) return 'rgba(255,255,255,0.3)';
-                return s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2a57a0ff' : s >= 50 ? '#EAB308' : '#F97316';
-              })()}
-            >
-              {(() => {
-                const s = report.pro && report.generated_cv ? atsScore : originalAtsScore;
-                const loading = report.pro && report.generated_cv ? isLoadingAtsScore : isLoadingOriginalAtsScore;
-                if (loading) return '...';
-                if (s !== null) return `${s}%`;
-                return '--';
-              })()}
-            </ProHeroScoreValue>
-            <ProHeroScoreLabel>ATS Score</ProHeroScoreLabel>
-          </ProHeroScoreBlock>
-        </ProHeroScoreRow>
+          {(() => {
+            const s = report.pro && report.generated_cv ? atsScore : originalAtsScore;
+            const loading = report.pro && report.generated_cv ? isLoadingAtsScore : isLoadingOriginalAtsScore;
+            const color = s === null ? 'rgba(255,255,255,0.3)' : s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2A57A0' : s >= 50 ? '#EAB308' : '#F97316';
+            const label = s === null ? '—' : s >= 85 ? 'ATS Ready' : s >= 70 ? 'Looking Good' : s >= 50 ? 'Needs Attention' : 'Not Ready';
+            const desc = s === null ? 'Calculating your ATS compatibility.' : s >= 85 ? 'Your resume passes automated screening.' : s >= 70 ? 'A few tweaks could push you higher.' : s >= 50 ? 'Several issues are affecting your score.' : 'Your resume needs significant improvements.';
+            return (
+              <HeroScoreCard $color={color}>
+                <HeroScoreCardHeader>
+                  <HeroScoreCardEyebrow>ATS Score</HeroScoreCardEyebrow>
+                  <HeroScoreCardBadge $color={color}>
+                    <HeroScoreCardBadgeDot $color={color} />
+                    <HeroScoreCardBadgeText $color={color}>{label}</HeroScoreCardBadgeText>
+                  </HeroScoreCardBadge>
+                </HeroScoreCardHeader>
+                <HeroScoreCardNumber>{loading ? '—' : s !== null ? s : '—'}</HeroScoreCardNumber>
+                <HeroScoreCardTrack><HeroScoreCardFill $color={color} $score={s ?? 0} /></HeroScoreCardTrack>
+                <HeroScoreCardDesc>{desc}</HeroScoreCardDesc>
+              </HeroScoreCard>
+            );
+          })()}
+        </HeroScoreCardsRow>
 
         {/* AI-Generated One Sentence Summary */}
         <ProHeroSummary>
@@ -7608,12 +7932,12 @@ export default function ReportDetailPage() {
 
         {/* Primary CTA — integrated into hero */}
         {report.generated_cv ? (
-          <ProHeroCTA onClick={handlePreviewCV}>
+          <Button variant="primary" onClick={handlePreviewCV}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             View Optimized Resume
-          </ProHeroCTA>
+          </Button>
         ) : (
-          <ProHeroCTA onClick={async () => {
+          <Button variant="primary" onClick={async () => {
             setIsUpgrading(true);
             try {
               const response = await fetch('/api/cv/generate', {
@@ -7639,7 +7963,7 @@ export default function ReportDetailPage() {
           }} disabled={isUpgrading}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.841m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>
             {isUpgrading ? 'Generating...' : 'Generate Optimized Resume'}
-          </ProHeroCTA>
+          </Button>
         )}
       </ProHeroSection>
 
@@ -7759,17 +8083,21 @@ export default function ReportDetailPage() {
 
             {activeDetailTab === 'roles' && (
               <>
-                {roleRecommendations.map((role, i) => (
-                  <RoleItem key={i}>
-                    <div>
-                      <TabRoleTitle>{role.title}</TabRoleTitle>
-                      {role.description && (
-                        <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{role.description}</div>
-                      )}
-                    </div>
-                    <TabRoleFit $color={role.fit >= 80 ? 'var(--primary-400)' : role.fit >= 60 ? '#EAB308' : '#F97316'}>{role.fit}%</TabRoleFit>
-                  </RoleItem>
-                ))}
+                {roleRecommendations.map((role, i) => {
+                  const fitColor = role.fit >= 85 ? 'var(--primary-500)' : role.fit >= 70 ? '#2A57A0' : role.fit >= 50 ? '#EAB308' : '#F97316';
+                  return (
+                    <RoleItem key={i}>
+                      <RoleBar $width={role.fit} $color={fitColor} />
+                      <div>
+                        <TabRoleTitle>{role.title}</TabRoleTitle>
+                        {role.description && (
+                          <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{role.description}</div>
+                        )}
+                      </div>
+                      <TabRoleFit $color={fitColor}>{role.fit}%</TabRoleFit>
+                    </RoleItem>
+                  );
+                })}
               </>
             )}
           </TabContent>
@@ -7818,7 +8146,7 @@ export default function ReportDetailPage() {
                 {interviewPrepTab === 'behavioral' && (
                   <>
                     <InterviewTabDescription>
-                      You have strong experiences to draw from. Tap any question to see a ready-made answer built from your background.
+                      You have strong experiences to draw from. <strong style={{color: "rgba(255, 255, 255, 0.6)"}}>Tap any question to see a ready-made answer built from your background.</strong>
                     </InterviewTabDescription>
                     {interviewPrep.behavioral.map((q, i) => (
                       <InterviewQuestionCard key={i}>
@@ -8131,7 +8459,24 @@ export default function ReportDetailPage() {
       )}
 
       {/* CV Preview Drawer */}
-      <Drawer isOpen={isPreviewOpen} onClose={handleClosePreview}>
+      <Drawer
+        isOpen={isPreviewOpen}
+        onClose={handleClosePreview}
+        floatingBar={
+          <DrawerFloatingBar>
+            <DrawerFloatingBtn $variant="ghost" onClick={handleClosePreview}>
+              Done
+            </DrawerFloatingBtn>
+            <DrawerFloatingDivider />
+            <DrawerFloatingBtn $variant="primary" onClick={handleDownloadCV}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="14" height="14">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              Download
+            </DrawerFloatingBtn>
+          </DrawerFloatingBar>
+        }
+      >
         <DrawerHeader>
           <DrawerTitle>
             {selectedImprovement ? (
@@ -8159,7 +8504,7 @@ export default function ReportDetailPage() {
           )}
         </DrawerHeader>
 
-        <DrawerBody maxWidth="min(90vw, 1000px)" style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <DrawerBody maxWidth="min(90vw, 1000px)" style={{ padding: '20px 24px 96px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {selectedImprovement && (
             <FixDrawerInfoArea>
               <FixDrawerInfoRow>
@@ -8182,12 +8527,16 @@ export default function ReportDetailPage() {
                     title="Resume Preview"
                   />
                   <PDFViewerMobileFallback>
-
+                    <MobileFallbackIconBadge>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                      </svg>
+                    </MobileFallbackIconBadge>
                     <MobileFallbackTitle>Ready for Review</MobileFallbackTitle>
-                    <MobileFallbackText>Mobile browsers don't support inline PDF rendering. Tap below to view your CV.</MobileFallbackText>
+                    <MobileFallbackText>PDF preview isn't available on mobile. Open it in your browser to view and download.</MobileFallbackText>
                     <ViewPDFButton href={pdfPreviewUrl} target="_blank" rel="noopener noreferrer">
                       Open Resume PDF
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" width="18" height="18">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                       </svg>
                     </ViewPDFButton>
@@ -8208,14 +8557,6 @@ export default function ReportDetailPage() {
             </PDFPreviewContainerDrawer>
           </FixDrawerPreviewArea>
         </DrawerBody>
-        <DrawerFooter>
-          <ProHeroCTA onClick={handleDownloadCV} style={{ width: '340px', maxWidth: '95%' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-            </svg>
-            Download Optimized Resume
-          </ProHeroCTA>
-        </DrawerFooter>
       </Drawer>
 
       {/* CV Generation Loading Modal - stays open until ATS score is calculated */}

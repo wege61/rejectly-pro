@@ -2406,8 +2406,10 @@ const TimelineHighlight = styled.span`
 
 // ==================== PROVOCATION SECTION (The True Cost) ====================
 const ProvocationSection = styled.div`
-  margin: 60px 0 100px;
+  margin: 80px 0 100px;
   width: 100%;
+  padding: 0 24px;
+  box-sizing: border-box;
 `;
 
 const ProvocationHeader = styled.div`
@@ -2415,50 +2417,45 @@ const ProvocationHeader = styled.div`
   margin-bottom: 64px;
 
   .eyebrow {
-    font-size: 13px;
+    display: block;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 700;
-    color: #ff6b6b;
+    letter-spacing: 3px;
+    font-weight: 600;
+    color: #ff453a;
     margin-bottom: 16px;
-    display: inline-block;
   }
 
   h3 {
-    font-size: 48px;
-    font-weight: 800;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700;
     color: var(--text-color);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.025em;
     line-height: 1.1;
-    margin-bottom: 24px;
-    max-width: 800px;
+    margin-bottom: 16px;
+    max-width: 680px;
     margin-left: auto;
     margin-right: auto;
-
-    @media (max-width: 768px) {
-      font-size: 36px;
-    }
   }
 
   p {
-    font-size: 20px;
+    font-size: 16px;
     color: var(--text-secondary);
     line-height: 1.6;
-    max-width: 640px;
+    max-width: 500px;
     margin: 0 auto;
-
-    @media (max-width: 768px) {
-      font-size: 18px;
-    }
+    font-weight: 400;
   }
 `;
 
 const ContrastGrid = styled.div`
+  max-width: 840px;
+  margin: 0 auto;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
-  max-width: 1000px;
-  margin: 0 auto;
 
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
@@ -2466,7 +2463,6 @@ const ContrastGrid = styled.div`
 `;
 
 const BaseColumn = styled.div`
-  border-radius: 24px;
   padding: 48px 40px;
   display: flex;
   flex-direction: column;
@@ -2474,38 +2470,45 @@ const BaseColumn = styled.div`
   overflow: hidden;
 
   @media (max-width: 768px) {
-    padding: 32px 24px;
+    padding: 36px 28px;
   }
 `;
 
 const OldWayColumn = styled(BaseColumn)`
-  background: rgba(150, 150, 150, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  opacity: 0.8;
+  background: transparent;
+
+  @media (min-width: 768px) {
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  @media (max-width: 767px) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
 
   .title {
-    font-size: 16px;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-tertiary);
+    letter-spacing: 2.5px;
+    color: rgba(255, 255, 255, 0.3);
     font-weight: 600;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
 
   .price {
-    font-size: 64px;
-    font-weight: 800;
-    color: var(--text-secondary);
+    font-size: 56px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.18);
     letter-spacing: -0.04em;
     line-height: 1;
-    margin-bottom: 32px;
+    margin-bottom: 36px;
     text-decoration: line-through;
-    opacity: 0.5;
+    text-decoration-color: rgba(255, 69, 58, 0.35);
+    text-decoration-thickness: 2px;
 
     span {
-      font-size: 24px;
-      font-weight: 600;
-      letter-spacing: normal;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 0;
     }
   }
 
@@ -2520,14 +2523,15 @@ const OldWayColumn = styled(BaseColumn)`
     li {
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 16px;
-      color: var(--text-tertiary);
+      gap: 10px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: -0.01em;
 
       svg {
-        width: 20px;
-        height: 20px;
-        color: rgba(255, 255, 255, 0.2);
+        width: 15px;
+        height: 15px;
+        color: rgba(255, 69, 58, 0.35);
         flex-shrink: 0;
       }
     }
@@ -2535,50 +2539,44 @@ const OldWayColumn = styled(BaseColumn)`
 `;
 
 const RejectlyColumn = styled(BaseColumn)`
-  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, rgba(var(--primary-500-rgb), 0.05) 100%);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border: 1px solid rgba(var(--accent-rgb), 0.4);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 24px 48px rgba(var(--accent-rgb), 0.15);
+  background: rgba(255, 255, 255, 0.04);
 
   .glow {
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), 0.15) 0%, transparent 50%);
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent);
     pointer-events: none;
   }
 
   .title {
-    font-size: 16px;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     color: var(--accent);
-    font-weight: 800;
-    margin-bottom: 24px;
+    font-weight: 600;
+    margin-bottom: 28px;
     position: relative;
     z-index: 1;
   }
 
   .price {
-    font-size: 80px;
-    font-weight: 800;
+    font-size: 64px;
+    font-weight: 700;
     color: var(--text-color);
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
     line-height: 1;
-    margin-bottom: 32px;
+    margin-bottom: 36px;
     position: relative;
     z-index: 1;
-    text-shadow: 0 4px 24px rgba(var(--accent-rgb), 0.4);
 
     span {
-      font-size: 20px;
-      font-weight: 600;
+      font-size: 18px;
+      font-weight: 400;
       color: var(--text-secondary);
-      letter-spacing: normal;
-      text-shadow: none;
+      letter-spacing: 0;
     }
   }
 
@@ -2595,18 +2593,18 @@ const RejectlyColumn = styled(BaseColumn)`
     li {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      font-size: 18px;
+      gap: 10px;
+      font-size: 14px;
       color: var(--text-color);
-      font-weight: 500;
-      line-height: 1.4;
+      letter-spacing: -0.01em;
+      line-height: 1.45;
 
       svg {
-        width: 24px;
-        height: 24px;
+        width: 15px;
+        height: 15px;
         color: var(--accent);
         flex-shrink: 0;
-        margin-top: -2px;
+        margin-top: 1px;
       }
     }
   }
@@ -2614,13 +2612,13 @@ const RejectlyColumn = styled(BaseColumn)`
 
 const ProvocativeCTA = styled.div`
   text-align: center;
-  margin-top: 64px;
-  
+  margin-top: 56px;
+
   p {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-color);
-    letter-spacing: -0.02em;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    letter-spacing: -0.01em;
   }
 `;
 
@@ -2870,128 +2868,144 @@ export default function Page() {
 
   const featureCards: Card[] = [
     {
-      src: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=800&auto=format&fit=crop",
-      title: "X-Ray Vision for Your Resume",
-      category: "See the Unseen",
+      src: "/reports-list.png",
+      title: "See exactly where you stand.",
+      category: "Match Intelligence",
       content: (
         <div>
-          <p>See exactly why you're getting rejected. Our AI analyzes your resume against the job description and reveals:</p>
+          <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
+            <img
+              src="/reports-list.png"
+              alt="Job Match Analysis Dashboard"
+              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}
+            />
+            <img
+              src="/reports-detail.png"
+              alt="Detailed Match Report"
+              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }}
+            />
+          </div>
+          <p>Upload your resume. Paste any job description. Instantly know your compatibility score — and exactly how to close the gap.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>The exact missing keywords killing your ATS score</li>
-            <li>Formatting errors that trigger auto-rejections</li>
-            <li>Weak action verbs that make you sound junior</li>
-            <li>The quantifiable metrics employers are actually looking for</li>
+            <li>Precise match score against the job description</li>
+            <li>Missing skills and keywords, ranked by impact</li>
+            <li>An optimized resume tailored to this specific role</li>
+            <li>Role recommendations based on your actual profile</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Stop guessing. Get the hiring manager's perspective in seconds.</p>
+          <p style={{ marginTop: '16px' }}>Apply with confidence. Every time.</p>
         </div>
       ),
     },
     {
-      src: "/reports-list.png",
-      title: "Sniper-Targeted Job Matching",
-      category: "Find Your Fit",
+      src: "/ats-screenshot-1.png",
+      title: "Past the filter. Into the room.",
+      category: "ATS Optimization",
       content: (
         <div>
           <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
-            <img 
-              src="/reports-list.png" 
-              alt="AI Job Matching Dashboard Dashboard List" 
-              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }} 
+            <img
+              src="/ats-screenshot-1.png"
+              alt="ATS Optimization Dashboard"
+              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}
             />
-            <img 
-              src="/reports-detail.png" 
-              alt="Detailed Match Analysis View" 
-              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }} 
+            <img
+              src="/ats-screenshot-2.png"
+              alt="ATS Optimization Detail"
+              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }}
             />
           </div>
-          <p>Stop applying blindly and praying for a response. Our AI finds jobs where you have an unfair advantage.</p>
+          <p>Most resumes never reach a human. Ours do.</p>
+          <p style={{ marginTop: '16px' }}>Our AI analyzes your resume against the systems used by the world&apos;s top companies — and fixes everything holding you back.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Hard metric match score for every job posting</li>
-            <li>Brutal skills gap analysis (know what you're missing)</li>
-            <li>Salary insights based on your actual market value</li>
-            <li>Company culture compatibility indicators</li>
+            <li>Keyword density and placement, optimized automatically</li>
+            <li>Formatting engineered to parse correctly every time</li>
+            <li>Instant score before and after — see the difference</li>
+            <li>Export-ready in PDF or Word, exactly as needed</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Apply smarter. Only fight battles you can win.</p>
+          <p style={{ marginTop: '16px' }}>Built to get you seen.</p>
         </div>
       ),
     },
     {
       src: "/cover-letters-list.png",
-      title: "1-Click Tailored Cover Letters",
-      category: "Stop Staring at Blank Pages",
+      title: "Words that open doors.",
+      category: "Cover Letters",
       content: (
         <div>
           <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
-            <img 
-              src="/cover-letters-list.png" 
-              alt="Cover Letters Dashboard" 
-              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }} 
+            <img
+              src="/cover-letters-list.png"
+              alt="Cover Letters Dashboard"
+              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}
             />
-            <img 
-              src="/cover-letters-detail.png" 
-              alt="Generated Cover Letter Detail View" 
-              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }} 
+            <img
+              src="/cover-letters-detail.png"
+              alt="Generated Cover Letter"
+              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }}
             />
           </div>
-          <p>The days of generic &quot;To whom it may concern&quot; letters are over. Generate hyper-personalized letters instantly.</p>
+          <p>Generic cover letters get deleted. Personalized ones get replies.</p>
+          <p style={{ marginTop: '16px' }}>Choose your tone, length, and template. We handle the rest — in seconds.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Professionally written in 30 seconds</li>
-            <li>Matches the specific job requirements perfectly</li>
-            <li>Highlights your most relevant achievements</li>
-            <li>Multiple tone options (formal, creative, confident)</li>
+            <li>Written specifically for this role and this company</li>
+            <li>Tone options: professional, confident, conversational</li>
+            <li>Highlights your most relevant achievements naturally</li>
+            <li>Reads like you spent hours on it. Takes seconds.</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Make them feel like you wrote it just for them.</p>
         </div>
       ),
     },
     {
-      src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
-      title: "Robot-Proof Formatting",
-      category: "Beat the Filters",
+      src: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop",
+      title: "The interview before the interview.",
+      category: "Interview Prep",
       content: (
         <div>
-          <p>Beautiful resumes get rejected if robots can't read them. We use structures engineered to pass the ATS.</p>
+          <p>Real interviewers don&apos;t go easy on you. Neither do we.</p>
+          <p style={{ marginTop: '16px' }}>Practice with an AI that asks the exact questions your interviewer will — and tells you, honestly, how you did.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Templates rigorously tested against major ATS systems</li>
-            <li>Automatic, context-aware keyword optimization</li>
-            <li>Flawless parsing by recruiting software</li>
-            <li>Export to PDF, Word, or plain text exactly as needed</li>
+            <li>Questions generated from the actual job description</li>
+            <li>Behavioral, Technical, Weak Spots, and Ask Them modes</li>
+            <li>Feedback on tone, structure, and filler words</li>
+            <li>Sharper every round</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Built from the ground up to slip past the robot gatekeepers.</p>
+          <p style={{ marginTop: '16px' }}>Walk in knowing you&apos;ve already passed the hardest one.</p>
         </div>
       ),
     },
     {
       src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=800&auto=format&fit=crop",
-      title: "Zero-Friction Resume Builder",
-      category: "Craft Your Masterpiece",
+      title: "Your story, perfectly told.",
+      category: "Resume Builder",
       content: (
         <div>
-          <p>Don&apos;t have a resume yet? Construct a world-class professional profile from the ground up without the headache.</p>
+          <p>No resume? No problem.</p>
+          <p style={{ marginTop: '16px' }}>We guide you through every section — from contact info to your biggest achievements — and build an ATS-optimized resume around your answers.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Smart content suggestions tailored to your target role</li>
-            <li>Real-time ATS score updates as you type</li>
-            <li>Pixel-perfect templates that stand out to recruiters</li>
-            <li>Effortless drag-and-drop section management</li>
+            <li>Smart suggestions tailored to your target role</li>
+            <li>Live ATS score as you build</li>
+            <li>Templates that impress both software and humans</li>
+            <li>Done in one sitting. Ready to send.</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Turn a blank page into your next job offer.</p>
+          <p style={{ marginTop: '16px' }}>From blank page to first interview.</p>
         </div>
       ),
     },
     {
-      src: "https://uploads.dailydot.com/2025/01/anne-hathaway-zoom-meme.jpg?q=65&auto=format&w=1600&ar=2:1&fit=crop",
-      title: "Hyper-Realistic AI Mock Interviews",
-      category: "Own The Room",
+      src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800&auto=format&fit=crop",
+      title: "The clearest path forward.",
+      category: "Career Intelligence",
       content: (
         <div>
-          <p>Don&apos;t practice on real opportunities. Our AI grills you exactly like a seasoned hiring manager would.</p>
+          <p>Getting the job is step one. Getting ahead is everything after.</p>
+          <p style={{ marginTop: '16px' }}>Based on your resume and target role, we map the certifications, courses, and projects that will move your career forward — ranked by real impact.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Dynamic questions generated directly from the job description</li>
-            <li>Real-time feedback on your tone, pacing, and filler words</li>
-            <li>Frameworks for tackling behavioral &quot;curveball&quot; questions</li>
-            <li>Confidence scoring to ensure you sound like the expert you are</li>
+            <li>Personalized to your field and current level</li>
+            <li>Ranked by impact and time investment</li>
+            <li>Specific enough to act on today</li>
+            <li>Updated as your profile evolves</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Walk into every interview knowing you&apos;ve already passed the hardest one.</p>
+          <p style={{ marginTop: '16px' }}>Your next level is closer than you think.</p>
         </div>
       ),
     },

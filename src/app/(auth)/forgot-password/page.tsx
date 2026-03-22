@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
     }
 
     // Check CAPTCHA if configured
-    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) {
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && process.env.NODE_ENV !== 'development' && !turnstileToken) {
       setCaptchaError('Please complete the CAPTCHA verification.');
       return;
     }

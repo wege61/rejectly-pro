@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
 import { Modal } from "@/components/ui/Modal";
+import { EditorModal, Body as EditorModalBody } from "@/components/ui/EditorModal";
 import { Button } from "@/components/ui/Button";
 import { LoadingModal } from "@/components/ui/LoadingModal";
 import { useToast } from "@/contexts/ToastContext";
@@ -30,14 +31,6 @@ const DownloadIcon = () => (
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
     <polyline points="7 10 12 15 17 10" />
     <line x1="12" y1="15" x2="12" y2="3" />
-  </svg>
-);
-
-const LightbulbIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9 18h6" />
-    <path d="M10 22h4" />
-    <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" />
   </svg>
 );
 
@@ -83,36 +76,18 @@ const TemplateItem = styled.label<{ $selected: boolean }>`
   gap: ${({ theme }) => theme.spacing.md};
   padding: ${({ theme }) => theme.spacing.md};
   border-radius: 12px;
-  position: relative;
-  overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  
-  /* Liquid Glass Base */
-  background: ${({ $selected }) =>
-    $selected 
-      ? 'linear-gradient(135deg, rgba(var(--accent-rgb), 0.15), rgba(var(--accent-rgb), 0.05))' 
-      : 'rgba(255, 255, 255, 0.03)'};
-  border: 1px solid ${({ $selected }) =>
-    $selected ? 'rgba(var(--accent-rgb), 0.4)' : 'rgba(255, 255, 255, 0.06)'};
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  transition: border-color 0.2s ease, background 0.2s ease;
 
-  /* Subtle border glow and shadow for selected state */
-  box-shadow: ${({ $selected }) =>
-    $selected 
-      ? '0 8px 32px rgba(var(--accent-rgb), 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.2)' 
-      : 'inset 0 1px 1px rgba(255, 255, 255, 0.05)'};
+  background: ${({ $selected }) =>
+    $selected ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.02)'};
+  border: 1px solid ${({ $selected }) =>
+    $selected ? 'rgba(var(--accent-rgb), 0.35)' : 'rgba(255, 255, 255, 0.06)'};
 
   &:hover {
-    transform: translateY(-2px);
-    background: ${({ $selected }) =>
-      $selected 
-        ? 'linear-gradient(135deg, rgba(var(--accent-rgb), 0.2), rgba(var(--accent-rgb), 0.08))' 
-        : 'rgba(255, 255, 255, 0.06)'};
+    background: rgba(255, 255, 255, 0.05);
     border-color: ${({ $selected }) =>
-      $selected ? 'rgba(var(--accent-rgb), 0.6)' : 'rgba(255, 255, 255, 0.15)'};
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      $selected ? 'rgba(var(--accent-rgb), 0.5)' : 'rgba(255, 255, 255, 0.12)'};
   }
 `;
 
@@ -174,32 +149,17 @@ const SimpleOptionItem = styled.label<{ $selected: boolean }>`
   cursor: pointer;
   padding: 10px 14px;
   border-radius: 10px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  
-  /* Liquid Glass Base */
+  transition: border-color 0.2s ease, background 0.2s ease;
+
   background: ${({ $selected }) =>
-    $selected 
-      ? 'linear-gradient(90deg, rgba(var(--accent-rgb), 0.12), rgba(var(--accent-rgb), 0.03))' 
-      : 'rgba(255, 255, 255, 0.02)'};
+    $selected ? 'rgba(255, 255, 255, 0.05)' : 'transparent'};
   border: 1px solid ${({ $selected }) =>
     $selected ? 'rgba(var(--accent-rgb), 0.3)' : 'transparent'};
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-
-  /* Subtle border glow and shadow for selected state */
-  box-shadow: ${({ $selected }) =>
-    $selected 
-      ? '0 4px 16px rgba(var(--accent-rgb), 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.1)' 
-      : 'none'};
 
   &:hover {
-    transform: translateX(4px);
-    background: ${({ $selected }) =>
-      $selected 
-        ? 'linear-gradient(90deg, rgba(var(--accent-rgb), 0.15), rgba(var(--accent-rgb), 0.05))' 
-        : 'rgba(255, 255, 255, 0.05)'};
+    background: rgba(255, 255, 255, 0.04);
     border-color: ${({ $selected }) =>
-      $selected ? 'rgba(var(--accent-rgb), 0.5)' : 'rgba(255, 255, 255, 0.1)'};
+      $selected ? 'rgba(var(--accent-rgb), 0.45)' : 'rgba(255, 255, 255, 0.08)'};
   }
 `;
 
@@ -288,130 +248,212 @@ const StyledTextarea = styled.textarea`
   }
 `;
 
-const TwoColumnGrid = styled.div`
+// ─── Document-style editor layout ─────────────────────────────────────────────
+
+const EditorLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
-  padding: 8px 4px;
+  align-items: flex-start;
 
   @media (min-width: 900px) {
-    grid-template-columns: 5fr 3fr;
-    align-items: flex-start;
+    grid-template-columns: 240px 1fr;
+    gap: 32px;
   }
-`;
-
-const EditorColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  height: 100%;
 `;
 
 const InsightsColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   position: sticky;
   top: 0;
-`;
 
-const EditorContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative;
-`;
-
-const ParagraphsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const ParagraphCard = styled.div`
-  padding: 18px 24px;
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  
-  /* Liquid Glass Base */
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-
-  &:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  @media (max-width: 899px) {
+    display: none;
   }
 `;
 
-const ParagraphType = styled.div<{ $type: string }>`
-  display: inline-block;
-  color: ${({ $type }) => {
-    switch ($type) {
-      case 'header': return '#64748b';
-      case 'greeting': return '#EAB308';
-      case 'opening': return '#2A57A0';
-      case 'achievement': return 'var(--primary-500)';
-      case 'motivation': return '#f59e0b';
-      case 'closing': return '#F97316';
-      default: return '#6b7280';
-    }
-  }};
-  
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 12px;
+const RationalePanel = styled.div`
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 `;
 
+const RationaleTitle = styled.div`
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.28);
+  margin-bottom: 10px;
+`;
+
+const RationaleContent = styled.div`
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.65;
+`;
+
+const RationaleEmpty = styled.div`
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.25);
+  line-height: 1.6;
+  font-style: italic;
+`;
+
+// Key Highlights
+const HighlightsPanel = styled.div`
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+`;
+
+const HighlightsTrigger = styled.button<{ $isOpen: boolean }>`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: transparent;
+  cursor: pointer;
+  gap: 8px;
+
+  .chevron {
+    width: 12px;
+    height: 12px;
+    color: rgba(255, 255, 255, 0.2);
+    transition: transform 0.22s ease;
+    transform: ${({ $isOpen }) => ($isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};
+    flex-shrink: 0;
+  }
+`;
+
+const HighlightsTriggerText = styled.span`
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.28);
+`;
+
+const HighlightsContent = styled.div<{ $isOpen: boolean }>`
+  display: grid;
+  grid-template-rows: ${({ $isOpen }) => ($isOpen ? '1fr' : '0fr')};
+  transition: grid-template-rows 0.22s ease;
+`;
+
+const HighlightsInner = styled.div`
+  overflow: hidden;
+`;
+
+const HighlightItem = styled.div`
+  padding: 8px 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+  &:first-child { border-top: none; }
+`;
+
+const InteractionHint = styled.p`
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.22);
+  line-height: 1.6;
+  margin: 0;
+  padding-top: 4px;
+`;
+
+const HintUnderline = styled.span`
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: rgba(255, 255, 255, 0.3);
+  text-underline-offset: 3px;
+`;
+
+const DocumentView = styled.div`
+  min-width: 0;
+`;
+
+const ParagraphSection = styled.div`
+  margin-bottom: 36px;
+  position: relative;
+  &:last-child { margin-bottom: 0; }
+`;
+
+const ParagraphEyebrow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  position: relative;
+`;
+
+const EyebrowLabel = styled.span`
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.2);
+  cursor: default;
+  user-select: none;
+`;
+
+const EyebrowDivider = styled.div`
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+`;
+
+
 const SentenceContainer = styled.div`
-  margin-top: 10px;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.85;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 15px;
 `;
 
 const Sentence = styled.span<{ $isHighlight: boolean; $isSelected: boolean }>`
-  cursor: pointer;
-  padding: 4px 6px;
-  margin: 0 -2px;
-  border-radius: 6px;
+  padding: 2px 4px;
+  margin: 0 -1px;
+  border-radius: 4px;
   font-size: 13.5px;
-  text-decoration: none;
-  display: inline-block;
-  
-  /* Liquid Glass Highlight */
-  background: ${({ $isHighlight, $isSelected }) =>
-    $isSelected 
-      ? 'linear-gradient(135deg, rgba(var(--accent-rgb), 0.2), rgba(var(--accent-rgb), 0.1))' 
-      : $isHighlight 
-        ? 'rgba(255, 255, 255, 0.05)' 
-        : 'transparent'};
-  
-  color: ${({ $isHighlight, $isSelected }) =>
-    $isSelected || $isHighlight ? 'var(--accent)' : 'inherit'};
-    
-  border: 1px solid ${({ $isSelected }) =>
-    $isSelected ? 'rgba(var(--accent-rgb), 0.4)' : 'transparent'};
-    
-  box-shadow: ${({ $isSelected }) => 
-    $isSelected ? '0 0 12px rgba(var(--accent-rgb), 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2)' : 'none'};
-    
-  backdrop-filter: ${({ $isSelected }) => $isSelected ? 'blur(4px)' : 'none'};
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline;
+  transition: background 0.15s ease, color 0.15s ease;
 
-  &:hover {
-    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.25), rgba(var(--accent-rgb), 0.1));
-    color: var(--accent);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-    border-color: rgba(var(--accent-rgb), 0.5);
-  }
+  /* Non-interactive sentences */
+  cursor: ${({ $isHighlight }) => $isHighlight ? 'pointer' : 'text'};
+
+  text-decoration: ${({ $isHighlight, $isSelected }) =>
+    $isHighlight || $isSelected ? 'underline' : 'none'};
+  text-decoration-style: ${({ $isSelected }) => $isSelected ? 'solid' : 'dashed'};
+  text-decoration-color: ${({ $isHighlight, $isSelected }) =>
+    $isSelected
+      ? 'var(--accent)'
+      : $isHighlight
+        ? 'rgba(var(--accent-rgb), 0.55)'
+        : 'transparent'};
+  text-underline-offset: 3px;
+
+  background: ${({ $isSelected }) =>
+    $isSelected ? 'rgba(var(--accent-rgb), 0.12)' : 'transparent'};
+
+  color: ${({ $isHighlight, $isSelected }) =>
+    $isSelected
+      ? 'var(--accent)'
+      : $isHighlight
+        ? 'rgba(255, 255, 255, 0.75)'
+        : 'inherit'};
+
+  ${({ $isHighlight }) => $isHighlight && `
+    &:hover {
+      background: rgba(var(--accent-rgb), 0.1);
+      color: var(--accent);
+      text-decoration-color: var(--accent);
+      text-decoration-style: solid;
+    }
+  `}
 `;
 
 // Select-style dropdown for alternatives
@@ -433,14 +475,8 @@ const SelectDropdown = styled.div`
   transform-origin: top left;
 
   @keyframes selectFadeIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95) translateY(-8px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
+    from { opacity: 0; transform: scale(0.97); }
+    to   { opacity: 1; transform: scale(1); }
   }
 
   &::-webkit-scrollbar { width: 6px; }
@@ -470,26 +506,16 @@ const SelectItem = styled.div<{ $isSelected?: boolean }>`
   border-radius: 8px;
   font-size: 13px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.9);
-  transition: all 150ms ease;
+  color: ${({ $isSelected }) => $isSelected ? 'var(--accent)' : 'rgba(255, 255, 255, 0.85)'};
+  font-weight: ${({ $isSelected }) => $isSelected ? '500' : '400'};
+  background: ${({ $isSelected }) => $isSelected ? 'rgba(var(--accent-rgb), 0.08)' : 'transparent'};
+  transition: background 0.15s ease;
   margin-bottom: 2px;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.06);
-    transform: translateX(2px);
+    background: ${({ $isSelected }) =>
+      $isSelected ? 'rgba(var(--accent-rgb), 0.12)' : 'rgba(255, 255, 255, 0.05)'};
   }
-
-  ${({ $isSelected }) =>
-    $isSelected &&
-    `
-    background: rgba(var(--accent-rgb), 0.1);
-    color: var(--accent);
-    font-weight: 500;
-    
-    &:hover {
-      background: rgba(var(--accent-rgb), 0.15);
-    }
-  `}
 `;
 
 const SelectIndicator = styled.span`
@@ -513,137 +539,88 @@ const SelectOverlay = styled.div`
   z-index: 2999;
 `;
 
-const RationalePanel = styled.div`
-  padding: 16px 20px;
-  border: 1px solid rgba(var(--accent-rgb), 0.2);
-  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.05) 0%, rgba(var(--accent-rgb), 0.02) 100%);
-  border-radius: 16px;
-  height: 100%;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-`;
+// ─── Floating Player Bar (Apple Music-style) ────────────────────────────────
 
-const RationaleTitle = styled.div`
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--accent);
-  margin-bottom: 8px;
+const FloatingPlayerBar = styled.div`
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
 
-  svg {
-    width: 14px;
-    height: 14px;
+  /* Navbar pattern: backdrop-filter on ::before with z-index: -1
+     avoids nested stacking context issues */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 100px;
+    background: rgba(150, 150, 150, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    z-index: -1;
   }
 `;
 
-const RationaleContent = styled.div`
+const PlayerBtn = styled.button<{ $variant?: 'primary' | 'default' | 'ghost' }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 100px;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.6;
-`;
-
-const RationaleEmpty = styled.div`
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-  font-style: italic;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-// Accordion for Key Highlights
-const AccordionWrapper = styled.div`
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border-radius: 16px;
-  padding: 0 20px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.1);
-`;
-
-const AccordionTrigger = styled.button<{ $isOpen: boolean }>`
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  padding: ${({ theme }) => theme.spacing.md} 0;
-  background: transparent;
-  border: none;
+  font-weight: 500;
   cursor: pointer;
-  gap: 10px;
-  transition: all 150ms ease;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  letter-spacing: -0.1px;
+
+  ${({ $variant = 'default' }) => {
+    switch ($variant) {
+      case 'primary':
+        return `
+          background: rgba(255, 255, 255, 0.14);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          color: rgba(255, 255, 255, 0.95);
+          &:hover { background: rgba(255, 255, 255, 0.2); }
+          &:active { opacity: 0.75; }
+        `;
+      case 'ghost':
+        return `
+          background: transparent;
+          border: 1px solid transparent;
+          color: rgba(255, 255, 255, 0.45);
+          &:hover { background: rgba(255, 255, 255, 0.07); color: rgba(255, 255, 255, 0.7); }
+          &:active { opacity: 0.6; }
+        `;
+      default:
+        return `
+          background: transparent;
+          border: 1px solid transparent;
+          color: rgba(255, 255, 255, 0.75);
+          &:hover { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.95); }
+          &:active { opacity: 0.6; }
+        `;
+    }
+  }}
+
+  svg { flex-shrink: 0; }
 `;
 
-const AccordionTriggerText = styled.span`
-  font-size: 13px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const AccordionChevron = styled.div<{ $isOpen: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 200ms ease;
-  transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0deg)")};
-  color: ${({ theme }) => theme.colors.textSecondary};
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-`;
-
-const AccordionContent = styled.div<{ $isOpen: boolean }>`
-  display: grid;
-  grid-template-rows: ${({ $isOpen }) => ($isOpen ? "1fr" : "0fr")};
-  transition: grid-template-rows 200ms ease;
-`;
-
-const AccordionContentInner = styled.div`
-  overflow: hidden;
-`;
-
-const AccordionContentPadding = styled.div`
-  padding-bottom: ${({ theme }) => theme.spacing.md};
-`;
-
-const HighlightItem = styled.div`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  padding: 6px 0;
-  display: flex;
-  align-items: flex-start;
-  gap: ${({ theme }) => theme.spacing.sm};
-
-  svg {
-    color: var(--success);
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-`;
-
-const ChevronDownIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-  </svg>
-);
-
-const ActionButtonsWrapper = styled.div`
-  display: flex;
-  gap: 12px;
-  margin-left: auto; /* Push buttons to the right */
+const PlayerDivider = styled.div`
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 4px;
+  flex-shrink: 0;
 `;
 
 const GlassButton = styled.button<{ $variant?: 'primary' | 'secondary' | 'ghost', $size?: 'sm' | 'md' }>`
@@ -653,42 +630,35 @@ const GlassButton = styled.button<{ $variant?: 'primary' | 'secondary' | 'ghost'
   gap: 6px;
   white-space: nowrap;
   border-radius: 10px;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-weight: 500;
   cursor: pointer;
-  
-  /* Size */
-  ${({ $size = 'md' }) => 
-    $size === 'sm' 
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+
+  ${({ $size = 'md' }) =>
+    $size === 'sm'
       ? 'padding: 8px 16px; font-size: 13px;'
       : 'padding: 10px 20px; font-size: 14px;'
   }
 
-  /* Variants */
   ${({ $variant = 'secondary' }) => {
     switch ($variant) {
       case 'primary':
         return `
-          background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.8), rgba(var(--accent-rgb), 0.6));
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: var(--accent);
+          border: 1px solid rgba(255, 255, 255, 0.15);
           color: #ffffff;
-          box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.4);
-          
-          &:hover {
-            background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.9), rgba(var(--accent-rgb), 0.7));
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(var(--accent-rgb), 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.5);
-          }
+
+          &:hover { opacity: 0.88; }
+          &:active { opacity: 0.76; }
         `;
       case 'ghost':
         return `
           background: transparent;
           border: 1px solid transparent;
-          color: rgba(255, 255, 255, 0.6);
-          box-shadow: none;
-          
+          color: rgba(255, 255, 255, 0.55);
+
           &:hover {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.85);
             background: rgba(255, 255, 255, 0.05);
             border-color: rgba(255, 255, 255, 0.08);
           }
@@ -696,26 +666,18 @@ const GlassButton = styled.button<{ $variant?: 'primary' | 'secondary' | 'ghost'
       case 'secondary':
       default:
         return `
-          background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+          background: rgba(255, 255, 255, 0.06);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          color: rgba(255, 255, 255, 0.9);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-          
+          color: rgba(255, 255, 255, 0.85);
+
           &:hover {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.18);
           }
+          &:active { opacity: 0.8; }
         `;
     }
   }}
-
-  &:active {
-    transform: translateY(1px);
-  }
 `;
 
 interface Sentence {
@@ -1193,8 +1155,8 @@ export function CoverLetterGenerator({
         </Modal.Body>
       </Modal>
 
-      {/* Modal - Editor/Viewer */}
-      <Modal
+      {/* EditorModal - Editor/Viewer */}
+      <EditorModal
         isOpen={isEditorSheetOpen}
         onClose={() => {
           setIsEditorSheetOpen(false);
@@ -1206,24 +1168,86 @@ export function CoverLetterGenerator({
         title="Cover Letter"
         description={generatedLetter ? `${generatedLetter.wordCount} words` : undefined}
         size="xl"
+        floatingBar={generatedLetter ? (
+          <FloatingPlayerBar>
+            {!existingLetter && (
+              <>
+                <PlayerBtn
+                  $variant="ghost"
+                  onClick={() => {
+                    setIsEditorSheetOpen(false);
+                    setGeneratedLetter(null);
+                  }}
+                >
+                  <RefreshIcon size={14} /> New
+                </PlayerBtn>
+                <PlayerDivider />
+              </>
+            )}
+            <PlayerBtn $variant="default" onClick={handleCopy}>
+              <CopyIcon /> Copy
+            </PlayerBtn>
+            <PlayerBtn $variant="primary" onClick={handleDownload}>
+              <DownloadIcon /> Download .txt
+            </PlayerBtn>
+          </FloatingPlayerBar>
+        ) : undefined}
       >
-        <Modal.Body>
+        <EditorModalBody>
           {generatedLetter && (
-            <GeneratorContent style={{ padding: '0 20px 20px' }}>
+            <GeneratorContent style={{ padding: '0 0 88px' }}>
               {generatedLetter.paragraphs && generatedLetter.paragraphs.length > 0 ? (
-                <TwoColumnGrid>
-                  {/* Left Column: The Application Letter */}
-                  <EditorColumn>
-                    <ParagraphsContainer>
+                <EditorLayout>
+                  {/* Left column: Insights */}
+                  <InsightsColumn>
+                    <RationalePanel>
+                      <RationaleTitle>Why This Content?</RationaleTitle>
+                      {activeParagraph ? (
+                        <RationaleContent>{activeParagraph.rationale}</RationaleContent>
+                      ) : (
+                        <RationaleEmpty>Hover over a paragraph to see why it was written this way.</RationaleEmpty>
+                      )}
+                    </RationalePanel>
+
+                    {generatedLetter.keyHighlights && generatedLetter.keyHighlights.length > 0 && (
+                      <HighlightsPanel>
+                        <HighlightsTrigger
+                          $isOpen={isHighlightsOpen}
+                          onClick={() => setIsHighlightsOpen(!isHighlightsOpen)}
+                        >
+                          <HighlightsTriggerText>
+                            Key Highlights ({generatedLetter.keyHighlights.length})
+                          </HighlightsTriggerText>
+                          <svg className="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
+                        </HighlightsTrigger>
+                        <HighlightsContent $isOpen={isHighlightsOpen}>
+                          <HighlightsInner>
+                            {generatedLetter.keyHighlights.map((h, i) => (
+                              <HighlightItem key={i}>{h}</HighlightItem>
+                            ))}
+                          </HighlightsInner>
+                        </HighlightsContent>
+                      </HighlightsPanel>
+                    )}
+                    <InteractionHint>
+                      <HintUnderline>Underlined phrases</HintUnderline> have alternatives — click to swap.
+                    </InteractionHint>
+                  </InsightsColumn>
+
+                  {/* Right column: The letter */}
+                  <DocumentView>
                     {generatedLetter.paragraphs.map((paragraph) => (
-                      <ParagraphCard
+                      <ParagraphSection
                         key={paragraph.id}
                         onMouseEnter={() => setActiveParagraphId(paragraph.id)}
                         onMouseLeave={() => setActiveParagraphId(null)}
                       >
-                        <ParagraphType $type={paragraph.type}>
-                          {paragraph.type.replace('_', ' ')}
-                        </ParagraphType>
+                        <ParagraphEyebrow>
+                          <EyebrowLabel>{paragraph.type.replace('_', ' ')}</EyebrowLabel>
+                          <EyebrowDivider />
+                        </ParagraphEyebrow>
                         <SentenceContainer>
                           {paragraph.sentences && paragraph.sentences.length > 0 ? (
                             paragraph.sentences.map((sentence, idx) => (
@@ -1245,77 +1269,15 @@ export function CoverLetterGenerator({
                               </span>
                             ))
                           ) : (
-                            <div style={{ whiteSpace: 'pre-wrap' }}>
-                              {paragraph.content}
-                            </div>
+                            <div style={{ whiteSpace: 'pre-wrap' }}>{paragraph.content}</div>
                           )}
                         </SentenceContainer>
-                      </ParagraphCard>
+                      </ParagraphSection>
                     ))}
-                    </ParagraphsContainer>
-                  </EditorColumn>
-
-                  {/* Right Column: Insights & Rationale */}
-                  <InsightsColumn>
-                    {generatedLetter.paragraphs && generatedLetter.paragraphs.length > 0 && (
-                      <RationalePanel>
-                        <RationaleTitle>
-                          <LightbulbIcon /> Why This Content?
-                        </RationaleTitle>
-                        {activeParagraph ? (
-                          <RationaleContent>
-                            <strong style={{ display: 'block', marginBottom: '8px', fontSize: '12px' }}>
-                              {activeParagraph.type.replace('_', ' ').toUpperCase()}:
-                            </strong>
-                            {activeParagraph.rationale}
-                          </RationaleContent>
-                        ) : (
-                          <RationaleEmpty>
-                            Hover over a paragraph to see why it was included. AI adapts styling of thoughts accordingly.
-                          </RationaleEmpty>
-                        )}
-                      </RationalePanel>
-                    )}
-
-                    {generatedLetter.keyHighlights && generatedLetter.keyHighlights.length > 0 && (
-                      <AccordionWrapper>
-                        <AccordionTrigger
-                          $isOpen={isHighlightsOpen}
-                          onClick={() => setIsHighlightsOpen(!isHighlightsOpen)}
-                        >
-                          <AccordionTriggerText>
-                            Key Highlights ({generatedLetter.keyHighlights.length})
-                          </AccordionTriggerText>
-                          <AccordionChevron $isOpen={isHighlightsOpen}>
-                            <ChevronDownIcon />
-                          </AccordionChevron>
-                        </AccordionTrigger>
-                        <AccordionContent $isOpen={isHighlightsOpen}>
-                          <AccordionContentInner>
-                            <AccordionContentPadding>
-                              {generatedLetter.keyHighlights.map((highlight, index) => (
-                                <HighlightItem key={index}>
-                                  <span>{highlight}</span>
-                                </HighlightItem>
-                              ))}
-                            </AccordionContentPadding>
-                          </AccordionContentInner>
-                        </AccordionContent>
-                      </AccordionWrapper>
-                    )}
-                  </InsightsColumn>
-                </TwoColumnGrid>
+                  </DocumentView>
+                </EditorLayout>
               ) : (
-                <div style={{
-                  padding: '24px',
-                  background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.05)',
-                  borderRadius: '16px',
-                  whiteSpace: 'pre-wrap',
-                  lineHeight: '1.8',
-                  maxHeight: '600px',
-                  overflowY: 'auto'
-                }}>
+                <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.85', fontSize: '15px', color: 'rgba(255,255,255,0.88)' }}>
                   {generatedLetter.content}
                 </div>
               )}
@@ -1357,30 +1319,9 @@ export function CoverLetterGenerator({
               }
             </GeneratorContent>
           )}
-        </Modal.Body>
-        <Modal.Footer>
-          <ActionButtonsWrapper>
-            <GlassButton onClick={handleCopy} $variant="primary" $size="sm">
-              <CopyIcon /> Copy
-            </GlassButton>
-            <GlassButton onClick={handleDownload} $variant="secondary" $size="sm">
-              <DownloadIcon /> Download
-            </GlassButton>
-            {!existingLetter && (
-              <GlassButton
-                onClick={() => {
-                  setIsEditorSheetOpen(false);
-                  setGeneratedLetter(null);
-                }}
-                $variant="ghost"
-                $size="sm"
-              >
-                <RefreshIcon size={16} /> New
-              </GlassButton>
-            )}
-          </ActionButtonsWrapper>
-        </Modal.Footer>
-      </Modal>
+
+        </EditorModalBody>
+      </EditorModal>
     </>
   );
 }

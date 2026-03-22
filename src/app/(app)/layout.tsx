@@ -3,7 +3,7 @@
 import styled, { css, keyframes } from "styled-components";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { PieChart, FileUser, Settings2 } from "lucide-react";
+import { PieChart, FileUser, Settings2, Wand2 } from "lucide-react";
 import { ROUTES } from "@/lib/constants";
 import { signOut } from "@/lib/auth";
 import { Spinner } from "@/components/ui/Spinner";
@@ -743,6 +743,8 @@ const JobMatchIcon = () => <PieChart size={24} strokeWidth={1.5} />;
 
 const ATSIcon = () => <Settings2 size={24} strokeWidth={1.5} />;
 
+const CVBuilderIcon = () => <Wand2 size={24} strokeWidth={1.5} />;
+
 const CoverLetterIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -798,6 +800,7 @@ const navSections = [
   {
     label: "Tools",
     items: [
+      { label: "CV Builder",    href: "/cv/builder",             icon: <CVBuilderIcon /> },
       { label: "Job Match",     href: ROUTES.APP.REPORTS,        icon: <JobMatchIcon /> },
       { label: "ATS Optimizer", href: ROUTES.APP.ATS_OPTIMIZER,  icon: <ATSIcon /> },
       { label: "Cover Letters", href: ROUTES.APP.COVER_LETTERS,  icon: <CoverLetterIcon /> },

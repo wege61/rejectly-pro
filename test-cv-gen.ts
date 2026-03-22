@@ -1,48 +1,54 @@
-import { generateOptimizedCVPrompt } from "./src/lib/ai/prompts";
-import { openai } from "./src/lib/ai/client";
-import * as fs from "fs";
+import { generateCVPDF } from './src/lib/pdf/cvGenerator';
+import fs from 'fs';
+import { GeneratedCV } from './src/types/cv';
 
-async function testGeneration() {
-  const cvText = fs.readFileSync("./public/dummy_weak_cv.txt", "utf-8");
-  const jobText = fs.readFileSync("./public/dummy_job.txt", "utf-8");
-
-  const userMetrics = {
-    "metric_1": "Increased sales volume by 45%",
-    "metric_2": "$15,000 quarterly budget"
-  };
-
-  const prompt = generateOptimizedCVPrompt(
-    cvText,
-    [jobText],
-    { fitScore: 60, summary: "Okay fit", missingKeywords: [] },
-    false,
-    [],
-    [],
-    "",
-    "English",
-    userMetrics
-  );
-
-  console.log("SENDING TO OPENAI FOR CV GENERATION...");
-  
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    response_format: { type: "json_object" },
-    messages: [
+async function test() {
+  const dummyCV: GeneratedCV = {
+    contact: {
+      name: 'Oğuzan Zarı',
+      email: 'zardao@gmail.xom',
+      phone: '+905399402767',
+      location: 'Istanbul, Türkiye',
+      linkedin: 'linkedin.com/in/oz',
+    },
+    summary: "Driven recent graduate with a Bachelor's in Business Administration, passionate about transforming retail experiences through innovative merchandising strategies.",
+    experience: [
       {
-        role: "system",
-        content: prompt + "\n\nReturn the result in JSON format."
+        title: 'Retail Merchandiser',
+        company: 'Pull&Bear',
+        location: 'Bakırköy, Istanbul',
+        startDate: 'May 2023',
+        endDate: 'Jun 2023',
+        bullets: ['Ensured the organized display of apparel on shelves to enhance visual merchandising and customer engagement.'],
       }
     ],
-    temperature: 0.3,
-  });
+    education: [
+      {
+        institution: 'Istanbul Aydin University',
+        degree: "Bachelor's",
+        fieldOfStudy: 'Business Administration',
+        location: 'Istanbul',
+        graduationDate: 'Jun 2025'
+      }
+    ],
+    skills: {
+      technical: ['Financial Analysis', 'Store Layout Optimization', 'Product Promotion'],
+      soft: []
+    },
+    certifications: [],
+    languages: []
+  };
 
-  const content = response.choices[0].message.content;
-  console.log("\n\n=== GENERATED CV ===");
-  if (content) {
-     const result = JSON.parse(content);
-     console.log(JSON.stringify(result.experience, null, 2));
-  }
+  const photoBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=";
+
+  const doc = await generateCVPDF(dummyCV, undefined, {
+    colorTemplate: 'modern-blue',
+    photoBase64: photoBase64
+  });
+  
+  const buffer = Buffer.from(doc.output('arraybuffer'));
+  fs.writeFileSync('test_output.pdf', buffer);
+  console.log('PDF saved to test_output.pdf');
 }
 
-testGeneration().catch(console.error);
+test().catch(console.error);

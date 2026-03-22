@@ -14,6 +14,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { CreditsCard } from "@/components/dashboard/CreditsCard";
+import { useCVStore } from "@/components/cv-builder/store";
+import { CVPreview } from "@/components/cv-builder/CVPreview";
 
 // Icons
 const UploadIcon = () => (
@@ -325,7 +327,7 @@ const CVGrid = styled.div`
 `;
 
 // Tab Navigation
-type CVTabType = 'original' | 'ats-optimized' | 'job-matched';
+type CVTabType = 'original' | 'ats-optimized' | 'job-matched' | 'created';
 
 /* Tab bar — floating pill matching marketing NavContainer */
 const TabContainer = styled.div`
@@ -793,6 +795,13 @@ const ATSIcon2 = () => (
 const JobIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+  </svg>
+);
+
+const CreatedIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.89 1.147l-2.002.502a.625.625 0 01-.765-.765l.502-2.002a4.5 4.5 0 011.147-1.89L16.862 4.487z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 7.5l1.5 1.5M10.5 10.5h-3m3 3h-3m3-6h-3" />
   </svg>
 );
 
@@ -1609,8 +1618,19 @@ export default function CVPage() {
   const { user } = useAuth();
   const router = useRouter();
 
+  useEffect(() => {
+    // Read ?tab= query parameter to auto-switch tabs
+    // Uses native URL to bypass Next.js 14 Suspense boundaries
+    const searchParams = new URLSearchParams(window.location.search);
+    const tab = searchParams.get('tab') as CVTabType;
+    if (tab && ['original', 'ats-optimized', 'job-matched', 'created'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, []);
+
   // Filter CVs by category
-  const originalCVs = allCVs.filter((cv) => !("isOptimized" in cv) || !cv.isOptimized);
+  const originalCVs = allCVs.filter((cv) => !("isOptimized" in cv) && cv.type === "cv" && cv.file_url !== "builder://local");
+  const createdCVs = allCVs.filter((cv) => !("isOptimized" in cv) && cv.type === "cv" && cv.file_url === "builder://local");
   const atsOptimizedCVs = allCVs.filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source === 'ats-optimizer');
   const jobMatchedCVs = allCVs.filter((cv) => "isOptimized" in cv && cv.isOptimized && (cv as any).source !== 'ats-optimizer');
 
@@ -1623,6 +1643,8 @@ export default function CVPage() {
         return atsOptimizedCVs;
       case 'job-matched':
         return jobMatchedCVs;
+      case 'created':
+        return createdCVs;
       default:
         return [];
     }
@@ -1717,7 +1739,7 @@ export default function CVPage() {
 
       const supabase = createClient();
 
-      // Fetch original CVs
+      // Fetch original CVs and Built CVs
       const { data: originalCVs } = await supabase
         .from("documents")
         .select("*")
@@ -1904,6 +1926,55 @@ export default function CVPage() {
   const handleDownload = async (cv: CVItem) => {
     if (!cv?.file_url) return;
 
+    if (cv.file_url === "builder://local") {
+      let element = document.getElementById("cv-preview-paper");
+      
+      // If downloaded straight from the card icon, auto-open the preview drawer first
+      if (!element) {
+        if (cv.text) {
+          try {
+            const parsedCv = JSON.parse(cv.text);
+            useCVStore.setState({ cv: parsedCv });
+          } catch (e) {
+            console.error("Parse error", e);
+          }
+        }
+        setPreviewCV(cv);
+        
+        // Wait for React to render the Drawer and CVPreview into the DOM
+        await new Promise(r => setTimeout(r, 300));
+        
+        element = document.getElementById("cv-preview-paper");
+        if (!element) {
+          toast.error("Preview failed to load. Please open the CV manually.");
+          return;
+        }
+      }
+      
+      toast.info("Preparing PDF...");
+      try {
+        const { generatePDF } = await import("@/utils/exportPDF");
+        
+        let filename = "Built_CV";
+        if (cv.text) {
+           try {
+             const parsedData = JSON.parse(cv.text);
+             if (parsedData.contact?.name) filename = parsedData.contact.name.replace(/\s+/g, "_") + "_CV";
+           } catch(e) {}
+        }
+        // generatePDF expects just the prefix if the browser adds .pdf automatically, 
+        // wait, we pass filename explicitly to generatePDF which adds nothing, it's just the document title.
+        // It's safe.
+        
+        await generatePDF('cv-preview-paper', filename);
+        toast.success("CV print dialog opened!");
+      } catch (error) {
+        console.error("Export error:", error);
+        toast.error("Failed to generate PDF");
+      }
+      return;
+    }
+
     try {
       const publicUrl = getPublicUrl(cv.file_url);
       const response = await fetch(publicUrl);
@@ -2042,8 +2113,9 @@ export default function CVPage() {
                 </svg>
                 {isUploading ? 'Uploading...' : 'Upload Your Resume'}
               </CVCTAButton>
-              <CVCTASecondary onClick={() => document.getElementById('cv-upload')?.click()}>
-                PDF or DOCX supported
+              <CVCTASecondary onClick={() => { useCVStore.getState().resetCV(); router.push('/cv/builder'); }} style={{ borderColor: 'rgba(59, 130, 246, 0.3)', color: '#93c5fd' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8L19 13"/><path d="M15 9h0"/><path d="M17.8 6.2L19 5"/><path d="M3 21l9-9"/><path d="M12.2 6.2L11 5"/></svg>
+                Build from Scratch (AI)
               </CVCTASecondary>
             </CVCTARow>
           </CVEmptyHero>
@@ -2059,6 +2131,14 @@ export default function CVPage() {
                   <OriginalIcon />
                   Original
                   <TabCount $active={activeTab === 'original'}>{originalCVs.length}</TabCount>
+                </TabButton>
+                <TabButton
+                  $active={activeTab === 'created'}
+                  onClick={() => setActiveTab('created')}
+                >
+                  <CreatedIcon />
+                  Created
+                  <TabCount $active={activeTab === 'created'}>{createdCVs.length}</TabCount>
                 </TabButton>
                 <TabButton
                   $active={activeTab === 'ats-optimized'}
@@ -2095,12 +2175,42 @@ export default function CVPage() {
                       <TabEmptyDescription>
                         Upload your resume to start job matching and ATS optimization.
                       </TabEmptyDescription>
-                      <TabEmptyAction
-                        $accent="rgba(16, 185, 129, 0.75)"
-                        $shadow="rgba(16, 185, 129, 0.40)"
-                        onClick={handleUploadClick}
+                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <TabEmptyAction
+                          $accent="rgba(16, 185, 129, 0.75)"
+                          $shadow="rgba(16, 185, 129, 0.40)"
+                          onClick={handleUploadClick}
+                        >
+                          <UploadIcon /> Upload Resume
+                        </TabEmptyAction>
+                        <TabEmptyAction
+                          $accent="rgba(59, 130, 246, 0.75)"
+                          $shadow="rgba(59, 130, 246, 0.40)"
+                          onClick={() => { useCVStore.getState().resetCV(); router.push('/cv/builder'); }}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8L19 13"/><path d="M15 9h0"/><path d="M17.8 6.2L19 5"/><path d="M3 21l9-9"/><path d="M12.2 6.2L11 5"/></svg> Build with AI
+                        </TabEmptyAction>
+                      </div>
+                    </>
+                  )}
+                  {activeTab === 'created' && (
+                    <>
+                      <TabEmptyIconBadge
+                        $color="rgba(245, 158, 11, 0.22)"
+                        $glow="rgba(245, 158, 11, 0.35)"
                       >
-                        <UploadIcon /> Upload Resume
+                        <CreatedIcon />
+                      </TabEmptyIconBadge>
+                      <TabEmptyTitle>No built CVs yet</TabEmptyTitle>
+                      <TabEmptyDescription>
+                        Create completely new resumes from scratch using our AI-powered CV Builder.
+                      </TabEmptyDescription>
+                      <TabEmptyAction
+                        $accent="rgba(245, 158, 11, 0.75)"
+                        $shadow="rgba(245, 158, 11, 0.40)"
+                        onClick={() => { useCVStore.getState().resetCV(); router.push('/cv/builder'); }}
+                      >
+                        <CreatedIcon /> Build a CV
                       </TabEmptyAction>
                     </>
                   )}
@@ -2155,7 +2265,17 @@ export default function CVPage() {
                   const isATSOptimized = isOptimized && (cv as any).source === 'ats-optimizer';
 
                   return (
-                    <CVCard key={cv.id} $isOptimized={isOptimized} onClick={() => setPreviewCV(cv)}>
+                    <CVCard key={cv.id} $isOptimized={isOptimized} onClick={() => {
+                        if (!isOptimized && cv.file_url === "builder://local" && cv.text) {
+                          try {
+                            const parsedCv = JSON.parse(cv.text);
+                            useCVStore.setState({ cv: parsedCv });
+                          } catch (e) {
+                            console.error("Failed to parse built CV", e);
+                          }
+                        }
+                        setPreviewCV(cv);
+                    }}>
                       <CVCardBackgroundComponent text={cv.text} isOptimized={isOptimized} />
 
                       {/* ATS Optimized score badge - top right */}
@@ -2171,6 +2291,7 @@ export default function CVPage() {
                         <CVCardContentInner className="cv-content">
                           <CVCardIcon $isOptimized={isOptimized} className="cv-icon">
                             {activeTab === 'original' && <OriginalIcon />}
+                            {activeTab === 'created' && <CreatedIcon />}
                             {activeTab === 'ats-optimized' && <ATSIcon2 />}
                             {activeTab === 'job-matched' && <JobIcon />}
                           </CVCardIcon>
@@ -2195,6 +2316,14 @@ export default function CVPage() {
                           <PreviewLink
                             onClick={(e) => {
                               e.stopPropagation();
+                              if (!isOptimized && cv.file_url === "builder://local" && cv.text) {
+                                try {
+                                  const parsedCv = JSON.parse(cv.text);
+                                  useCVStore.setState({ cv: parsedCv });
+                                } catch (err) {
+                                  console.error("Failed to parse built CV", err);
+                                }
+                              }
                               setPreviewCV(cv);
                             }}
                           >
@@ -2277,7 +2406,17 @@ export default function CVPage() {
                     key={cv.id}
                     $active={previewCV?.id === cv.id}
                     $isOptimized={isOptimized}
-                    onClick={() => setPreviewCV(cv)}
+                    onClick={() => {
+                      if (!isOptimized && cv.file_url === "builder://local" && cv.text) {
+                        try {
+                          const parsedCv = JSON.parse(cv.text);
+                          useCVStore.setState({ cv: parsedCv });
+                        } catch (err) {
+                          console.error("Failed to parse built CV", err);
+                        }
+                      }
+                      setPreviewCV(cv);
+                    }}
                   >
                     <CVPreviewSidebarItemTitle>
                       {cv.title}
@@ -2307,7 +2446,17 @@ export default function CVPage() {
                 onClick={() => {
                   const currentIndex = allCVs.findIndex((cv) => cv.id === previewCV?.id);
                   if (currentIndex > 0) {
-                    setPreviewCV(allCVs[currentIndex - 1]);
+                    const prevCv = allCVs[currentIndex - 1];
+                    const isPrevOptimized = "isOptimized" in prevCv && prevCv.isOptimized;
+                    if (!isPrevOptimized && prevCv.file_url === "builder://local" && prevCv.text) {
+                      try {
+                        const parsedCv = JSON.parse(prevCv.text);
+                        useCVStore.setState({ cv: parsedCv });
+                      } catch (err) {
+                        console.error("Failed to parse built CV", err);
+                      }
+                    }
+                    setPreviewCV(prevCv);
                   }
                 }}
                 disabled={allCVs.findIndex((cv) => cv.id === previewCV?.id) === 0}
@@ -2323,7 +2472,17 @@ export default function CVPage() {
                 onClick={() => {
                   const currentIndex = allCVs.findIndex((cv) => cv.id === previewCV?.id);
                   if (currentIndex < allCVs.length - 1) {
-                    setPreviewCV(allCVs[currentIndex + 1]);
+                    const nextCv = allCVs[currentIndex + 1];
+                    const isNextOptimized = "isOptimized" in nextCv && nextCv.isOptimized;
+                    if (!isNextOptimized && nextCv.file_url === "builder://local" && nextCv.text) {
+                      try {
+                        const parsedCv = JSON.parse(nextCv.text);
+                        useCVStore.setState({ cv: parsedCv });
+                      } catch (err) {
+                        console.error("Failed to parse built CV", err);
+                      }
+                    }
+                    setPreviewCV(nextCv);
                   }
                 }}
                 disabled={allCVs.findIndex((cv) => cv.id === previewCV?.id) === allCVs.length - 1}
@@ -2351,13 +2510,33 @@ export default function CVPage() {
                 )}
               </CVPreviewTitleWrapper>
               <CVPreviewActions>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => previewCV && handleDownload(previewCV)}
-                >
-                  <DownloadIcon /> Download
-                </Button>
+                {previewCV?.file_url === "builder://local" ? (
+                  <>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => router.push(`/cv/builder?id=${previewCV.id}`)}
+                      style={{ background: 'var(--accent)', color: 'white', border: 'none' }}
+                    >
+                      Continue to Edit
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => previewCV && handleDownload(previewCV)}
+                    >
+                      <DownloadIcon /> Download
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => previewCV && handleDownload(previewCV)}
+                  >
+                    <DownloadIcon /> Download
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -2367,13 +2546,30 @@ export default function CVPage() {
                 </Button>
               </CVPreviewActions>
             </CVPreviewHeader>
-            <CVPreviewBody>
+            <CVPreviewBody style={{ padding: previewCV?.file_url === "builder://local" ? "0" : undefined }}>
               {previewCV && (
                 <PDFContainer>
-                  <iframe
-                    src={`${getPublicUrl(previewCV.file_url)}#toolbar=0`}
-                    title="CV Preview"
-                  />
+                  {previewCV.file_url === "builder://local" ? (
+                    <div style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      overflowY: 'auto', 
+                      background: '#f1f5f9', 
+                      padding: '40px 20px', 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'flex-start'
+                    }}>
+                      <div style={{ width: '100%', maxWidth: '780px', pointerEvents: 'none' }}>
+                        <CVPreview />
+                      </div>
+                    </div>
+                  ) : (
+                    <iframe
+                      src={`${getPublicUrl(previewCV.file_url)}#toolbar=0`}
+                      title="CV Preview"
+                    />
+                  )}
                 </PDFContainer>
               )}
             </CVPreviewBody>

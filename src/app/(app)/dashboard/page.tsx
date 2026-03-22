@@ -14,7 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { CreditsCard } from "@/components/dashboard";
-import { PieChart, Settings2, FileUser } from "lucide-react";
+import { PieChart, Settings2, FileUser, Wand2 } from "lucide-react";
 
 // Icons
 const ReportsIcon = () => <PieChart size={32} strokeWidth={1.5} />;
@@ -2020,6 +2020,7 @@ export default function DashboardPage() {
             Welcome back, {user?.user_metadata?.name || "User"}! Here&apos;s
             your overview.
           </Subtitle>
+
           </TitleElements>
            <CreditsCardWrapper>
             <CreditsCard />

@@ -206,7 +206,8 @@ export async function POST(request: NextRequest) {
       .from("cv-files")
       .getPublicUrl(storagePath);
 
-    const pdfUrl = urlData.publicUrl;
+    const timestamp = new Date().getTime();
+    const pdfUrl = `${urlData.publicUrl}?t=${timestamp}`;
     console.log("✅ PDF uploaded:", pdfUrl);
 
     // 7. Re-check optimized CV with DETERMINISTIC scoring

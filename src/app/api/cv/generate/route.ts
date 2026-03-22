@@ -392,7 +392,8 @@ export async function POST(request: NextRequest) {
 
       const displayName = userName || 'Optimized CV';
       const sanitizedName = displayName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
-      const fileName = `${user.id}/${reportId}/${sanitizedName}.pdf`;
+      const timestamp = new Date().getTime();
+      const fileName = `${user.id}/${reportId}/${timestamp}/${sanitizedName}.pdf`;
 
       // Upload to Supabase storage bypassing RLS using admin client
       const { error: uploadError } = await supabaseAdmin.storage
@@ -409,6 +410,8 @@ export async function POST(request: NextRequest) {
         const { data: urlData } = supabaseAdmin.storage
           .from('cv-files')
           .getPublicUrl(fileName);
+
+        const pdfUrl = urlData.publicUrl;
 
         // Save to optimized_cvs table - use just the name as title
         const cvTitle = userName ? `${userName} - Optimized CV` : 'Optimized CV';
@@ -427,7 +430,7 @@ export async function POST(request: NextRequest) {
             report_id: reportId,
             original_cv_id: report.cv_id,
             title: cvTitle,
-            file_url: urlData.publicUrl,
+            file_url: pdfUrl,
             text: JSON.stringify(generatedCV),
             lang: report.cv?.lang || 'en',
             source: 'reports',

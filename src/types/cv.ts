@@ -18,6 +18,7 @@ export interface CVExperience {
 
 export interface CVEducation {
   degree: string;
+  fieldOfStudy?: string;
   institution: string;
   location?: string;
   graduationDate?: string | null;
@@ -33,6 +34,7 @@ export interface CVCertification {
   name: string;
   issuer?: string;
   date?: string | null;
+  credentialId?: string;
 }
 
 export interface CVLanguage {
@@ -49,5 +51,5 @@ export interface GeneratedCV {
   certifications?: CVCertification[];
   languages?: CVLanguage[];
   photoUrl?: string;
-  colorTemplate?: string;
+  themeColor?: string;
 }

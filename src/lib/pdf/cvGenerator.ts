@@ -1,48 +1,13 @@
 import { jsPDF } from "jspdf";
-import { GeneratedCV } from "@/types/cv";
-import { ColorTemplateColors } from "@/types/cvCustomization";
-import { getColorTemplate, DEFAULT_COLOR_TEMPLATE } from "./colorTemplates";
+import { GeneratedCV, CVExperience, CVEducation, CVCertification } from "@/types/cv";
 import { loadFontsToDocument } from "./fontLoader";
 
-const DEFAULT_COLORS = DEFAULT_COLOR_TEMPLATE.colors;
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace('#', '');
+  const color = parseInt(h.length === 3 ? h.split('').map(x => x + x).join('') : h, 16);
+  return [(color >> 16) & 255, (color >> 8) & 255, color & 255];
+}
 
-const FONTS = {
-  heading: 16,
-  subheading: 12,
-  body: 10,
-  small: 9,
-};
-
-// Language-aware section labels
-const LABELS = {
-  en: {
-    professionalSummary: 'Professional Summary',
-    professionalExperience: 'Professional Experience',
-    education: 'Education',
-    skills: 'Skills',
-    technicalSkills: 'Technical Skills:',
-    softSkills: 'Soft Skills:',
-    certifications: 'Certifications',
-    languages: 'Languages',
-    titleConnector: ' at ',
-  },
-  tr: {
-    professionalSummary: 'Profesyonel Özet',
-    professionalExperience: 'İş Deneyimi',
-    education: 'Eğitim',
-    skills: 'Beceriler',
-    technicalSkills: 'Teknik Beceriler:',
-    softSkills: 'Kişisel Beceriler:',
-    certifications: 'Sertifikalar',
-    languages: 'Diller',
-    titleConnector: ', ',
-  },
-};
-
-/**
- * Detect language from CV summary text.
- * Checks for Turkish-specific characters and common Turkish words.
- */
 function detectCVLanguage(cv: GeneratedCV): 'tr' | 'en' {
   const text = [cv.summary, ...(cv.experience?.[0]?.bullets || [])].join(' ').toLowerCase();
   const turkishChars = /[şçğıöüŞÇĞİÖÜ]/;
@@ -51,434 +16,447 @@ function detectCVLanguage(cv: GeneratedCV): 'tr' | 'en' {
   return 'en';
 }
 
+const LABELS = {
+  en: {
+    professionalSummary: 'SUMMARY',
+    professionalExperience: 'EXPERIENCE',
+    education: 'EDUCATION',
+    skills: 'SKILLS',
+    certifications: 'CERTIFICATIONS & COURSES',
+    languages: 'LANGUAGES',
+  },
+  tr: {
+    professionalSummary: 'ÖZET',
+    professionalExperience: 'İŞ DENEYİMİ',
+    education: 'EĞİTİM',
+    skills: 'YETENEKLER',
+    certifications: 'SERTİFİKALAR VE KURSLAR',
+    languages: 'DİLLER',
+  },
+};
+
 export interface CVPDFOptions {
   colorTemplate?: string;
   photoBase64?: string;
 }
+
+const parseDateForSort = (dateStr?: string | null) => {
+  if (!dateStr || dateStr.trim() === '') return 0;
+  const lower = dateStr.toLowerCase();
+  if (lower.includes('present') || lower.includes('devam') || lower.includes('cerrent')) {
+    return Infinity;
+  }
+  const d = new Date(dateStr);
+  if (!isNaN(d.getTime())) {
+    return d.getTime();
+  }
+  const match = dateStr.match(/\d{4}/);
+  if (match) {
+    return parseInt(match[0]) * 31556952000; 
+  }
+  return 0; 
+};
+
+const getColorTemplateHex = (templateName?: string): string | null => {
+  const templates: Record<string, string> = {
+    'modern-blue': '#2563eb', 
+    'classic-navy': '#1e3a8a',
+    'emerald-green': '#059669',
+    'royal-purple': '#7c3aed',
+    'crimson-red': '#dc2626',
+    'slate-grey': '#475569',
+  };
+  return templateName ? templates[templateName] || null : null;
+};
 
 export async function generateCVPDF(
   cv: GeneratedCV,
   highlightSection?: string,
   options?: CVPDFOptions
 ): Promise<jsPDF> {
-  const doc = new jsPDF();
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+    compress: true
+  });
 
-  // Resolve colors from template
-  const COLORS: ColorTemplateColors = options?.colorTemplate
-    ? getColorTemplate(options.colorTemplate).colors
-    : DEFAULT_COLORS;
-
-  const photoBase64 = options?.photoBase64;
-
-  // Load Unicode-compatible fonts (Roboto) for international character support
-  await loadFontsToDocument(doc);
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const margin = 20;
-  const contentWidth = pageWidth - 2 * margin;
-  let yPosition = margin;
+  
+  const themeColorHex = options?.colorTemplate ? getColorTemplateHex(options.colorTemplate) : null;
+  const themeColor = themeColorHex || cv.themeColor || '#2563eb';
+  const photoBase64 = options?.photoBase64 || cv.photoUrl;
 
-  // Photo dimensions
-  const photoSize = 25; // mm
-  const hasPhoto = !!photoBase64;
-  const contactTextWidth = hasPhoto ? contentWidth - photoSize - 5 : contentWidth;
+  await loadFontsToDocument(doc);
+  
+  const marginX = 18;
+  const marginY = 18;
+  const contentWidth = pageWidth - 2 * marginX;
+  let yPosition = marginY;
 
-  // Helper function to add new page if needed
-  const checkPageBreak = (requiredSpace: number) => {
-    if (yPosition + requiredSpace > pageHeight - margin) {
+  const FONTS = {
+    name: 22,
+    section: 10.5,
+    title: 10.5,
+    subtitle: 9.5,
+    date: 9,
+    body: 9.5,
+  };
+
+  const COLORS = {
+    theme: themeColor,
+    main: '#1a1a1a',
+    secondary: '#444444',
+    light: '#666666',
+    bullet: '#333333',
+    contact: '#555555'
+  };
+
+  const checkPageBreak = (requiredMM: number) => {
+    if (yPosition + requiredMM > pageHeight - marginY) {
       doc.addPage();
-      yPosition = margin;
+      yPosition = marginY;
       return true;
     }
     return false;
   };
 
-  // Helper function to wrap text
-  const wrapText = (text: string, maxWidth: number): string[] => {
-    return doc.splitTextToSize(text, maxWidth);
+  const getLines = (text: string, maxWMM: number): string[] => {
+    return doc.splitTextToSize(text, maxWMM);
   };
 
-  // Apple-style contextual highlight (Xcode style left-bar + subtle tint)
   const drawHighlightBorder = (startY: number, endY: number) => {
-    const padding = 4;
-    const boxX = margin - padding;
+    const padding = 2;
+    const boxX = marginX - padding;
     const boxY = startY - padding;
-    const boxW = contentWidth + padding * 2;
     const boxH = endY - startY + padding * 2;
-    const radius = 6;
-    const accentColor = "#0A84FF"; // Apple System Blue (Dark Mode)
+    const accentColor = "#0A84FF"; 
 
-    // 1. Draw a very soft, light-blue fill for the background with no borders
     doc.saveGraphicsState();
-    // @ts-ignore - GState is available but types might be outdated
-    doc.setGState(new doc.GState({ opacity: 0.06 }));
+    // @ts-ignore
+    doc.setGState(new doc.GState({ opacity: 0.05 }));
     doc.setFillColor(accentColor);
-    doc.roundedRect(boxX, boxY, boxW, boxH, radius, radius, "F");
+    doc.rect(boxX, boxY, contentWidth + padding * 2, boxH, "F");
     doc.restoreGraphicsState();
 
-    // 2. Draw a thick vertical accent bar on the left edge
     doc.setFillColor(accentColor);
-    doc.roundedRect(boxX, boxY, 3, boxH, 1.5, 1.5, "F");
+    doc.rect(boxX, boxY, 1, boxH, "F");
   };
 
-  // 1. CONTACT SECTION
-  const contactStartY = yPosition;
+  // ==========================================
+  // 1. HEADER SECTION
+  // ==========================================
+  const headerStartY = yPosition;
+  const hasPhoto = !!photoBase64 && photoBase64.length > 50;
+  
+  const photoW = 22;               
+  const photoH = 27.5;           
+  const textMaxWidth = hasPhoto ? contentWidth - photoW - 6 : contentWidth; 
 
-  // Add photo if available (right side of contact section)
-  if (hasPhoto && photoBase64) {
+  doc.setFont("Roboto", "bold");
+  doc.setFontSize(FONTS.name);
+  doc.setTextColor(COLORS.theme);
+  
+  if (cv.contact.name) {
+    yPosition += 10; // Extra room above name
+    doc.text(cv.contact.name, marginX, yPosition);
+    yPosition += 10; // Giant cushion below the name
+  }
+
+  doc.setFont("Roboto", "normal");
+  doc.setFontSize(FONTS.date);
+  doc.setTextColor(COLORS.contact);
+  const contactItems = [
+    cv.contact.email,
+    cv.contact.phone && `• ${cv.contact.phone}`,
+    cv.contact.location && `• ${cv.contact.location}`,
+    cv.contact.linkedin && `• ${cv.contact.linkedin.replace('https://', '')}`,
+    cv.contact.portfolio && `• ${cv.contact.portfolio.replace('https://', '')}`
+  ].filter(Boolean) as string[];
+
+  const contactText = contactItems.join(" ");
+  const contactLines = getLines(contactText, textMaxWidth);
+  
+  if (contactLines.length > 0) {
+    yPosition += 1; 
+    contactLines.forEach(line => {
+      doc.text(line, marginX, yPosition);
+      yPosition += 5.5;
+    });
+  }
+
+  if (hasPhoto) {
     try {
-      console.log("[cvGenerator] Adding photo to PDF, data length:", photoBase64.length, "starts with:", photoBase64.substring(0, 30));
-      const photoX = pageWidth - margin - photoSize;
-      const photoY = yPosition - 2;
+      const photoX = pageWidth - marginX - photoW;
+      const photoY = headerStartY;
 
-      doc.setFillColor("#ffffff");
-      doc.circle(photoX + photoSize / 2, photoY + photoSize / 2, photoSize / 2, "F");
-
-      // Convert photo to JPEG via canvas for maximum jsPDF compatibility
       const jpegDataUrl = await convertToJPEG(photoBase64);
-      console.log("[cvGenerator] After conversion, format:", jpegDataUrl.substring(0, 30));
-
       const format = jpegDataUrl.includes("image/png") ? "PNG" : "JPEG";
-      
-      // Calculate object-fit: cover dimensions
       const imgProps = doc.getImageProperties(jpegDataUrl);
       const imgRatio = imgProps.width / imgProps.height;
-      let targetW = photoSize;
-      let targetH = photoSize;
+      
+      let targetW = photoW;
+      let targetH = photoH;
       let offsetX = 0;
       let offsetY = 0;
 
-      if (imgRatio > 1) {
-        // Landscape
-        targetW = photoSize * imgRatio;
-        offsetX = (targetW - photoSize) / 2;
-      } else if (imgRatio < 1) {
-        // Portrait
-        targetH = photoSize / imgRatio;
-        offsetY = (targetH - photoSize) / 2;
+      const targetRatio = photoW / photoH;
+      if (imgRatio > targetRatio) {
+        targetW = photoH * imgRatio;
+        offsetX = (targetW - photoW) / 2;
+      } else if (imgRatio < targetRatio) {
+        targetH = photoW / imgRatio;
+        offsetY = (targetH - photoH) / 2;
       }
 
-      // IMPORTANT: doc.clip() and saveGraphicsState() are broken in many jsPDF versions and cause text to disappear.
-      // Instead we draw the image and then draw four very thick white arcs/corners over the square edges to make it look circular.
-      // Easiest faux-clip: just draw a very thick circle over it.
-      
-      const imgSide = Math.max(targetW, targetH);
-      doc.addImage(jpegDataUrl, format, photoX - offsetX, photoY - offsetY, targetW, targetH);
-      
-      // Faux-clipping: draw a very thick white circular border around the image to cover the square corners
-      const coverThickness = imgSide / 2; // Thick enough to cover corners
-      doc.setDrawColor("#ffffff");
-      doc.setLineWidth(coverThickness);
-      doc.circle(photoX + photoSize / 2, photoY + photoSize / 2, photoSize / 2 + (coverThickness / 2), "S");
-      
-      console.log("[cvGenerator] Photo added successfully with robust border-based faux-clip");
+      const bRad = 1.5;
 
-      // Draw circular border on top
-      doc.setDrawColor(COLORS.primary);
-      doc.setLineWidth(0.5);
-      doc.circle(photoX + photoSize / 2, photoY + photoSize / 2, photoSize / 2, "S");
+      // Draw the image first (it may overflow its box)
+      await doc.addImage(jpegDataUrl, format, photoX - offsetX, photoY - offsetY, targetW, targetH);
+      
+      // Faux-clip: Draw white rectangles EXACTLY over the overhanging regions to hide them
+      doc.setFillColor("#ffffff");
+      // Top overhang
+      if (offsetY > 0) doc.rect(photoX - offsetX, photoY - offsetY - 1, targetW + 2, offsetY + 1, "F");
+      // Bottom overhang
+      if (offsetY > 0) doc.rect(photoX - offsetX, photoY + photoH, targetW + 2, offsetY + 2, "F");
+      // Left overhang
+      if (offsetX > 0) doc.rect(photoX - offsetX - 1, photoY - offsetY, offsetX + 1, targetH + 2, "F");
+      // Right overhang
+      if (offsetX > 0) doc.rect(photoX + photoW, photoY - offsetY, offsetX + 2, targetH + 2, "F");
+      
+      // Sleek Border drawn exactly on the bounding box
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(photoX, photoY, photoW, photoH, bRad, bRad, "S");
+
     } catch (e) {
-      console.error("[cvGenerator] Failed to add photo to PDF:", e);
-      // Continue without photo
-    }
-  } else {
-    console.log("[cvGenerator] No photo to add. hasPhoto:", hasPhoto, "photoBase64 length:", photoBase64?.length || 0);
-  }
-
-  doc.setFontSize(FONTS.heading + 4);
-  doc.setTextColor(COLORS.primary);
-  doc.text(cv.contact.name, margin, yPosition);
-  yPosition += 8;
-
-  // Contact details - Use comma separator for maximum ATS compatibility
-  // IMPORTANT: Avoid special characters like • | — that confuse ATS parsers
-  doc.setFontSize(FONTS.small);
-  doc.setTextColor(COLORS.textLight);
-  const contactDetails = [
-    cv.contact.email,
-    cv.contact.phone,
-    cv.contact.location,
-    cv.contact.linkedin,
-    cv.contact.portfolio,
-  ]
-    .filter(Boolean)
-    .join(", ");
-
-  const contactLines = wrapText(contactDetails, contactTextWidth);
-  contactLines.forEach((line) => {
-    doc.text(line, margin, yPosition);
-    yPosition += 4;
-  });
-
-  // If photo is present, ensure yPosition is at least past the photo
-  if (hasPhoto) {
-    const photoBottom = contactStartY - 2 + photoSize;
-    if (yPosition < photoBottom) {
-      yPosition = photoBottom;
+      console.error("[cvGenerator] Failed to add photo:", e);
     }
   }
 
-  yPosition += 5;
-  if (highlightSection === "contact") {
-    drawHighlightBorder(contactStartY, yPosition);
+  const photoBottom = headerStartY + (hasPhoto ? photoH : 0);
+  if (hasPhoto && yPosition < photoBottom) {
+    yPosition = photoBottom;
   }
 
-  // Divider line
-  doc.setDrawColor(COLORS.border);
-  doc.line(margin, yPosition, pageWidth - margin, yPosition);
-  yPosition += 8;
+  if (highlightSection === "contact") drawHighlightBorder(headerStartY, yPosition);
 
-  // Detect language for localized labels
+  // Header Divider
+  yPosition += 6; // Deep space after photo
+  doc.setDrawColor(COLORS.theme);
+  doc.setLineWidth(0.5);
+  doc.line(marginX, yPosition, pageWidth - marginX, yPosition);
+  yPosition += 8; // Deep space before first section
+
   const lang = detectCVLanguage(cv);
   const L = LABELS[lang];
 
-  // 2. PROFESSIONAL SUMMARY
-  const summaryStartY = yPosition;
-  doc.setFont("Roboto", "bold");
-  doc.setFontSize(FONTS.subheading);
-  doc.setTextColor(COLORS.primary);
-  doc.text(L.professionalSummary, margin, yPosition);
-  yPosition += 6;
-
-  doc.setFont("Roboto", "normal");
-  doc.setFontSize(FONTS.body);
-  doc.setTextColor(COLORS.text);
-  const summaryLines = wrapText(cv.summary, contentWidth);
-  summaryLines.forEach((line) => {
-    checkPageBreak(5);
-    doc.text(line, margin, yPosition);
-    yPosition += 5;
-  });
-  yPosition += 5;
-  if (highlightSection === "summary") {
-    drawHighlightBorder(summaryStartY, yPosition);
-  }
-
-  // 3. EXPERIENCE
-  const experienceStartY = yPosition;
-  doc.setFont("Roboto", "bold");
-  doc.setFontSize(FONTS.subheading);
-  doc.setTextColor(COLORS.primary);
-  doc.text(L.professionalExperience, margin, yPosition);
-  yPosition += 6;
-
-  cv.experience.forEach((exp) => {
-    checkPageBreak(20);
-
-    // Job title and company - ATS-friendly format without pipes
-    doc.setFontSize(FONTS.body + 1);
-    doc.setTextColor(COLORS.text);
-    doc.setFont("Roboto", "bold");
-    // Reset character spacing to prevent letter spacing issues
-    if (typeof doc.setCharSpace === 'function') {
-      doc.setCharSpace(0);
-    }
-    doc.text(`${exp.title}${L.titleConnector}${exp.company}`, margin, yPosition);
-    yPosition += 5;
-
-    doc.setFont("Roboto", "normal");
-    doc.setFontSize(FONTS.body);
-    doc.text(
-      `${exp.location}, ${exp.startDate} - ${exp.endDate}`,
-      margin,
-      yPosition
-    );
-    yPosition += 6;
-
-    // Bullets
-    exp.bullets.forEach((bullet) => {
-      checkPageBreak(10);
-      doc.setFont("Roboto", "normal");
-      doc.setFontSize(FONTS.body);
-      doc.setTextColor(COLORS.text);
-
-      // Bullet point (using simple dash for better compatibility)
-      doc.text("-", margin + 2, yPosition);
-
-      // Wrap bullet text
-      const bulletLines = wrapText(bullet, contentWidth - 8);
-      bulletLines.forEach((line, lineIndex) => {
-        if (lineIndex > 0) {
-          checkPageBreak(5);
-        }
-        doc.text(line, margin + 7, yPosition);
-        yPosition += 5;
-      });
-    });
-
-    yPosition += 3;
-  });
-
-  yPosition += 2;
-  if (highlightSection === "experience") {
-    drawHighlightBorder(experienceStartY, yPosition);
-  }
-
-  // 4. EDUCATION
-  checkPageBreak(15);
-  const educationStartY = yPosition;
-  doc.setFont("Roboto", "bold");
-  doc.setFontSize(FONTS.subheading);
-  doc.setTextColor(COLORS.primary);
-  doc.text(L.education, margin, yPosition);
-  yPosition += 6;
-
-  cv.education.forEach((edu) => {
+  const drawSectionTitle = (title: string) => {
     checkPageBreak(12);
-    doc.setFontSize(FONTS.body + 1);
-    doc.setTextColor(COLORS.text);
     doc.setFont("Roboto", "bold");
-    doc.text(edu.degree, margin, yPosition);
-    yPosition += 5;
+    doc.setFontSize(FONTS.section);
+    doc.setTextColor(COLORS.theme);
+    
+    const letterSpacedTitle = title.split('').join(String.fromCharCode(8202));
+    
+    yPosition += 6;
+    doc.text(letterSpacedTitle, marginX, yPosition);
+    yPosition += 3.5;
+    
+    const [r, g, b] = hexToRgb(COLORS.theme);
+    doc.setDrawColor(
+      Math.round(r * 0.25 + 255 * 0.75), 
+      Math.round(g * 0.25 + 255 * 0.75), 
+      Math.round(b * 0.25 + 255 * 0.75)
+    );
+    doc.setLineWidth(0.2);
+    doc.line(marginX, yPosition, pageWidth - marginX, yPosition);
+    
+    yPosition += 6.5;
+  };
 
+  const drawSplitRow = (left: string, right: string | undefined, isBoldLeft: boolean, colorL: string, colorR: string, sizeL: number, sizeR: number) => {
+    if (isBoldLeft) doc.setFont("Roboto", "bold");
+    else doc.setFont("Roboto", "normal");
+    
+    doc.setFontSize(sizeL);
+    doc.setTextColor(colorL);
+    
+    doc.text(left, marginX, yPosition);
+    
+    if (right) {
+      doc.setFont("Roboto", "normal");
+      doc.setFontSize(sizeR);
+      doc.setTextColor(colorR);
+      const rightWidth = doc.getTextWidth(right);
+      doc.text(right, pageWidth - marginX - rightWidth, yPosition);
+    }
+  };
+
+  // ==========================================
+  // 2. SUMMARY
+  // ==========================================
+  if (cv.summary) {
+    const startY = yPosition;
+    drawSectionTitle(L.professionalSummary);
+    
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
-    // Build education details - only include values that exist
-    const eduDetails = [edu.institution, edu.location, edu.graduationDate]
-      .filter(Boolean)
-      .join(", ");
-    doc.text(eduDetails, margin, yPosition);
-    yPosition += 5;
-
-    if (edu.details) {
-      doc.setFontSize(FONTS.small);
-      doc.setTextColor(COLORS.textLight);
-      const detailLines = wrapText(edu.details, contentWidth);
-      detailLines.forEach((line) => {
-        checkPageBreak(4);
-        doc.text(line, margin, yPosition);
-        yPosition += 4;
-      });
-    }
-
-    yPosition += 3;
-  });
-
-  yPosition += 2;
-  if (highlightSection === "education") {
-    drawHighlightBorder(educationStartY, yPosition);
-  }
-
-  // 5. SKILLS
-  checkPageBreak(15);
-  const skillsStartY = yPosition;
-  doc.setFont("Roboto", "bold");
-  doc.setFontSize(FONTS.subheading);
-  doc.setTextColor(COLORS.primary);
-  doc.text(L.skills, margin, yPosition);
-  yPosition += 6;
-
-  // Technical Skills
-  doc.setFontSize(FONTS.body);
-  doc.setTextColor(COLORS.text);
-  doc.setFont("Roboto", "bold");
-  doc.text(L.technicalSkills, margin, yPosition);
-  yPosition += 5;
-
-  doc.setFont("Roboto", "normal");
-  const techSkillsText = cv.skills.technical.join(", ");
-  const techSkillsLines = wrapText(techSkillsText, contentWidth - 5);
-  techSkillsLines.forEach((line) => {
-    checkPageBreak(5);
-    doc.text(line, margin + 5, yPosition);
-    yPosition += 5;
-  });
-
-  yPosition += 2;
-
-  // Soft Skills
-  doc.setFont("Roboto", "bold");
-  doc.text(L.softSkills, margin, yPosition);
-  yPosition += 5;
-
-  doc.setFont("Roboto", "normal");
-  const softSkillsText = cv.skills.soft.join(", ");
-  const softSkillsLines = wrapText(softSkillsText, contentWidth - 5);
-  softSkillsLines.forEach((line) => {
-    checkPageBreak(5);
-    doc.text(line, margin + 5, yPosition);
-    yPosition += 5;
-  });
-
-  yPosition += 2;
-  if (highlightSection === "skills") {
-    drawHighlightBorder(skillsStartY, yPosition);
-  }
-
-  // 6. CERTIFICATIONS (if present)
-  if (cv.certifications && cv.certifications.length > 0) {
-    yPosition += 2;
-    checkPageBreak(15);
-    const certificationsStartY = yPosition;
-    doc.setFont("Roboto", "bold");
-    doc.setFontSize(FONTS.subheading);
-    doc.setTextColor(COLORS.primary);
-    doc.text(L.certifications, margin, yPosition);
+    doc.setTextColor(COLORS.bullet);
+    
+    const summaryLines = getLines(cv.summary, contentWidth);
+    summaryLines.forEach((line) => {
+      checkPageBreak(5.5);
+      doc.text(line, marginX, yPosition);
+      yPosition += 5.5; 
+    });
+    
     yPosition += 6;
+    if (highlightSection === "summary") drawHighlightBorder(startY, yPosition);
+  }
 
-    cv.certifications.forEach((cert) => {
-      checkPageBreak(8);
-      doc.setFontSize(FONTS.body);
-      doc.setTextColor(COLORS.text);
-      doc.setFont("Roboto", "bold");
-      doc.text(cert.name, margin, yPosition);
-      yPosition += 5;
+  // ==========================================
+  // 3. EXPERIENCE
+  // ==========================================
+  const validExperience = cv.experience.filter(e => e.title?.trim() !== "" || e.company?.trim() !== "");
+  const sortedExperience = [...validExperience].sort((a, b) => {
+    const dateA = a.endDate ? a.endDate : a.startDate;
+    const dateB = b.endDate ? b.endDate : b.startDate;
+    return parseDateForSort(dateB) - parseDateForSort(dateA);
+  });
+
+  if (sortedExperience.length > 0) {
+    const startY = yPosition;
+    drawSectionTitle(L.professionalExperience);
+
+    sortedExperience.forEach((exp) => {
+      checkPageBreak(12);
+      
+      const dateText = [exp.startDate, exp.endDate || (exp.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
+      drawSplitRow(exp.title, dateText, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
+      yPosition += 5.5;
+      
+      let companyLoc = exp.company || "";
+      if (exp.location) companyLoc += ` • ${exp.location}`;
+      doc.setFont("Roboto", "bold"); 
+      doc.setFontSize(FONTS.subtitle);
+      doc.setTextColor(COLORS.secondary);
+      doc.text(companyLoc, marginX, yPosition);
+      yPosition += 6.5;
 
       doc.setFont("Roboto", "normal");
-      doc.setFontSize(FONTS.small);
-      // Build certification details - only include values that exist
-      const certDetails = [cert.issuer, cert.date].filter(Boolean).join(", ");
-      doc.text(certDetails, margin, yPosition);
-      yPosition += 5;
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.bullet);
+
+      exp.bullets.forEach((bullet) => {
+        checkPageBreak(7);
+        doc.text("•", marginX + 3, yPosition);
+
+        const bulletLines = getLines(bullet.trim(), contentWidth - 8);
+        bulletLines.forEach((line, lineIndex) => {
+          if (lineIndex > 0) {
+            checkPageBreak(5);
+            yPosition += 5;
+          }
+          doc.text(line, marginX + 8, yPosition);
+        });
+        yPosition += 6;
+      });
+      
+      yPosition += 8;
     });
-    if (highlightSection === "certifications") {
-      drawHighlightBorder(certificationsStartY, yPosition);
-    }
+    
+    if (highlightSection === "experience") drawHighlightBorder(startY, yPosition);
   }
 
-  // 7. LANGUAGES (if present)
-  if (cv.languages && cv.languages.length > 0) {
-    yPosition += 2;
-    checkPageBreak(15);
-    const languagesStartY = yPosition;
-    doc.setFont("Roboto", "bold");
-    doc.setFontSize(FONTS.subheading);
-    doc.setTextColor(COLORS.primary);
-    doc.text(L.languages, margin, yPosition);
-    yPosition += 6;
+  // ==========================================
+  // 4. EDUCATION
+  // ==========================================
+  const validEducation = cv.education.filter(e => e.institution?.trim() !== "");
+  const sortedEducation = [...validEducation].sort((a, b) => {
+    return parseDateForSort(b.graduationDate) - parseDateForSort(a.graduationDate);
+  });
+
+  if (sortedEducation.length > 0) {
+    const startY = yPosition;
+    drawSectionTitle(L.education);
+
+    sortedEducation.forEach((edu) => {
+      checkPageBreak(10);
+      drawSplitRow(edu.institution, edu.graduationDate || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
+      yPosition += 5.5;
+      
+      let degreeLine = edu.degree || "";
+      if (edu.fieldOfStudy) degreeLine += ` in ${edu.fieldOfStudy}`;
+      
+      drawSplitRow(degreeLine, edu.location, false, COLORS.secondary, COLORS.light, FONTS.subtitle, FONTS.date);
+      yPosition += 8; 
+    });
+    
+    if (highlightSection === "education") drawHighlightBorder(startY, yPosition);
+  }
+
+  // ==========================================
+  // 5. CERTIFICATIONS
+  // ==========================================
+  const validCerts = (cv.certifications || []).filter(c => c.name?.trim() !== "");
+  if (validCerts.length > 0) {
+    const startY = yPosition;
+    drawSectionTitle(L.certifications);
+
+    validCerts.forEach((cert) => {
+      checkPageBreak(10);
+      drawSplitRow(cert.name, cert.date || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
+      yPosition += 5.5;
+      
+      const issuerLine = [cert.issuer, cert.credentialId ? `ID: ${cert.credentialId}` : ''].filter(Boolean).join(' • ');
+      if (issuerLine) {
+        doc.setFont("Roboto", "normal");
+        doc.setFontSize(FONTS.subtitle);
+        doc.setTextColor(COLORS.secondary);
+        doc.text(issuerLine, marginX, yPosition);
+        yPosition += 5.5;
+      } else {
+        yPosition += 2;
+      }
+      yPosition += 6;
+    });
+    
+    if (highlightSection === "certifications") drawHighlightBorder(startY, yPosition);
+  }
+
+  // ==========================================
+  // 6. SKILLS
+  // ==========================================
+  if (cv.skills.technical.length > 0) {
+    const startY = yPosition;
+    drawSectionTitle(L.skills);
 
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
-    doc.setTextColor(COLORS.text);
-    const languagesText = cv.languages
-      .map((lang) => `${lang.language} (${lang.proficiency})`)
-      .join(", ");
-    const languageLines = wrapText(languagesText, contentWidth);
-    languageLines.forEach((line) => {
-      checkPageBreak(5);
-      doc.text(line, margin, yPosition);
-      yPosition += 5;
+    doc.setTextColor(COLORS.bullet);
+
+    const skillsText = cv.skills.technical.join(' • ');
+    const skillsLines = getLines(skillsText, contentWidth);
+    skillsLines.forEach((line) => {
+      checkPageBreak(5.5);
+      doc.text(line, marginX, yPosition);
+      yPosition += 5.5;
     });
-    if (highlightSection === "languages") {
-      drawHighlightBorder(languagesStartY, yPosition);
-    }
+    
+    if (highlightSection === "skills") drawHighlightBorder(startY, yPosition);
   }
 
   return doc;
 }
 
-/**
- * Convert any image data URL to JPEG format using canvas.
- * jsPDF has unreliable PNG support in some environments,
- * but JPEG always works.
- */
 async function convertToJPEG(dataUrl: string): Promise<string> {
-  // If already JPEG, return as-is
   if (dataUrl.startsWith("data:image/jpeg") || dataUrl.startsWith("data:image/jpg")) {
     return dataUrl;
   }
 
-  // In browser: use canvas to convert PNG -> JPEG
   if (typeof window !== "undefined" && typeof document !== "undefined") {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -487,22 +465,15 @@ async function convertToJPEG(dataUrl: string): Promise<string> {
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          // Fallback: return original and hope for the best
-          resolve(dataUrl);
-          return;
-        }
-        // White background (JPEG has no transparency)
+        if (!ctx) return resolve(dataUrl);
         ctx.fillStyle = "#FFFFFF";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL("image/jpeg", 0.92));
+        resolve(canvas.toDataURL("image/jpeg", 0.95));
       };
       img.onerror = () => reject(new Error("Failed to load image for conversion"));
       img.src = dataUrl;
     });
   }
-
-  // In Node.js: return as-is (server-side PDF generation won't have photos typically)
   return dataUrl;
 }

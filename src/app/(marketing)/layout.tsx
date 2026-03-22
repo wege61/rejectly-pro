@@ -1,13 +1,6 @@
-"use client";
-
 import { Suspense } from "react";
-import styled from "styled-components";
 import { Navbar } from "@/components/ui/Navbar";
 import { Spinner } from "@/components/ui/Spinner";
-
-const Main = styled.main`
-  /* padding removed to allow Hero backgrounds to reach the top edge */
-`;
 
 export default function MarketingLayout({
   children,
@@ -17,7 +10,7 @@ export default function MarketingLayout({
   return (
     <>
       <Navbar />
-      <Main>
+      <main>
         <Suspense
           fallback={
             <div style={{ padding: "80px 24px", textAlign: "center" }}>
@@ -27,7 +20,7 @@ export default function MarketingLayout({
         >
           {children}
         </Suspense>
-      </Main>
+      </main>
     </>
   );
 }

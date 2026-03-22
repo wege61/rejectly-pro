@@ -1,0 +1,49 @@
+# Rejectly.pro
+
+> AI-powered resume optimization platform that helps job seekers beat Applicant Tracking Systems (ATS) and land more interviews.
+
+## What Rejectly Does
+
+Rejectly.pro analyzes resumes against specific job postings using GPT-4, identifies gaps and missing keywords, and generates optimized, ATS-friendly resumes in 30 seconds. 75% of resumes never reach a human recruiter — Rejectly fixes that.
+
+## Core Features
+
+- **AI Resume Analysis**: GPT-4 powered analysis that identifies keyword gaps, formatting issues, and optimization opportunities
+- **ATS Optimization**: Ensures resumes pass automated screening systems with 85% higher pass rate
+- **Job Matching**: AI compares your resume against job descriptions to calculate compatibility and identify skill gaps
+- **Bullet Point Rewriting**: AI rewrites achievement-focused bullet points tailored to the target role
+- **Cover Letter Generator**: Creates personalized, job-specific cover letters in 30 seconds
+- **Alternative Role Suggestions**: Recommends other suitable positions based on your skills and experience
+- **ATS-Optimized Resume Builder**: Clean, professional templates designed to pass ATS filters
+- **Multi-language Support**: Works with 50+ languages
+
+## Who It's For
+
+- Active job seekers applying to multiple positions
+- Career changers transitioning to new roles
+- Professionals frustrated with low interview response rates
+- Anyone navigating ATS-heavy application processes
+
+## How It Works
+
+1. Upload your resume (PDF, DOCX, or plain text)
+2. Paste the job description you're targeting
+3. Receive AI-powered analysis with ATS score, keyword gaps, and recommendations
+4. Download your optimized, ATS-friendly resume
+
+## Pricing
+
+- **Single**: $2 one-time — 1 analysis credit
+- **Starter**: $7 one-time — 10 credits ($0.70 per analysis)
+- **Pro**: $12/month — Unlimited analyses
+
+Free demo available without credit card.
+
+## Links
+
+- Website: https://www.rejectly.pro
+- ATS Optimizer: https://www.rejectly.pro/ats-optimizer
+- CV Builder: https://www.rejectly.pro/cv-builder
+- Pricing: https://www.rejectly.pro/pricing
+- Blog: https://www.rejectly.pro/blog
+- Contact: https://www.rejectly.pro/contact

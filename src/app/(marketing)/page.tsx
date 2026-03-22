@@ -646,7 +646,7 @@ const Section = styled.section`
   }
 `;
 
-const SectionHeader = styled.div`
+const SectionHeader = styled.header`
   text-align: center;
   margin-bottom: 64px;
 
@@ -699,7 +699,7 @@ const Divider = styled.div`
 `;
 
 // ==================== DEMO SECTION - SIMPLIFIED ====================
-const DemoSectionWrapper = styled.div`
+const DemoSectionWrapper = styled.section`
   /* Full viewport width */
   width: 100vw;
   position: relative;
@@ -1200,7 +1200,7 @@ const KeywordBadge = styled.span`
   font-weight: 500;
 `;
 
-const CTASection = styled.div`
+const CTASection = styled.section`
   text-align: center;
   padding: 32px;
   background: linear-gradient(
@@ -1279,7 +1279,7 @@ const FeatureGrid = styled.div`
   }
 `;
 
-const FeatureCard = styled.div`
+const FeatureCard = styled.article`
   padding: 40px;
   text-align: center;
   background: rgba(150, 150, 150, 0.08);
@@ -1363,7 +1363,7 @@ const TestimonialGrid = styled.div`
   }
 `;
 
-const TestimonialCard = styled.div`
+const TestimonialCard = styled.article`
   background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -1507,7 +1507,7 @@ const PricingGrid = styled.div`
   }
 `;
 
-const PricingCard = styled.div<{ $featured?: boolean }>`
+const PricingCard = styled.article<{ $featured?: boolean }>`
   background: ${({ $featured }) => $featured ? "rgba(255, 255, 255, 0.04)" : "rgba(255, 255, 255, 0.02)"};
   backdrop-filter: blur(40px) saturate(200%);
   -webkit-backdrop-filter: blur(40px) saturate(200%);
@@ -1795,7 +1795,7 @@ const PricingRefreshIcon = () => (
 );
 
 // ==================== FAQ ====================
-const FAQSectionWrapper = styled.div`
+const FAQSectionWrapper = styled.section`
   position: relative;
   isolation: isolate;
   

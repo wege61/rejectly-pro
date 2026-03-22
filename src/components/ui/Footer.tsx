@@ -26,7 +26,7 @@ const FooterGrid = styled.div`
   }
 `;
 
-const FooterColumn = styled.div`
+const FooterColumn = styled.section`
   h3 {
     font-weight: 700;
     font-size: 18px;
@@ -87,7 +87,7 @@ const FooterBottom = styled.div`
   }
 `;
 
-const FooterLinks = styled.div`
+const FooterLinks = styled.nav`
   display: flex;
   gap: 24px;
 

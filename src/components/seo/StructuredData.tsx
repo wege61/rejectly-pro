@@ -1,5 +1,3 @@
-import Script from 'next/script'
-
 export function OrganizationSchema() {
   const schema = {
     '@context': 'https://schema.org',
@@ -22,8 +20,7 @@ export function OrganizationSchema() {
   }
 
   return (
-    <Script
-      id="organization-schema"
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
@@ -48,8 +45,7 @@ export function WebSiteSchema() {
   }
 
   return (
-    <Script
-      id="website-schema"
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
@@ -102,8 +98,7 @@ export function ProductSchema() {
   }
 
   return (
-    <Script
-      id="product-schema"
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
@@ -123,8 +118,7 @@ export function BreadcrumbSchema({ items }: { items: Array<{ name: string; url: 
   }
 
   return (
-    <Script
-      id={`breadcrumb-schema-${items.length}`}
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
@@ -146,8 +140,7 @@ export function FAQSchema({ faqs }: { faqs: Array<{ question: string; answer: st
   }
 
   return (
-    <Script
-      id="faq-schema"
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
@@ -231,8 +224,7 @@ export function BlogPostingSchema({
   }
 
   return (
-    <Script
-      id="blogposting-schema"
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
@@ -267,8 +259,7 @@ export function ArticleFAQSchema({
   };
 
   return (
-    <Script
-      id="article-faq-schema"
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
@@ -305,8 +296,7 @@ export function HowToSchema({
   };
 
   return (
-    <Script
-      id="howto-schema"
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
@@ -347,8 +337,7 @@ export function BlogListSchema({
   }
 
   return (
-    <Script
-      id="blog-schema"
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
@@ -422,8 +411,7 @@ export function ReviewSchema() {
   }
 
   return (
-    <Script
-      id="review-schema"
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />

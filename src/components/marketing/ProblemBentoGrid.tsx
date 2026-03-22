@@ -18,7 +18,7 @@ const BentoGridWrapper = styled.div`
   }
 `;
 
-const BentoGridItemWrapper = styled.div`
+const BentoGridItemWrapper = styled.article`
   position: relative;
   display: flex;
   flex-direction: column;

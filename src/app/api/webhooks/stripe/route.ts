@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+import { sendCreditsPurchasedEmail } from '@/lib/email';
 
 export const dynamic = 'force-dynamic'; // Prevent Next.js from caching the raw body
 
@@ -160,6 +161,18 @@ export async function POST(req: Request) {
             }
           }
           console.log(`Successfully added ${creditsAdded} credits for user ${userId}`);
+
+          // Send credits purchased email
+          try {
+            const { data: userData } = await supabase.auth.admin.getUserById(userId);
+            if (userData?.user?.email) {
+              const userName = userData.user.user_metadata?.name || 'there';
+              const planName = session.metadata?.planName || planType || 'Credit Pack';
+              await sendCreditsPurchasedEmail(userData.user.email, userName, creditsAdded, planName);
+            }
+          } catch (emailErr) {
+            console.error('Failed to send credits email (non-blocking):', emailErr);
+          }
         }
 
         // Also update payments table for the record

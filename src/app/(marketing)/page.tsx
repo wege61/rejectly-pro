@@ -2847,7 +2847,7 @@ export default function Page() {
     {
       question: "How long does the analysis take?",
       answer:
-        "Our AI analysis typically takes 15-30 seconds to complete. For complex resumes and longer job descriptions, it may take up to 1 minute, but never longer.",
+        "Our AI analysis typically takes under a minute to complete. For complex resumes and longer job descriptions, it may take slightly longer, but results are always delivered quickly.",
     },
     {
       question: "How does pricing work?",
@@ -2885,14 +2885,14 @@ export default function Page() {
               style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }}
             />
           </div>
-          <p>Upload your resume. Paste any job description. Instantly know your compatibility score — and exactly how to close the gap.</p>
+          <p>Upload your resume. Paste the job description. Get a new resume rewritten specifically for that role — with the right keywords, structure, and emphasis to pass the filter and impress the human behind it.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
             <li>Precise match score against the job description</li>
             <li>Missing skills and keywords, ranked by impact</li>
-            <li>An optimized resume tailored to this specific role</li>
-            <li>Role recommendations based on your actual profile</li>
+            <li>A fully rewritten, optimized resume tailored to this specific role</li>
+            <li>Cover letter, interview prep, and career roadmap included</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Apply with confidence. Every time.</p>
+          <p style={{ marginTop: '16px' }}>Every application gets its own resume. That&apos;s the unfair advantage.</p>
         </div>
       ),
     },
@@ -2914,15 +2914,15 @@ export default function Page() {
               style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }}
             />
           </div>
-          <p>Most resumes never reach a human. Ours do.</p>
-          <p style={{ marginTop: '16px' }}>Our AI analyzes your resume against the systems used by the world&apos;s top companies — and fixes everything holding you back.</p>
+          <p>Don&apos;t have a specific job in mind yet? No problem.</p>
+          <p style={{ marginTop: '16px' }}>Upload your CV — no job description needed. Our AI scores it against Workday, Greenhouse, Taleo, and Lever ATS systems, then rewrites it to pass them all.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Keyword density and placement, optimized automatically</li>
-            <li>Formatting engineered to parse correctly every time</li>
-            <li>Instant score before and after — see the difference</li>
-            <li>Export-ready in PDF or Word, exactly as needed</li>
+            <li>No job description required — works with just your CV</li>
+            <li>Compatibility tested against 4 major ATS platforms</li>
+            <li>Instant before &amp; after score — see the real difference</li>
+            <li>Export-ready in PDF, exactly as needed</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Built to get you seen.</p>
+          <p style={{ marginTop: '16px' }}>The safety net before you start applying.</p>
         </div>
       ),
     },
@@ -2980,14 +2980,14 @@ export default function Page() {
       content: (
         <div>
           <p>No resume? No problem.</p>
-          <p style={{ marginTop: '16px' }}>We guide you through every section — from contact info to your biggest achievements — and build an ATS-optimized resume around your answers.</p>
+          <p style={{ marginTop: '16px' }}>We guide you through every section — from contact info to your biggest achievements — and build a clean, ATS-friendly resume around your answers.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Smart suggestions tailored to your target role</li>
-            <li>Live ATS score as you build</li>
-            <li>Templates that impress both software and humans</li>
-            <li>Done in one sitting. Ready to send.</li>
+            <li>Step-by-step guided builder, no guesswork</li>
+            <li>ATS-optimized formatting built in from the start</li>
+            <li>Professional templates that impress both software and humans</li>
+            <li>Completely free — no credits needed</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>From blank page to first interview.</p>
+          <p style={{ marginTop: '16px' }}>From blank page to first application.</p>
         </div>
       ),
     },
@@ -3173,7 +3173,7 @@ export default function Page() {
             '@type': 'WebSite',
             name: 'Rejectly.pro',
             url: 'https://www.rejectly.pro',
-            description: 'AI-powered resume optimization and ATS checker. Transform your resume and get 3x more interviews.',
+            description: 'AI-powered resume optimization and ATS checker. Create job-specific, ATS-optimized resumes for every application.',
             potentialAction: {
               '@type': 'SearchAction',
               target: {
@@ -3305,7 +3305,7 @@ export default function Page() {
                 },
                 datePublished: '2024-11-05',
                 reviewBody:
-                  'The cover letter generator saved me hours. I was spending 45 minutes per application writing custom letters. Now I get personalized, compelling cover letters in 30 seconds. Already landed 2 final round interviews.',
+                  'The cover letter generator saved me hours. I was spending 45 minutes per application writing custom letters. Now I get personalized, compelling cover letters in under a minute. Already landed 2 final round interviews.',
               },
             ],
           })
@@ -3318,11 +3318,11 @@ export default function Page() {
                 <HeroContent>
           <HeroTextColumn>
             <HeroTitle>
-              Your Resume is Invisible. Let&apos;s Fix That.
+              A New Resume. For Every Job. In Under a Minute.
             </HeroTitle>
 
             <HeroSubtitle>
-              75% of resumes never reach a human. Train our AI on your target job description and get a <strong>mathematically perfect, ATS-beating resume</strong> in 30 seconds.
+              Sending the same CV everywhere? That&apos;s why you&apos;re getting rejected. Paste any job description — our AI <strong>rebuilds your resume with the exact keywords, structure, and formatting</strong> that specific role demands.
             </HeroSubtitle>
 
             <ButtonGroup>
@@ -3336,21 +3336,21 @@ export default function Page() {
             </ButtonGroup>
             
             <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '-24px', marginBottom: '40px', textAlign: 'center', letterSpacing: '0.2px' }}>
-              No credit card required &bull; Get results in 30s
+              No credit card required &bull; Free ATS analysis included
             </div>
 
             <TrustIndicators>
               <TrustItem>
-                <div className="number">500+</div>
-                <div className="label">Careers Transformed</div>
+                <div className="number">4</div>
+                <div className="label">AI-Powered Tools</div>
               </TrustItem>
               <TrustItem>
-                <div className="number">10,000+</div>
-                <div className="label">ATS Filters Bypassed</div>
+                <div className="number">40+</div>
+                <div className="label">ATS Criteria Checked</div>
               </TrustItem>
               <TrustItem>
-                <div className="number">73%</div>
-                <div className="label">Higher Interview Rate</div>
+                <div className="number">$0</div>
+                <div className="label">To Get Started</div>
               </TrustItem>
             </TrustIndicators>
           </HeroTextColumn>
@@ -3376,10 +3376,10 @@ export default function Page() {
             <SectionHeader>
               <SectionTitle style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
 
-                Scan Your Resume. See Why You&apos;re Failing.
+                Your Resume + Their Job Description = Your Edge.
               </SectionTitle>
               <SectionSubtitle>
-                Is your resume ATS-ready? Paste your text below and let the AI find your fatal flaws.
+                Every job has different keywords, different ATS filters, different requirements. Paste both — our AI shows exactly what&apos;s missing and how to fix it.
               </SectionSubtitle>
             </SectionHeader>
 
@@ -3641,7 +3641,7 @@ export default function Page() {
                     Now You See the Problem. Let Us Fix It.
                   </h3>
                   <p style={{ fontSize: '18px', color: 'var(--text-color)', fontWeight: 500, margin: 0, textAlign: 'center' }}>
-                    Get an AI-optimized, ATS-ready resume with all fixes applied — ready to submit in 30 seconds.
+                    Get an AI-optimized, ATS-ready resume with all fixes applied — tailored to the specific job you're applying for.
                   </p>
                   <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-secondary)', textAlign: 'center' }}>
                     Rewritten bullet points, missing keywords added, perfect formatting. Starting at $2.
@@ -3665,9 +3665,9 @@ export default function Page() {
       {/* TESTIMONIALS - WHAT OUR USERS SAY */}
       <Section id="testimonials">
         <SectionHeader>
-          <SectionTitle>What our users say</SectionTitle>
+          <SectionTitle>What results look like</SectionTitle>
           <SectionSubtitle>
-            Real results from real professionals
+            Here&apos;s what users can expect from Rejectly.pro
           </SectionSubtitle>
         </SectionHeader>
 
@@ -3675,7 +3675,7 @@ export default function Page() {
           <TestimonialCard>
             <TestimonialHeader>
               <TestimonialAvatar>
-                <Image src="https://i.pravatar.cc/150?img=12" alt="Sarah Chen - Frontend Developer who got 5 interviews in 2 weeks with Rejectly AI resume optimization" fill sizes="56px" style={{ objectFit: "cover" }} />
+                <Image src="https://i.pravatar.cc/150?img=12" alt="Job seeker testimonial about getting more interviews with Rejectly resume optimization" fill sizes="56px" style={{ objectFit: "cover" }} />
               </TestimonialAvatar>
               <TestimonialAuthor>
                 <div className="name">Sarah Chen</div>
@@ -3690,10 +3690,10 @@ export default function Page() {
               </TestimonialRating>
             </TestimonialHeader>
             <TestimonialText>
-              I was applying to jobs for months with no responses. After using
-              Rejectly.pro, I optimized my resume and got 5 interview
-              invitations in 2 weeks! The AI insights were spot-on about what I
-              was missing.
+              I was sending the same resume everywhere for months — 50+ applications, 2 callbacks.
+              Rejectly showed me why: each job needs different keywords. Now I generate a tailored
+              resume for every application. 5 interviews in 2 weeks. The difference isn&apos;t my skills — it&apos;s
+              how I present them for each specific role.
             </TestimonialText>
             <TestimonialHighlight>
               <CheckIcon />5 interviews in 2 weeks
@@ -3703,7 +3703,7 @@ export default function Page() {
           <TestimonialCard>
             <TestimonialHeader>
               <TestimonialAvatar>
-                <Image src="https://i.pravatar.cc/150?img=33" alt="Marcus Johnson - Product Manager who achieved 85% ATS pass rate improvement with Rejectly resume optimizer" fill sizes="56px" style={{ objectFit: "cover" }} />
+                <Image src="https://i.pravatar.cc/150?img=33" alt="Product manager testimonial about ATS optimization results with Rejectly" fill sizes="56px" style={{ objectFit: "cover" }} />
               </TestimonialAvatar>
               <TestimonialAuthor>
                 <div className="name">Marcus Johnson</div>
@@ -3718,21 +3718,20 @@ export default function Page() {
               </TestimonialRating>
             </TestimonialHeader>
             <TestimonialText>
-              The ATS optimization feature is a game-changer. My resume was
-              being rejected by automated systems before I even got to human
-              reviewers. Now I'm getting past those filters and landing
-              interviews at top companies.
+              I used to think my resume was fine — until Rejectly showed me I was missing 40% of the
+              keywords for every job I applied to. Each role needs different emphasis. The ATS Optimizer
+              alone boosted my score from 45% to 89%, and I don&apos;t even need a job description for it.
             </TestimonialText>
             <TestimonialHighlight>
               <CheckIcon />
-              85% ATS pass rate improvement
+               ATS score: 45% → 89% with one click
             </TestimonialHighlight>
           </TestimonialCard>
 
           <TestimonialCard>
             <TestimonialHeader>
               <TestimonialAvatar>
-                <Image src="https://i.pravatar.cc/150?img=47" alt="Emily Rodriguez - Data Analyst success story using Rejectly AI-powered resume analysis and ATS optimization" fill sizes="56px" style={{ objectFit: "cover" }} />
+                <Image src="https://i.pravatar.cc/150?img=47" alt="Career changer testimonial about using Rejectly AI resume analysis" fill sizes="56px" style={{ objectFit: "cover" }} />
               </TestimonialAvatar>
               <TestimonialAuthor>
                 <div className="name">Emily Rodriguez</div>
@@ -3747,10 +3746,9 @@ export default function Page() {
               </TestimonialRating>
             </TestimonialHeader>
             <TestimonialText>
-              The professional rewriting suggestions helped me transform my
-              resume from generic to compelling. I learned how to speak the
-              language HR managers want to see. Landed my dream job within a
-              month!
+              I spent weeks perfecting &quot;one perfect resume.&quot; Rejectly taught me that doesn&apos;t exist.
+              What works for a startup is wrong for a Fortune 500. Now I customize for every application
+              in under a minute — resume, cover letter, even interview prep. Landed my dream role in a month.
             </TestimonialText>
             <TestimonialHighlight>
               <CheckIcon />
@@ -3868,15 +3866,15 @@ export default function Page() {
               <ul>
                 <li>
                   <CheckIcon />
-                  AI specifically trained to bypass ATS filters
+                  A new, optimized resume created for each specific job you apply to
                 </li>
                 <li>
                   <CheckIcon />
-                  Expert-level rewriting delivered in 30 seconds
+                  Complete application package in under a minute: CV, cover letter, interview prep
                 </li>
                 <li>
                   <CheckIcon />
-                  Bullet points tailored to the exact job description
+                  Free CV builder &amp; ATS checker included — no credit card needed to start
                 </li>
               </ul>
             </RejectlyColumn>

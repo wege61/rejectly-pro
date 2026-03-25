@@ -3,7 +3,7 @@ import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
   title: { absolute: "How It Works - AI Resume Analysis Process | Rejectly.pro" },
-  description: "Learn how our AI analyzes your resume in 4 simple steps: Upload, get smart recommendations, generate cover letters, and download optimized resume. 30-second analysis.",
+  description: "Learn how our AI creates a unique, ATS-optimized resume for every job you apply to — in 4 simple steps. Upload, analyze, optimize, apply.",
   keywords: [
     "AI resume analysis process",
     "how ATS optimization works",

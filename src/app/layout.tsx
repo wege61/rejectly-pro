@@ -15,11 +15,11 @@ declare global {
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.rejectly.pro'),
   title: {
-    default: "Rejectly.pro - AI Resume Optimizer | Get 3x More Interviews",
+    default: "Rejectly.pro - AI Resume Optimizer | A New Resume for Every Job",
     template: "%s | Rejectly.pro"
   },
   description:
-    "Transform your resume with AI. Get past ATS systems, find your perfect job match, and land 3x more interviews. Free analysis in 30 seconds. Used by 500+ professionals.",
+    "Transform your resume with AI. Get a unique, ATS-optimized CV for every job you apply to — plus cover letters, interview prep, and career insights. Free tools included.",
   keywords: [
     "AI resume optimizer",
     "ATS resume checker",
@@ -47,8 +47,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://www.rejectly.pro",
     siteName: "Rejectly.pro",
-    title: "Rejectly.pro - AI Resume Optimizer | Get 3x More Interviews",
-    description: "Transform your resume with AI-powered analysis. Beat ATS systems, find perfect job matches, and boost your interview rate by 300%. Free 30-second analysis.",
+    title: "Rejectly.pro - AI Resume Optimizer | A New Resume for Every Job",
+    description: "Transform your resume with AI. Get a unique, ATS-optimized CV for every job you apply to — plus cover letters, interview prep, and career insights.",
     images: [
       {
         url: "/og-image.png",
@@ -62,8 +62,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@rejectlypro",
     creator: "@rejectlypro",
-    title: "Rejectly.pro - AI Resume Optimizer | Get 3x More Interviews",
-    description: "Transform your resume with AI. Beat ATS systems and land 3x more interviews in 7 days.",
+    title: "Rejectly.pro - AI Resume Optimizer | A New Resume for Every Job",
+    description: "Transform your resume with AI. Get a unique, ATS-optimized CV for every job you apply to.",
     images: ["/og-image.png"],
   },
   robots: {

@@ -257,7 +257,7 @@ export default function FAQPage() {
         {
           question: "How does Rejectly.pro work?",
           answer:
-            "Upload your resume and paste a job description. Our AI analyzes the match, identifies gaps, and provides actionable recommendations to improve your chances. The entire process takes 15-30 seconds.",
+            "Upload your resume and paste a job description. Our AI analyzes the match, identifies gaps, and provides actionable recommendations to improve your chances. The entire process takes under a minute.",
         },
         {
           question: "What file formats do you support?",
@@ -267,7 +267,7 @@ export default function FAQPage() {
         {
           question: "How long does the analysis take?",
           answer:
-            "Our AI analysis typically takes <strong>15-30 seconds</strong> to complete. For complex resumes and longer job descriptions, it may take up to 1 minute, but never longer.",
+            "Our AI analysis typically takes <strong>under a minute</strong> to complete. For complex resumes and longer job descriptions, it may take slightly longer, but results are always fast.",
         },
         {
           question: "Do I need to create an account?",

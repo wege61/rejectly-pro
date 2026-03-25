@@ -351,8 +351,8 @@ interface WelcomeModalProps {
 
 const SLIDES_DATA = [
   {
-    title: "Land Your Dream Job 3x Faster",
-    description: "Join thousands of job seekers who have transformed their career with AI-powered resume optimization and smart job matching.",
+    title: "A New Resume for Every Job",
+    description: "Create job-specific, ATS-optimized resumes for every application — plus cover letters, interview prep, and career insights. All powered by AI.",
     animation: "float" as const,
     variant: 0,
   },
@@ -383,7 +383,7 @@ const SLIDES_DATA = [
     description: "Generate personalized, compelling cover letters in seconds. Each one tailored to the specific job and company.",
     features: [
       "Save 2+ hours per application",
-      "85% higher response rate",
+      "Job-specific resume optimization",
       "Multiple tone options (professional, friendly, formal)",
     ],
     animation: "pulse" as const,

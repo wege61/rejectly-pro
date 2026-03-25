@@ -1646,7 +1646,7 @@ export default function AboutPage() {
                       </StoryTimelineDot>
                       <StoryTimelineContent>
                         <StoryTimelineLabel>Today</StoryTimelineLabel>
-                        <StoryTimelineText>Helping thousands land dream jobs</StoryTimelineText>
+                        <StoryTimelineText>Empowering job seekers worldwide</StoryTimelineText>
                       </StoryTimelineContent>
                     </StoryTimelineItem>
                   </StoryTimelineContainer>
@@ -1715,8 +1715,8 @@ export default function AboutPage() {
                     <VisionStar $top="25px" $left="85%" $size="16px" $delay={1} />
                     <VisionStar $top="40px" $left="75%" $size="10px" $delay={1.2} />
                     <VisionMilestone $position="start">
-                      <VisionMilestoneNumber $color="#6366f1">50K+</VisionMilestoneNumber>
-                      <VisionMilestoneLabel>Users</VisionMilestoneLabel>
+                      <VisionMilestoneNumber $color="#6366f1">Launch</VisionMilestoneNumber>
+                      <VisionMilestoneLabel>2025</VisionMilestoneLabel>
                     </VisionMilestone>
                     <VisionMilestone $position="middle">
                       <VisionMilestoneNumber $color="#8b5cf6">1M+</VisionMilestoneNumber>
@@ -1942,16 +1942,16 @@ export default function AboutPage() {
                       </TargetVisual>
                       <AccuracyStats>
                         <AccuracyStatItem>
-                          <AccuracyStatLabel>Precision</AccuracyStatLabel>
-                          <AccuracyStatValue>98.5%</AccuracyStatValue>
+                          <AccuracyStatLabel>Engine</AccuracyStatLabel>
+                          <AccuracyStatValue>GPT-4</AccuracyStatValue>
                         </AccuracyStatItem>
                         <AccuracyStatItem>
-                          <AccuracyStatLabel>Recall</AccuracyStatLabel>
-                          <AccuracyStatValue>97.2%</AccuracyStatValue>
+                          <AccuracyStatLabel>ATS Systems</AccuracyStatLabel>
+                          <AccuracyStatValue>4+</AccuracyStatValue>
                         </AccuracyStatItem>
                         <AccuracyStatItem>
-                          <AccuracyStatLabel>F1 Score</AccuracyStatLabel>
-                          <AccuracyStatValue>97.8%</AccuracyStatValue>
+                          <AccuracyStatLabel>Analysis Criteria</AccuracyStatLabel>
+                          <AccuracyStatValue>40+</AccuracyStatValue>
                         </AccuracyStatItem>
                       </AccuracyStats>
                     </AccuracyContainer>
@@ -1996,8 +1996,8 @@ export default function AboutPage() {
             visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
           }}
         >
-          <StatNumber>50K+</StatNumber>
-          <StatLabel>Resumes Analyzed</StatLabel>
+          <StatNumber>4</StatNumber>
+          <StatLabel>AI-Powered Tools</StatLabel>
         </StatCard>
 
         <StatCard
@@ -2007,8 +2007,8 @@ export default function AboutPage() {
             visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
           }}
         >
-          <StatNumber>85%</StatNumber>
-          <StatLabel>Interview Rate Increase</StatLabel>
+          <StatNumber>GPT-4</StatNumber>
+          <StatLabel>AI Engine</StatLabel>
         </StatCard>
 
         <StatCard
@@ -2018,8 +2018,8 @@ export default function AboutPage() {
             visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
           }}
         >
-          <StatNumber>24/7</StatNumber>
-          <StatLabel>AI-Powered Support</StatLabel>
+          <StatNumber>6</StatNumber>
+          <StatLabel>Deliverables Per Report</StatLabel>
         </StatCard>
       </TeamStats>
     </motion.div>

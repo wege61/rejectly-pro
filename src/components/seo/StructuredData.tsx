@@ -33,7 +33,7 @@ export function WebSiteSchema() {
     '@type': 'WebSite',
     name: 'Rejectly.pro',
     url: 'https://www.rejectly.pro',
-    description: 'AI-powered resume optimization and ATS checker. Transform your resume and get 3x more interviews.',
+    description: 'AI-powered resume optimization and ATS checker. Create job-specific, ATS-optimized resumes for every application.',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -405,7 +405,7 @@ export function ReviewSchema() {
         },
         datePublished: '2024-11-05',
         reviewBody:
-          'The cover letter generator saved me hours. I was spending 45 minutes per application writing custom letters. Now I get personalized, compelling cover letters in 30 seconds. Already landed 2 final round interviews.',
+          'The cover letter generator saved me hours. I was spending 45 minutes per application writing custom letters. Now I get personalized, compelling cover letters in under a minute. Already landed 2 final round interviews.',
       },
     ],
   }

@@ -542,7 +542,7 @@ export default function HowItWorksPage() {
             '@context': 'https://schema.org',
             '@type': 'HowTo',
             name: 'How to Optimize Your Resume with Rejectly.pro',
-            description: 'Step-by-step guide to transform your resume and get 3x more interviews using AI-powered optimization',
+            description: 'Step-by-step guide to creating job-specific, ATS-optimized resumes with AI-powered tools',
             totalTime: 'PT2M',
             estimatedCost: {
               '@type': 'MonetaryAmount',
@@ -570,7 +570,7 @@ export default function HowItWorksPage() {
                 '@type': 'HowToStep',
                 position: 3,
                 name: 'AI Analysis & Insights',
-                text: 'Our GPT-4 powered AI analyzes your resume in 15-30 seconds, identifying gaps, ATS compatibility issues, and providing actionable recommendations.',
+                text: 'Our GPT-4 powered AI analyzes your resume in under a minute, identifying gaps, ATS compatibility issues, and providing actionable recommendations.',
                 url: 'https://www.rejectly.pro/how-it-works#step-3',
                 image: 'https://www.rejectly.pro/og-image.png',
               },
@@ -578,7 +578,7 @@ export default function HowItWorksPage() {
                 '@type': 'HowToStep',
                 position: 4,
                 name: 'Get Optimized Resume',
-                text: 'Download your AI-optimized resume with improved keywords, rewritten bullet points, and ATS-friendly formatting. Start applying and get 3x more interviews.',
+                text: 'Download your AI-optimized resume with improved keywords, rewritten bullet points, and ATS-friendly formatting. Start applying with a resume built specifically for each job.',
                 url: 'https://www.rejectly.pro/how-it-works#step-4',
                 image: 'https://www.rejectly.pro/og-image.png',
               },
@@ -603,20 +603,20 @@ export default function HowItWorksPage() {
             <FlipWords words={["Job Search", "Career", "Resume", "Future"]} duration={2500} />
           </HeroTitle>
         <HeroSubtitle>
-          From resume upload to your dream job in 4 simple steps. Our AI-powered
-          platform helps you create resumes that get noticed.
+          Same resume everywhere = same rejection everywhere. Here&apos;s how Rejectly
+          creates a unique, optimized resume for every job you apply to.
         </HeroSubtitle>
         <StatsGrid>
           <StatCard>
-            <StatNumber>50K+</StatNumber>
-            <StatLabel>Resumes Analyzed</StatLabel>
+            <StatNumber>40+</StatNumber>
+            <StatLabel>Analysis Criteria</StatLabel>
           </StatCard>
           <StatCard>
-            <StatNumber>85%</StatNumber>
-            <StatLabel>ATS Pass Rate</StatLabel>
+            <StatNumber>GPT-4</StatNumber>
+            <StatLabel>AI Engine</StatLabel>
           </StatCard>
           <StatCard>
-            <StatNumber>30s</StatNumber>
+            <StatNumber>&lt;1m</StatNumber>
             <StatLabel>Analysis Time</StatLabel>
           </StatCard>
         </StatsGrid>
@@ -625,9 +625,9 @@ export default function HowItWorksPage() {
       <ProcessSection>
         <ProcessSectionContent>
           <SectionHeader>
-            <SectionTitle>Everything you need.</SectionTitle>
+            <SectionTitle>Your complete application toolkit.</SectionTitle>
             <SectionSubtitle>
-              Everything works together to get you hired.
+              Job Match, ATS Optimizer, Cover Letters, CV Builder &mdash; everything works together to get you hired.
             </SectionSubtitle>
           </SectionHeader>
         </ProcessSectionContent>
@@ -679,7 +679,7 @@ export default function HowItWorksPage() {
               </BentoCardDescription>
               <BentoCardVisual>
                 <StatHighlight>
-                  <div className="number">30s</div>
+                  <div className="number">&lt;1m</div>
                   <div className="label">Average Analysis Time</div>
                 </StatHighlight>
               </BentoCardVisual>
@@ -689,14 +689,14 @@ export default function HowItWorksPage() {
           {/* Right tall card - ATS Optimized */}
           <BentoCard $span="tall" $position="right">
             <BentoCardContent $tall>
-              <BentoCardTitle>ATS Optimized</BentoCardTitle>
+              <BentoCardTitle>ATS Optimized &mdash; Per Job</BentoCardTitle>
               <BentoCardDescription>
-                Beat the robots. Our AI ensures your resume passes through automated screening systems with flying colors.
+                Every job has a different ATS filter. Our AI reads the specific job description and optimizes your resume to pass that exact system with flying colors.
               </BentoCardDescription>
               <BentoCardVisual>
                 <StatHighlight>
-                  <div className="number">85%</div>
-                  <div className="label">Higher Pass Rate</div>
+                  <div className="number">4+</div>
+                  <div className="label">ATS Systems Tested</div>
                 </StatHighlight>
               </BentoCardVisual>
               <FeatureList>

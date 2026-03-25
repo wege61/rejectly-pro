@@ -993,10 +993,10 @@ const items = [
     className: "md:col-span-1",
   },
   {
-    title: "The Difference Between Rejection and Interview",
+    title: "Same Resume, 50 Jobs = Same Rejection",
     description: (
       <span>
-        Same qualifications, different results. AI-optimized resumes get 3x more interviews.
+        You&apos;re sending one resume to 50 different jobs. Each has different keywords, different ATS filters, different requirements. Generic doesn&apos;t cut it.
       </span>
     ),
     header: <SkeletonFour />,
@@ -1019,9 +1019,9 @@ export function ProblemBentoGrid() {
   return (
     <ProblemSectionWrapper>
       <SectionHeader>
-        <SectionTitle>Why you keep getting rejected</SectionTitle>
+        <SectionTitle>Why the same resume keeps failing</SectionTitle>
         <SectionSubtitle>
-          The brutal truth about modern job hunting
+          One resume can&apos;t pass 50 different ATS filters. Here&apos;s what&apos;s really happening.
         </SectionSubtitle>
       </SectionHeader>
 
@@ -1040,10 +1040,10 @@ export function ProblemBentoGrid() {
       <TransitionBoxWrapper>
         <AuroraBackground showRadialGradient={true}>
           <TransitionBoxContent>
-            <h3>There&apos;s a better way.</h3>
+            <h3>What if every application had its own resume?</h3>
             <p>
-              Stop sending applications into the void.
-              Let AI show you exactly what&apos;s missing—in 30 seconds.
+              Paste the job description. Get a resume built specifically for that role &mdash;
+              keyword-perfect, ATS-ready. In under a minute.
             </p>
           </TransitionBoxContent>
         </AuroraBackground>

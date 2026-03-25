@@ -2015,7 +2015,7 @@ export default function ATSCheckPage() {
               </CTAGradientCircle>
               <CTATitle>Now you see the problems. Let us fix them.</CTATitle>
               <CTAText>
-                Get an AI-optimized resume with all issues fixed — rewritten bullet points, missing keywords added, and ATS-proof formatting. Ready to download in 30 seconds. Starting at $2.
+                Get an AI-optimized resume with all issues fixed — rewritten bullet points, missing keywords added, and ATS-proof formatting. Ready to download in under a minute. Starting at $2.
               </CTAText>
               <CTAButtonGroup>
                 <CTAButton href={ROUTES.AUTH.SIGNUP}>

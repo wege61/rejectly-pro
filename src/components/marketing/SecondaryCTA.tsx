@@ -196,14 +196,14 @@ export function SecondaryCTA() {
         <CTABox>
           <ContentSection>
             <Title>
-              Your competitors have already optimized their resumes.
+              Still sending the same resume to every job?
             </Title>
             <Description>
-              Stop leaving your career to chance. Get the same AI advantage that thousands of professionals are using to secure $100k+ roles.
+              Every job has different keywords, different ATS filters, different expectations. A tailored resume for each application is the difference between getting rejected and getting hired.
             </Description>
             <ButtonGroup>
               <PrimaryButton href={ROUTES.AUTH.SIGNUP}>
-                Scan My Resume for $2
+                Build My Resume — Free
               </PrimaryButton>
               <SecondaryButton href={ROUTES.PUBLIC.PRICING}>
                 View Plans

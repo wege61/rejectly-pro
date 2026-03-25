@@ -187,7 +187,7 @@ const ctaContent = {
     icon: Sparkles,
     title: "Land More Interviews with AI",
     description:
-      "Join thousands of job seekers who've increased their interview rate by 3x. Optimize your resume and cover letters with Rejectly.pro.",
+      "Stop sending the same resume everywhere. Get a unique, ATS-optimized CV for every job you apply to — plus cover letters, interview prep, and career insights.",
     buttonText: "Get Started Free",
     buttonLink: "/signup",
     features: ["Free Analysis", "No Credit Card", "Instant Results"],

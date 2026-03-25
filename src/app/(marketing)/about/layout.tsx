@@ -3,7 +3,7 @@ import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
   title: { absolute: "About - AI Resume Optimizer Company | Rejectly.pro" },
-  description: "Learn about Rejectly.pro, the AI-powered resume optimization platform helping 50K+ job seekers land their dream jobs. Our mission, values, and commitment to your success.",
+  description: "Learn about Rejectly.pro, the AI-powered resume optimization platform that creates a unique, ATS-optimized CV for every job you apply to. Our mission, values, and commitment to your success.",
   keywords: [
     "about Rejectly",
     "AI resume optimizer company",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "About - AI Resume Optimizer Company | Rejectly.pro",
-    description: "Learn about Rejectly.pro, the AI-powered resume optimization platform helping 50K+ job seekers land their dream jobs with 85% higher ATS pass rate.",
+    description: "Learn about Rejectly.pro, the AI-powered resume optimization platform that builds job-specific, ATS-optimized resumes for every application.",
     url: "https://www.rejectly.pro/about",
     type: "website",
     images: [

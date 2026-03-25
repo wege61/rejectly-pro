@@ -3,7 +3,7 @@ import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
   title: { absolute: "Features - GPT-4 Powered Resume Analysis Tools | Rejectly.pro" },
-  description: "Discover powerful AI resume features: ATS optimization, keyword analysis, professional rewriting, cover letter generation, and instant job matching. Try free demo now.",
+  description: "Explore Rejectly.pro's AI-powered tools: Job Match Analysis, ATS Optimizer, Cover Letter Generator, and CV Builder. Create job-specific resumes for every application.",
   keywords: [
     "AI resume features",
     "ATS optimization features",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Features - GPT-4 Powered Resume Analysis Tools | Rejectly.pro",
-    description: "Discover powerful AI resume features: ATS optimization, keyword analysis, professional rewriting, and instant job matching. Try free demo now.",
+    description: "Explore Rejectly.pro's AI-powered tools: Job Match Analysis, ATS Optimizer, Cover Letter Generator, and free CV Builder.",
     url: "https://www.rejectly.pro/features",
     type: "website",
     images: [

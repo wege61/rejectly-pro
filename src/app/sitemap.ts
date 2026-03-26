@@ -93,6 +93,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  // Programmatic SEO pages for role-specific resume optimization
+  const rolePages: MetadataRoute.Sitemap = [
+    'software-engineer', 'product-manager', 'data-analyst', 'marketing-manager',
+    'project-manager', 'ux-designer', 'sales-representative', 'nurse',
+    'accountant', 'teacher', 'human-resources', 'business-analyst',
+  ].map((role) => ({
+    url: `${BASE_URL}/resume/${role}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
   // Fetch blog posts from Supabase (using direct client without cookies)
   let blogPages: MetadataRoute.Sitemap = [];
   let categoryPages: MetadataRoute.Sitemap = [];
@@ -150,5 +162,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Error fetching blog data for sitemap:", error);
   }
 
-  return [...staticPages, ...blogPages, ...categoryPages, ...tagPages];
+  return [...staticPages, ...rolePages, ...blogPages, ...categoryPages, ...tagPages];
 }

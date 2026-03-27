@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
+import { ShareScoreButton } from "./ShareScoreButton";
 
 interface ATSScoreCircleProps {
   score: number;
@@ -345,6 +346,10 @@ export function ATSScoreCircle({
       {showLabel && (
         <Description $size={size}>{theme.description}</Description>
       )}
+
+      <div style={{ marginTop: '16px' }}>
+        <ShareScoreButton score={score} size="sm" />
+      </div>
     </Card>
   );
 }

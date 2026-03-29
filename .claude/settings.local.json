@@ -62,7 +62,9 @@
       "Bash(brew install:*)",
       "Bash(pdftoppm -v)",
       "Bash(pdftotext \"/Users/ozgunegeoner/Downloads/siliconfriendly-rejectly.pro-L0.pdf\" -)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:universities.hipolabs.com)"
     ],
     "deny": [],
     "ask": []

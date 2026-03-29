@@ -207,7 +207,7 @@ function CVBuilderContent() {
     if (!user) return; // Protected route, user always exists here
     
     setDownloading(true);
-    const filename = cv.contact.name ? `${cv.contact.name.replace(/\\s+/g, '_')}_CV` : 'Rejectly_Pro_CV';
+    const filename = cv.contact.name ? `${cv.contact.name.replace(/\s+/g, '_')}_CV` : 'Rejectly_Pro_CV';
     
     // Auto-save built CV to dashboard seamlessly
     try {

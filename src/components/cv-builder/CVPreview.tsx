@@ -205,15 +205,16 @@ export function CVPreview() {
           {sortedEducation.map((edu: CVEducation, idx: number) => (
             <div key={idx} style={{ marginBottom: '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                <span style={{ fontWeight: 600, fontSize: '14px' }}>{edu.institution}</span>
+                <span style={{ fontWeight: 600, fontSize: '14px' }}>
+                  {edu.degree}
+                  {edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''}
+                </span>
                 <span style={{ color: '#666', fontSize: '13px' }}>{edu.graduationDate}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: '4px' }}>
                 <span style={{ fontSize: '14px', color: '#444' }}>
-                  {edu.degree}
-                  {edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''}
+                  {[edu.institution, edu.location].filter(Boolean).join(', ')}
                 </span>
-                <span style={{ fontSize: '13px', color: '#666' }}>{edu.location}</span>
               </div>
             </div>
           ))}

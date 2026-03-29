@@ -385,14 +385,15 @@ export async function generateCVPDF(
 
     sortedEducation.forEach((edu) => {
       checkPageBreak(10);
-      drawSplitRow(edu.institution, edu.graduationDate || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 5.5;
-      
       let degreeLine = edu.degree || "";
       if (edu.fieldOfStudy) degreeLine += ` in ${edu.fieldOfStudy}`;
-      
-      drawSplitRow(degreeLine, edu.location, false, COLORS.secondary, COLORS.light, FONTS.subtitle, FONTS.date);
-      yPosition += 8; 
+
+      drawSplitRow(degreeLine, edu.graduationDate || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
+      yPosition += 5.5;
+
+      const institutionLine = [edu.institution, edu.location].filter(Boolean).join(', ');
+      drawSplitRow(institutionLine, undefined, false, COLORS.secondary, COLORS.light, FONTS.subtitle, FONTS.date);
+      yPosition += 8;
     });
     
     if (highlightSection === "education") drawHighlightBorder(startY, yPosition);

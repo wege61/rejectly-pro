@@ -127,12 +127,13 @@ export function SummaryForm() {
   // Track previous cache hash to refetch if profile changed
   const [lastHash, setLastHash] = useState('');
 
-  // Initial tab set based on strictly having a summary loaded already
+  // Initial tab set based on strictly having a summary loaded already (runs only on mount)
   useEffect(() => {
-    if (cv.summary.trim() && !hasFetched) {
+    if (cv.summary.trim()) {
       setActiveTab('custom');
     }
-  }, [cv.summary, hasFetched]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const fetchSuggestions = async () => {

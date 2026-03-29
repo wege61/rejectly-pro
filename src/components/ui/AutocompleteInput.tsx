@@ -172,7 +172,7 @@ export function AutocompleteInput({ value, onChange, onSelect, placeholder, fetc
             .map((j: string) => ({ name: j }));
         }
         else if (fetchType === "university") {
-          const res = await fetch(`http://universities.hipolabs.com/search?name=${encodeURIComponent(value)}&limit=5`);
+          const res = await fetch(`https://universities.hipolabs.com/search?name=${encodeURIComponent(value)}&limit=5`);
           const data = await res.json();
           // Map HippoLabs response, remove duplicates
           const uniqueNames = new Set();

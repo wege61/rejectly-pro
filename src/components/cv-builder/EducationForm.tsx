@@ -188,7 +188,7 @@ export function EducationForm() {
     try {
       setLoadingLocationIndex(index);
       
-      let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(schoolName)}&format=json&limit=1&addressdetails=1`;
+      let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(schoolName)}&format=json&limit=1&addressdetails=1&accept-language=en`;
       
       // Strict country filtering to avoid mapping foreign universities to US restaurants
       if (context?.domain) {

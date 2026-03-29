@@ -61,7 +61,7 @@ const RightPanel = styled.div`
   align-items: flex-start; /* Fixed: allows top of tall elements to be scrollable */
   justify-content: center;
   background: #000; /* Deep black for absolute contrast */
-  padding: 40px;
+  padding: 100px 40px 40px;
   overflow-y: auto;
 
   /* Subtle ambient glow behind the CV */

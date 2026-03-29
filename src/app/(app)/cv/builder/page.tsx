@@ -57,7 +57,7 @@ const RightPanel = styled.div`
   align-items: flex-start;
   justify-content: center;
   background: #000;
-  padding: 40px;
+  padding: 100px 40px 40px;
   overflow-y: auto;
   position: relative;
 

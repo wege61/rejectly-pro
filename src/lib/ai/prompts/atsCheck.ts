@@ -540,6 +540,24 @@ export function generateATSOptimizationPrompt(
 
 🎯 TARGET: 95-100% ATS SCORE - ACCEPT NOTHING LESS!
 
+=============================================================================
+🌐 LANGUAGE DETECTION & OUTPUT LANGUAGE (CRITICAL!)
+=============================================================================
+STEP 1: Detect the language of the original CV below.
+STEP 2: ALL text content in your response MUST be in the SAME language as the original CV.
+
+RULES:
+- JSON keys ("contact", "summary", "experience", "title", "company", etc.) stay in ENGLISH.
+- ALL VALUES (summary text, bullet points, skill names, dates, proficiency levels, etc.) MUST be in the DETECTED language.
+- If the CV is in Turkish → write everything in Turkish.
+  - Use Turkish month names: Ocak, Şubat, Mart, Nisan, Mayıs, Haziran, Temmuz, Ağustos, Eylül, Ekim, Kasım, Aralık
+  - Use "Devam Ediyor" instead of "Present" for current positions
+  - Write section content in Turkish (e.g., summary, bullets)
+- If the CV is in English → write everything in English.
+- If the CV is in any other language → write everything in that language.
+- NEVER translate a non-English CV into English. Preserve the original language!
+=============================================================================
+
 ${userProvidedMetrics && Object.keys(userProvidedMetrics).length > 0 ? `
 🎯🎯🎯 USER PROVIDED METRICS - MUST INTEGRATE! 🎯🎯🎯
 ================================================================================
@@ -898,6 +916,7 @@ Include 10-15 changes minimum!
 □ Professional Summary has NO clichés, HAS metrics
 □ Section headers in TITLE CASE (NOT all-caps): "Professional Summary", "Professional Experience", "Education", "Skills"
 □ Experience in REVERSE chronological order
+□ LANGUAGE CHECK: ALL output text is in the SAME language as the original CV (NOT translated to English!)
 □ Job titles in format: "[Title] at [Company]" (NOT "Title | Company")
 □ ALL dates in "Month YYYY" format (e.g., "January 2020", NOT "Jan 2020" or "January 20")
 □ EVERY bullet starts with power verb

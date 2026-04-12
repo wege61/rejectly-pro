@@ -179,6 +179,7 @@ interface OptimizationResult {
     impact?: string;
   }>;
   optimizedCVId: string;
+  contactName?: string;
   optimizedAtsResult?: {
     overallScore: number;
     summary: string;
@@ -2703,6 +2704,7 @@ export default function DashboardATSOptimizerPage() {
         improvement: cv.after_score - cv.before_score,
         changes: cv.changes || [],
         optimizedCVId: cv.id,
+        contactName: cv.contact_name,
         optimizedAtsResult: cv.ats_result,
       });
       setStep("optimized"); // Switch to detailed view
@@ -2977,9 +2979,25 @@ export default function DashboardATSOptimizerPage() {
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
 
+      // Build filename as Name_Surname.pdf (no timestamp)
+      const rawName = optimizationResult.contactName || "Optimized_CV";
+      const cleanName = rawName
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[ğĞ]/g, 'g')
+        .replace(/[üÜ]/g, 'u')
+        .replace(/[şŞ]/g, 's')
+        .replace(/[ıİ]/g, 'I')
+        .replace(/[öÖ]/g, 'o')
+        .replace(/[çÇ]/g, 'c')
+        .trim()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-zA-Z0-9_]/g, '');
+      const downloadName = `${cleanName}.pdf`;
+
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = optimizationResult.pdfUrl.split("/").pop() || "Optimized_CV.pdf";
+      link.download = downloadName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

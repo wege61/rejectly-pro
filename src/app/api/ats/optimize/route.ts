@@ -293,6 +293,7 @@ export async function POST(request: NextRequest) {
         impact: c.impact as "high" | "medium" | "low",
       })),
       optimizedCVId: savedCV?.id || "",
+      contactName: contactName,
       optimizedAtsResult: optimizedAtsResult
     };
 

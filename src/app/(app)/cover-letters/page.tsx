@@ -1813,30 +1813,32 @@ export default function CoverLettersPage() {
   };
 
   const handleGeneratorSuccess = async (letterId?: string) => {
-    await fetchCoverLetters();
-
-    // Auto-open the generated cover letter
-    if (letterId) {
-      const newLetter = coverLetters.find(l => l.id === letterId);
-      if (newLetter) {
-        setSelectedLetterForEdit(newLetter);
-        setIsEditorOpen(true);
-      } else {
-        // Refetch and find
-        const response = await fetch("/api/cover-letters");
-        if (response.ok) {
-          const data = await response.json();
-          const generated = data.coverLetters?.find((l: CoverLetter) => l.id === letterId);
-          if (generated) {
-            setSelectedLetterForEdit(generated);
-            setIsEditorOpen(true);
-          }
-        }
-      }
+    // Fetch fresh data first so we can find the new letter
+    const response = await fetch("/api/cover-letters");
+    let freshLetters: CoverLetter[] = [];
+    if (response.ok) {
+      const data = await response.json();
+      freshLetters = data.coverLetters || [];
+      setCoverLetters(freshLetters);
+    } else {
+      await fetchCoverLetters();
     }
 
+    // Close generator before opening editor to avoid stacked modals
     handleGeneratorClose();
-    toast.success("Cover letter generated successfully!");
+
+    // Auto-open the generated cover letter in editor
+    if (letterId) {
+      const generated = freshLetters.find((l: CoverLetter) => l.id === letterId);
+      if (generated) {
+        // Small delay to let generator close animation finish
+        setTimeout(() => {
+          setSelectedLetterForEdit(generated);
+          setIsEditorOpen(true);
+        }, 400);
+      }
+    }
+    // Toast is already shown by CoverLetterGenerator, no need to duplicate
   };
 
   const handleCardClick = (letter: CoverLetter) => {
@@ -2306,7 +2308,6 @@ export default function CoverLettersPage() {
           }}
           onSuccess={() => {
             fetchCoverLetters();
-            toast.success("Cover letter viewed!");
           }}
         />
       )}
@@ -2315,159 +2316,123 @@ export default function CoverLettersPage() {
       <Modal
         isOpen={isPremiumModalOpen}
         onClose={() => setIsPremiumModalOpen(false)}
-        title="✨ Premium Feature"
-        description="Cover letters are only available for premium reports"
-        size="md"
+        size="sm"
       >
-        <Modal.Body>
-          <div style={{
-            padding: '24px',
-            textAlign: 'center',
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '40px 32px 32px',
+          textAlign: 'center',
+        }}>
+          <h3 style={{
+            fontSize: 22,
+            fontWeight: 600,
+            color: 'rgba(255, 255, 255, 0.95)',
+            margin: '0 0 10px',
+            letterSpacing: '-0.02em',
           }}>
-            <div style={{
-              marginBottom: '20px',
-              display: 'flex',
-              justifyContent: 'center',
-            }}>
-              <div style={{
-                background: 'var(--gradient-primary)',
-                borderRadius: '16px',
-                padding: '16px',
-                display: 'inline-flex',
-              }}>
-                <EnvelopeIcon size="48" />
-              </div>
-            </div>
-            <h3 style={{
-              fontSize: '24px',
-              fontWeight: 600,
-              marginBottom: '16px',
-              background: 'var(--gradient-primary)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
-              AI-Powered Cover Letters
-            </h3>
-            <p style={{
-              fontSize: '16px',
-              color: '#9ca3af',
-              marginBottom: '24px',
-              lineHeight: '1.6',
-            }}>
-              Create personalized, professional cover letters tailored to each job posting.
-              To unlock this feature, you need to upgrade the report to premium.
-            </p>
+            Unlock Cover Letters
+          </h3>
 
-            <div style={{
-              background: 'rgba(102, 126, 234, 0.1)',
-              border: '2px solid rgba(102, 126, 234, 0.3)',
-              borderRadius: '12px',
-              padding: '20px',
-              marginBottom: '24px',
-              textAlign: 'left',
-            }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: 'var(--accent)' }}>
-                ✨ What you'll get with premium:
-              </div>
-              <ul style={{
-                listStyle: 'none',
-                padding: 0,
-                margin: 0,
-                fontSize: '14px',
-                color: '#d1d5db',
-              }}>
-                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
-                    <CheckCircleIcon />
-                  </div>
-                  <span>AI-generated cover letters with 6 templates</span>
-                </li>
-                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
-                    <CheckCircleIcon />
-                  </div>
-                  <span>Optimized CV with improved ATS score</span>
-                </li>
-                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
-                    <CheckCircleIcon />
-                  </div>
-                  <span>Detailed improvement breakdown</span>
-                </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
-                    <CheckCircleIcon />
-                  </div>
-                  <span>Alternative role recommendations</span>
-                </li>
-              </ul>
-            </div>
+          <p style={{
+            fontSize: 15,
+            color: 'rgba(255, 255, 255, 0.5)',
+            margin: '0 0 24px',
+            lineHeight: 1.6,
+            maxWidth: 300,
+          }}>
+            Upgrade the report to premium to generate tailored cover letters with multiple templates and tones.
+          </p>
 
-            {userCredits.canAnalyze ? (
-              <>
-                <div style={{
-                  background: 'rgba(16, 185, 129, 0.1)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  borderRadius: '8px',
-                  padding: '12px',
-                  marginBottom: '16px',
-                  fontSize: '14px',
-                  color: 'var(--success)',
-                }}>
-                  You have <strong>{userCredits.credits}</strong> credits available
-                </div>
-                <Button
-                  size="lg"
-                  onClick={() => {
-                    setIsPremiumModalOpen(false);
-                    if (selectedFreeReportId) {
-                      router.push(`/reports/${selectedFreeReportId}?upgrade=true`);
-                    }
-                  }}
-                  style={{
-                    width: '100%',
-                    background: 'var(--gradient-primary)',
-                    fontSize: '16px',
-                    padding: '14px 24px',
-                    marginBottom: '12px',
-                  }}
-                >
-                  Upgrade to Pro - Use 1 Credit
-                </Button>
-                <p style={{
-                  fontSize: '12px',
-                  color: '#6b7280',
-                  marginTop: '12px',
-                }}>
-                  Uses 1 credit • Unlock all premium features
-                </p>
-              </>
-            ) : (
-              <>
-                <Button
-                  size="lg"
-                  onClick={() => router.push(ROUTES.APP.BILLING)}
-                  style={{
-                    width: '100%',
-                    background: 'var(--gradient-primary)',
-                    fontSize: '16px',
-                    padding: '14px 24px',
-                    marginBottom: '12px',
-                  }}
-                >
-                  Buy Credits to Unlock
-                </Button>
-                <p style={{
-                  fontSize: '12px',
-                  color: '#6b7280',
-                  marginTop: '12px',
-                }}>
-                  Starting at $2 for 1 credit • Best value: $7 for 10 credits
-                </p>
-              </>
-            )}
+          {/* Feature grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 10,
+            width: '100%',
+            marginBottom: 28,
+          }}>
+            {['6 Templates', 'Optimized CV', 'ATS Improvements', 'Role Suggestions'].map((feature) => (
+              <div key={feature} style={{
+                padding: '12px 14px',
+                borderRadius: 14,
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'rgba(255, 255, 255, 0.6)',
+              }}>
+                {feature}
+              </div>
+            ))}
           </div>
-        </Modal.Body>
+
+          {/* Credit pill */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 16px',
+            borderRadius: 100,
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            marginBottom: 24,
+            fontSize: 14,
+            color: 'rgba(255, 255, 255, 0.7)',
+          }}>
+            <svg width="16" height="16" fill="none" stroke="rgba(53, 162, 159, 0.9)" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {userCredits.canAnalyze
+              ? <>You have <span style={{ fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>{userCredits.credits}</span> credits</>
+              : 'Credits required'}
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: 'flex', gap: 12, width: '100%' }}>
+            <button
+              onClick={() => setIsPremiumModalOpen(false)}
+              style={{
+                flex: 1,
+                padding: '14px 24px',
+                borderRadius: 100,
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: 15,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+              onMouseEnter={e => {
+                (e.target as HTMLButtonElement).style.background = 'rgba(255, 255, 255, 0.1)';
+                (e.target as HTMLButtonElement).style.borderColor = 'rgba(255, 255, 255, 0.2)';
+              }}
+              onMouseLeave={e => {
+                (e.target as HTMLButtonElement).style.background = 'rgba(255, 255, 255, 0.05)';
+                (e.target as HTMLButtonElement).style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            >
+              Maybe Later
+            </button>
+            <Button
+              variant="glass-primary"
+              size="lg"
+              onClick={() => {
+                setIsPremiumModalOpen(false);
+                if (userCredits.canAnalyze && selectedFreeReportId) {
+                  router.push(`/reports/${selectedFreeReportId}?upgrade=true`);
+                } else {
+                  router.push(ROUTES.APP.BILLING);
+                }
+              }}
+              style={{ flex: 1 }}
+            >
+              {userCredits.canAnalyze ? 'Upgrade' : 'Buy Credits'}
+            </Button>
+          </div>
+        </div>
       </Modal>
 
       {/* Delete Confirmation Modal */}

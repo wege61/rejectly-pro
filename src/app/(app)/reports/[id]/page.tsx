@@ -8609,124 +8609,117 @@ export default function ReportDetailPage() {
       <Modal
         isOpen={isPremiumModalOpen}
         onClose={() => setIsPremiumModalOpen(false)}
-        title="✨ Premium Feature"
-        description="Upgrade to unlock AI-powered cover letters"
-        size="md"
+        size="sm"
       >
-        <Modal.Body>
-          <div style={{
-            padding: '24px',
-            textAlign: 'center',
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '40px 32px 32px',
+          textAlign: 'center',
+        }}>
+          <h3 style={{
+            fontSize: 22,
+            fontWeight: 600,
+            color: 'rgba(255, 255, 255, 0.95)',
+            margin: '0 0 10px',
+            letterSpacing: '-0.02em',
           }}>
-            <div style={{
-              marginBottom: '20px',
-              display: 'flex',
-              justifyContent: 'center',
-            }}>
-              <div style={{
-                background: 'var(--gradient-primary)',
-                borderRadius: '16px',
-                padding: '16px',
-                display: 'inline-flex',
-              }}>
-                <EnvelopeIcon size="48" />
-              </div>
-            </div>
-            <h3 style={{
-              fontSize: '24px',
-              fontWeight: 600,
-              marginBottom: '16px',
-              background: 'var(--gradient-primary)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
-              AI-Powered Cover Letters
-            </h3>
-            <p style={{
-              fontSize: '16px',
-              color: '#9ca3af',
-              marginBottom: '24px',
-              lineHeight: '1.6',
-            }}>
-              Create personalized, professional cover letters tailored to each job posting.
-              Choose from multiple templates, tones, and styles to make your application stand out.
-            </p>
+            Unlock Cover Letters
+          </h3>
 
-            <div style={{
-              background: 'rgba(102, 126, 234, 0.1)',
-              border: '2px solid rgba(102, 126, 234, 0.3)',
-              borderRadius: '12px',
-              padding: '20px',
-              marginBottom: '24px',
-              textAlign: 'left',
-            }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: 'var(--accent)' }}>
-                ✨ What you'll get:
-              </div>
-              <ul style={{
-                listStyle: 'none',
-                padding: 0,
-                margin: 0,
-                fontSize: '14px',
-                color: '#d1d5db',
-              }}>
-                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
-                    <CheckCircleIcon />
-                  </div>
-                  <span>6 professional templates to choose from</span>
-                </li>
-                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
-                    <CheckCircleIcon />
-                  </div>
-                  <span>Multiple tones (Professional, Friendly, Formal)</span>
-                </li>
-                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
-                    <CheckCircleIcon />
-                  </div>
-                  <span>Customizable length and language (EN/TR)</span>
-                </li>
-                <li style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
-                    <CheckCircleIcon />
-                  </div>
-                  <span>Interactive editor with alternative phrasings</span>
-                </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ color: 'var(--success)', flexShrink: 0 }}>
-                    <CheckCircleIcon />
-                  </div>
-                  <span>Tailored to your resume and job posting</span>
-                </li>
-              </ul>
-            </div>
+          <p style={{
+            fontSize: 15,
+            color: 'rgba(255, 255, 255, 0.5)',
+            margin: '0 0 24px',
+            lineHeight: 1.6,
+            maxWidth: 300,
+          }}>
+            Generate tailored cover letters for each job posting with multiple templates and tones.
+          </p>
 
+          {/* Feature grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 10,
+            width: '100%',
+            marginBottom: 28,
+          }}>
+            {['6 Templates', 'Multiple Tones', 'EN / TR Support', 'Inline Editor'].map((feature) => (
+              <div key={feature} style={{
+                padding: '12px 14px',
+                borderRadius: 14,
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'rgba(255, 255, 255, 0.6)',
+              }}>
+                {feature}
+              </div>
+            ))}
+          </div>
+
+          {/* Credit pill */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 16px',
+            borderRadius: 100,
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            marginBottom: 24,
+            fontSize: 14,
+            color: 'rgba(255, 255, 255, 0.7)',
+          }}>
+            <svg width="16" height="16" fill="none" stroke="rgba(53, 162, 159, 0.9)" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {userCredits.canAnalyze
+              ? <>You have <span style={{ fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}>{userCredits.credits}</span> credits</>
+              : 'Credits required'}
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: 'flex', gap: 12, width: '100%' }}>
+            <button
+              onClick={() => setIsPremiumModalOpen(false)}
+              style={{
+                flex: 1,
+                padding: '14px 24px',
+                borderRadius: 100,
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: 15,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+              onMouseEnter={e => {
+                (e.target as HTMLButtonElement).style.background = 'rgba(255, 255, 255, 0.1)';
+                (e.target as HTMLButtonElement).style.borderColor = 'rgba(255, 255, 255, 0.2)';
+              }}
+              onMouseLeave={e => {
+                (e.target as HTMLButtonElement).style.background = 'rgba(255, 255, 255, 0.05)';
+                (e.target as HTMLButtonElement).style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            >
+              Maybe Later
+            </button>
             <Button
+              variant="glass-primary"
               size="lg"
               onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}
               isLoading={isUpgrading}
-              style={{
-                width: '100%',
-                background: 'var(--gradient-primary)',
-                fontSize: '16px',
-                padding: '14px 24px',
-                marginBottom: '12px',
-              }}
+              style={{ flex: 1 }}
             >
-              {isUpgrading ? 'Processing...' : userCredits.canAnalyze ? 'Upgrade to Pro - Use 1 Credit' : 'Buy Credits to Upgrade'}
+              {isUpgrading ? 'Processing...' : userCredits.canAnalyze ? 'Upgrade' : 'Buy Credits'}
             </Button>
-
-            <p style={{
-              fontSize: '12px',
-              color: '#6b7280',
-              marginTop: '12px',
-            }}>
-              {userCredits.canAnalyze ? `You have ${userCredits.credits} credits • Uses 1 credit` : 'Buy credits to unlock all premium features'}
-            </p>
           </div>
-        </Modal.Body>
+        </div>
       </Modal>
 
       {/* Buy Credits Modal */}

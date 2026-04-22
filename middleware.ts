@@ -25,6 +25,14 @@ const AUTH_ROUTES = [
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // www → non-www redirect (canonical URL)
+  const host = request.headers.get('host') || '';
+  if (host.startsWith('www.')) {
+    const newUrl = request.nextUrl.clone();
+    newUrl.host = host.replace(/^www\./, '');
+    return NextResponse.redirect(newUrl, { status: 301 });
+  }
+
   // ============ Auth middleware for page routes ============
   const response = NextResponse.next({
     request: {

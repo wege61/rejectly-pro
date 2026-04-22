@@ -3234,7 +3234,7 @@ export default function DashboardATSOptimizerPage() {
                     onPreview={handlePreviewCV}
                  />
                  <div style={{ textAlign: "center", marginTop: 24 }}>
-                   <Button $variant="ghost" onClick={handleReset}>
+                   <Button variant="ghost" onClick={handleReset}>
                      Optimize Another Resume
                    </Button>
                  </div>

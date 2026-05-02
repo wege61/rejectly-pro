@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "About - AI Resume Optimizer Company | Rejectly.pro",
     description: "Learn about Rejectly.pro, the AI-powered resume optimization platform that builds job-specific, ATS-optimized resumes for every application.",
-    url: "https://www.rejectly.pro/about",
+    url: "https://rejectly.pro/about",
     type: "website",
     images: [
       {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://www.rejectly.pro/about",
+    canonical: "https://rejectly.pro/about",
   },
 };
 
@@ -44,8 +44,8 @@ export default function AboutLayout({
     <>
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://www.rejectly.pro" },
-          { name: "About", url: "https://www.rejectly.pro/about" },
+          { name: "Home", url: "https://rejectly.pro" },
+          { name: "About", url: "https://rejectly.pro/about" },
         ]}
       />
       {children}

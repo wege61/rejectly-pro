@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Terms of Service - User Agreement | Rejectly.pro",
     description: "Read our terms of service for using Rejectly.pro AI resume optimization platform. Clear policies on accounts, billing, and usage.",
-    url: "https://www.rejectly.pro/terms",
+    url: "https://rejectly.pro/terms",
     type: "website",
     images: [
       {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://www.rejectly.pro/terms",
+    canonical: "https://rejectly.pro/terms",
   },
 };
 
@@ -44,8 +44,8 @@ export default function TermsLayout({
     <>
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://www.rejectly.pro" },
-          { name: "Terms of Service", url: "https://www.rejectly.pro/terms" },
+          { name: "Home", url: "https://rejectly.pro" },
+          { name: "Terms of Service", url: "https://rejectly.pro/terms" },
         ]}
       />
       {children}

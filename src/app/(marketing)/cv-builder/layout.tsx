@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     description:
       "Build a stunning, ATS-optimized CV with smart suggestions. Professional templates, guided step-by-step builder, and instant PDF download. Start free — no signup required.",
     type: "website",
-    url: "https://www.rejectly.pro/cv-builder",
+    url: "https://rejectly.pro/cv-builder",
     images: [
       {
         url: "/og-image.png",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   alternates: {
-    canonical: "https://www.rejectly.pro/cv-builder",
+    canonical: "https://rejectly.pro/cv-builder",
   },
   robots: {
     index: true,

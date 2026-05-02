@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: "Blog - Resume Tips & Career Advice | Rejectly.pro",
     description:
       "Expert insights on resume optimization, ATS systems, and career advice to help you land more interviews.",
-    url: "https://www.rejectly.pro/blog",
+    url: "https://rejectly.pro/blog",
     type: "website",
     images: [
       {
@@ -53,9 +53,9 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://www.rejectly.pro/blog",
+    canonical: "https://rejectly.pro/blog",
     types: {
-      "application/rss+xml": "https://www.rejectly.pro/blog/feed.xml",
+      "application/rss+xml": "https://rejectly.pro/blog/feed.xml",
     },
   },
 };
@@ -69,8 +69,8 @@ export default function BlogLayout({
     <>
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://www.rejectly.pro" },
-          { name: "Blog", url: "https://www.rejectly.pro/blog" },
+          { name: "Home", url: "https://rejectly.pro" },
+          { name: "Blog", url: "https://rejectly.pro/blog" },
         ]}
       />
       {children}

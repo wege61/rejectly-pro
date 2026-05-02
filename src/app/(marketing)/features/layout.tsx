@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Features - GPT-4 Powered Resume Analysis Tools | Rejectly.pro",
     description: "Explore Rejectly.pro's AI-powered tools: Job Match Analysis, ATS Optimizer, Cover Letter Generator, and free CV Builder.",
-    url: "https://www.rejectly.pro/features",
+    url: "https://rejectly.pro/features",
     type: "website",
     images: [
       {
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   alternates: {
-    canonical: "https://www.rejectly.pro/features",
+    canonical: "https://rejectly.pro/features",
   },
   robots: {
     index: true,

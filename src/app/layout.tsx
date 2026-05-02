@@ -13,7 +13,7 @@ declare global {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.rejectly.pro'),
+  metadataBase: new URL('https://rejectly.pro'),
   title: {
     default: "Rejectly.pro - AI Resume Optimizer | A New Resume for Every Job",
     template: "%s | Rejectly.pro"
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.rejectly.pro",
+    url: "https://rejectly.pro",
     siteName: "Rejectly.pro",
     title: "Rejectly.pro - AI Resume Optimizer | A New Resume for Every Job",
     description: "Transform your resume with AI. Get a unique, ATS-optimized CV for every job you apply to — plus cover letters, interview prep, and career insights.",
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
   alternates: {
-    canonical: "https://www.rejectly.pro",
+    canonical: "https://rejectly.pro",
   },
 };
 

@@ -1582,8 +1582,8 @@ export default function AboutPage() {
     <>
       <BreadcrumbSchema
         items={[
-          { name: 'Home', url: 'https://www.rejectly.pro' },
-          { name: 'About', url: 'https://www.rejectly.pro/about' }
+          { name: 'Home', url: 'https://rejectly.pro' },
+          { name: 'About', url: 'https://rejectly.pro/about' }
         ]}
       />
       <Container>

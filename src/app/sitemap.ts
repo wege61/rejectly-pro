@@ -107,8 +107,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Fetch blog posts from Supabase (using direct client without cookies)
   let blogPages: MetadataRoute.Sitemap = [];
-  let categoryPages: MetadataRoute.Sitemap = [];
-  let tagPages: MetadataRoute.Sitemap = [];
 
   try {
     // Use direct Supabase client for build-time access (no cookies needed for public data)
@@ -131,36 +129,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
     }
 
-    // Fetch blog categories
-    const { data: categories } = await supabase
-      .from("blog_categories")
-      .select("slug");
-
-    if (categories) {
-      categoryPages = categories.map((category) => ({
-        url: `${BASE_URL}/blog?category=${category.slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly" as const,
-        priority: 0.6,
-      }));
-    }
-
-    // Fetch blog tags
-    const { data: tags } = await supabase
-      .from("blog_tags")
-      .select("slug");
-
-    if (tags) {
-      tagPages = tags.map((tag) => ({
-        url: `${BASE_URL}/blog?tag=${tag.slug}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly" as const,
-        priority: 0.5,
-      }));
-    }
+    // Note: Category and tag filter pages (/blog?category=X, /blog?tag=Y) are
+    // intentionally excluded from sitemap as they are filtered views of /blog
+    // and Google treats query-string URLs as potential duplicate content.
   } catch (error) {
     console.error("Error fetching blog data for sitemap:", error);
   }
 
-  return [...staticPages, ...rolePages, ...blogPages, ...categoryPages, ...tagPages];
+  return [...staticPages, ...rolePages, ...blogPages];
 }

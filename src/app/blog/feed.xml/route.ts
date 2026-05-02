@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { config } from "@/lib/config";
 
-const BASE_URL = "https://www.rejectly.pro";
+const BASE_URL = "https://rejectly.pro";
 
 export const revalidate = 3600; // Revalidate every hour
 

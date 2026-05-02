@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     description:
       "Check your resume score against real ATS systems. 99% of Fortune 500 companies use ATS - only 15% of resumes pass. Find out where you stand.",
     type: "website",
-    url: "https://www.rejectly.pro/ats-check",
+    url: "https://rejectly.pro/ats-check",
     images: [
       {
         url: "/og-ats-checker.jpg",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     images: ["/og-ats-checker.jpg"],
   },
   alternates: {
-    canonical: "https://www.rejectly.pro/ats-check",
+    canonical: "https://rejectly.pro/ats-check",
   },
   robots: {
     index: true,

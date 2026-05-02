@@ -666,8 +666,8 @@ export default function PricingPage() {
     <>
       <BreadcrumbSchema
         items={[
-          { name: 'Home', url: 'https://www.rejectly.pro' },
-          { name: 'Pricing', url: 'https://www.rejectly.pro/pricing' }
+          { name: 'Home', url: 'https://rejectly.pro' },
+          { name: 'Pricing', url: 'https://rejectly.pro/pricing' }
         ]}
       />
       {/* Pricing Offers Schema */}
@@ -680,7 +680,7 @@ export default function PricingPage() {
             '@type': 'Product',
             name: 'Rejectly.pro Resume Optimizer',
             description: 'AI-powered resume optimization and ATS checker with multiple pricing options',
-            image: 'https://www.rejectly.pro/logo.png',
+            image: 'https://rejectly.pro/logo.png',
             brand: {
               '@type': 'Brand',
               name: 'Rejectly.pro',
@@ -693,7 +693,7 @@ export default function PricingPage() {
                 price: '2.00',
                 priceCurrency: 'USD',
                 availability: 'https://schema.org/InStock',
-                url: 'https://www.rejectly.pro/pricing',
+                url: 'https://rejectly.pro/pricing',
                 priceValidUntil: '2025-12-31',
                 itemOffered: {
                   '@type': 'Service',
@@ -708,7 +708,7 @@ export default function PricingPage() {
                 price: '7.00',
                 priceCurrency: 'USD',
                 availability: 'https://schema.org/InStock',
-                url: 'https://www.rejectly.pro/pricing',
+                url: 'https://rejectly.pro/pricing',
                 priceValidUntil: '2025-12-31',
                 itemOffered: {
                   '@type': 'Service',
@@ -723,7 +723,7 @@ export default function PricingPage() {
                 price: '12.00',
                 priceCurrency: 'USD',
                 availability: 'https://schema.org/InStock',
-                url: 'https://www.rejectly.pro/pricing',
+                url: 'https://rejectly.pro/pricing',
                 priceValidUntil: '2025-12-31',
                 billingDuration: 'P1M',
                 itemOffered: {

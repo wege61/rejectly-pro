@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Privacy Policy - Data Protection & Security | Rejectly.pro",
     description: "Learn how Rejectly.pro protects your personal data and resume information. GDPR compliant with encrypted storage.",
-    url: "https://www.rejectly.pro/privacy",
+    url: "https://rejectly.pro/privacy",
     type: "website",
     images: [
       {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://www.rejectly.pro/privacy",
+    canonical: "https://rejectly.pro/privacy",
   },
 };
 
@@ -44,8 +44,8 @@ export default function PrivacyLayout({
     <>
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://www.rejectly.pro" },
-          { name: "Privacy Policy", url: "https://www.rejectly.pro/privacy" },
+          { name: "Home", url: "https://rejectly.pro" },
+          { name: "Privacy Policy", url: "https://rejectly.pro/privacy" },
         ]}
       />
       {children}

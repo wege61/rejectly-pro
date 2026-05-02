@@ -3,8 +3,8 @@ export function OrganizationSchema() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Rejectly.pro',
-    url: 'https://www.rejectly.pro',
-    logo: 'https://www.rejectly.pro/logo.png',
+    url: 'https://rejectly.pro',
+    logo: 'https://rejectly.pro/logo.png',
     description: 'AI-powered resume optimization platform that helps job seekers get past ATS systems and land more interviews.',
     foundingDate: '2024',
     sameAs: [
@@ -32,13 +32,13 @@ export function WebSiteSchema() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Rejectly.pro',
-    url: 'https://www.rejectly.pro',
+    url: 'https://rejectly.pro',
     description: 'AI-powered resume optimization and ATS checker. Create job-specific, ATS-optimized resumes for every application.',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://www.rejectly.pro/blog?search={search_term_string}',
+        urlTemplate: 'https://rejectly.pro/blog?search={search_term_string}',
       },
       'query-input': 'required name=search_term_string',
     },
@@ -94,7 +94,7 @@ export function ProductSchema() {
       'Keyword Targeting',
       'Resume Rewriting',
     ],
-    screenshot: 'https://www.rejectly.pro/screenshot.png',
+    screenshot: 'https://rejectly.pro/screenshot.png',
   }
 
   return (
@@ -175,12 +175,12 @@ export function BlogPostingSchema({
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
-    '@id': `https://www.rejectly.pro/blog/${slug}#article`,
+    '@id': `https://rejectly.pro/blog/${slug}#article`,
     headline: title,
     description: description,
     image: {
       '@type': 'ImageObject',
-      url: image || 'https://www.rejectly.pro/og-image.png',
+      url: image || 'https://rejectly.pro/og-image.png',
       width: 1200,
       height: 630,
     },
@@ -189,26 +189,26 @@ export function BlogPostingSchema({
     author: {
       '@type': 'Person',
       name: authorName,
-      url: 'https://www.rejectly.pro/about',
+      url: 'https://rejectly.pro/about',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Rejectly.pro',
-      url: 'https://www.rejectly.pro',
+      url: 'https://rejectly.pro',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://www.rejectly.pro/logo.png',
+        url: 'https://rejectly.pro/logo.png',
         width: 512,
         height: 512,
       },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://www.rejectly.pro/blog/${slug}`,
+      '@id': `https://rejectly.pro/blog/${slug}`,
     },
     isPartOf: {
       '@type': 'Blog',
-      '@id': 'https://www.rejectly.pro/blog',
+      '@id': 'https://rejectly.pro/blog',
       name: 'Rejectly.pro Blog',
     },
     inLanguage: 'en-US',
@@ -318,20 +318,20 @@ export function BlogListSchema({
     '@type': 'Blog',
     name: 'Rejectly.pro Blog',
     description: 'Expert tips on resume optimization, ATS systems, career advice, and job search strategies.',
-    url: 'https://www.rejectly.pro/blog',
+    url: 'https://rejectly.pro/blog',
     publisher: {
       '@type': 'Organization',
       name: 'Rejectly.pro',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://www.rejectly.pro/logo.png',
+        url: 'https://rejectly.pro/logo.png',
       },
     },
     blogPost: posts.map((post) => ({
       '@type': 'BlogPosting',
       headline: post.title,
       description: post.excerpt,
-      url: `https://www.rejectly.pro/blog/${post.slug}`,
+      url: `https://rejectly.pro/blog/${post.slug}`,
       datePublished: post.datePublished,
     })),
   }

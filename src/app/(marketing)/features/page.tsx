@@ -546,8 +546,8 @@ export default function FeaturesPage() {
     <>
       <BreadcrumbSchema
         items={[
-          { name: 'Home', url: 'https://www.rejectly.pro' },
-          { name: 'Features', url: 'https://www.rejectly.pro/features' }
+          { name: 'Home', url: 'https://rejectly.pro' },
+          { name: 'Features', url: 'https://rejectly.pro/features' }
         ]}
       />
       <script

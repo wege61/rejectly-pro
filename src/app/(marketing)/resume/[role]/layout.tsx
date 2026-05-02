@@ -47,7 +47,7 @@ export async function generateMetadata({
     openGraph: {
       title: `ATS Resume for ${role.title}s | Rejectly.pro`,
       description: `Build a job-specific, ATS-optimized resume for ${role.title} roles. Tested against Workday, Greenhouse, Taleo & Lever.`,
-      url: `https://www.rejectly.pro/resume/${slug}`,
+      url: `https://rejectly.pro/resume/${slug}`,
       type: "website",
     },
     twitter: {
@@ -56,7 +56,7 @@ export async function generateMetadata({
       description: `ATS-optimized resumes for ${role.title} roles. Free score check.`,
     },
     alternates: {
-      canonical: `https://www.rejectly.pro/resume/${slug}`,
+      canonical: `https://rejectly.pro/resume/${slug}`,
     },
     robots: {
       index: true,

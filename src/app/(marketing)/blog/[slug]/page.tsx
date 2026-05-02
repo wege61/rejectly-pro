@@ -53,7 +53,7 @@ export async function generateMetadata({
     title: { absolute: `${title} | Rejectly.pro Blog` },
     description,
     keywords,
-    authors: [{ name: post.author_name, url: "https://www.rejectly.pro/about" }],
+    authors: [{ name: post.author_name, url: "https://rejectly.pro/about" }],
     creator: post.author_name,
     publisher: "Rejectly.pro",
     robots: {
@@ -70,7 +70,7 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      url: `https://www.rejectly.pro/blog/${slug}`,
+      url: `https://rejectly.pro/blog/${slug}`,
       siteName: "Rejectly.pro",
       type: "article",
       publishedTime: post.published_at || undefined,
@@ -81,7 +81,7 @@ export async function generateMetadata({
       locale: "en_US",
       images: [
         {
-          url: image.startsWith("/") ? `https://www.rejectly.pro${image}` : image,
+          url: image.startsWith("/") ? `https://rejectly.pro${image}` : image,
           width: 1200,
           height: 630,
           alt: post.featured_image_alt || post.title,
@@ -96,12 +96,12 @@ export async function generateMetadata({
       title,
       description,
       images: {
-        url: image.startsWith("/") ? `https://www.rejectly.pro${image}` : image,
+        url: image.startsWith("/") ? `https://rejectly.pro${image}` : image,
         alt: post.featured_image_alt || post.title,
       },
     },
     alternates: {
-      canonical: post.canonical_url || `https://www.rejectly.pro/blog/${slug}`,
+      canonical: post.canonical_url || `https://rejectly.pro/blog/${slug}`,
     },
     other: {
       "article:published_time": post.published_at || "",
@@ -150,9 +150,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       />
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://www.rejectly.pro" },
-          { name: "Blog", url: "https://www.rejectly.pro/blog" },
-          { name: post.title, url: `https://www.rejectly.pro/blog/${slug}` },
+          { name: "Home", url: "https://rejectly.pro" },
+          { name: "Blog", url: "https://rejectly.pro/blog" },
+          { name: post.title, url: `https://rejectly.pro/blog/${slug}` },
         ]}
       />
       <BlogPostContent post={post} relatedPosts={relatedPosts} />

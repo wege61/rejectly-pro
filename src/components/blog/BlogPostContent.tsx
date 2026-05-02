@@ -634,7 +634,7 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
     ? new Date(post.published_at).toISOString()
     : "";
 
-  const shareUrl = `https://www.rejectly.pro/blog/${post.slug}`;
+  const shareUrl = `https://rejectly.pro/blog/${post.slug}`;
   const shareText = `${post.title} - Great article on resume optimization!`;
 
   return (

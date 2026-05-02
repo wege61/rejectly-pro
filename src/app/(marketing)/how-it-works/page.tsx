@@ -529,8 +529,8 @@ export default function HowItWorksPage() {
     <>
       <BreadcrumbSchema
         items={[
-          { name: 'Home', url: 'https://www.rejectly.pro' },
-          { name: 'How It Works', url: 'https://www.rejectly.pro/how-it-works' }
+          { name: 'Home', url: 'https://rejectly.pro' },
+          { name: 'How It Works', url: 'https://rejectly.pro/how-it-works' }
         ]}
       />
       {/* HowTo Schema */}
@@ -555,32 +555,32 @@ export default function HowItWorksPage() {
                 position: 1,
                 name: 'Upload Your Resume',
                 text: 'Upload your current resume in PDF or DOCX format, or paste your resume text directly. Our AI can parse any format.',
-                url: 'https://www.rejectly.pro/how-it-works#step-1',
-                image: 'https://www.rejectly.pro/og-image.png',
+                url: 'https://rejectly.pro/how-it-works#step-1',
+                image: 'https://rejectly.pro/og-image.png',
               },
               {
                 '@type': 'HowToStep',
                 position: 2,
                 name: 'Paste Job Description',
                 text: 'Copy and paste the job description for the position you want to apply to. Our AI will analyze the match between your resume and the job requirements.',
-                url: 'https://www.rejectly.pro/how-it-works#step-2',
-                image: 'https://www.rejectly.pro/og-image.png',
+                url: 'https://rejectly.pro/how-it-works#step-2',
+                image: 'https://rejectly.pro/og-image.png',
               },
               {
                 '@type': 'HowToStep',
                 position: 3,
                 name: 'AI Analysis & Insights',
                 text: 'Our GPT-4 powered AI analyzes your resume in under a minute, identifying gaps, ATS compatibility issues, and providing actionable recommendations.',
-                url: 'https://www.rejectly.pro/how-it-works#step-3',
-                image: 'https://www.rejectly.pro/og-image.png',
+                url: 'https://rejectly.pro/how-it-works#step-3',
+                image: 'https://rejectly.pro/og-image.png',
               },
               {
                 '@type': 'HowToStep',
                 position: 4,
                 name: 'Get Optimized Resume',
                 text: 'Download your AI-optimized resume with improved keywords, rewritten bullet points, and ATS-friendly formatting. Start applying with a resume built specifically for each job.',
-                url: 'https://www.rejectly.pro/how-it-works#step-4',
-                image: 'https://www.rejectly.pro/og-image.png',
+                url: 'https://rejectly.pro/how-it-works#step-4',
+                image: 'https://rejectly.pro/og-image.png',
               },
             ],
             tool: [

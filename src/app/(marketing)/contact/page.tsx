@@ -337,8 +337,8 @@ export default function ContactPage() {
     <>
       <BreadcrumbSchema
         items={[
-          { name: 'Home', url: 'https://www.rejectly.pro' },
-          { name: 'Contact', url: 'https://www.rejectly.pro/contact' }
+          { name: 'Home', url: 'https://rejectly.pro' },
+          { name: 'Contact', url: 'https://rejectly.pro/contact' }
         ]}
       />
       {/* ContactPage Schema */}
@@ -351,11 +351,11 @@ export default function ContactPage() {
             '@type': 'ContactPage',
             name: 'Contact Rejectly.pro',
             description: 'Get in touch with Rejectly.pro support team. We respond within 24 hours.',
-            url: 'https://www.rejectly.pro/contact',
+            url: 'https://rejectly.pro/contact',
             mainEntity: {
               '@type': 'Organization',
               name: 'Rejectly.pro',
-              url: 'https://www.rejectly.pro',
+              url: 'https://rejectly.pro',
               contactPoint: [
                 {
                   '@type': 'ContactPoint',

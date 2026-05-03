@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import ATSCheckClient from "./client";
 
-export async function generateMetadata({ searchParams }: { searchParams: { score?: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { searchParams: Promise<{ score?: string }> }): Promise<Metadata> {
+  const searchParams = await props.searchParams;
   const score = searchParams?.score;
   const imageUrl = score ? `https://rejectly.pro/api/og/score?score=${score}` : "https://rejectly.pro/og-ats-checker.jpg";
   

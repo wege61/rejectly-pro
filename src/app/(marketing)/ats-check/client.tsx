@@ -2042,14 +2042,11 @@ export default function ATSCheckPage() {
           const quickFixes = generateQuickFixes(categoriesForAnalysis, issuesForQuickFixes);
 
           return (
-          <ResultsSection>
-            {/* The Faded Report */}
+          <ResultsSection style={{ position: "relative" }}>
+            {/* The Full Report Container */}
             <div style={{ 
-               maxHeight: "1200px", 
+               maxHeight: "1050px", 
                overflow: "hidden", 
-               position: "relative",
-               maskImage: "linear-gradient(to bottom, black 65%, transparent 100%)",
-               WebkitMaskImage: "-webkit-linear-gradient(top, black 65%, transparent 100%)"
             }}>
               {/* ATSFullResult Component */}
               <ATSFullResult
@@ -2127,13 +2124,30 @@ export default function ATSCheckPage() {
             </div>
 
             {/* Overlay CTA Section */}
-            <div style={{ marginTop: "-280px", position: "relative", zIndex: 10, padding: "0 16px" }}>
+            <div style={{ 
+                position: "absolute", 
+                bottom: 0, 
+                left: 0, 
+                right: 0, 
+                height: "450px", 
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-end",
+                background: "linear-gradient(to bottom, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.9) 40%, rgba(15, 23, 42, 1) 100%)",
+                backdropFilter: "blur(6px)",
+                WebkitBackdropFilter: "blur(6px)",
+                padding: "0 16px 40px",
+                zIndex: 10
+            }}>
               <CTASection style={{ 
-                background: "rgba(15, 23, 42, 0.65)", 
-                backdropFilter: "blur(24px)", 
-                WebkitBackdropFilter: "blur(24px)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                boxShadow: "0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)" 
+                background: "rgba(30, 41, 59, 0.6)", 
+                backdropFilter: "blur(16px)", 
+                WebkitBackdropFilter: "blur(16px)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                boxShadow: "0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)",
+                maxWidth: "800px",
+                margin: "0 auto",
+                width: "100%"
               }}>
                 <CTAGradientCircle viewBox="0 0 600 600" aria-hidden="true">
                   <circle
@@ -2141,7 +2155,7 @@ export default function ATSCheckPage() {
                     cx={300}
                     cy={300}
                     fill="url(#gradient-cta-ats)"
-                    fillOpacity="0.5"
+                    fillOpacity="0.4"
                   />
                   <defs>
                     <radialGradient id="gradient-cta-ats">

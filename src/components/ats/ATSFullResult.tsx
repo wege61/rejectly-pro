@@ -299,7 +299,9 @@ export function ATSFullResult({
   onPreview,
   downloadUrl,
 }: ATSFullResultProps) {
-  const totalIssuesCount = Object.values(categories).reduce((acc, cat) => acc + cat.issues.length, 0);
+  const totalIssuesCount = topIssues && topIssues.length > 0 
+    ? topIssues.length 
+    : Object.values(categories).reduce((acc, cat) => acc + cat.issues.length, 0);
 
   return (
     <Container>

@@ -2045,11 +2045,11 @@ export default function ATSCheckPage() {
           <ResultsSection>
             {/* The Faded Report */}
             <div style={{ 
-               maxHeight: "900px", 
+               maxHeight: "1200px", 
                overflow: "hidden", 
                position: "relative",
-               maskImage: "linear-gradient(to bottom, black 30%, transparent 100%)",
-               WebkitMaskImage: "-webkit-linear-gradient(top, black 30%, transparent 100%)"
+               maskImage: "linear-gradient(to bottom, black 65%, transparent 100%)",
+               WebkitMaskImage: "-webkit-linear-gradient(top, black 65%, transparent 100%)"
             }}>
               {/* ATSFullResult Component */}
               <ATSFullResult
@@ -2127,32 +2127,38 @@ export default function ATSCheckPage() {
             </div>
 
             {/* Overlay CTA Section */}
-            <div style={{ marginTop: "-220px", position: "relative", zIndex: 10, padding: "0 16px" }}>
-              <CTASection style={{ boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}>
+            <div style={{ marginTop: "-280px", position: "relative", zIndex: 10, padding: "0 16px" }}>
+              <CTASection style={{ 
+                background: "rgba(15, 23, 42, 0.65)", 
+                backdropFilter: "blur(24px)", 
+                WebkitBackdropFilter: "blur(24px)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                boxShadow: "0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)" 
+              }}>
                 <CTAGradientCircle viewBox="0 0 600 600" aria-hidden="true">
                   <circle
                     r={300}
                     cx={300}
                     cy={300}
                     fill="url(#gradient-cta-ats)"
-                    fillOpacity="0.7"
+                    fillOpacity="0.5"
                   />
                   <defs>
                     <radialGradient id="gradient-cta-ats">
                       <stop stopColor="#35A29F" />
-                      <stop offset={1} stopColor="#0B666A" />
+                      <stop offset={1} stopColor="transparent" />
                     </radialGradient>
                   </defs>
                 </CTAGradientCircle>
                 <CTATitle>Unlock Your Full Report</CTATitle>
-                <CTAText>
+                <CTAText style={{ color: "rgba(255,255,255,0.85)" }}>
                   Your resume is missing critical keywords. Sign up for free to unlock the full list of errors and fix your CV instantly with AI.
                 </CTAText>
                 <CTAButtonGroup>
                   <CTAButton href={ROUTES.AUTH.SIGNUP}>
                     Sign Up to Unlock
                   </CTAButton>
-                  <CTASecondaryButton href={`https://twitter.com/intent/tweet?text=I%20just%20scored%20${result.overallScore}/100%20on%20my%20Resume!%20Check%20yours%20for%20free%20at%20rejectly.pro/ats-check?score=${result.overallScore}`} target="_blank" rel="noreferrer">
+                  <CTASecondaryButton href={`https://twitter.com/intent/tweet?text=I%20just%20scored%20${result.overallScore}/100%20on%20my%20Resume!%20Check%20yours%20for%20free%20at%20rejectly.pro/ats-check?score=${result.overallScore}`} target="_blank" rel="noreferrer" style={{ color: "rgba(255,255,255,0.9)" }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
                     </svg>

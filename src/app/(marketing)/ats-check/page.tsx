@@ -1758,8 +1758,78 @@ interface CategoryResult {
   passes: string[];
 }
 
+const JobDescriptionWrapper = styled(motion.div)`
+  margin-top: 24px;
+  width: 100%;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+`;
+
+const JDLabel = styled.label`
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 8px;
+`;
+
+const JDTextarea = styled.textarea`
+  width: 100%;
+  height: 120px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-alt);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 2px rgba(var(--primary-500-rgb), 0.2);
+  }
+`;
+
+const AnalyzeButton = styled(motion.button)`
+  width: 100%;
+  max-width: 560px;
+  margin: 24px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  background: var(--primary-500);
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(53, 162, 159, 0.3);
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--primary-700);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(53, 162, 159, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
 export default function ATSCheckPage() {
   const [file, setFile] = useState<File | null>(null);
+  const [jobDescription, setJobDescription] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ATSResult | null>(null);
@@ -1775,7 +1845,7 @@ export default function ATSCheckPage() {
   const handleFileChange = (newFile: File) => {
     setFile(newFile);
     setError(null);
-    analyzeFile(newFile);
+    // Don't auto-analyze, let user click the button so they can add job description
   };
 
   const handleRemove = (e: React.MouseEvent) => {
@@ -1817,23 +1887,74 @@ export default function ATSCheckPage() {
         throw new Error(parseData.error || "Failed to parse file");
       }
 
-      // Step 2: Analyze the CV automatically
-      const analyzeResponse = await fetch("/api/ats/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cvText: parseData.text }),
-      });
+      if (jobDescription.trim()) {
+        // Use demo analyze for Job Match
+        const analyzeResponse = await fetch("/api/demo/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cvText: parseData.text, jobText: jobDescription }),
+        });
 
-      const analyzeData = await analyzeResponse.json();
+        const analyzeData = await analyzeResponse.json();
 
-      if (!analyzeResponse.ok) {
-        throw new Error(analyzeData.error || "Analysis failed");
+        if (!analyzeResponse.ok) {
+          throw new Error(analyzeData.error || "Analysis failed");
+        }
+
+        // Map Demo Result to ATSResult format
+        const missingKeyIssues = (analyzeData.missingKeywords || []).map((kw: string) => ({
+          severity: "critical",
+          issue: "Missing Required Skill",
+          suggestion: `Add the keyword '${kw}' to your experience or skills section to match the job description.`,
+          category: "Keywords"
+        }));
+        
+        const otherIssues = (analyzeData.improvementTips || []).map((tip: string) => ({
+          severity: "high",
+          issue: "Job Match Improvement",
+          suggestion: tip,
+          category: "Format"
+        }));
+
+        const mappedResult: ATSResult = {
+          overallScore: analyzeData.fitScore,
+          scoreLabel: analyzeData.fitScore >= 80 ? "Excellent Match" : analyzeData.fitScore >= 60 ? "Good Match" : "Weak Match",
+          summary: analyzeData.summary,
+          categories: {
+            format: { earnedPoints: 20, maxPoints: 25, issues: [], passes: [] },
+            structure: { earnedPoints: 20, maxPoints: 25, issues: [], passes: [] },
+            keywords: { earnedPoints: Math.round((analyzeData.fitScore / 100) * 30), maxPoints: 30, issues: [], passes: [] },
+            readability: { earnedPoints: 15, maxPoints: 20, issues: [], passes: [] },
+          },
+          topIssues: [...missingKeyIssues, ...otherIssues],
+          quickWins: analyzeData.quickWins || [],
+          metadata: {
+            wordCount: parseData.text.split(" ").length,
+            estimatedPages: 1,
+            keywordStats: { hardSkillsCount: 0, softSkillsCount: 0, actionVerbsCount: 0, quantifiedAchievements: 0 }
+          }
+        };
+
+        setResult(mappedResult);
+      } else {
+        // Step 2: Analyze the CV automatically (General Format Check)
+        const analyzeResponse = await fetch("/api/ats/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cvText: parseData.text }),
+        });
+
+        const analyzeData = await analyzeResponse.json();
+
+        if (!analyzeResponse.ok) {
+          throw new Error(analyzeData.error || "Analysis failed");
+        }
+
+        setResult(analyzeData.result);
       }
-
-      setResult(analyzeData.result);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to analyze file");
-      setFile(null);
+      // Keep file so they can retry
     } finally {
       setIsAnalyzing(false);
     }
@@ -1922,111 +2043,124 @@ export default function ATSCheckPage() {
 
           return (
           <ResultsSection>
-            {/* ATSFullResult Component */}
-            <ATSFullResult
-              score={result.overallScore}
-              summary={result.summary || getScoreMessage(result.overallScore)}
-              categories={{
-                format: {
-                  earnedPoints: result.categories.format.earnedPoints,
-                  maxPoints: result.categories.format.maxPoints,
-                  issues: result.categories.format.issues.map(i => ({
-                    issue: i.issue,
-                    recommendation: i.fix,
-                    severity: i.severity
-                  })),
-                  passes: result.categories.format.passes
-                },
-                structure: {
-                  earnedPoints: result.categories.structure.earnedPoints,
-                  maxPoints: result.categories.structure.maxPoints,
-                  issues: result.categories.structure.issues.map(i => ({
-                    issue: i.issue,
-                    recommendation: i.fix,
-                    severity: i.severity
-                  })),
-                  passes: result.categories.structure.passes
-                },
-                keywords: {
-                  earnedPoints: result.categories.keywords.earnedPoints,
-                  maxPoints: result.categories.keywords.maxPoints,
-                  issues: result.categories.keywords.issues.map(i => ({
-                    issue: i.issue,
-                    recommendation: i.fix,
-                    severity: i.severity
-                  })),
-                  passes: result.categories.keywords.passes
-                },
-                readability: {
-                  earnedPoints: result.categories.readability.earnedPoints,
-                  maxPoints: result.categories.readability.maxPoints,
-                  issues: result.categories.readability.issues.map(i => ({
-                    issue: i.issue,
-                    recommendation: i.fix,
-                    severity: i.severity
-                  })),
-                  passes: result.categories.readability.passes
-                }
-              }}
-              hasContactInfo={result.metadata?.hasContactInfo || {
-                email: false,
-                phone: false,
-                linkedin: false,
-                location: false
-              }}
-              parsingChecks={result.parsingChecks || {
-                singleColumn: { ok: true, note: "Unknown" },
-                standardSections: { ok: true, note: "Unknown" },
-                cleanCharacters: { ok: true, note: "Unknown" },
-                abbreviations: { ok: true, note: "Unknown" }
-              }}
-              keywordStats={result.metadata?.keywordStats || {
-                hardSkillsCount: 0,
-                actionVerbsCount: 0,
-                quantifiedAchievements: 0
-              }}
-              wordCount={result.metadata?.wordCount || 0}
-              topIssues={result.topIssues?.map(issue => ({
-                severity: issue.severity,
-                issue: issue.issue,
-                suggestion: issue.suggestion,
-                category: issue.category
-              }))}
-              potentialScore={scoreAnalysis.maxPotential}
-              easyWinsPoints={scoreAnalysis.easyWinsPoints}
-            />
+            {/* The Faded Report */}
+            <div style={{ 
+               maxHeight: "900px", 
+               overflow: "hidden", 
+               position: "relative",
+               maskImage: "linear-gradient(to bottom, black 30%, transparent 100%)",
+               WebkitMaskImage: "-webkit-linear-gradient(top, black 30%, transparent 100%)"
+            }}>
+              {/* ATSFullResult Component */}
+              <ATSFullResult
+                score={result.overallScore}
+                summary={result.summary || getScoreMessage(result.overallScore)}
+                categories={{
+                  format: {
+                    earnedPoints: result.categories.format.earnedPoints,
+                    maxPoints: result.categories.format.maxPoints,
+                    issues: result.categories.format.issues.map(i => ({
+                      issue: i.issue,
+                      recommendation: i.fix,
+                      severity: i.severity
+                    })),
+                    passes: result.categories.format.passes
+                  },
+                  structure: {
+                    earnedPoints: result.categories.structure.earnedPoints,
+                    maxPoints: result.categories.structure.maxPoints,
+                    issues: result.categories.structure.issues.map(i => ({
+                      issue: i.issue,
+                      recommendation: i.fix,
+                      severity: i.severity
+                    })),
+                    passes: result.categories.structure.passes
+                  },
+                  keywords: {
+                    earnedPoints: result.categories.keywords.earnedPoints,
+                    maxPoints: result.categories.keywords.maxPoints,
+                    issues: result.categories.keywords.issues.map(i => ({
+                      issue: i.issue,
+                      recommendation: i.fix,
+                      severity: i.severity
+                    })),
+                    passes: result.categories.keywords.passes
+                  },
+                  readability: {
+                    earnedPoints: result.categories.readability.earnedPoints,
+                    maxPoints: result.categories.readability.maxPoints,
+                    issues: result.categories.readability.issues.map(i => ({
+                      issue: i.issue,
+                      recommendation: i.fix,
+                      severity: i.severity
+                    })),
+                    passes: result.categories.readability.passes
+                  }
+                }}
+                hasContactInfo={result.metadata?.hasContactInfo || {
+                  email: false,
+                  phone: false,
+                  linkedin: false,
+                  location: false
+                }}
+                parsingChecks={result.parsingChecks || {
+                  singleColumn: { ok: true, note: "Unknown" },
+                  standardSections: { ok: true, note: "Unknown" },
+                  cleanCharacters: { ok: true, note: "Unknown" },
+                  abbreviations: { ok: true, note: "Unknown" }
+                }}
+                keywordStats={result.metadata?.keywordStats || {
+                  hardSkillsCount: 0,
+                  actionVerbsCount: 0,
+                  quantifiedAchievements: 0
+                }}
+                wordCount={result.metadata?.wordCount || 0}
+                topIssues={result.topIssues?.map(issue => ({
+                  severity: issue.severity,
+                  issue: issue.issue,
+                  suggestion: issue.suggestion,
+                  category: issue.category
+                }))}
+                potentialScore={scoreAnalysis.maxPotential}
+                easyWinsPoints={scoreAnalysis.easyWinsPoints}
+              />
+            </div>
 
-            {/* CTA Section */}
-            <CTASection>
-              <CTAGradientCircle viewBox="0 0 600 600" aria-hidden="true">
-                <circle
-                  r={300}
-                  cx={300}
-                  cy={300}
-                  fill="url(#gradient-cta-ats)"
-                  fillOpacity="0.7"
-                />
-                <defs>
-                  <radialGradient id="gradient-cta-ats">
-                    <stop stopColor="#35A29F" />
-                    <stop offset={1} stopColor="#0B666A" />
-                  </radialGradient>
-                </defs>
-              </CTAGradientCircle>
-              <CTATitle>Now you see the problems. Let us fix them.</CTATitle>
-              <CTAText>
-                Get an AI-optimized resume with all issues fixed — rewritten bullet points, missing keywords added, and ATS-proof formatting. Ready to download in under a minute. Starting at $2.
-              </CTAText>
-              <CTAButtonGroup>
-                <CTAButton href={ROUTES.AUTH.SIGNUP}>
-                  Get My Optimized Resume
-                </CTAButton>
-                <CTASecondaryButton href={ROUTES.PUBLIC.HOW_IT_WORKS}>
-                  Learn more
-                  <span aria-hidden="true">→</span>
-                </CTASecondaryButton>
-              </CTAButtonGroup>
-            </CTASection>
+            {/* Overlay CTA Section */}
+            <div style={{ marginTop: "-220px", position: "relative", zIndex: 10, padding: "0 16px" }}>
+              <CTASection style={{ boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}>
+                <CTAGradientCircle viewBox="0 0 600 600" aria-hidden="true">
+                  <circle
+                    r={300}
+                    cx={300}
+                    cy={300}
+                    fill="url(#gradient-cta-ats)"
+                    fillOpacity="0.7"
+                  />
+                  <defs>
+                    <radialGradient id="gradient-cta-ats">
+                      <stop stopColor="#35A29F" />
+                      <stop offset={1} stopColor="#0B666A" />
+                    </radialGradient>
+                  </defs>
+                </CTAGradientCircle>
+                <CTATitle>Unlock Your Full Report</CTATitle>
+                <CTAText>
+                  Your resume is missing critical keywords. Sign up for free to unlock the full list of errors and fix your CV instantly with AI.
+                </CTAText>
+                <CTAButtonGroup>
+                  <CTAButton href={ROUTES.AUTH.SIGNUP}>
+                    Sign Up to Unlock
+                  </CTAButton>
+                  <CTASecondaryButton href={`https://twitter.com/intent/tweet?text=I%20just%20scored%20${result.overallScore}/100%20on%20my%20Resume!%20Check%20yours%20for%20free%20at%20rejectly.pro/ats-check`} target="_blank" rel="noreferrer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                    </svg>
+                    Share Score
+                  </CTASecondaryButton>
+                </CTAButtonGroup>
+              </CTASection>
+            </div>
 
             <TryAgainButton onClick={handleTryAgain}>
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -2143,6 +2277,32 @@ export default function ATSCheckPage() {
                 </ContentContainer>
               </UploadContainer>
             </UploadWrapper>
+
+            {/* NEW: Job Description & Analyze Button */}
+            {file && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                <JobDescriptionWrapper>
+                  <JDLabel>Target Job Description (Optional)</JDLabel>
+                  <JDTextarea
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                    placeholder="Paste the job description here to get a tailored Job Match Score. If left blank, we'll run a general formatting check."
+                  />
+                </JobDescriptionWrapper>
+
+                <AnalyzeButton
+                  onClick={() => analyzeFile(file)}
+                  disabled={isAnalyzing}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {isAnalyzing ? "Analyzing..." : "Get My ATS Score"}
+                </AnalyzeButton>
+              </motion.div>
+            )}
 
             {error && <ErrorMessage>{error}</ErrorMessage>}
           </UploadSection>

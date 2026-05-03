@@ -419,7 +419,7 @@ export default function CVBuilderPage() {
               lineHeight: 1.6,
               marginBottom: '32px',
             }}>
-              Create a stunning, job-ready resume in just a few minutes.
+              Create a resume designed to beat entry-level ATS bots.
             </p>
 
             {/* Features */}
@@ -628,7 +628,7 @@ export default function CVBuilderPage() {
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             </div>
           </div>
-          <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>Your Executive CV is Ready</h2>
+          <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>Your ATS-Bypassing CV is Ready</h2>
           <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '15px', lineHeight: 1.6, marginBottom: '32px' }}>
             Create a free account to download your beautifully formatted CV and unlock our AI-powered ATS optimizer suite.
           </p>

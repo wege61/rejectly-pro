@@ -502,10 +502,10 @@ export function BulletModal({ isOpen, onClose, onAdd, jobTitle, company }: Bulle
                   {!polishedResult ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       <p style={{ margin: 0, color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>
-                        Write a rough draft of what you did. We'll turn it into a professional, ATS-friendly achievement.
+                        Write a rough draft of what you did in this role or school project. We'll translate it into a professional, ATS-friendly achievement.
                       </p>
                       <Textarea 
-                        placeholder="e.g. I fixed the website login bug and made the app load much faster."
+                        placeholder="e.g. For my capstone, I built a React app that let students trade books. It was pretty fast."
                         value={draft}
                         onChange={(e) => setDraft(e.target.value)}
                         autoFocus

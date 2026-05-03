@@ -19,7 +19,7 @@ function detectCVLanguage(cv: GeneratedCV): 'tr' | 'en' {
 const LABELS = {
   en: {
     professionalSummary: 'SUMMARY',
-    professionalExperience: 'EXPERIENCE',
+    professionalExperience: 'EXPERIENCE & PROJECTS',
     education: 'EDUCATION',
     skills: 'SKILLS',
     certifications: 'CERTIFICATIONS & COURSES',
@@ -334,7 +334,10 @@ export async function generateCVPDF(
     sortedExperience.forEach((exp) => {
       checkPageBreak(12);
       
-      const dateText = [exp.startDate, exp.endDate || (exp.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
+      // Don't duplicate date if start and end are the same month
+      const dateText = exp.startDate === exp.endDate
+        ? exp.startDate
+        : [exp.startDate, exp.endDate || (exp.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
       drawSplitRow(exp.title, dateText, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
       yPosition += 5.5;
       

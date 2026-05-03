@@ -2034,7 +2034,7 @@ export default function DashboardPage() {
               name="Total Reports"
               className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3"
               Icon={ReportsIcon}
-              description="View all your resume analysis reports"
+              description="View your past ATS bypass scores"
               href={ROUTES.APP.REPORTS}
               cta="View Reports"
               value={stats.totalReports}
@@ -2144,7 +2144,7 @@ export default function DashboardPage() {
         {/* Recent Reports */}
         <Section>
           <SectionHeader>
-            <SectionTitle>Recent Reports</SectionTitle>
+            <SectionTitle>ATS Bypass Reports</SectionTitle>
           </SectionHeader>
 
           {recentReports.length === 0 ? (
@@ -2219,7 +2219,7 @@ export default function DashboardPage() {
               </RecentReportsGrid>
               <ViewAllLink>
                 <ViewAllGlassButton onClick={() => router.push(ROUTES.APP.REPORTS)}>
-                  View All Reports
+                  View All Bypass Reports
                   <ArrowRightIconLetter />
                 </ViewAllGlassButton>
               </ViewAllLink>

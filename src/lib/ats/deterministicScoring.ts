@@ -155,9 +155,9 @@ const STRUCTURE_CRITERIA: ScoringCriterion[] = [
     name: "Experience section",
     points: 10,
     check: (cv) => cv.hasExperience,
-    passMessage: "Work Experience section found",
-    failMessage: "No experience section with standard header",
-    suggestion: "Add section titled 'Experience', 'Work Experience', or 'Professional Experience'. ATS looks for these exact headers.",
+    passMessage: "Experience or Projects section found",
+    failMessage: "No experience or projects section detected",
+    suggestion: "Add a section titled 'Experience', 'Academic Projects', or 'Extracurriculars'. ATS looks for these headers.",
     severity: "critical",
   },
   {
@@ -232,10 +232,10 @@ const KEYWORDS_CRITERIA: ScoringCriterion[] = [
     id: "quantified_achievements",
     name: "Quantified achievements",
     points: 10,
-    check: (cv) => cv.metricsCount >= 3,
+    check: (cv) => cv.metricsCount >= 1,
     passMessage: "Good use of metrics and numbers",
-    failMessage: "Few quantified achievements found",
-    suggestion: "Add numbers to your achievements: percentages, dollar amounts, team sizes, timeframes. E.g., 'Increased sales by 25%' or 'Managed team of 8'.",
+    failMessage: "No quantified achievements found",
+    suggestion: "Add numbers to your academic projects or internships: e.g., 'Collaborated in a team of 4' or 'Improved performance by 20%'.",
     severity: "major",
   },
   {
@@ -270,10 +270,10 @@ const READABILITY_CRITERIA: ScoringCriterion[] = [
     id: "word_count",
     name: "Reasonable length",
     points: 4,
-    check: (cv) => cv.wordCount >= 200 && cv.wordCount <= 1200,
+    check: (cv) => cv.wordCount >= 150 && cv.wordCount <= 1000,
     passMessage: "Resume length is reasonable",
     failMessage: "Resume too short or too long",
-    suggestion: "Keep resume between 300-800 words. Very long resumes may hit ATS character limits.",
+    suggestion: "Keep resume between 150-800 words. Don't worry if it's short, just ensure your projects are detailed.",
     severity: "major",
   },
   {
@@ -321,7 +321,7 @@ export function parseCV(text: string): ParsedCV {
 
   // Section detection
   const hasProfessionalSummary = /professional\s*summary|summary|profile|about\s*me|objective/i.test(text);
-  const hasExperience = /experience|employment|work\s*history|professional\s*experience/i.test(text);
+  const hasExperience = /experience|employment|work\s*history|professional\s*experience|academic\s*projects?|personal\s*projects?|extracurriculars?|leadership/i.test(text);
   const hasEducation = /education|academic|degree|university|college/i.test(text);
   const hasSkills = /skills|technical\s*skills|core\s*competencies|expertise/i.test(text);
   const hasCertifications = /certifications?|certificates?|credentials?/i.test(text);

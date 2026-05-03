@@ -32,14 +32,10 @@ export const ABBREVIATION_EXPANSIONS: Record<string, string> = {
   MVC: "Model-View-Controller (MVC)",
   MVVM: "Model-View-ViewModel (MVVM)",
 
-  // Web Technologies - CRITICAL: Greenhouse/Taleo don't recognize these!
-  HTML: "HyperText Markup Language (HTML)",
-  CSS: "Cascading Style Sheets (CSS)",
+  // Web Technologies - Only expand truly obscure acronyms, not universal ones
+  // NOTE: HTML, CSS, URL, DOM, HTTP are NOT expanded — universally understood and look odd when expanded
   JSON: "JavaScript Object Notation (JSON)",
   XML: "Extensible Markup Language (XML)",
-  HTTP: "Hypertext Transfer Protocol (HTTP)",
-  URL: "Uniform Resource Locator (URL)",
-  DOM: "Document Object Model (DOM)",
   SPA: "Single Page Application (SPA)",
   PWA: "Progressive Web App (PWA)",
 
@@ -266,7 +262,10 @@ export function expandSkillAbbreviations(skills: string[]): string[] {
     }
   }
 
-  return expandedSkills;
+  return expandedSkills.map((skill) => {
+    // Deduplicate consecutive repeated words (e.g. "Agile Methodology Methodologies" → "Agile Methodology")
+    return skill.replace(/(\b\w+)\s+\1s?\b/gi, '$1');
+  });
 }
 
 /**
@@ -402,23 +401,9 @@ export function normalizeBulletLength(bullet: string): string[] {
     }
   }
 
-  // If no natural split point, truncate at word boundary
-  let truncated = trimmed.substring(0, MAX_BULLET_LENGTH);
-  const lastSpace = truncated.lastIndexOf(" ");
-  if (lastSpace > MAX_BULLET_LENGTH - 30) {
-    truncated = truncated.substring(0, lastSpace);
-  }
-
-  // Add ellipsis indicator if truncated mid-thought
-  if (truncated.length < trimmed.length && !truncated.endsWith(".")) {
-    // Try to end at a logical point
-    const lastPeriod = truncated.lastIndexOf(".");
-    if (lastPeriod > MAX_BULLET_LENGTH - 50) {
-      truncated = truncated.substring(0, lastPeriod + 1);
-    }
-  }
-
-  return [truncated];
+  // If no natural split point, return the full bullet intact (never hard-truncate)
+  // A truncated bullet is worse than a long one — leave it for PDF to wrap
+  return [trimmed];
 }
 
 /**
@@ -551,6 +536,12 @@ export function postProcessCVForATS(cv: GeneratedCVData): GeneratedCVData {
       ...cv.contact,
       name: cleanSpecialCharacters(cv.contact.name),
       location: cleanSpecialCharacters(cv.contact.location),
+      // Sanitize LinkedIn URL — fix common AI typo 'inkedin.com' → 'linkedin.com'
+      linkedin: cv.contact.linkedin
+        ? cv.contact.linkedin
+            .replace(/^inkedin\.com/i, 'linkedin.com')
+            .replace(/^https?:\/\/inkedin\.com/i, 'https://linkedin.com')
+        : cv.contact.linkedin,
     },
     // Expand abbreviations and clean summary
     summary: cleanSpecialCharacters(expandAbbreviations(cv.summary)),

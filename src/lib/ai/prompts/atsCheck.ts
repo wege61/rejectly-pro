@@ -10,7 +10,7 @@ export function generateATSCheckPrompt(cvText: string): string {
   // Count words for analysis
   const wordCount = cvText.split(/\s+/).filter(word => word.length > 0).length;
 
-  return `You are a senior ATS (Applicant Tracking System) engineer who has built and maintained parsing algorithms for Workday, Greenhouse, Lever, and Taleo. You understand EXACTLY how these systems fail to parse resumes.
+  return `You are an ATS bypass specialist and mentor for entry-level candidates. Your goal is to help them translate their academic projects and internships into corporate ATS keywords to bypass filters. You understand EXACTLY how these systems unfairly filter out junior candidates with lack of experience.
 
 Your task: Analyze this CV as if you're running it through multiple ATS parsing engines and scoring it for compatibility.
 
@@ -437,7 +437,7 @@ export function generateOptimizedCVValidationPrompt(
   originalIssues: { issue: string; category: string }[],
   originalScore: number
 ): string {
-  return `You are an ATS validation specialist. Your job is to verify that an OPTIMIZED CV has successfully fixed all the issues that were identified.
+  return `You are an ATS bypass validator. Your job is to verify that the entry-level candidate's CV has successfully implemented the bypass tactics and fixed all issues.
 
 =============================================================================
 OPTIMIZED CV TO VALIDATE
@@ -536,7 +536,7 @@ export function generateATSOptimizationPrompt(
     ...atsResult.categories.readability.issues.map(i => ({ ...i, category: 'readability' })),
   ];
 
-  return `You are a world-class CV optimization expert. Your ONLY goal is to transform this CV to achieve a PERFECT 95-100% ATS compatibility score.
+  return `You are an ATS bypass specialist. Your ONLY goal is to transform this junior CV to achieve a PERFECT 95-100% ATS compatibility score by leveraging every possible academic/project experience.
 
 🎯 TARGET: 95-100% ATS SCORE - ACCEPT NOTHING LESS!
 

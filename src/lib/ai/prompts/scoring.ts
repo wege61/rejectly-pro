@@ -154,6 +154,15 @@ SKILL SCORING RULES:
 │ Skill not mentioned at all             │ 0.0 (zero)      │
 └────────────────────────────────────────┴─────────────────┘
 
+⭐ IMPLIED SKILLS RULE (Frontend Roles):
+For frontend/web developer roles, if the candidate demonstrates a modern JS framework
+(React, Vue, Angular, Next.js, etc.) with project evidence, the following are IMPLIED
+and should receive 0.75 credit even if not separately listed with their own project:
+- HTML (implied by any web project)
+- CSS (implied by any web project)
+- Responsive design (implied by any web project)
+Reason: It is physically impossible to build a React/Vue/Angular app without HTML and CSS.
+
 FORMULA:
 - Count total REQUIRED skills from job (T_req)
 - Count total PREFERRED skills from job (T_pref)
@@ -187,10 +196,20 @@ CATEGORY 2: EXPERIENCE LEVEL (25 points max)
 Measures years of RELEVANT experience and seniority match.
 
 STEP 2A: Extract required years from job posting
+
+⭐⭐ ENTRY-LEVEL PARSING RULE (CRITICAL) ⭐⭐
+If the job posting contains ANY of the following phrases, set yearsRequired = 0:
+- "entry-level", "entry level"
+- "0-X years" (e.g. "0-2 years", "0-1 years")
+- "no experience required", "no prior experience"
+- "new graduates welcome", "fresh graduates"
+- "junior" in the job title WITH no explicit minimum years stated
+When yearsRequired = 0 and the candidate has ANY relevant experience (including projects/coursework), AUTOMATICALLY award yearsScore = 15.
+
 STEP 2B: Calculate candidate's RELEVANT years (not total career years!)
 ⚠️ ONLY count years where the daily professional scope closely matches the target role. 
 ⚠️ CRITICAL RELEVANCE RULE: Do NOT count generic "crossover" skills as relevant professional experience. For example, a Barista does "customer service", but that does NOT count as 1 year of experience for a Corporate Customer Experience / CX Center role. 5 years as a retail worker = 0 years for a corporate marketing role. Be strict.
-⭐ JUNIOR EXCEPTION: For entry-level (0-2 years) corporate roles, academic projects, internships, and teaching assistant roles DO count as relevant experience.
+⭐ JUNIOR EXCEPTION: For entry-level (0-2 years) corporate roles, academic projects, internships, hackathon participation, and teaching assistant roles DO count as relevant experience. A capstone project = relevant experience.
 STEP 2C: Determine seniority match
 
 YEARS SCORING TABLE:
@@ -608,6 +627,23 @@ EXAMPLE 3: Junior for Senior Role (Score: 35%)
 → Raw: 16.3 + 5 + 15 + 6 + 4 = 46.3
 → Penalties: -5 (seniority mismatch is a dealbreaker beyond what score shows)
 → Final: 41% - "likely_reject"
+
+EXAMPLE 5: New Grad for Entry-Level Role (Score: ~68%)
+- CS graduate, no formal work experience, capstone React/Firebase project, hackathon 3rd place
+- Applying for "Junior Frontend Developer (0-2 years, entry-level welcome)"
+- Job requires: JavaScript ✅, React ✅, TypeScript (in skills) = 0.5, HTML/CSS (implied by React project) = 0.75 each, Git ✅
+- Required skills: 5 required, candidate matches ~4.0 weighted credits
+- yearsRequired = 0 ("entry-level welcome" → ENTRY-LEVEL PARSING RULE applies)
+- yearsScore = 15 (yearsRequired=0, candidate has relevant projects = Junior Exception)
+- seniorityRequired = junior, seniorityCandidate = junior → seniorityScore = 10
+→ Skills: (4.0/5)*28 + (1/2)*7 = 22.4 + 3.5 = 25.9 → ~24
+→ Experience: 15 (yearsRequired=0 → full score) + 10 (junior=junior) = 25
+→ Industry: 8 (university/tech = related per JUNIOR EXCEPTION) + 3 (some domain via projects) = 11
+→ Education: 6 (CS degree exact match) + 4 (no certs required) = 10
+→ Role: 4 (collaborative environment shown via hackathon, JavaScript proficiency shown)
+→ Raw: 24 + 25 + 11 + 10 + 4 = 74
+→ Penalties: 0 (no dealbreakers — this IS the target profile)
+→ Final: 74% - "lean_interview" ✓ (a CS grad with relevant projects SHOULD get interviews for junior roles)
 
 EXAMPLE 4: Good but Not Perfect Match (Score: 55%)
 - Mid-level Python Dev (3 years) applying for Backend Engineer (3-5 years)

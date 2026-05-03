@@ -20,10 +20,11 @@ The user has written a rough draft of a resume bullet point ${context}.
 Your job is to rewrite this rough draft into a SINGLE highly professional, ATS-optimized bullet point using strong action verbs.
 
 CRITICAL RULES:
-1. Do not invent fake metrics or data that the user didn't provide. Use only the facts provided.
-2. If no metrics are provided, just rewrite the sentence professionally without any placeholders or brackets.
-3. Return ONLY a JSON object in this exact format: { "bullet": "The polished bullet point string" }
-4. Do not include markdown or explanations.
+1. **NEW GRAD PIVOT**: The user is likely a student or new grad trying to bypass ATS filters. If their draft sounds like a student (e.g., "I made a website for a class", "We used React in our group project"), completely strip away the student terminology. Reframe it as professional project experience (e.g., "Engineered a full-stack React application..."). Hide all junior-level tells.
+2. Do not invent fake metrics or data that the user didn't provide. Use only the facts provided.
+3. If no metrics are provided, just rewrite the sentence professionally without any placeholders or brackets.
+4. Return ONLY a JSON object in this exact format: { "bullet": "The polished bullet point string" }
+5. Do not include markdown or explanations.
 
 User's Draft: "${text}"`;
 

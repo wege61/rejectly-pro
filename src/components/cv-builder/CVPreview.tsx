@@ -174,7 +174,7 @@ export function CVPreview() {
       {/* Experience Section */}
       {(sortedExperience.length > 0) && (
         <div style={{ marginBottom: '24px' }}>
-          <SectionTitle $theme={theme}>Experience</SectionTitle>
+          <SectionTitle $theme={theme}>Experience & Projects</SectionTitle>
           {sortedExperience.map((exp: CVExperience, idx: number) => (
             <div key={idx} style={{ marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>

@@ -32,13 +32,18 @@ const HeroSection = styled.section`
 `;
 
 const HeroTitle = styled.h1`
-  font-size: 56px;
-  font-weight: 900;
+  font-size: 64px;
+  font-weight: 800;
   margin-bottom: 24px;
-  line-height: 1.2;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 
   @media (max-width: 768px) {
-    font-size: 36px;
+    font-size: 42px;
   }
 `;
 
@@ -433,25 +438,25 @@ export default function HowItWorksPage() {
   const featureCards: Card[] = [
     {
       src: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=800&auto=format&fit=crop",
-      title: "AI Resume Analysis",
-      category: "Smart Insights",
+      title: "The ATS Filter Reverse-Engineering",
+      category: "Hack The Filter",
       content: (
         <div>
-          <p>See exactly what&apos;s wrong with your resume. Our AI analyzes your resume against the job description and reveals:</p>
+          <p>See exactly why the bot rejected you. Our AI reverse-engineers the job description and reveals:</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Missing keywords that ATS systems are looking for</li>
-            <li>Formatting issues that hurt readability</li>
-            <li>Weak action verbs and how to strengthen them</li>
-            <li>Quantifiable achievements you should highlight</li>
+            <li>The exact corporate keywords the ATS is filtering for</li>
+            <li>Where your academic projects fall short of the algorithm</li>
+            <li>Action verbs that bypass junior-level filters</li>
+            <li>How to quantify school projects to look like real experience</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Get instant, actionable feedback in seconds—not hours.</p>
+          <p style={{ marginTop: '16px' }}>Don&apos;t guess what the recruiter wants. Know exactly what the bot needs.</p>
         </div>
       ),
     },
     {
       src: "/reports-list.png",
-      title: "Smart Job Matching",
-      category: "Find Your Fit",
+      title: "Score Your Resume Against Any Job",
+      category: "Match Intelligence",
       content: (
         <div>
           <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
@@ -466,20 +471,20 @@ export default function HowItWorksPage() {
               style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }} 
             />
           </div>
-          <p>Stop applying blindly. Our AI finds jobs where your skills actually match what employers are looking for.</p>
+          <p>Don't apply blindly. Paste the job description you want, and our AI will score your current resume against the exact corporate requirements.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Match score for every job posting</li>
-            <li>Skills gap analysis and recommendations</li>
-            <li>Salary insights based on your experience</li>
-            <li>Company culture compatibility indicators</li>
+            <li>Instant match score for the specific job posting</li>
+            <li>Identifies the exact skills and keywords you're missing</li>
+            <li>Highlights where your university tech stack matches the job</li>
+            <li>Warns you if your CV needs a major rewrite to pass</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Apply smarter, not harder. Focus on roles where you&apos;ll succeed.</p>
+          <p style={{ marginTop: '16px' }}>Know if you can pass the filter before you even apply.</p>
         </div>
       ),
     },
     {
       src: "/cover-letters-list.png",
-      title: "1-Click Tailored Cover Letters",
+      title: "The Human Hook (Cover Letters)",
       category: "Personalized Outreach",
       content: (
         <div>
@@ -495,31 +500,31 @@ export default function HowItWorksPage() {
               style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }} 
             />
           </div>
-          <p>Stand out from the crowd with cover letters that actually sound like you and address the specific role.</p>
+          <p>Once you beat the bot, you need to convince the human. Generate cover letters that explain why your hunger beats 3 years of mediocre experience.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Instantly generated from your optimized resume</li>
-            <li>Matches the job requirements perfectly</li>
-            <li>Highlights your most relevant achievements</li>
-            <li>Multiple tone options (formal, creative, casual)</li>
+            <li>Frames academic work as high-impact projects</li>
+            <li>Directly addresses the lack of formal experience with confidence</li>
+            <li>Matches the specific company culture and tone</li>
+            <li>Instantly generated from your ATS-optimized resume</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Never stare at a blank page again.</p>
+          <p style={{ marginTop: '16px' }}>Prove you&apos;re the junior they need to hire.</p>
         </div>
       ),
     },
     {
       src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
-      title: "ATS-Optimized Resume Builder",
-      category: "Built to Pass",
+      title: "The Corporate Translator",
+      category: "Resume Builder",
       content: (
         <div>
-          <p>Start fresh with an ATS-optimized resume. Clean formatting, right keywords, professional structure.</p>
+          <p>Turn &quot;built a react app for class&quot; into &quot;Architected a scalable frontend application.&quot; Our builder speaks corporate.</p>
           <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Templates designed for ATS systems</li>
-            <li>Automatic keyword optimization</li>
-            <li>Professional formatting that works everywhere</li>
-            <li>Export to PDF, Word, or plain text</li>
+            <li>Translates student terminology into HR keywords</li>
+            <li>Templates designed specifically to bypass modern ATS systems</li>
+            <li>Automatic keyword density optimization</li>
+            <li>Hides junior-level tells and highlights actual capabilities</li>
           </ul>
-          <p style={{ marginTop: '16px' }}>Built from the ground up to get past the robots.</p>
+          <p style={{ marginTop: '16px' }}>Built from the ground up to get you that first interview.</p>
         </div>
       ),
     },
@@ -599,25 +604,24 @@ export default function HowItWorksPage() {
       <Container>
         <HeroSection>
           <HeroTitle>
-            Transform Your{" "}
-            <FlipWords words={["Job Search", "Career", "Resume", "Future"]} duration={2500} />
+            How To Bypass The <br /> ATS Filter
           </HeroTitle>
         <HeroSubtitle>
-          Same resume everywhere = same rejection everywhere. Here&apos;s how Rejectly
-          creates a unique, optimized resume for every job you apply to.
+          The corporate system filters out new grads automatically. Here is exactly how Rejectly 
+          translates your university experience into the corporate ATS keywords they demand.
         </HeroSubtitle>
         <StatsGrid>
           <StatCard>
-            <StatNumber>40+</StatNumber>
-            <StatLabel>Analysis Criteria</StatLabel>
+            <StatNumber>50+</StatNumber>
+            <StatLabel>ATS Systems Bypassed</StatLabel>
           </StatCard>
           <StatCard>
-            <StatNumber>GPT-4</StatNumber>
-            <StatLabel>AI Engine</StatLabel>
+            <StatNumber>0 to 3</StatNumber>
+            <StatLabel>Years Experience Gap Bridged</StatLabel>
           </StatCard>
           <StatCard>
-            <StatNumber>&lt;1m</StatNumber>
-            <StatLabel>Analysis Time</StatLabel>
+            <StatNumber>&lt;60s</StatNumber>
+            <StatLabel>ATS Translation Time</StatLabel>
           </StatCard>
         </StatsGrid>
       </HeroSection>
@@ -648,77 +652,77 @@ export default function HowItWorksPage() {
         </SectionHeader>
 
         <BentoGrid>
-          {/* Left tall card - GPT-4 Powered */}
+          {/* Left tall card */}
           <BentoCard $span="tall" $position="left">
             <BentoCardContent $tall>
-              <BentoCardTitle>Advanced AI Analysis</BentoCardTitle>
+              <BentoCardTitle>Translate Academic into Corporate</BentoCardTitle>
               <BentoCardDescription>
-                Cutting-edge language models that understand context, not just keywords. Our AI reads your resume like a human recruiter would.
+                We know you don't have 5 years of corporate experience. Our system analyzes your university projects, coursework, and extracurriculars, and translates them into the exact professional terminology recruiters search for.
               </BentoCardDescription>
               <BentoCardVisual>
                 <StatHighlight>
-                  <div className="number">GPT-4</div>
-                  <div className="label">Next-Gen Intelligence</div>
+                  <div className="number">100%</div>
+                  <div className="label">Student to Pro</div>
                 </StatHighlight>
               </BentoCardVisual>
               <FeatureList>
-                <FeatureListItem>Contextual understanding</FeatureListItem>
-                <FeatureListItem>Smart keyword extraction</FeatureListItem>
-                <FeatureListItem>Industry-specific analysis</FeatureListItem>
-                <FeatureListItem>Continuous improvements</FeatureListItem>
+                <FeatureListItem>Extracts skills from school projects</FeatureListItem>
+                <FeatureListItem>Translates club leadership to management</FeatureListItem>
+                <FeatureListItem>Frames hackathons as product ships</FeatureListItem>
+                <FeatureListItem>Hides junior-level tells</FeatureListItem>
               </FeatureList>
             </BentoCardContent>
           </BentoCard>
 
-          {/* Top middle card - Instant Results */}
+          {/* Top middle card */}
           <BentoCard>
             <BentoCardContent>
-              <BentoCardTitle>Instant Results</BentoCardTitle>
+              <BentoCardTitle>Beat the Experience Trap</BentoCardTitle>
               <BentoCardDescription>
-                Get detailed analysis and recommendations in seconds, not hours.
+                Stop getting automatically rejected for &quot;lack of experience&quot; before a human even reads your name.
               </BentoCardDescription>
               <BentoCardVisual>
                 <StatHighlight>
-                  <div className="number">&lt;1m</div>
-                  <div className="label">Average Analysis Time</div>
+                  <div className="number">Bypass</div>
+                  <div className="label">The Auto-Reject</div>
                 </StatHighlight>
               </BentoCardVisual>
             </BentoCardContent>
           </BentoCard>
 
-          {/* Right tall card - ATS Optimized */}
+          {/* Right tall card */}
           <BentoCard $span="tall" $position="right">
             <BentoCardContent $tall>
-              <BentoCardTitle>ATS Optimized &mdash; Per Job</BentoCardTitle>
+              <BentoCardTitle>Hack the Exact ATS Filter</BentoCardTitle>
               <BentoCardDescription>
-                Every job has a different ATS filter. Our AI reads the specific job description and optimizes your resume to pass that exact system with flying colors.
+                Every company uses a different ATS. Workday scans differently than Greenhouse. We read the job description and inject the exact keywords their specific algorithm is trained to catch.
               </BentoCardDescription>
               <BentoCardVisual>
                 <StatHighlight>
-                  <div className="number">4+</div>
-                  <div className="label">ATS Systems Tested</div>
+                  <div className="number">95%+</div>
+                  <div className="label">Target Match Score</div>
                 </StatHighlight>
               </BentoCardVisual>
               <FeatureList>
-                <FeatureListItem>Keyword optimization</FeatureListItem>
-                <FeatureListItem>Format compatibility</FeatureListItem>
-                <FeatureListItem>Section structure analysis</FeatureListItem>
-                <FeatureListItem>Parsing verification</FeatureListItem>
+                <FeatureListItem>Workday/Greenhouse/Lever ready</FeatureListItem>
+                <FeatureListItem>Keyword density optimization</FeatureListItem>
+                <FeatureListItem>Format compatibility check</FeatureListItem>
+                <FeatureListItem>Hard vs Soft skill balancing</FeatureListItem>
               </FeatureList>
             </BentoCardContent>
           </BentoCard>
 
-          {/* Bottom middle card - Multi-Language */}
+          {/* Bottom middle card */}
           <BentoCard>
             <BentoCardContent>
-              <BentoCardTitle>Works in Any Language</BentoCardTitle>
+              <BentoCardTitle>Global Bypass</BentoCardTitle>
               <BentoCardDescription>
-                Upload resumes and job descriptions in any language. Our AI understands and analyzes content globally.
+                Whether you're applying in the US, Europe, or Asia, our tools understand and bypass regional hiring algorithms.
               </BentoCardDescription>
               <BentoCardVisual>
                 <StatHighlight>
                   <div className="number">50+</div>
-                  <div className="label">Languages Supported</div>
+                  <div className="label">Countries Supported</div>
                 </StatHighlight>
               </BentoCardVisual>
             </BentoCardContent>

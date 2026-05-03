@@ -127,10 +127,9 @@ export default function AnalyzePage() {
       <Container>
         <Header>
           <TitleElements>
-            <Title>Create New Analysis</Title>
+            <Title>Check Your Resume Match</Title>
             <Subtitle>
-              Upload your CV and select a job posting to generate your
-              personalized match report
+              Upload your CV and paste a job description — we'll show you exactly which keywords you're missing and how your background stacks up.
             </Subtitle>
           </TitleElements>
           <CreditsCardWrapper>

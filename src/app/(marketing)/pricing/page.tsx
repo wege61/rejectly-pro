@@ -812,7 +812,7 @@ export default function PricingPage() {
                 <FeatureRow><AnalysisIcon />Unlimited job match analyses</FeatureRow>
                 <FeatureRow><ATSIcon />Unlimited ATS optimizations</FeatureRow>
                 <FeatureRow><LetterIcon />Unlimited cover letters</FeatureRow>
-                <FeatureRow><RocketIcon />Perfect for career transitions</FeatureRow>
+                <FeatureRow><RocketIcon />Perfect for graduation season</FeatureRow>
                 <FeatureRowHighlight><StarIcon />Best value for 20+ analyses/month</FeatureRowHighlight>
                 <FeatureRowMuted><RefreshIcon />Credits never expire while subscribed</FeatureRowMuted>
                 <FeatureRowMuted><ShieldIcon />Cancel anytime, no questions asked</FeatureRowMuted>
@@ -877,8 +877,8 @@ export default function PricingPage() {
             </ComparisonRow>
 
             <ComparisonRow>
-              <ComparisonFeature>Alternative Role Suggestions</ComparisonFeature>
-              <ComparisonValue $isCross><CrossMark /></ComparisonValue>
+              <ComparisonFeature>Translate Student Experience</ComparisonFeature>
+              <ComparisonValue><CheckIcon /></ComparisonValue>
               <ComparisonValue $isPro><CheckIcon /></ComparisonValue>
             </ComparisonRow>
 
@@ -890,7 +890,7 @@ export default function PricingPage() {
           </ComparisonTableWrapper>
 
           <ComparisonMessage>
-            Start for free, land the job with Pro.
+            Start for free, bypass the filter with Pro.
           </ComparisonMessage>
         </ComparisonSection>
 

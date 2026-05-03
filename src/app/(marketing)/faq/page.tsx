@@ -257,22 +257,22 @@ export default function FAQPage() {
         {
           question: "How does Rejectly.pro work?",
           answer:
-            "Upload your resume and paste a job description. Our AI analyzes the match, identifies gaps, and provides actionable recommendations to improve your chances. The entire process takes under a minute.",
+            "Upload your resume and paste a job description. Our AI analyzes the match, identifies missing keywords, and gives you specific tools to translate your academic projects and internships into professional, ATS-friendly bullet points. The entire process takes under a minute.",
+        },
+        {
+          question: "I have no formal work experience. Will this work for me?",
+          answer:
+            "Yes — that's exactly who we built this for. If you have university capstone projects, coursework, hackathons, or club leadership, our AI tools help you format them as professional experience that ATS bots can recognize and recruiters will take seriously. You don't need a corporate job title to have a strong resume.",
         },
         {
           question: "What file formats do you support?",
           answer:
-            "We support <strong>PDF and DOCX</strong> formats. You can also paste text directly for analysis. Maximum file size is 5MB. Our AI can parse complex formatting and extract the relevant information.",
+            "We support <strong>PDF and DOCX</strong> formats. One important tip: avoid complex design templates from tools like Canva or Figma — ATS bots frequently fail to parse them correctly, which can cause your resume to be auto-rejected regardless of your qualifications. A clean, simple PDF works best.",
         },
         {
           question: "How long does the analysis take?",
           answer:
             "Our AI analysis typically takes <strong>under a minute</strong> to complete. For complex resumes and longer job descriptions, it may take slightly longer, but results are always fast.",
-        },
-        {
-          question: "Do I need to create an account?",
-          answer:
-            "You can try our <strong>Quick Demo</strong> without an account! For saving your analyses and accessing more features, creating a free account is recommended. It only takes 30 seconds to sign up.",
         },
       ],
     },
@@ -287,7 +287,7 @@ export default function FAQPage() {
         {
           question: "What's included in a Pro analysis?",
           answer:
-            "Pro includes <strong>detailed AI insights, professional rewriting of 3 bullet points, cover letter generation, ATS optimization recommendations, alternative role suggestions, and AI-optimized resume PDF</strong>. Purchase credits starting at $2 or subscribe for unlimited access.",
+            "Pro includes <strong>detailed AI insights, translation of student experience into professional bullet points, cover letter generation, ATS optimization recommendations, and an AI-optimized resume PDF</strong>. Purchase credits starting at $2 or subscribe for unlimited access.",
         },
         {
           question: "Can I cancel anytime?",
@@ -298,11 +298,6 @@ export default function FAQPage() {
           question: "Do you offer refunds?",
           answer:
             "We don't provide refunds for partial months or unused services. However, you can cancel anytime to stop future charges. We recommend trying our free plan first to ensure it meets your needs.",
-        },
-        {
-          question: "Can I upgrade or downgrade my plan?",
-          answer:
-            "Yes! You can upgrade from Free to Pro at any time. When downgrading from Pro to Free, the change takes effect at the end of your current billing period, so you don't lose any paid time.",
         },
       ],
     },
@@ -340,24 +335,24 @@ export default function FAQPage() {
             "Currently, we support <strong>English and Turkish</strong> resumes and job descriptions. Our AI can analyze content in both languages with high accuracy. We're planning to add more languages based on user demand.",
         },
         {
+          question: "What is ATS optimization?",
+          answer:
+            "ATS (Applicant Tracking System) is software companies use to automatically filter resumes before a human recruiter ever sees them. The problem for new grads is that entry-level job postings still require specific technical keywords — and a generic student resume rarely matches them. Our tool scans your resume against the specific job description to find exactly which keywords you're missing, and helps you rephrase student jargon into the professional terms that pass the automated screening.",
+        },
+        {
           question: "How accurate is the AI analysis?",
           answer:
             "Our AI is powered by OpenAI's GPT-4, one of the most advanced language models available. While highly accurate, <strong>AI analysis should be used as guidance, not absolute truth</strong>. We recommend combining AI insights with your own judgment and career expertise.",
         },
         {
-          question: "Can I analyze multiple job postings at once?",
-          answer:
-            "Currently, each analysis compares your resume to one job posting. However, you can run multiple analyses with credits or unlimited analyses with a Pro subscription to compare your resume against different positions and track which roles you're best suited for.",
-        },
-        {
           question: "Do you provide cover letter generation?",
           answer:
-            "Yes! Our AI generates personalized, compelling cover letters tailored to the specific job description and your resume. Choose from multiple tones (professional, creative, formal) and get a polished cover letter in seconds. It's available with Pro analyses.",
+            "Yes! Our AI writes cover letters tailored to the specific job description and your resume. Crucially for new grads, the AI is instructed to focus on your <strong>potential, academic foundation, and eagerness to learn</strong> — not just years of experience — which is exactly the right approach when you're just starting out.",
         },
         {
-          question: "What is ATS optimization?",
+          question: "Can I analyze multiple job postings?",
           answer:
-            "ATS (Applicant Tracking System) is software that many companies use to screen resumes before humans see them. Our <strong>Pro plan</strong> provides recommendations to optimize your resume for ATS, including keyword suggestions, formatting tips, and structure improvements to pass automated screenings.",
+            "Yes. Each analysis compares your resume to one specific job posting. You can run multiple analyses with credits or get unlimited analyses with a Pro subscription — which is especially useful during graduation season when you're applying to many positions at once.",
         },
       ],
     },
@@ -367,7 +362,7 @@ export default function FAQPage() {
         {
           question: "My PDF isn't uploading. What should I do?",
           answer:
-            "Ensure your PDF is under 5MB and is a valid PDF file (not a scanned image). If issues persist, try converting to DOCX or copying the text directly. If you still experience problems, contact us at <a href='mailto:support@rejectly.pro'>support@rejectly.pro</a>.",
+            "Ensure your PDF is under 5MB and is a valid PDF file (not a scanned image). If you created your resume in Canva or a similar design tool, try exporting as a DOCX or pasting your text directly — design-heavy PDFs are often unreadable by parsers. If issues persist, contact us at <a href='mailto:support@rejectly.pro'>support@rejectly.pro</a>.",
         },
         {
           question: "The analysis is taking longer than usual. Why?",

@@ -321,11 +321,11 @@ export function AnimatedATSScanner() {
                   >
                     {isSuccess ? (
                       <>
-                        <CheckCircleIcon /> Spearheaded $2M pipeline
+                        <CheckCircleIcon /> Led full-stack capstone project
                       </>
                     ) : (
                       <>
-                        <XCircleIcon /> helped with sales
+                        <XCircleIcon /> did a school project
                       </>
                     )}
                   </KeywordBox>
@@ -374,11 +374,11 @@ export function AnimatedATSScanner() {
                   >
                     {isSuccess ? (
                       <>
-                        <CheckCircleIcon /> Optimized performance by 40%
+                        <CheckCircleIcon /> Won 1st place at Hackathon
                       </>
                     ) : (
                       <>
-                       <XCircleIcon /> made app faster
+                       <XCircleIcon /> wrote some code
                       </>
                     )}
                   </KeywordBox>

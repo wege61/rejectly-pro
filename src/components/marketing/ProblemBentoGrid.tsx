@@ -405,14 +405,14 @@ const SkeletonTwo = () => {
 // Skeleton Three - Text Flip Animation (Good vs Bad Examples)
 const SkeletonThree = () => {
   const goodExamples = [
-    "Led cross-functional team of 8",
-    "Increased revenue by 150%",
-    "Managed $2M budget",
+    "Engineered full-stack capstone project",
+    "Awarded 1st place in hackathon",
+    "Built scalable React application",
   ];
   const badExamples = [
     "Worked with team members",
-    "Helped improve sales",
-    "Handled company money",
+    "Did a school project",
+    "Wrote code for class",
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -976,7 +976,7 @@ const items = [
     title: "Invisible Skills Gap",
     description: (
       <span>
-        Without AI analysis, you can&apos;t see the 30-40% skills gap between your resume and the job.
+        Without AI analysis, you can&apos;t see the skills gap between your academic work and the corporate job.
       </span>
     ),
     header: <SkeletonTwo />,
@@ -1019,9 +1019,9 @@ export function ProblemBentoGrid() {
   return (
     <ProblemSectionWrapper>
       <SectionHeader>
-        <SectionTitle>Why the same resume keeps failing</SectionTitle>
+        <SectionTitle>Why your entry-level resume gets auto-rejected</SectionTitle>
         <SectionSubtitle>
-          One resume can&apos;t pass 50 different ATS filters. Here&apos;s what&apos;s really happening.
+          You have academic experience, but the ATS wants corporate keywords. Here&apos;s what&apos;s really happening.
         </SectionSubtitle>
       </SectionHeader>
 
@@ -1040,10 +1040,10 @@ export function ProblemBentoGrid() {
       <TransitionBoxWrapper>
         <AuroraBackground showRadialGradient={true}>
           <TransitionBoxContent>
-            <h3>What if every application had its own resume?</h3>
+            <h3>What if your university projects sounded like 3 years of experience?</h3>
             <p>
-              Paste the job description. Get a resume built specifically for that role &mdash;
-              keyword-perfect, ATS-ready. In under a minute.
+              Paste the job description. Our AI translates your academic experience into a
+              keyword-perfect, ATS-ready corporate resume. In under a minute.
             </p>
           </TransitionBoxContent>
         </AuroraBackground>

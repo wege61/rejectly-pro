@@ -1259,11 +1259,11 @@ export function OnboardingWizard({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <StepHeader>
-              <StepTitle>Select Resume</StepTitle>
+              <StepTitle>Upload Your Resume</StepTitle>
               <StepDescription>
                 {hasExistingCV
-                  ? "Upload a new PDF/DOCX or use a previously saved resume"
-                  : "Upload your resume in PDF or DOCX format"
+                  ? "Upload a new PDF/DOCX or use a previously saved resume. Avoid Canva templates — they can't be read by ATS bots."
+                  : "Upload your resume in PDF or DOCX. Avoid Canva templates — ATS bots can't parse them."
                 }
               </StepDescription>
             </StepHeader>
@@ -1365,10 +1365,10 @@ export function OnboardingWizard({
                       onClick={() => document.getElementById("wizard-cv-upload")?.click()}
                     >
                       <UploadText>
-                        <strong>Click to upload</strong> or drag and drop
+                      <strong>Click to upload</strong> or drag and drop
                       </UploadText>
                       <UploadHint>
-                        PDF or DOCX (max 5MB)
+                        PDF or DOCX (max 5MB) · No Canva / fancy templates
                       </UploadHint>
                       <input
                         id="wizard-cv-upload"
@@ -1400,11 +1400,11 @@ export function OnboardingWizard({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <StepHeader>
-              <StepTitle>Add Job Posting</StepTitle>
+              <StepTitle>Paste Job Posting</StepTitle>
               <StepDescription>
                 {hasExistingJob
-                  ? "Paste a new job description or use an existing one"
-                  : "Paste the job description you want to apply to"
+                  ? "Paste a new job description or use a saved one. Don't worry if it asks for experience — paste it anyway."
+                  : "Paste the job description you want to apply to. Don't worry if it asks for experience you don't have — paste it anyway."
                 }
               </StepDescription>
             </StepHeader>
@@ -1472,7 +1472,7 @@ export function OnboardingWizard({
                         <FormLabel>Job Title</FormLabel>
                         <Input
                           type="text"
-                          placeholder="e.g. Senior Frontend Developer"
+                          placeholder="e.g. Junior Frontend Developer, Software Engineer, Data Analyst"
                           value={jobTitle}
                           onChange={(e) => setJobTitle(e.target.value)}
                         />
@@ -1480,7 +1480,7 @@ export function OnboardingWizard({
                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <FormLabel>Job Description</FormLabel>
                         <Textarea
-                          placeholder="Paste the full job description here (requirements, responsibilities, qualifications, etc.)..."
+                          placeholder="Paste the full job description here — even if it asks for '3 years of experience', paste it. We'll show you how your background matches and what keywords to add."
                           value={jobDetails}
                           onChange={(e) => setJobDetails(e.target.value)}
                           style={{ flex: 1, minHeight: hasExistingJob ? "160px" : "240px", resize: 'none' }}
@@ -1539,10 +1539,10 @@ export function OnboardingWizard({
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               <LoadingContainer>
-                <AnalysisProgress
-                  currentStep={analysisProgressStep - 1}
-                  title="Analyzing your match"
-                />
+                  <AnalysisProgress
+                    currentStep={analysisProgressStep - 1}
+                    title="Checking your resume against the job"
+                  />
               </LoadingContainer>
             </SlideContainer>
           );

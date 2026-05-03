@@ -53,7 +53,7 @@ Integrate these into the relevant job experience bullets!
 ================================================================================
 ` : '';
 
-  return `You are an expert CV writer and ATS optimization specialist. Create a fully optimized, ATS-friendly CV based on the original CV, target job postings, and analysis results.
+  return `You are an ATS bypass specialist and mentor for entry-level candidates. Your goal is to create a CV that hacks ATS filters by translating academic/junior experience into corporate keywords.
 
 ================================================================================
 OUTPUT LANGUAGE: ${outputLanguage.toUpperCase()}
@@ -206,6 +206,7 @@ IMPORTANT INSTRUCTIONS:
 - Organize skills by relevance to target roles
 - Keep formatting clean and ATS-friendly
 - CRITICAL: Order work experience in REVERSE CHRONOLOGICAL order (most recent job FIRST, oldest job LAST)
+- CRITICAL: Preserve the EXACT degree name and field of study from the original CV — never paraphrase or change it. If the CV says "Computer Engineering", output must say "Computer Engineering", NOT "Computer Science". Copy it verbatim.
 
 =============================================================================
 REMINDER: Write ALL content in ${outputLanguage}.
@@ -244,10 +245,13 @@ PROFESSIONAL SUMMARY GUIDE (3-4 powerful sentences)
 ⚠️ DO NOT copy bullets from the original CV as-is!
 EVERY bullet must be rewritten to be more impactful.
 
-🚨 CRITICAL: BULLET LENGTH LIMIT 🚨
-- MAXIMUM 120 characters per bullet (STRICTLY ENFORCED!)
-- Should render as 1-2 lines maximum when displayed
-- If a bullet exceeds 120 chars → SPLIT into TWO separate bullets!
+🚨 CRITICAL: BULLET RULES 🚨
+- MAXIMUM 150 characters per bullet
+- Every bullet MUST be a COMPLETE sentence — never end mid-thought
+- WRONG: "Engineered a React application, enhancing user engagement through a"
+- RIGHT: "Engineered a React/Firebase marketplace, boosting user engagement by 30%"
+- If a bullet is too long → SPLIT into two complete sentences, each ending with a full stop or logical end
+- NEVER truncate. Every bullet must stand alone and make sense.
 - Count characters BEFORE submitting your response!
 
 TRANSFORMATION FORMULA (STRICT STAR METHOD):

@@ -301,9 +301,9 @@ export function ExperienceForm() {
 
             <Row>
               <InputGroup style={{ flex: 1 }}>
-                <Label>Job Title</Label>
+                <Label>Role / Project Name</Label>
                 <AutocompleteInput 
-                  placeholder="e.g. Frontend Engineer" 
+                  placeholder="e.g. Frontend Engineer OR Capstone Project" 
                   value={exp.title}
                   onChange={(val) => updateExperience(index, { title: val })}
                   fetchType="job_title"
@@ -313,9 +313,9 @@ export function ExperienceForm() {
 
             <Row>
               <InputGroup style={{ flex: 1 }}>
-                <Label>Company</Label>
+                <Label>Company / Context</Label>
                 <AutocompleteInput 
-                  placeholder="e.g. Apple" 
+                  placeholder="e.g. Apple OR University Name" 
                   value={exp.company}
                   onChange={(val) => updateExperience(index, { company: val })}
                   fetchType="company"
@@ -407,13 +407,35 @@ export function ExperienceForm() {
         ))}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {cv.experience.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            style={{
+              background: 'rgba(16, 185, 129, 0.1)',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              borderRadius: '12px',
+              padding: '16px',
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontSize: '14px',
+              lineHeight: 1.5,
+              marginBottom: '16px'
+            }}
+          >
+            <strong>Pro Tip:</strong> No formal work experience? No problem. Add your university capstone projects, hackathon wins, or freelance work here. Our AI will help you translate them into professional achievements.
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AddButton onClick={() => addExperience({
         title: "", company: "", location: "", startDate: "", endDate: "", bullets: []
       })}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 5v14M5 12h14" />
         </svg>
-        Add Another Experience
+        Add Experience or Project
       </AddButton>
 
       {activeModalIndex !== null && (

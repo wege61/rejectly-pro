@@ -2835,9 +2835,24 @@ export default function Page() {
 
   const faqs = [
     {
-      question: "Is my data secure?",
+      question: "I have no professional experience. Will this work for me?",
       answer:
-        "Absolutely! All your data is encrypted and stored securely. We never share your information with third parties. We're fully GDPR compliant and take data security seriously.",
+        "Yes! Our AI is specifically trained to translate academic projects, hackathons, and extracurriculars into the corporate keywords ATS systems are looking for. You don't need 3 years of experience if you have the right keywords.",
+    },
+    {
+      question: "Does this actually bypass ATS systems?",
+      answer:
+        "Yes. By identifying the exact keywords in the job description and weaving them into your generated resume, we drastically increase your match score and help you bypass automatic rejection filters.",
+    },
+    {
+      question: "What's included in every analysis?",
+      answer:
+        "Every analysis gives you the exact ATS match score, reveals the missing keywords, and provides a completely AI-optimized resume tailored specifically for that single job description.",
+    },
+    {
+      question: "How does pricing work?",
+      answer:
+        "We offer flexible options: Single ($2) for 1 analysis, Starter ($7) for 10 analyses at best value, or Pro ($12/month) for unlimited access to the ATS bypass tools. Credits never expire!",
     },
     {
       question: "What file formats do you support?",
@@ -2845,24 +2860,9 @@ export default function Page() {
         "We support PDF and DOCX formats. You can also paste text directly for analysis. Maximum file size is 5MB.",
     },
     {
-      question: "How long does the analysis take?",
+      question: "Is my data secure?",
       answer:
-        "Our AI analysis typically takes under a minute to complete. For complex resumes and longer job descriptions, it may take slightly longer, but results are always delivered quickly.",
-    },
-    {
-      question: "How does pricing work?",
-      answer:
-        "We offer flexible options: Single ($2) for 1 analysis, Starter ($7) for 10 analyses at best value, or Pro ($12/month) for unlimited access. Credits never expire!",
-    },
-    {
-      question: "What's included in every analysis?",
-      answer:
-        "Every Pro analysis includes detailed AI insights, all missing keywords, professional rewriting of 3 bullet points, ATS optimization guide, role recommendations, and AI-optimized resume generation.",
-    },
-    {
-      question: "Can I cancel Pro anytime?",
-      answer:
-        "Yes! No commitment required. Cancel anytime and keep access until the end of your billing period. Your unused credits from packs never expire.",
+        "Absolutely! All your data is encrypted and stored securely. We never share your information with third parties or employers.",
     },
   ];
 
@@ -3318,11 +3318,11 @@ export default function Page() {
                 <HeroContent>
           <HeroTextColumn>
             <HeroTitle>
-              A New Resume. For Every Job. In Under a Minute.
+              Stop Getting Auto-Rejected For Your First Job.
             </HeroTitle>
 
             <HeroSubtitle>
-              Sending the same CV everywhere? That&apos;s why you&apos;re getting rejected. Paste any job description — our AI <strong>rebuilds your resume with the exact keywords, structure, and formatting</strong> that specific role demands.
+              The system is rigged against new grads. <strong>Hack it.</strong> Our AI reverse-engineers the ATS, translating your university projects and internships into the exact corporate keywords recruiters demand.
             </HeroSubtitle>
 
             <ButtonGroup>
@@ -3376,10 +3376,10 @@ export default function Page() {
             <SectionHeader>
               <SectionTitle style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
 
-                Your Resume + Their Job Description = Your Edge.
+                Your Academic Experience + Our AI = Corporate ATS Keywords.
               </SectionTitle>
               <SectionSubtitle>
-                Every job has different keywords, different ATS filters, different requirements. Paste both — our AI shows exactly what&apos;s missing and how to fix it.
+                The ATS doesn&apos;t understand &quot;university projects&quot;. Paste your student resume and the job description &mdash; our AI translates your background to pass the filter.
               </SectionSubtitle>
             </SectionHeader>
 
@@ -3679,7 +3679,7 @@ export default function Page() {
               </TestimonialAvatar>
               <TestimonialAuthor>
                 <div className="name">Sarah Chen</div>
-                <div className="role">Frontend Developer</div>
+                <div className="role">Junior Frontend Developer</div>
               </TestimonialAuthor>
               <TestimonialRating>
                 <StarIcon />
@@ -3690,10 +3690,7 @@ export default function Page() {
               </TestimonialRating>
             </TestimonialHeader>
             <TestimonialText>
-              I was sending the same resume everywhere for months — 50+ applications, 2 callbacks.
-              Rejectly showed me why: each job needs different keywords. Now I generate a tailored
-              resume for every application. 5 interviews in 2 weeks. The difference isn&apos;t my skills — it&apos;s
-              how I present them for each specific role.
+              I applied to 50+ junior roles and got zero callbacks. Rejectly translated my boot camp projects into corporate ATS keywords. 5 interviews in 2 weeks. The difference isn&apos;t my skills &mdash; it&apos;s how I bypass the filter for each specific role.
             </TestimonialText>
             <TestimonialHighlight>
               <CheckIcon />5 interviews in 2 weeks
@@ -3707,7 +3704,7 @@ export default function Page() {
               </TestimonialAvatar>
               <TestimonialAuthor>
                 <div className="name">Marcus Johnson</div>
-                <div className="role">Product Manager</div>
+                <div className="role">New Grad (Business)</div>
               </TestimonialAuthor>
               <TestimonialRating>
                 <StarIcon />
@@ -3718,9 +3715,9 @@ export default function Page() {
               </TestimonialRating>
             </TestimonialHeader>
             <TestimonialText>
-              I used to think my resume was fine — until Rejectly showed me I was missing 40% of the
-              keywords for every job I applied to. Each role needs different emphasis. The ATS Optimizer
-              alone boosted my score from 45% to 89%, and I don&apos;t even need a job description for it.
+              I used to think my student resume was fine &mdash; until Rejectly showed me I was missing 40% of the
+              keywords for every entry-level job. It translated my university club leadership into professional experience.
+              The ATS Optimizer boosted my score from 45% to 89%.
             </TestimonialText>
             <TestimonialHighlight>
               <CheckIcon />
@@ -3735,7 +3732,7 @@ export default function Page() {
               </TestimonialAvatar>
               <TestimonialAuthor>
                 <div className="name">Emily Rodriguez</div>
-                <div className="role">Data Analyst</div>
+                <div className="role">Junior Data Analyst</div>
               </TestimonialAuthor>
               <TestimonialRating>
                 <StarIcon />
@@ -3746,9 +3743,9 @@ export default function Page() {
               </TestimonialRating>
             </TestimonialHeader>
             <TestimonialText>
-              I spent weeks perfecting &quot;one perfect resume.&quot; Rejectly taught me that doesn&apos;t exist.
-              What works for a startup is wrong for a Fortune 500. Now I customize for every application
-              in under a minute — resume, cover letter, even interview prep. Landed my dream role in a month.
+              I spent weeks perfecting one &quot;perfect&quot; resume. Rejectly taught me that doesn&apos;t exist.
+              Now I customize for every junior role and easily bypass the &quot;3-years experience&quot; filter by
+              translating my academic datasets into corporate language. Landed my dream role in a month.
             </TestimonialText>
             <TestimonialHighlight>
               <CheckIcon />
@@ -3810,9 +3807,9 @@ export default function Page() {
         `}} />
 
         <SectionHeader style={{ maxWidth: "1200px", margin: "0 auto 64px auto", padding: "0 24px", position: "relative", zIndex: 2 }}>
-          <SectionTitle>Six powerful tools. One goal.</SectionTitle>
+          <SectionTitle>Bypassing the HR filter.</SectionTitle>
           <SectionSubtitle>
-            Everything works together to get you hired.
+            Everything works together to land your first job.
           </SectionSubtitle>
         </SectionHeader>
 

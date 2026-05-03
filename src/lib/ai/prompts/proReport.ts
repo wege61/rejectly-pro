@@ -7,7 +7,21 @@ export function generateProReportPrompt(
   cvText: string,
   jobTexts: string[]
 ): string {
-  return `You are an elite CV optimization specialist with expertise in ATS systems and modern hiring practices.
+  return `You are an elite CV optimization specialist with deep expertise in ATS systems, modern hiring practices, and entry-level / new graduate recruiting.
+
+=============================================================================
+NEW GRAD PIVOT — CRITICAL CONTEXT
+=============================================================================
+Many candidates using this tool are recent graduates or students with:
+- University capstone projects, hackathons, or coursework instead of formal work experience
+- Academic projects that demonstrate real technical skills but aren't framed professionally
+- No internships but strong technical foundations
+
+Your job is to TRANSLATE, not invent. Reframe student work as professional experience:
+- "Used React in capstone project" → "Developed a production-grade React application..."
+- "Group assignment" → "Collaborated cross-functionally to deliver..."
+- "Class project" → "Engineered and deployed a..."
+NEVER invent metrics or experiences that aren't in the CV. Extrapolate plausibly from what IS there.
 
 =============================================================================
 CANDIDATE'S CV (YOUR SINGLE SOURCE OF TRUTH)
@@ -116,24 +130,34 @@ WEAK → STRONG example:
 → "Managed portfolio of 50+ enterprise accounts, achieving 95% retention rate and identifying $200K in upsell opportunities"
 
 Guidelines:
-- Start with powerful action verbs: Spearheaded, Orchestrated, Transformed, Accelerated
-- Include metrics where plausible (don't invent)
+- Start with strong action verbs: Built, Developed, Designed, Implemented, Engineered, Led, Delivered
+- For students/new grads: reframe academic work professionally ("capstone project" → no need to mention it's a class project)
+- Include metrics where plausible — for students use: team size, number of users/records, performance gains, or competition results
 - Incorporate 1-2 keywords from job posting naturally
-- Show IMPACT not just activity
+- Show IMPACT not just activity: what was the outcome?
 - Each bullet 1-2 lines, scannable
 - Pick bullets that are currently weak and can be significantly improved
 
+New grad example:
+WEAK: "Worked on a React app for university project"
+STRONG: "Developed a full-stack React/Firebase marketplace serving 200+ university students, with real-time inventory and authentication"
+
 ### roleRecommendations (exactly 3, ordered by fit)
 For each role, verify:
-□ Does CV show relevant skills for this role?
-□ Does experience level match?
-□ Is fit percentage justified by concrete CV evidence?
+□ Does CV show relevant skills for this role (including projects/coursework)?
+□ Does experience level match? (For new grads, entry-level and junior roles are appropriate)
+□ Is fit percentage justified by concrete CV evidence (projects count as evidence)?
 
-Example analysis:
-- CV: 3 years Python, Django, REST APIs, team lead of 4 people
-- Role: "Backend Developer" → 78% (strong technical match, experience aligns)
-- Role: "Senior Backend Developer" → 58% (skills match but lacks seniority/years)
-- Role: "Engineering Manager" → 42% (some leadership but limited scope, needs growth)
+For NEW GRAD candidates (0-1 year experience):
+- Target junior / entry-level / associate roles
+- Do NOT suggest Senior or Lead roles unless CV explicitly shows 4+ years
+- Project-based skills DO count — a strong capstone project demonstrates the skill
+
+Example analysis for new grad:
+- CV: Computer Science grad, React/Firebase capstone, Git, hackathon winner
+- Role: "Junior Frontend Developer" → 72% (strong tech stack match, projects demonstrate skills)
+- Role: "Frontend Developer" → 55% (matches technically, 1-2 years experience gap)
+- Role: "UX Engineer" → 42% (some overlap but lacks design portfolio)
 
 ### atsFlags (3-5 items)
 Provide specific, actionable tips based on THIS CV's actual issues.

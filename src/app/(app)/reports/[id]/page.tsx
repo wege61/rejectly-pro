@@ -7596,7 +7596,7 @@ export default function ReportDetailPage() {
                 const s = report.fit_score;
                 const color = s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2A57A0' : s >= 50 ? '#EAB308' : '#F97316';
                 const label = s >= 85 ? 'Strong Match' : s >= 70 ? 'Good Match' : s >= 50 ? 'Partial Match' : 'Weak Match';
-                const desc = s >= 85 ? 'Excellent fit for this role.' : s >= 70 ? 'Strong candidate with room to grow.' : s >= 50 ? 'Several key gaps to address.' : 'Resume needs significant alignment.';
+                const desc = s >= 85 ? 'Strong match — your background aligns well.' : s >= 70 ? 'Good foundation — a few keywords away from a strong match.' : s >= 50 ? 'Your academic background is relevant — some keywords need translating.' : 'Your projects are relevant but need professional framing.';
                 return (
                   <HeroScoreCard $color={color} $isPrimary>
                     <HeroScoreCardHeader>
@@ -7639,8 +7639,8 @@ export default function ReportDetailPage() {
             {/* AI Insight */}
             <ProHeroSummary>
               Your resume matches <strong style={{ color: 'var(--text-color)' }}>{report.fit_score}%</strong> of the job requirements.
-              {missingKeywords.length > 0 ? (<> Missing <strong style={{ color: '#f59e0b' }}>{missingKeywords.length} critical keywords</strong>.</>) : null}
-              {' '}Pro optimization can boost your score to <strong style={{ color: '#10b981' }}>{Math.min(95, Math.ceil(report.fit_score + (missingKeywords.length > 0 ? missingKeywords.length * 3 : 15)))}%+</strong>.
+              {missingKeywords.length > 0 ? (<> Missing <strong style={{ color: '#f59e0b' }}>{missingKeywords.length} critical keywords</strong> — we'll add them for you.</>) : null}
+              {' '}Pro rewrites your bullet points and injects the missing terms so you pass the ATS filter.
             </ProHeroSummary>
 
             {/* Centralized CTA */}
@@ -7676,8 +7676,14 @@ export default function ReportDetailPage() {
             const totalPenalty = bd.totalPenalties ?? bd.calculation?.totalPenalties ?? 0;
             const rawScore = bd.rawScore ?? bd.calculation?.rawScore ?? 0;
 
+            const verdictMap: Record<string, string> = {
+              would_interview: 'Strong Candidate — Would Interview',
+              lean_interview: 'Likely to Interview',
+              maybe_with_reservations: 'Promising — Needs Keyword Alignment',
+              likely_reject: 'At Risk — Missing Key Requirements',
+            };
             const verdictText = bd.assessment?.verdict
-              ? bd.assessment.verdict.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+              ? (verdictMap[bd.assessment.verdict] ?? bd.assessment.verdict.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()))
               : null;
             const verdictColor = bd.assessment?.verdict
               ? bd.assessment.verdict === 'would_interview' ? '#10b981'
@@ -7791,14 +7797,14 @@ export default function ReportDetailPage() {
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
               </svg>
-              <BlurredPreviewText>Your 95%+ optimized resume is ready</BlurredPreviewText>
-              <BlurredPreviewSubtext>Tap to unlock with Pro</BlurredPreviewSubtext>
+              <BlurredPreviewText>Your job-ready resume is ready — keywords added, bullets rewritten</BlurredPreviewText>
+              <BlurredPreviewSubtext>Unlock your ATS-ready version with Pro</BlurredPreviewSubtext>
             </BlurredPreviewOverlay>
           </BlurredPreviewCard>
 
           {/* Frosted Lock-List */}
           <LockListCard>
-            <LockListTitle>What Pro Unlocks</LockListTitle>
+            <LockListTitle>What We Fix For You</LockListTitle>
             <LockListItem onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}>
               <LockListLeft>
                 <LockListIcon>
@@ -7845,8 +7851,8 @@ export default function ReportDetailPage() {
               <GlassBadge><strong>12,483+</strong> professionals</GlassBadge>
             </SocialProofRow>
             <GlassTestimonial>
-              &quot;The ATS optimization made all the difference. Finally working in tech!&quot;
-              <TestimonialAttribution>— Chris P., Software Engineer, 23</TestimonialAttribution>
+              &quot;I had no internships. Rejectly rewrote my capstone project bullet points and I landed 3 interviews in a week.&quot;
+              <TestimonialAttribution>— Sofia M., Junior Frontend Dev, 22</TestimonialAttribution>
             </GlassTestimonial>
             <UpgradeCTAButton
               onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}
@@ -7869,7 +7875,7 @@ export default function ReportDetailPage() {
             const s = visibleSections?.showScoreComparison ? (displayOptimizedScore ?? report.fit_score) : report.fit_score;
             const color = s >= 85 ? 'var(--primary-500)' : s >= 70 ? '#2A57A0' : s >= 50 ? '#EAB308' : '#F97316';
             const label = s >= 85 ? 'Strong Match' : s >= 70 ? 'Good Match' : s >= 50 ? 'Partial Match' : 'Weak Match';
-            const desc = s >= 85 ? 'Excellent fit for this role.' : s >= 70 ? 'Strong candidate with room to grow.' : s >= 50 ? 'Several key gaps to address.' : 'Resume needs significant alignment.';
+            const desc = s >= 85 ? 'Strong match — your background aligns well.' : s >= 70 ? 'Good foundation — a few keywords away from a strong match.' : s >= 50 ? 'Your academic background is relevant — some keywords need translating.' : 'Your projects are relevant but need professional framing.';
             return (
               <HeroScoreCard $color={color} $isPrimary>
                 <HeroScoreCardHeader>
@@ -8883,7 +8889,7 @@ export default function ReportDetailPage() {
               <DrawerHeader>
                 <DrawerTitle>{label}</DrawerTitle>
                 <DrawerDescription>
-                  Detailed breakdown of how your resume scores in this category
+                  Here's what we found — and what to add to improve your score.
                 </DrawerDescription>
               </DrawerHeader>
               <DrawerBody>
@@ -8892,7 +8898,7 @@ export default function ReportDetailPage() {
                   <DrawerScoreMeta>
                     <DrawerScoreMetaLabel>{comp.earnedPoints} / {comp.maxPoints} points</DrawerScoreMetaLabel>
                     <DrawerScoreMetaSub>
-                      {pct >= 75 ? 'Strong performance' : pct >= 55 ? 'Moderate performance' : pct >= 35 ? 'Needs improvement' : 'Significant gaps'}
+                      {pct >= 75 ? 'Looking good — strong match' : pct >= 55 ? 'On track — a few gaps' : pct >= 35 ? 'Missing key items — we can fix this' : 'Significant gaps — Pro rewrites this for you'}
                     </DrawerScoreMetaSub>
                   </DrawerScoreMeta>
                 </DrawerScoreHero>
@@ -9024,8 +9030,8 @@ export default function ReportDetailPage() {
                               <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
                                 {details.domainExperience === 'deep' ? '3+ years of hands-on domain knowledge'
                                   : details.domainExperience === 'solid' ? '1-3 years of relevant domain experience'
-                                  : details.domainExperience === 'some' ? 'Limited exposure through projects or coursework'
-                                  : details.domainExperience === 'none' ? 'No specific domain experience detected'
+                                  : details.domainExperience === 'some' ? 'You have relevant exposure through projects or coursework — Pro will frame this professionally'
+                                  : details.domainExperience === 'none' ? 'No specific domain experience detected — Pro adds transferable context'
                                   : ''}
                               </span>
                             </div>
@@ -9070,7 +9076,9 @@ export default function ReportDetailPage() {
                         <DrawerDetailStat>
                           <DrawerDetailStatLabel>Your Experience</DrawerDetailStatLabel>
                           <DrawerDetailStatValue $color={(details.yearsCandidate ?? 0) >= (details.yearsRequired ?? 0) ? '#10b981' : '#f59e0b'}>
-                            {details.yearsCandidate} years
+                            {details.yearsCandidate < 1
+                              ? 'Projects & internships'
+                              : `${details.yearsCandidate} years`}
                           </DrawerDetailStatValue>
                         </DrawerDetailStat>
                       )}

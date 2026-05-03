@@ -2005,11 +2005,9 @@ export default function ATSCheckPage() {
     <PageContainer>
       <HeroSection>
         
-        <Title>Free ATS Resume Score Checker</Title>
+        <Title>Find Out Why Your Entry-Level Resume is Getting Auto-Rejected</Title>
         <Subtitle>
-          Check your resume score instantly. Our ATS score checker analyzes your resume
-          against 40+ criteria used by Workday, Greenhouse, Taleo & Lever.
-          85% of resumes get rejected — see where you stand.
+          Upload your resume to see if ATS bots can actually read your academic projects. We'll show you the exact formatting errors and missing keywords keeping you from getting an interview.
         </Subtitle>
       </HeroSection>
 
@@ -2162,15 +2160,15 @@ export default function ATSCheckPage() {
                     </radialGradient>
                   </defs>
                 </CTAGradientCircle>
-                <CTATitle>Unlock Your Full Report</CTATitle>
+                <CTATitle>Fix Your Entry-Level Resume</CTATitle>
                 <CTAText style={{ color: "rgba(255,255,255,0.85)" }}>
-                  Your resume is missing critical keywords. Sign up for free to unlock the full list of errors and fix your CV instantly with AI.
+                  You might be missing keywords that recruiters expect from entry-level candidates. Sign up for free to see how to format your academic projects and pass the filter.
                 </CTAText>
                 <CTAButtonGroup>
                   <CTAButton href={ROUTES.AUTH.SIGNUP}>
-                    Sign Up to Unlock
+                    Sign Up to Bypass ATS
                   </CTAButton>
-                  <CTASecondaryButton href={`https://twitter.com/intent/tweet?text=I%20just%20scored%20${result.overallScore}/100%20on%20my%20Resume!%20Check%20yours%20for%20free%20at%20rejectly.pro/ats-check?score=${result.overallScore}`} target="_blank" rel="noreferrer" style={{ color: "rgba(255,255,255,0.9)" }}>
+                  <CTASecondaryButton href={`https://twitter.com/intent/tweet?text=I%20just%20scored%20${result.overallScore}/100%20on%20my%20new%20grad%20resume!%20Check%20yours%20to%20bypass%20filters%20at%20rejectly.pro/ats-check?score=${result.overallScore}`} target="_blank" rel="noreferrer" style={{ color: "rgba(255,255,255,0.9)" }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
                     </svg>
@@ -2308,7 +2306,7 @@ export default function ATSCheckPage() {
                   <JDTextarea
                     value={jobDescription}
                     onChange={(e) => setJobDescription(e.target.value)}
-                    placeholder="Paste the job description here to get a tailored Job Match Score. If left blank, we'll run a general formatting check."
+                    placeholder="Paste an entry-level job description here to see which critical keywords your resume is missing. If left blank, we'll just run a general formatting check."
                   />
                 </JobDescriptionWrapper>
 
@@ -2333,8 +2331,7 @@ export default function ATSCheckPage() {
       <SEOSection>
         <SEOTitle>How our resume score checker works</SEOTitle>
         <SEOSubtitle>
-          Our ATS resume checker analyzes your resume against the same criteria used by
-          Fortune 500 companies to filter candidates automatically.
+          We analyze your resume strictly against the automated criteria used by companies to filter out junior candidates.
         </SEOSubtitle>
 
         <BentoGrid>
@@ -2343,10 +2340,9 @@ export default function ATSCheckPage() {
               <UploadAnimation />
             </BentoHeader>
             <BentoContent>
-              <BentoTitle>Upload Your Resume</BentoTitle>
+              <BentoTitle>Test Your Student Template</BentoTitle>
               <BentoDescription>
-                Simply drag and drop your resume (PDF or DOCX). Our ATS score checker
-                instantly parses your document.
+                Simply drag and drop your resume. See immediately if your Canva or Word template is actually readable by parsing bots.
               </BentoDescription>
             </BentoContent>
           </BentoCard>
@@ -2356,10 +2352,9 @@ export default function ATSCheckPage() {
               <ScoreAnimation />
             </BentoHeader>
             <BentoContent>
-              <BentoTitle>Get Your Resume Score</BentoTitle>
+              <BentoTitle>Get Your Reality Check</BentoTitle>
               <BentoDescription>
-                Receive an instant ATS score out of 100, with detailed breakdown across
-                format, structure, keywords, and readability.
+                Receive an instant score detailing exact formatting errors, missing technical skills, and unreadable sections.
               </BentoDescription>
             </BentoContent>
           </BentoCard>
@@ -2369,10 +2364,9 @@ export default function ATSCheckPage() {
               <OptimizeAnimation />
             </BentoHeader>
             <BentoContent>
-              <BentoTitle>Fix & Optimize</BentoTitle>
+              <BentoTitle>Translate & Optimize</BentoTitle>
               <BentoDescription>
-                Get actionable suggestions to improve your resume score and pass
-                ATS filters at companies like Google, Amazon, and Microsoft.
+                Get actionable steps to rewrite your academic projects and hackathons into ATS-friendly professional language.
               </BentoDescription>
             </BentoContent>
           </BentoCard>
@@ -2383,115 +2377,62 @@ export default function ATSCheckPage() {
         <div>
           <SEOTitle>Frequently asked questions</SEOTitle>
           <SEOSubtitle>
-            Everything you need to know about ATS resume scoring and optimization.
+            Everything you need to know about navigating the entry-level job market and ATS filters.
           </SEOSubtitle>
 
           <FAQList>
             <FAQItem $isOpen={openFAQs.includes("faq-0")}>
               <FAQQuestion onClick={() => toggleFAQ("faq-0")}>
-                <FAQQuestionText>What is an ATS resume score?</FAQQuestionText>
+                <FAQQuestionText>Why do 85% of student resumes get rejected?</FAQQuestionText>
                 <FAQQuestionIcon $isOpen={openFAQs.includes("faq-0")}>
                   {openFAQs.includes("faq-0") ? "−" : "+"}
                 </FAQQuestionIcon>
               </FAQQuestion>
               <FAQAnswer $isOpen={openFAQs.includes("faq-0")}>
                 <FAQAnswerText>
-                  An ATS (Applicant Tracking System) resume score measures how well your resume
-                  will perform when parsed by automated hiring software. Companies like Workday,
-                  Greenhouse, Taleo, and Lever use ATS to filter resumes before human review.
-                  A score of 80+ typically means your resume will pass initial screening, while
-                  scores below 60 often result in automatic rejection — regardless of your qualifications.
+                  Most new grad resumes fail because they use complex design templates (like Canva) that bots cannot read, lack the specific "hard skills" listed in the job description, or use non-standard section headers that confuse the parsing software.
                 </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>
 
             <FAQItem $isOpen={openFAQs.includes("faq-1")}>
               <FAQQuestion onClick={() => toggleFAQ("faq-1")}>
-                <FAQQuestionText>How do I check my resume score for free?</FAQQuestionText>
+                <FAQQuestionText>Can I put my university capstone or hackathon on my resume?</FAQQuestionText>
                 <FAQQuestionIcon $isOpen={openFAQs.includes("faq-1")}>
                   {openFAQs.includes("faq-1") ? "−" : "+"}
                 </FAQQuestionIcon>
               </FAQQuestion>
               <FAQAnswer $isOpen={openFAQs.includes("faq-1")}>
                 <FAQAnswerText>
-                  Simply upload your resume (PDF or DOCX) to our free ATS resume checker above.
-                  Within seconds, you&apos;ll receive a comprehensive resume score breakdown including
-                  format analysis, keyword optimization, and compatibility ratings for major ATS
-                  systems. No signup required for the basic score check.
+                  Absolutely. In fact, if you lack formal internship experience, your academic projects are your strongest asset. However, you must format them like professional experience (e.g., as "Projects") and describe them using corporate language rather than student jargon.
                 </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>
 
             <FAQItem $isOpen={openFAQs.includes("faq-2")}>
               <FAQQuestion onClick={() => toggleFAQ("faq-2")}>
-                <FAQQuestionText>What is a good ATS resume score?</FAQQuestionText>
+                <FAQQuestionText>What is a good ATS score for an entry-level role?</FAQQuestionText>
                 <FAQQuestionIcon $isOpen={openFAQs.includes("faq-2")}>
                   {openFAQs.includes("faq-2") ? "−" : "+"}
                 </FAQQuestionIcon>
               </FAQQuestion>
               <FAQAnswer $isOpen={openFAQs.includes("faq-2")}>
                 <FAQAnswerText>
-                  A good ATS resume score is 80 or above out of 100. Here&apos;s how to interpret your score:
-                  <br /><br />
-                  <strong>80-100 (Excellent):</strong> Your resume is well-optimized and should pass most ATS filters.<br />
-                  <strong>60-79 (Good):</strong> Acceptable but has room for improvement.<br />
-                  <strong>40-59 (Fair):</strong> Significant issues that may cause rejection.<br />
-                  <strong>Below 40 (Poor):</strong> Critical problems — most ATS systems will reject this resume.
+                  A good ATS score is 80 or above. This means your formatting is perfectly readable by bots and you have a strong keyword match with the target job. If you score below 60, your resume might be automatically discarded before a human recruiter even sees it.
                 </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>
 
             <FAQItem $isOpen={openFAQs.includes("faq-3")}>
               <FAQQuestion onClick={() => toggleFAQ("faq-3")}>
-                <FAQQuestionText>Why do 85% of resumes get rejected by ATS?</FAQQuestionText>
+                <FAQQuestionText>Why is the tool asking for a Target Job Description?</FAQQuestionText>
                 <FAQQuestionIcon $isOpen={openFAQs.includes("faq-3")}>
                   {openFAQs.includes("faq-3") ? "−" : "+"}
                 </FAQQuestionIcon>
               </FAQQuestion>
               <FAQAnswer $isOpen={openFAQs.includes("faq-3")}>
                 <FAQAnswerText>
-                  Most resumes get rejected due to formatting issues (tables, graphics, text boxes,
-                  headers/footers), missing keywords, non-standard section headings, and poor structure.
-                  ATS systems struggle to parse creative layouts, causing qualified candidates to be
-                  filtered out before human review. Our resume score checker identifies these exact
-                  issues so you can fix them.
-                </FAQAnswerText>
-              </FAQAnswer>
-            </FAQItem>
-
-            <FAQItem $isOpen={openFAQs.includes("faq-4")}>
-              <FAQQuestion onClick={() => toggleFAQ("faq-4")}>
-                <FAQQuestionText>Which ATS systems does this checker support?</FAQQuestionText>
-                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-4")}>
-                  {openFAQs.includes("faq-4") ? "−" : "+"}
-                </FAQQuestionIcon>
-              </FAQQuestion>
-              <FAQAnswer $isOpen={openFAQs.includes("faq-4")}>
-                <FAQAnswerText>
-                  Our ATS resume checker analyzes your resume against the parsing behavior of the
-                  most popular ATS platforms: Workday (used by 50% of Fortune 500), Greenhouse
-                  (10,000+ companies), Taleo/Oracle (large enterprises), and Lever (fast-growing
-                  startups). Each system has different parsing quirks, and we show you compatibility
-                  ratings for all four.
-                </FAQAnswerText>
-              </FAQAnswer>
-            </FAQItem>
-
-            <FAQItem $isOpen={openFAQs.includes("faq-5")}>
-              <FAQQuestion onClick={() => toggleFAQ("faq-5")}>
-                <FAQQuestionText>How can I improve my resume score quickly?</FAQQuestionText>
-                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-5")}>
-                  {openFAQs.includes("faq-5") ? "−" : "+"}
-                </FAQQuestionIcon>
-              </FAQQuestion>
-              <FAQAnswer $isOpen={openFAQs.includes("faq-5")}>
-                <FAQAnswerText>
-                  The fastest ways to improve your ATS resume score:<br /><br />
-                  1. <strong>Use a simple, single-column layout</strong> — avoid tables, graphics, and text boxes<br />
-                  2. <strong>Use standard section headers</strong> — &quot;Experience&quot; not &quot;My Journey&quot;<br />
-                  3. <strong>Add quantified achievements</strong> — numbers and percentages stand out<br />
-                  4. <strong>Include relevant keywords</strong> — match the job description language<br />
-                  5. <strong>Save as .docx or simple PDF</strong> — avoid scanned images
+                  ATS systems don't just check your formatting; they score you based on how well your resume matches the specific job you're applying for. Pasting the job description allows us to show you exactly which critical keywords you are missing.
                 </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>

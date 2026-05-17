@@ -3013,10 +3013,10 @@ export default function Page() {
 
   const loadSample = () => {
     setCvText(
-      "John Doe\nSoftware Engineer\n\nExperience:\n- 3 years of React development\n- Built 5 web applications\n- Team collaboration\n\nSkills: React, JavaScript, HTML, CSS"
+      "Alex Kim\nSoftware Engineering Student\n\nEducation:\nBSc Computer Engineering, Bilkent University (2024)\n\nProjects:\n- Built a full-stack e-commerce web app using React and Node.js (500+ users)\n- Developed a machine learning model for sentiment analysis (Python, TensorFlow)\n- Hackathon: 1st place in university-wide coding challenge\n\nInternship:\n- Frontend Developer Intern at Startup X (Summer 2023): Worked on React components\n\nSkills: React, JavaScript, Python, HTML, CSS, Git, SQL"
     );
     setJobText(
-      "Senior Frontend Developer\n\nRequirements:\n- 5+ years React experience\n- TypeScript expertise\n- Next.js knowledge\n- Testing experience (Jest, React Testing Library)\n- CI/CD pipelines\n- Team leadership"
+      "Junior Frontend Developer\n\nAbout the Role:\nWe're looking for a recent grad or junior developer ready to grow.\n\nRequirements:\n- 0-2 years React or similar experience\n- TypeScript knowledge preferred\n- Familiarity with REST APIs\n- Team player, eager to learn\n- Bonus: CI/CD, testing experience"
     );
     setHasUploadedFile(false);
   };
@@ -3379,7 +3379,7 @@ export default function Page() {
                 Your Academic Experience + Our AI = Corporate ATS Keywords.
               </SectionTitle>
               <SectionSubtitle>
-                The ATS doesn&apos;t understand &quot;university projects&quot;. Paste your student resume and the job description &mdash; our AI translates your background to pass the filter.
+                ATS bots don&apos;t understand &ldquo;university projects.&rdquo; Paste your student resume and any job posting &mdash; our AI instantly translates your background into the exact keywords that pass the filter.
               </SectionSubtitle>
             </SectionHeader>
 
@@ -3393,7 +3393,7 @@ export default function Page() {
                   </DemoTitleRow>
                 </DemoCardTitle>
                 <DemoCardDescription>
-                  Upload or paste your resume and job description to get instant AI feedback
+                  Paste your CV and a job posting — see your ATS score and exactly what's missing
                 </DemoCardDescription>
               </DemoCardHeader>
 
@@ -3426,7 +3426,7 @@ export default function Page() {
                             <span>or paste text</span>
                           </DemoOrDivider>
                           <NewDemoTextarea
-                            placeholder="Paste your resume text here..."
+                            placeholder="Paste your CV or student resume here..."
                             value={cvText}
                             onChange={(e) => setCvText(e.target.value)}
                             style={{ flex: 1, minHeight: '160px' }}
@@ -3446,7 +3446,7 @@ export default function Page() {
                     </CompactLabelRow>
                     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                       <NewDemoTextarea
-                        placeholder="Paste the target job description here..."
+                        placeholder="Paste the job posting you want to apply for..."
                         value={jobText}
                         onChange={(e) => setJobText(e.target.value)}
                         style={{ flex: 1, height: '100%', minHeight: '300px' }}

@@ -89,9 +89,6 @@ export const metadata: Metadata = {
     ],
   },
   manifest: "/site.webmanifest",
-  alternates: {
-    canonical: "https://rejectly.pro",
-  },
 };
 
 export default function RootLayout({

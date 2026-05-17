@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { EditorModal, Body as EditorModalBody } from "@/components/ui/EditorModal";
-import { Camera, Upload, UserX, Check, Loader2, Target } from "lucide-react";
+import { Camera, Upload, UserX, Check, Loader2, Target, GraduationCap } from "lucide-react";
 import { COLOR_TEMPLATES } from "@/lib/pdf/colorTemplates";
 import { CVCustomizationOptions } from "@/types/cvCustomization";
 
@@ -242,6 +242,29 @@ const QuestionInput = styled.input`
   }
 `;
 
+const QuestionTextarea = styled.textarea`
+  width: 100%;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 12px;
+  color: white;
+  font-size: 14px;
+  min-height: 80px;
+  resize: vertical;
+  transition: all 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.05);
+  }
+
+  &::placeholder {
+    color: rgba(255,255,255,0.3);
+  }
+`;
+
 const LoadingState = styled.div`
   display: flex;
   align-items: center;
@@ -451,6 +474,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
   const [extractionDone, setExtractionDone] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("classic-blue");
   const [metricAnswers, setMetricAnswers] = useState<Record<string, string>>({});
+  const [academicDetails, setAcademicDetails] = useState({ gpa: "", coursework: "", capstone: "" });
 
   // Reset state when modal opens or existing photo data changes
   useEffect(() => {
@@ -465,6 +489,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
       setExtractionDone(false);
       setSelectedTemplate(initialTemplate || "classic-blue");
       setMetricAnswers({});
+      setAcademicDetails({ gpa: "", coursework: "", capstone: "" });
 
       // Try to extract photo from PDF
       if (documentId) {
@@ -537,6 +562,7 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
       photoBase64: photo,
       colorTemplateKey: selectedTemplate,
       userProvidedMetrics: Object.keys(metricAnswers).length > 0 ? metricAnswers : undefined,
+      academicDetails: academicDetails.gpa || academicDetails.coursework || academicDetails.capstone ? academicDetails : undefined,
     });
   };
 
@@ -693,6 +719,45 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
               ))}
             </div>
           )}
+
+          {/* New Grad / Academic Context Section */}
+          <div>
+            <SectionTitle>
+              <GraduationCap /> Academic Experience (Optional)
+            </SectionTitle>
+            <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.6)", marginBottom: "16px" }}>
+              Help us frame your university experience professionally. If you lack work experience, these are critical for the ATS.
+            </div>
+            
+            <QuestionContainer>
+              <QuestionText>Capstone or Major Project</QuestionText>
+              <QuestionTextarea
+                placeholder="e.g., Developed a full-stack booking app using React and Node.js..."
+                value={academicDetails.capstone}
+                onChange={(e) => setAcademicDetails(prev => ({ ...prev, capstone: e.target.value }))}
+              />
+            </QuestionContainer>
+
+            <QuestionContainer>
+              <QuestionText>Relevant Coursework</QuestionText>
+              <QuestionInput
+                type="text"
+                placeholder="e.g., Data Structures, Web Development, Cloud Computing..."
+                value={academicDetails.coursework}
+                onChange={(e) => setAcademicDetails(prev => ({ ...prev, coursework: e.target.value }))}
+              />
+            </QuestionContainer>
+
+            <QuestionContainer>
+              <QuestionText>GPA (Only if strong)</QuestionText>
+              <QuestionInput
+                type="text"
+                placeholder="e.g., 3.8/4.0"
+                value={academicDetails.gpa}
+                onChange={(e) => setAcademicDetails(prev => ({ ...prev, gpa: e.target.value }))}
+              />
+            </QuestionContainer>
+          </div>
 
           {/* Color Template Section */}
           <div>

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get request body
-    const { reportId, additionalTools = [], forceRegenerate = false, photoUrl, colorTemplate, userProvidedMetrics } = await request.json();
+    const { reportId, additionalTools = [], forceRegenerate = false, photoUrl, colorTemplate, userProvidedMetrics, academicDetails } = await request.json();
 
     console.log('🔍 CV Generation Request:', {
       reportId,
@@ -177,7 +177,8 @@ export async function POST(request: NextRequest) {
       extractedMetrics,
       achievementsSection,
       outputLanguage,
-      enrichedMetrics
+      enrichedMetrics,
+      academicDetails
     );
 
     const completion = await openai.chat.completions.create({

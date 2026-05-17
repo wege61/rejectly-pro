@@ -19,7 +19,8 @@ export function generateOptimizedCVPrompt(
   extractedMetrics: string[] = [],
   achievementsSection: string = '',
   outputLanguage: string = 'English',
-  userProvidedMetrics?: Record<string, string>
+  userProvidedMetrics?: Record<string, string>,
+  academicDetails?: { gpa?: string; coursework?: string; capstone?: string; }
 ): string {
   const userMetricsWarning = userProvidedMetrics && Object.keys(userProvidedMetrics).length > 0 ? `
 🎯🎯🎯 USER PROVIDED METRICS - MUST INTEGRATE! 🎯🎯🎯
@@ -29,6 +30,21 @@ Here are the answers they provided:
 ${Object.entries(userProvidedMetrics).map(([id, answer]) => `- For bullet ID ${id}: User answered "${answer}"`).join('\n')}
 
 You MUST use these numbers to enhance the corresponding bullet points in the CV! Do not ignore them.
+================================================================================
+` : '';
+
+  const academicDetailsWarning = academicDetails && (academicDetails.capstone || academicDetails.coursework || academicDetails.gpa) ? `
+🎓🎓🎓 NEW GRAD / ACADEMIC DETAILS PROVIDED 🎓🎓🎓
+================================================================================
+The candidate has provided the following academic details to strengthen their entry-level profile:
+${academicDetails.gpa ? `- GPA: ${academicDetails.gpa}` : ''}
+${academicDetails.coursework ? `- Relevant Coursework: ${academicDetails.coursework}` : ''}
+${academicDetails.capstone ? `- Capstone/Major Project: ${academicDetails.capstone}` : ''}
+
+CRITICAL INTEGRATION REQUIREMENTS:
+- Integrate the Capstone/Major Project as a fully fleshed-out professional project experience in the Experience or Projects section.
+- Add the GPA and Relevant Coursework to the Education section.
+- Treat these academic details as real, professional-grade qualifications to boost the ATS score.
 ================================================================================
 ` : '';
 
@@ -67,6 +83,7 @@ For current positions: use the equivalent of "Present" in ${outputLanguage}.` : 
 ${metricsWarning}
 ${achievementsWarning}
 ${userMetricsWarning}
+${academicDetailsWarning}
 
 ORIGINAL CV:
 """

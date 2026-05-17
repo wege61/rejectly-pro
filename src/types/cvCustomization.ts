@@ -19,4 +19,9 @@ export interface CVCustomizationOptions {
   photoBase64?: string | null;
   colorTemplateKey?: string;
   userProvidedMetrics?: Record<string, string>;
+  academicDetails?: {
+    gpa?: string;
+    coursework?: string;
+    capstone?: string;
+  };
 }

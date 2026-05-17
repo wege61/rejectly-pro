@@ -1947,7 +1947,7 @@ export default function CoverLettersPage() {
         <TitleElements>
           <Title>Cover Letters</Title>
           <Subtitle>
-            Generate AI-powered cover letters from your reports and manage your applications.
+            AI writes your cover letter from scratch — even if you have zero work experience.
           </Subtitle>
         </TitleElements>
         <CreditsCardWrapper>
@@ -1968,25 +1968,25 @@ export default function CoverLettersPage() {
             </svg>
           </HeroIconBadge>
 
-          <HeroTitle>Create your first cover letter</HeroTitle>
+          <HeroTitle>No blank page anxiety — AI writes it for you</HeroTitle>
           <HeroSubtitle>
-            Cover letters are generated from your Job Match reports. Run an analysis first, then come back here to craft a personalized letter in seconds.
+            Don&apos;t know what to write? We got you. Run a Job Match analysis first, then come back here — AI will write a tailored cover letter in seconds using your CV and the job posting.
           </HeroSubtitle>
 
           <StepsRow>
             <Step>
               <StepNum $n={1}>1</StepNum>
-              <StepText>Run a Job Match analysis on your CV</StepText>
+              <StepText>Paste your CV + a job posting to get your score</StepText>
             </Step>
             <StepConnector />
             <Step>
               <StepNum $n={2}>2</StepNum>
-              <StepText>Select a report and choose your tone</StepText>
+              <StepText>Come here, pick that report &amp; choose a tone</StepText>
             </Step>
             <StepConnector />
             <Step>
               <StepNum $n={3}>3</StepNum>
-              <StepText>AI generates your personalized letter</StepText>
+              <StepText>AI writes a letter tailored to that exact job</StepText>
             </Step>
           </StepsRow>
 
@@ -1996,7 +1996,7 @@ export default function CoverLettersPage() {
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              Start New Analysis
+              Analyse My CV First
             </HeroCTAButton>
             <HeroCTASecondary onClick={() => router.push(ROUTES.APP.REPORTS)}>
               View my reports
@@ -2121,13 +2121,13 @@ export default function CoverLettersPage() {
 
               <InlineHeroTitle>
                 {filterReport
-                  ? `No letters for "${filterReport.job?.title || 'this report'}" yet`
-                  : 'No cover letters yet'}
+                  ? `No letter written for "${filterReport.job?.title || 'this role'}" yet`
+                  : 'No cover letters yet — start with a job analysis'}
               </InlineHeroTitle>
               <InlineHeroSubtitle>
                 {filterReport
-                  ? 'Use the "✦ Generate new letter →" button in the tab above to write your first personalized letter for this role.'
-                  : 'Select a report tab above to filter by job, then generate your first AI-powered cover letter.'}
+                  ? 'Hit the button below — AI will write your letter using your CV and this job posting. No blank page, no guessing.'
+                  : 'Select a report tab above, then hit generate. AI will handle the writing — you just edit and send.'}
               </InlineHeroSubtitle>
 
               {filterReport && (
@@ -2138,7 +2138,7 @@ export default function CoverLettersPage() {
                     <line x1="12" y1="5" x2="12" y2="19" />
                     <line x1="5" y1="12" x2="19" y2="12" />
                   </svg>
-                  Generate letter
+                  ✦ Write My Cover Letter
                 </InlineCTAButton>
               )}
             </InlineEmptyHero>

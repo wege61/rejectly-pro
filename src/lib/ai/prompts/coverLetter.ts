@@ -133,6 +133,31 @@ CRITICAL RULES (Non-Negotiable):
    - If you cite a metric, it must be in CV or reasonably inferred
    - Never invent achievements, projects, or skills
 
+⭐⭐ NEW GRAD PIVOT RULES (Apply when candidate has <2 years experience) ⭐⭐
+When the CV shows primarily academic/project-based experience:
+
+a) TRANSLATE, don't apologize:
+   - WRONG: "Although I lack professional experience..."
+   - RIGHT: "Through my capstone project building [X], I developed..."
+   - Treat every project, internship, or hackathon as REAL experience
+
+b) FRAME projects as professional proof:
+   - Capstone project → "Led end-to-end development of..."
+   - Hackathon win → "Under competitive pressure, delivered..."
+   - University coursework → "Applied [skill] to..."
+   - Part-time/internship → Full professional framing
+
+c) Lead with POTENTIAL and LEARNING VELOCITY:
+   - "Proven ability to pick up [tech] quickly — built X in Y weeks"
+   - Highlight how fast they learn, not how much they lack
+   - End with forward-looking value: "I'm ready to contribute from day one"
+
+d) NEVER say:
+   - "As a recent graduate..."
+   - "I don't have much experience but..."
+   - "I am eager to learn..."
+   - "I am a fast learner" (show it, don't say it)
+
 3. COMPANY SPECIFICITY:
    - Reference something specific about ${companyName} (product, mission, news, culture)
    - Don't just say "your company" - show research

@@ -210,9 +210,9 @@ const ReportBadge = styled.span<{ $variant?: 'success' | 'warning' | 'info' }>`
 `;
 
 const reportItems = [
-  { title: 'Software Engineer', cv: 'Resume_v3.pdf', score: 87, keywords: 3, pro: true },
-  { title: 'Product Manager', cv: 'CV_2024.pdf', score: 72, keywords: 5, pro: false },
-  { title: 'Data Analyst', cv: 'Resume_Tech.pdf', score: 91, keywords: 1, pro: true },
+  { title: 'Junior Frontend Developer', cv: 'My_Resume.pdf', score: 82, keywords: 2, pro: true },
+  { title: 'Associate PM', cv: 'CV_2024.pdf', score: 68, keywords: 4, pro: false },
+  { title: 'Entry-Level Data Analyst', cv: 'Resume_CS.pdf', score: 91, keywords: 1, pro: true },
 ];
 
 const ReportsBackground = () => (
@@ -358,10 +358,10 @@ const FileIconMini = () => (
 );
 
 const resumeData = [
-  { name: 'Resume_v3.pdf', isOptimized: false, lang: 'EN' },
-  { name: 'John Doe - Optimized', isOptimized: true, lang: 'EN' },
+  { name: 'My_Resume.pdf', isOptimized: false, lang: 'EN' },
+  { name: 'Alex Kim - Optimized', isOptimized: true, lang: 'EN' },
   { name: 'CV_2024.pdf', isOptimized: false, lang: 'TR' },
-  { name: 'Jane Smith - Optimized', isOptimized: true, lang: 'EN' },
+  { name: 'Jordan Lee - Optimized', isOptimized: true, lang: 'EN' },
 ];
 
 const CVBackground = () => (
@@ -453,9 +453,9 @@ const JobCharBadge = styled.span`
 `;
 
 const jobData = [
-  { title: 'Senior Frontend Developer', date: 'Dec 12', chars: 2450 },
-  { title: 'Product Manager', date: 'Dec 10', chars: 1890 },
-  { title: 'ML Engineer', date: 'Dec 8', chars: 3200 },
+  { title: 'Junior Frontend Developer', date: 'Dec 12', chars: 2450 },
+  { title: 'Associate Product Manager', date: 'Dec 10', chars: 1890 },
+  { title: 'Junior Data Analyst', date: 'Dec 8', chars: 3200 },
 ];
 
 const JobsBackground = () => (
@@ -575,9 +575,9 @@ const LetterToneBadge = styled.span<{ $tone: string }>`
 `;
 
 const letterData = [
-  { title: 'Software Engineer', tone: 'professional', words: 285, date: 'Dec 14' },
-  { title: 'Product Manager', tone: 'friendly', words: 312, date: 'Dec 12' },
-  { title: 'Data Scientist', tone: 'formal', words: 298, date: 'Dec 10' },
+  { title: 'Junior Software Engineer', tone: 'professional', words: 285, date: 'Dec 14' },
+  { title: 'Associate Product Manager', tone: 'friendly', words: 312, date: 'Dec 12' },
+  { title: 'Entry-Level Data Analyst', tone: 'formal', words: 298, date: 'Dec 10' },
 ];
 
 const CoverLettersBackground = () => (
@@ -2017,8 +2017,7 @@ export default function DashboardPage() {
           <TitleElements>
           <Title>Dashboard</Title>
           <Subtitle>
-            Welcome back, {user?.user_metadata?.name || "User"}! Here&apos;s
-            your overview.
+            Welcome back, {user?.user_metadata?.name?.split(' ')[0] || "there"}! Let&apos;s land your first job.
           </Subtitle>
 
           </TitleElements>
@@ -2031,10 +2030,10 @@ export default function DashboardPage() {
         <BentoGridContainer>
           <BentoGrid className="lg:grid-rows-3">
             <BentoCard
-              name="Total Reports"
+              name="Job Match Reports"
               className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3"
               Icon={ReportsIcon}
-              description="View your past ATS bypass scores"
+              description="See how your resume scores against real job postings"
               href={ROUTES.APP.REPORTS}
               cta="View Reports"
               value={stats.totalReports}
@@ -2042,10 +2041,10 @@ export default function DashboardPage() {
               onClick={() => router.push(ROUTES.APP.REPORTS)}
             />
             <BentoCard
-              name="Resumes Uploaded"
+              name="My Resumes"
               className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3"
               Icon={ResumeIcon}
-              description="Manage your uploaded resumes"
+              description="Upload your base resume to start matching jobs"
               href={ROUTES.APP.CV}
               cta="View Resumes"
               value={stats.totalCVs}
@@ -2053,10 +2052,10 @@ export default function DashboardPage() {
               onClick={() => router.push(ROUTES.APP.CV)}
             />
             <BentoCard
-              name="Job Postings"
+              name="Target Jobs"
               className="lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4"
               Icon={JobsIcon}
-              description="Browse saved job postings"
+              description="Paste job postings you want to optimize your resume for"
               href={ROUTES.APP.JOBS}
               cta="View Jobs"
               value={stats.totalJobs}
@@ -2067,7 +2066,7 @@ export default function DashboardPage() {
               name="Cover Letters"
               className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2"
               Icon={CoverLettersIcon}
-              description="Your generated cover letters"
+              description="AI-written cover letters tailored to each job — even with zero experience"
               href={ROUTES.APP.COVER_LETTERS}
               cta="View Letters"
               value={stats.totalCoverLetters}
@@ -2075,10 +2074,10 @@ export default function DashboardPage() {
               onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
             />
             <BentoCard
-              name="ATS Optimized"
+              name="ATS-Ready CVs"
               className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4"
               Icon={ATSOptimizerIcon}
-              description="AI-optimized resumes for better ATS scores"
+              description="Rewrite your CV to pass ATS bots before a human ever sees it"
               href={ROUTES.APP.ATS_OPTIMIZER}
               cta="Optimize Resume"
               value={stats.totalOptimizedCVs}
@@ -2144,17 +2143,17 @@ export default function DashboardPage() {
         {/* Recent Reports */}
         <Section>
           <SectionHeader>
-            <SectionTitle>ATS Bypass Reports</SectionTitle>
+            <SectionTitle>Your Recent Analyses</SectionTitle>
           </SectionHeader>
 
           {recentReports.length === 0 ? (
             <Card variant="bordered">
               <EmptyState
                 icon={<EmptyState.DocumentIcon />}
-                title="No reports yet"
-                description="Create your first analysis to see results here."
+                title="No analyses yet"
+                description="Paste your CV + a job posting and see exactly why you're getting rejected — then fix it."
                 action={{
-                  label: "Create Analysis",
+                  label: "Run My First Analysis",
                   onClick: () => setIsWizardOpen(true),
                 }}
               />
@@ -2219,7 +2218,7 @@ export default function DashboardPage() {
               </RecentReportsGrid>
               <ViewAllLink>
                 <ViewAllGlassButton onClick={() => router.push(ROUTES.APP.REPORTS)}>
-                  View All Bypass Reports
+                  View All Reports
                   <ArrowRightIconLetter />
                 </ViewAllGlassButton>
               </ViewAllLink>
@@ -2234,9 +2233,9 @@ export default function DashboardPage() {
           <SpotlightOverlay $show={showFABHint} onClick={handleDismissFABHint} />
           <SpotlightCircle />
           <HintContainer>
-            <HintText>Ready to Get Started?</HintText>
+            <HintText>Ready to Beat the ATS?</HintText>
             <HintSubtext>
-              Create your first AI-powered resume analysis
+              Upload your CV + a job posting to see your score
             </HintSubtext>
             <ArrowContainer>
               <ArrowText>Click here</ArrowText>

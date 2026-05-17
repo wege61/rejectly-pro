@@ -56,7 +56,7 @@ function emailLayout(content: string) {
           <tr>
             <td style="padding: 24px 40px 32px 40px; text-align: center;">
               <p style="margin: 0 0 8px 0; font-size: 13px; color: rgba(255,255,255,0.3);">
-                © ${new Date().getFullYear()} Rejectly.pro — Land your dream job.
+                © ${new Date().getFullYear()} Rejectly.pro — Land your first job.
               </p>
               <table role="presentation" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
                 <tr>
@@ -131,23 +131,23 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
 
   const content = `
     <h1 style="margin: 0 0 8px 0; font-size: 26px; font-weight: 700; color: #fff; letter-spacing: -0.02em; text-align: center;">
-      Welcome aboard, ${firstName}! 🎉
+      You're in, ${firstName}. Let's get you hired. 🎯
     </h1>
     <p style="margin: 0 0 32px 0; font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.6; text-align: center;">
-      You've just unlocked powerful tools to optimize your job search and land more interviews.
+      Most resumes get auto-rejected before a human ever sees them. We're going to change that — starting with yours.
     </p>
 
     <!-- Features -->
-    ${featureRow('📊', 'Resume Analysis', 'Upload your resume and get a detailed match score against any job posting.')}
-    ${featureRow('⚡', 'ATS Optimizer', 'Check ATS compatibility and get an optimized version that beats hiring filters.')}
-    ${featureRow('📄', 'CV Builder', 'Build a professional, ATS-friendly CV from scratch with smart suggestions.')}
-    ${featureRow('✉️', 'Cover Letters', 'Generate tailored cover letters in seconds based on your profile.')}
+    ${featureRow('📊', 'Job Match Score', 'Paste any job posting and see exactly how well your student resume matches — before you apply.')}
+    ${featureRow('⚡', 'ATS Bypass', 'Translate your university projects and internships into the exact keywords ATS bots are scanning for.')}
+    ${featureRow('📄', 'CV Builder', 'No resume yet? Build one from scratch — we guide every section, no blank page panic.')}
+    ${featureRow('✉️', 'Cover Letters', 'Generate a tailored cover letter in seconds — even with zero formal work experience.')}
 
     <!-- CTA -->
-    ${ctaButton('Go to Your Dashboard →', 'https://rejectly.pro/dashboard')}
+    ${ctaButton('Analyse My First Job → ', 'https://rejectly.pro/analyze')}
 
     <p style="margin: 28px 0 0 0; font-size: 13px; color: rgba(255,255,255,0.3); text-align: center; line-height: 1.6;">
-      Need help? Reply to this email — we read every message.
+      Questions? Reply to this email — we read every message.
     </p>
   `;
 
@@ -155,7 +155,7 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
     await resend.emails.send({
       from: 'Rejectly Pro <onboarding@rejectly.pro>',
       to: email,
-      subject: `Welcome to Rejectly, ${firstName}! Your career upgrade starts now 🚀`,
+      subject: `You're in, ${firstName} — let's get past the robot filter 🤖`,
       html: emailLayout(content),
     });
   } catch (error) {
@@ -189,7 +189,7 @@ export const sendReportReadyEmail = async (email: string, name: string, reportId
     </table>
 
     <p style="margin: 0 0 0 0; font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; text-align: center;">
-      View your full report to see detailed insights, keyword analysis, and actionable recommendations to improve your application.
+      View your full report to see your keyword gaps, ATS score, and the exact changes that will get your CV past the filter.
     </p>
 
     ${ctaButton('View Full Report →', 'https://rejectly.pro/reports/' + reportId)}
@@ -232,10 +232,10 @@ export const sendCreditsPurchasedEmail = async (email: string, name: string, cre
     </table>
 
     <p style="margin: 0; font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; text-align: center;">
-      You're all set. Use your credits to generate pro-level reports, optimize your resume, and create cover letters.
+      You're all set. Each credit gets you one full analysis — job match score, ATS check, or cover letter. Start with the role you want most.
     </p>
 
-    ${ctaButton('Start Using Credits →', 'https://rejectly.pro/dashboard')}
+    ${ctaButton('Analyse My Best-Match Job →', 'https://rejectly.pro/analyze')}
   `;
 
   try {
@@ -270,20 +270,20 @@ export const sendFreeReportFOMOEmail = async (
 
   if (score < 50) {
     headline = `Your resume scored ${score}% — here's why that's costing you interviews`;
-    subtext = `Most ATS systems auto-reject resumes below 60%. Right now, your resume is likely being filtered out before a human ever sees it.`;
-    urgencyMessage = `Every day with a ${score}% resume is another day of missed opportunities. Companies are hiring right now — but not seeing your application.`;
+    subtext = `Most ATS systems auto-reject resumes below 60%. As a new grad, this is the #1 reason applications disappear — before any human sees your name.`;
+    urgencyMessage = `Every day with a ${score}% score is another missed opportunity. Companies are actively hiring entry-level candidates right now — but not seeing your application.`;
   } else if (score < 70) {
-    headline = `You scored ${score}% — you're close, but "close" doesn't get callbacks`;
-    subtext = `Your resume is in the danger zone: good enough to feel confident, but not strong enough to consistently beat other candidates.`;
-    urgencyMessage = `The average successful candidate scores 80+. Closing that ${80 - score}-point gap could be the difference between silence and an interview.`;
+    headline = `You scored ${score}% — you're close, but the ATS still filtered you`;
+    subtext = `Your student resume is in the danger zone: good enough to feel confident, but missing the specific ATS keywords recruiters search for.`;
+    urgencyMessage = `The average successful entry-level candidate scores 80+. Closing that ${80 - score}-point gap could be the difference between silence and your first interview call.`;
   } else if (score < 85) {
-    headline = `${score}% is solid — but your competition is scoring higher`;
-    subtext = `You're ahead of most applicants, but top candidates are optimizing every detail. A few targeted improvements could push you to the top of the pile.`;
-    urgencyMessage = `You're ${100 - score} points away from a near-perfect score. At this level, small optimizations make the biggest impact.`;
+    headline = `${score}% is solid — but your competition is optimizing harder`;
+    subtext = `You're ahead of most applicants, but top entry-level candidates are optimizing every detail. A few targeted keyword additions could put you at the front of the pile.`;
+    urgencyMessage = `You're ${100 - score} points away from a near-perfect score. At this level, small optimizations make the biggest impact on callback rates.`;
   } else {
-    headline = `${score}% — impressive! Lock in your advantage`;
-    subtext = `You're in the top tier of applicants. A Pro report will give you the exact edge to make your application undeniable.`;
-    urgencyMessage = `Don't leave anything on the table. See exactly what hiring managers will focus on and fine-tune your application to perfection.`;
+    headline = `${score}% — your CV is ATS-ready. One final push to make it perfect.`;
+    subtext = `You're in the top tier of applicants. Your university background is translating well. A Pro report locks in every last detail to make your application stand out.`;
+    urgencyMessage = `Don't leave anything on the table. See exactly what hiring managers will focus on and make your first impression undeniable.`;
   }
 
   // Build missing keywords section
@@ -341,7 +341,7 @@ export const sendFreeReportFOMOEmail = async (
     ${ctaButton('Upgrade to Pro Report →', 'https://rejectly.pro/reports/' + reportId)}
 
     <p style="margin: 20px 0 0 0; font-size: 13px; color: rgba(255,255,255,0.3); text-align: center;">
-      Starting at just $2.99 per report · One-time payment · No subscription
+      Starting at just $2 · One-time payment · No subscription needed
     </p>
   `;
 

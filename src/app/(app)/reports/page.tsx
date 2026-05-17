@@ -1355,8 +1355,8 @@ export default function ReportsPage() {
     <Container>
       <Header>
         <TitleElements>
-          <Title>Job Match & Optimize</Title>
-          <Subtitle>Analyze how well your resume matches a job posting and generate a targeted version to boost your chances.</Subtitle>
+          <Title>Job Match</Title>
+          <Subtitle>See if your CV passes the ATS filter before you waste a real application.</Subtitle>
         </TitleElements>
         <CreditsCardWrapper>
           <CreditsCard />
@@ -1380,26 +1380,26 @@ export default function ReportsPage() {
             </svg>
           </HeroIconBadge>
 
-          <HeroTitle>Analyze your first job match</HeroTitle>
+          <HeroTitle>Check your first job match</HeroTitle>
           <HeroSubtitle>
-            Upload your CV, paste a job posting, and let AI score how well you match — then generate a tailored version that gets past ATS filters.
+            Paste any job posting and your CV — AI scores exactly how well your student background matches the role, then rewrites your CV with the keywords the ATS is looking for.
           </HeroSubtitle>
 
           {/* 3-step how it works */}
           <StepsRow>
             <Step>
               <StepNum $n={1}>1</StepNum>
-              <StepText>Upload your CV or choose an existing one</StepText>
+              <StepText>Paste a job you want to apply for</StepText>
             </Step>
             <StepConnector />
             <Step>
               <StepNum $n={2}>2</StepNum>
-              <StepText>Paste a job posting or pick from saved jobs</StepText>
+              <StepText>Upload your CV — student or otherwise</StepText>
             </Step>
             <StepConnector />
             <Step>
               <StepNum $n={3}>3</StepNum>
-              <StepText>Get your AI match score & optimized CV</StepText>
+              <StepText>Get your match score + ATS-ready version</StepText>
             </Step>
           </StepsRow>
 
@@ -1410,10 +1410,10 @@ export default function ReportsPage() {
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              Start New Analysis
+              ✨ Analyse My First Job
             </HeroCTAButton>
             <HeroCTASecondary onClick={() => router.push(ROUTES.APP.JOBS)}>
-              Browse job postings
+              See saved jobs →
             </HeroCTASecondary>
           </HeroCTARow>
         </EmptyHero>

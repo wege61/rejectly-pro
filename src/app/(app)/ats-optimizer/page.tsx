@@ -3033,7 +3033,7 @@ export default function DashboardATSOptimizerPage() {
             <TitleElements>
               <Title>ATS Optimizer</Title>
               <Subtitle>
-                Optimize your CV specifically for ATS systems using AI. We analyze keywords, formatting, and structure.
+                Find out if your CV gets past the robot — and fix it before a single recruiter sees it.
               </Subtitle>
             </TitleElements>
             <CreditsCardWrapper>
@@ -3060,25 +3060,25 @@ export default function DashboardATSOptimizerPage() {
                 </svg>
               </ATSHeroIconBadge>
 
-              <ATSHeroTitle>Run your first ATS check</ATSHeroTitle>
+              <ATSHeroTitle>Does your CV survive the robot filter?</ATSHeroTitle>
               <ATSHeroSubtitle>
-                Upload your CV and instantly see how well it passes Applicant Tracking Systems — then generate a fully optimized version.
+                Most CVs get rejected before a human ever sees them. Upload yours — we&apos;ll score it against real ATS systems and rewrite it to pass.
               </ATSHeroSubtitle>
 
               <ATSStepsRow>
                 <ATSStep>
                   <ATSStepNum $n={1}>1</ATSStepNum>
-                  <ATSStepText>Upload your CV in PDF or DOCX format</ATSStepText>
+                  <ATSStepText>Upload your CV — PDF or DOCX, any format</ATSStepText>
                 </ATSStep>
                 <ATSStepConnector />
                 <ATSStep>
                   <ATSStepNum $n={2}>2</ATSStepNum>
-                  <ATSStepText>Get your ATS score across key categories</ATSStepText>
+                  <ATSStepText>Get an instant score: format, keywords, structure</ATSStepText>
                 </ATSStep>
                 <ATSStepConnector />
                 <ATSStep>
                   <ATSStepNum $n={3}>3</ATSStepNum>
-                  <ATSStepText>Download an ATS-optimized version of your CV</ATSStepText>
+                  <ATSStepText>Download an ATS-ready version that passes the filter</ATSStepText>
                 </ATSStep>
               </ATSStepsRow>
 
@@ -3121,7 +3121,7 @@ export default function DashboardATSOptimizerPage() {
           ) : (
             <HistorySection>
               <HistorySectionHeader>
-                <HistoryTitle>Optimization History</HistoryTitle>
+                <HistoryTitle>My Optimized CVs</HistoryTitle>
               </HistorySectionHeader>
               <HistoryGrid>
               {optimizedHistory.map((cv) => (
@@ -3175,7 +3175,7 @@ export default function DashboardATSOptimizerPage() {
            {(step === 'result' || step === 'optimized') && (
              <div style={{ marginBottom: 20 }}>
                <Button variant="ghost" onClick={handleReset} style={{fontSize: "14px"}}>
-                ← Back to Dashboard
+                ← Back to results
                </Button>
              </div>
            )}
@@ -3235,7 +3235,7 @@ export default function DashboardATSOptimizerPage() {
                  />
                  <div style={{ textAlign: "center", marginTop: 24 }}>
                    <Button variant="ghost" onClick={handleReset}>
-                     Optimize Another Resume
+                     Check Another CV
                    </Button>
                  </div>
                </ResultsSection>
@@ -3257,8 +3257,8 @@ export default function DashboardATSOptimizerPage() {
               <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </ATSModalIconBadge>
-          <ATSModalHeadTitle>Start New Optimization</ATSModalHeadTitle>
-          <ATSModalHeadSub>Upload a CV or select one you’ve already uploaded</ATSModalHeadSub>
+          <ATSModalHeadTitle>Check Your CV Against ATS</ATSModalHeadTitle>
+          <ATSModalHeadSub>Upload a new CV or pick one you&apos;ve already saved</ATSModalHeadSub>
           <ATSModalCloseBtn onClick={() => setIsUploadModalOpen(false)} aria-label="Close">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <path d="M18 6L6 18M6 6l12 12"/>

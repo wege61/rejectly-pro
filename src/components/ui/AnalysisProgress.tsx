@@ -168,10 +168,10 @@ interface AnalysisStep {
 }
 
 const DEFAULT_STEPS: AnalysisStep[] = [
-  { id: 'prepare', label: 'Preparing documents', description: 'Loading CV and job posting' },
-  { id: 'analyze', label: 'Analyzing CV', description: 'Extracting content and keywords' },
-  { id: 'compare', label: 'Comparing', description: 'Matching with job requirements' },
-  { id: 'score', label: 'Calculating score', description: 'Determining match score' },
+  { id: 'prepare', label: 'Loading your documents', description: 'Reading CV and job posting' },
+  { id: 'analyze', label: 'Scanning for keywords', description: 'Finding what the ATS is looking for' },
+  { id: 'compare', label: 'Translating your experience', description: 'Matching academic background to job requirements' },
+  { id: 'score', label: 'Calculating your score', description: 'Determining ATS match percentage' },
 ];
 
 interface AnalysisProgressProps {

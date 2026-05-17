@@ -3078,19 +3078,19 @@ const testimonials = [
     role: "Junior Developer, 22"
   },
   {
-    text: "6 months unemployed and losing hope. This tool rewrote my CV and I got 4 interviews in one week. Now happily employed!",
+    text: "Sending hundreds of applications and hearing nothing back was crushing. This tool showed me how to phrase my student projects. I got 4 interviews in one week!",
     author: "Maria S.",
-    role: "Marketing Associate, 28"
+    role: "Marketing Assistant, 23"
   },
   {
-    text: "As a recent graduate competing with experienced candidates, the optimized bullets made my internships shine. Got my dream job!",
+    text: "As a recent graduate competing with experienced candidates, the optimized bullets made my internships shine. Got my first real job!",
     author: "James L.",
     role: "Business Analyst, 23"
   },
   {
-    text: "Was laid off and struggling for 4 months. The Pro analysis showed exactly why I wasn't getting callbacks. Employed within 3 weeks!",
+    text: "I didn't think my university club leadership mattered. The Pro analysis framed it perfectly for entry-level roles. Hired within 3 weeks!",
     author: "David R.",
-    role: "Sales Rep, 31"
+    role: "Sales Development Rep, 22"
   },
   {
     text: "No one was looking at my applications. After the upgrade, recruiters started reaching out to ME. Life-changing!",
@@ -3098,14 +3098,14 @@ const testimonials = [
     role: "Junior Designer, 24"
   },
   {
-    text: "Graduated during tough times with zero responses. This tool helped me land a role at a Fortune 500 company!",
+    text: "Graduated during tough times with zero responses. This tool helped me land an entry-level role at a Fortune 500 company!",
     author: "Ryan M.",
     role: "Data Analyst, 25"
   },
   {
-    text: "8 months of unemployment depression ended after using Pro. The rewritten CV got me 5 callbacks in the first week.",
+    text: "The post-graduation anxiety was real. The rewritten CV turned my 3-month internship into a powerful selling point. Got 5 callbacks!",
     author: "Emma W.",
-    role: "HR Coordinator, 29"
+    role: "HR Assistant, 23"
   },
   {
     text: "First job hunt after university was brutal. The ATS optimization made all the difference. Finally working in tech!",
@@ -8760,7 +8760,7 @@ export default function ReportDetailPage() {
             </WelcomeSuccessTitle>
 
             <SuccessMessage>
-              Your investment in yourself will pay off. Every optimized reseume brings you closer to your dream job.
+              Your investment in yourself will pay off. Every optimized resume brings you closer to your first job.
             </SuccessMessage>
 
             <SuccessQuote>
@@ -9722,7 +9722,7 @@ export default function ReportDetailPage() {
             You've got this{report?.generated_cv?.contact?.name ? `, ${report.generated_cv.contact.name.split(' ')[0]}` : ''}.
           </MotivationalTitle>
           <MotivationalText>
-            Don't worry, the perfect role you are looking for is out there. Keep pushing forward—we're walking this path with you. The Rejectly.pro family is always by your side!
+            Getting that first job is the hardest part. Keep pushing forward, and don't let the ATS bots get you down—we're walking this path with you. The Rejectly.pro family is always by your side!
           </MotivationalText>
           <MotivationalQuote>
             Success is not final, failure is not fatal: it is the courage to continue that counts.

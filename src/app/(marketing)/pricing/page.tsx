@@ -654,7 +654,7 @@ const pricingFAQs = [
   {
     question: "Which plan should I choose?",
     answer:
-      "If you're applying to a few specific jobs, Single ($2) is perfect. For active job seekers, Starter ($7) offers the best value at $0.70 per analysis. If you're applying to many positions, Pro ($12/month) gives you unlimited access.",
+      "If you're applying to 1-2 specific roles right now, Single ($2) is the right start. If you're in active job-search mode after graduation, Starter ($7) gives you 10 credits at $0.70 each — enough for a full search campaign. If you're applying to many positions at once (graduation season), Pro ($12/month) is the best value.",
   },
 ];
 
@@ -741,7 +741,7 @@ export default function PricingPage() {
           <Header>
             <Title>Simple, Transparent Pricing</Title>
           <Subtitle>
-            Pay per analysis or subscribe for unlimited access. No hidden fees.
+            No subscriptions required. Pay for what you need, keep the rest for later.
           </Subtitle>
         </Header>
 
@@ -754,13 +754,13 @@ export default function PricingPage() {
                 <Price>$2</Price>
               </PlanPrice>
               <PriceSubtext>one-time payment</PriceSubtext>
-              <PlanDescription>Try it with a single analysis</PlanDescription>
-              <PlanTagline>Perfect for quick tests</PlanTagline>
+              <PlanDescription>One credit to check your first real application</PlanDescription>
+              <PlanTagline>Try it risk-free before committing</PlanTagline>
               <CTAButton onClick={() => router.push("/signup")}>
                 Get started <ArrowIcon />
               </CTAButton>
               <FeatureList>
-                <FeatureRow><CreditIcon />1 credit — Perfect for testing</FeatureRow>
+                <FeatureRow><CreditIcon />1 credit — good for your first application</FeatureRow>
                 <FeatureRow><AnalysisIcon />1 job match analysis OR</FeatureRow>
                 <FeatureRow><ATSIcon />1 ATS optimization OR</FeatureRow>
                 <FeatureRow><LetterIcon />1 cover letter</FeatureRow>
@@ -779,7 +779,7 @@ export default function PricingPage() {
               </PlanPrice>
               <PriceSubtext>one-time payment</PriceSubtext>
               <PlanDescription>$0.70 per analysis — save 65%</PlanDescription>
-              <PlanTagline>Best for active job seekers</PlanTagline>
+              <PlanTagline>For students applying to 5–10 roles</PlanTagline>
               <CTAButton $primary onClick={() => router.push("/signup")}>
                 Get started <ArrowIcon />
               </CTAButton>
@@ -791,7 +791,7 @@ export default function PricingPage() {
                 <FeatureRow><MixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</FeatureRow>
                 <FeatureRowHighlight><SaveIcon />Save 65% ($0.70 per credit)</FeatureRowHighlight>
                 <FeatureRowMuted><ClockIcon />Credits valid for 90 days</FeatureRowMuted>
-                <FeatureRowMuted><TargetIcon />Best for 5-10 target positions</FeatureRowMuted>
+                <FeatureRowMuted><TargetIcon />Perfect for graduation job search</FeatureRowMuted>
               </FeatureList>
             </PricingCard>
 
@@ -802,8 +802,8 @@ export default function PricingPage() {
                 <Price>$12</Price>
               </PlanPrice>
               <PriceSubtext>per month</PriceSubtext>
-              <PlanDescription>Unlimited for power users</PlanDescription>
-              <PlanTagline>Apply without limits</PlanTagline>
+              <PlanDescription>Unlimited for graduation season</PlanDescription>
+              <PlanTagline>Apply everywhere, filter nothing</PlanTagline>
               <CTAButton onClick={() => router.push("/signup")}>
                 Get started <ArrowIcon />
               </CTAButton>
@@ -812,7 +812,7 @@ export default function PricingPage() {
                 <FeatureRow><AnalysisIcon />Unlimited job match analyses</FeatureRow>
                 <FeatureRow><ATSIcon />Unlimited ATS optimizations</FeatureRow>
                 <FeatureRow><LetterIcon />Unlimited cover letters</FeatureRow>
-                <FeatureRow><RocketIcon />Perfect for graduation season</FeatureRow>
+                <FeatureRow><RocketIcon />Graduation season mode — apply to everything</FeatureRow>
                 <FeatureRowHighlight><StarIcon />Best value for 20+ analyses/month</FeatureRowHighlight>
                 <FeatureRowMuted><RefreshIcon />Credits never expire while subscribed</FeatureRowMuted>
                 <FeatureRowMuted><ShieldIcon />Cancel anytime, no questions asked</FeatureRowMuted>

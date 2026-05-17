@@ -265,6 +265,11 @@ export default function FAQPage() {
             "Yes — that's exactly who we built this for. If you have university capstone projects, coursework, hackathons, or club leadership, our AI tools help you format them as professional experience that ATS bots can recognize and recruiters will take seriously. You don't need a corporate job title to have a strong resume.",
         },
         {
+          question: "My university projects aren't real jobs. How do I write about them?",
+          answer:
+            "That's the biggest mistake new grads make — and exactly what Rejectly fixes. A final-year capstone project, a hackathon win, or leading your university club <strong>are professional experiences</strong>. Our AI rewrites them in the exact format companies expect: action verb, scope, tool, outcome. For example: <em>\"Developed a full-stack inventory system for 200+ users using React and PostgreSQL, reducing manual tracking time by 40%.\"</em> — not just \"worked on a school project.\" We turn your academic background into bullet points that pass the ATS filter and impress human recruiters.",
+        },
+        {
           question: "What file formats do you support?",
           answer:
             "We support <strong>PDF and DOCX</strong> formats. One important tip: avoid complex design templates from tools like Canva or Figma — ATS bots frequently fail to parse them correctly, which can cause your resume to be auto-rejected regardless of your qualifications. A clean, simple PDF works best.",

@@ -55,8 +55,17 @@ export async function POST(req: Request) {
 
   if (event.type === 'checkout.session.completed') {
     const userId = session.metadata?.userId;
-    const creditsAdded = parseInt(session.metadata?.credits || '0');
+    const creditsRaw = session.metadata?.credits;
+    const creditsAdded = parseInt(creditsRaw || '0');
     const planType = session.metadata?.planType;
+    const planName = session.metadata?.planName;
+
+    // 🔍 DEBUG: Log full metadata so we can trace issues in Vercel logs
+    console.log('=== WEBHOOK DEBUG ===');
+    console.log('session.id:', session.id);
+    console.log('session.metadata:', JSON.stringify(session.metadata, null, 2));
+    console.log('Parsed → userId:', userId, '| planType:', planType, '| planName:', planName, '| creditsRaw:', creditsRaw, '| creditsAdded:', creditsAdded);
+    console.log('====================');
 
     if (userId) {
       console.log(`Processing payment for user: ${userId}, Plan: ${planType}, Credits: ${creditsAdded}`);

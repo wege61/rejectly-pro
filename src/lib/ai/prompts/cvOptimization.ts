@@ -243,6 +243,7 @@ IMPORTANT INSTRUCTIONS:
 - CRITICAL: Order work experience in REVERSE CHRONOLOGICAL order (most recent job FIRST, oldest job LAST)
 - CRITICAL: Preserve the EXACT degree name and field of study from the original CV — never paraphrase or change it. If the CV says "Computer Engineering", output must say "Computer Engineering", NOT "Computer Science". Copy it verbatim.
 - CRITICAL: If the original CV contains a Leadership, Extracurricular, Volunteer, or Activities section, you MUST preserve it as a separate "leadership" array in the JSON. Do NOT collapse these roles into a single vague sentence. Each role (e.g., Treasurer, VP of Finance, Club President, Founder) must be its own entry with title, organization, dates, and bullets. For new graduates especially, this section is a key differentiator and must NEVER be omitted or summarized away.
+- CRITICAL: NEVER use "Month YYYY" as a placeholder anywhere in the CV (not in experience, education, leadership, or certifications). If a date is not available in the original CV, OMIT the date field entirely or use an empty string "". A missing date is far better than a fake placeholder that will embarrass the candidate.
 
 =============================================================================
 REMINDER: Write ALL content in ${outputLanguage}.
@@ -537,6 +538,7 @@ ${fakeItMode ? '□ All missing keywords aggressively added per Fake It Mode' : 
 □ JSON is valid and complete
 □ ATS checklist requirements met
 □ LANGUAGE CHECK: Output language matches the original CV language (NOT English unless inputs are English!)
+□ DATE PLACEHOLDER CHECK: Search your entire JSON output for "Month YYYY" — if found even once → YOU FAILED. Remove it. If no real date exists, omit the date field entirely.
 
 ⚠️ CRITICAL CHECK: Compare your output to the original CV.
 If the summary and bullets look almost identical → YOU FAILED. Rewrite them!

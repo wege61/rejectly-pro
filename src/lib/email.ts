@@ -250,6 +250,63 @@ export const sendCreditsPurchasedEmail = async (email: string, name: string, cre
   }
 };
 
+// ─── Subscription Purchased Email ──────────────────────────────
+export const sendSubscriptionPurchasedEmail = async (email: string, name: string, periodEnd: Date) => {
+  if (!resend) return;
+
+  const firstName = name.split(' ')[0];
+  const renewalDate = periodEnd.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const content = `
+    <h1 style="margin: 0 0 8px 0; font-size: 26px; font-weight: 700; color: #fff; letter-spacing: -0.02em; text-align: center;">
+      Welcome to Pro, ${firstName} 🚀
+    </h1>
+    <p style="margin: 0 0 28px 0; font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.6; text-align: center;">
+      Your Pro subscription is now active. Every tool is unlocked — let's turn your applications into interviews.
+    </p>
+
+    <!-- Pro Badge -->
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin: 0 auto 28px auto;">
+      <tr>
+        <td style="background: linear-gradient(135deg, rgba(53,162,159,0.2) 0%, rgba(11,102,106,0.2) 100%); border: 1px solid rgba(53,162,159,0.35); border-radius: 16px; padding: 20px 40px; text-align: center;">
+          <p style="margin: 0 0 4px 0; font-size: 22px; font-weight: 800; color: #35A29F; letter-spacing: -0.01em;">⭐ PRO MEMBER</p>
+          <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">Renews on ${renewalDate}</p>
+        </td>
+      </tr>
+    </table>
+
+    <!-- What's unlocked -->
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin: 0 0 24px 0;">
+      <tr>
+        <td style="background: rgba(53,162,159,0.06); border: 1px solid rgba(53,162,159,0.15); border-radius: 12px; padding: 20px;">
+          <p style="margin: 0 0 12px 0; font-size: 13px; font-weight: 600; color: #35A29F; text-transform: uppercase; letter-spacing: 1px;">Everything Unlocked</p>
+          ${featureRow('🎯', 'Unlimited Job Match Scores', 'Analyze as many job postings as you want — no credit limits.')}
+          ${featureRow('⚡', 'ATS-Optimized Rewrites', 'Get a fully rewritten resume tailored to every role you apply for.')}
+          ${featureRow('✉️', 'Cover Letters & Outreach', 'Auto-generated cover letter and LinkedIn DM for each application.')}
+          ${featureRow('📊', 'Deep Section Analysis', 'Bullet-by-bullet breakdown with exact keyword and impact improvements.')}
+        </td>
+      </tr>
+    </table>
+
+    <p style="margin: 0; font-size: 14px; color: rgba(255,255,255,0.4); line-height: 1.6; text-align: center;">
+      Questions or feedback? Just reply to this email — we read every message.
+    </p>
+
+    ${ctaButton('Start Analyzing Jobs →', 'https://rejectly.pro/analyze')}
+  `;
+
+  try {
+    await resend.emails.send({
+      from: 'Rejectly Pro <billing@rejectly.pro>',
+      to: email,
+      subject: `🚀 You're now Pro, ${firstName} — every tool is unlocked`,
+      html: emailLayout(content),
+    });
+  } catch (error) {
+    console.error('Failed to send subscription purchased email:', error);
+  }
+};
+
 // ─── Free Report FOMO Upsell Email ─────────────────────────────
 export const sendFreeReportFOMOEmail = async (
   email: string, 

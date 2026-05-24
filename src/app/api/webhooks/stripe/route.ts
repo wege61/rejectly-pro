@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
-import { sendCreditsPurchasedEmail } from '@/lib/email';
+import { sendCreditsPurchasedEmail, sendSubscriptionPurchasedEmail } from '@/lib/email';
 
 export const dynamic = 'force-dynamic'; // Prevent Next.js from caching the raw body
 
@@ -121,6 +121,16 @@ export async function POST(req: Request) {
           }
           console.log(`Successfully activated subscription for user ${userId}`);
 
+          // Send subscription confirmation email
+          try {
+            const { data: userData } = await supabase.auth.admin.getUserById(userId);
+            if (userData?.user?.email) {
+              const userName = userData.user.user_metadata?.name || 'there';
+              await sendSubscriptionPurchasedEmail(userData.user.email, userName, currentPeriodEnd);
+            }
+          } catch (emailErr) {
+            console.error('Failed to send subscription email (non-blocking):', emailErr);
+          }
         } else if (creditsAdded > 0) {
           // Handle One-Time Credits Purchase
           // Check if user has credits record

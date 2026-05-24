@@ -186,6 +186,24 @@ If ANY metric is missing → add it back immediately!
 Every single metric from the original CV MUST appear in the optimized version.
 This includes ALL: percentages, dollar amounts, user counts, rankings, time periods, and volume metrics.
 
+🚨🚨🚨 CRITICAL: NEVER ALTER FINANCIAL FIGURES — THIS IS NON-NEGOTIABLE 🚨🚨🚨
+================================================================================
+Monetary values (revenue, portfolio sizes, savings, allocation amounts, etc.) from the
+original CV MUST be copied EXACTLY as written. Do NOT round, convert, abbreviate, or
+change them in any way.
+
+EXAMPLES OF FORBIDDEN CHANGES:
+❌ Original "$9M+" → Your output "$500K"  ← THIS IS FALSIFICATION
+❌ Original "€2.3M" → Your output "€2 million"  ← NOT ALLOWED
+❌ Original "$50M" → Your output "$50 million"  ← Keep the original format
+
+✅ CORRECT APPROACH:
+✅ Original "$9M+" → Your output MUST say "$9M+" — verbatim, no changes
+✅ Original "$50M capital allocation" → Your output MUST say "$50M capital allocation"
+
+If you change a financial figure, you are FALSIFYING the candidate's record. NEVER do this.
+================================================================================
+
 If the original has an "ACHIEVEMENTS" section:
 1. Each achievement becomes a bullet point in the relevant job experience
 2. Top 2-3 achievements are ALSO mentioned in the summary
@@ -224,6 +242,7 @@ IMPORTANT INSTRUCTIONS:
 - Keep formatting clean and ATS-friendly
 - CRITICAL: Order work experience in REVERSE CHRONOLOGICAL order (most recent job FIRST, oldest job LAST)
 - CRITICAL: Preserve the EXACT degree name and field of study from the original CV — never paraphrase or change it. If the CV says "Computer Engineering", output must say "Computer Engineering", NOT "Computer Science". Copy it verbatim.
+- CRITICAL: If the original CV contains a Leadership, Extracurricular, Volunteer, or Activities section, you MUST preserve it as a separate "leadership" array in the JSON. Do NOT collapse these roles into a single vague sentence. Each role (e.g., Treasurer, VP of Finance, Club President, Founder) must be its own entry with title, organization, dates, and bullets. For new graduates especially, this section is a key differentiator and must NEVER be omitted or summarized away.
 
 =============================================================================
 REMINDER: Write ALL content in ${outputLanguage}.
@@ -417,8 +436,10 @@ Respond in JSON format:
   "certifications": [ // optional, only if present in original CV
     {
       "name": "Certification Name",
-      "issuer": "Issuing Organization",
-      "date": "Month YYYY"
+      "issuer": "Issuing Organization"
+      // "date" field: ONLY include if a real date exists in the original CV.
+      // If the original has no date for this cert, OMIT the date field entirely.
+      // NEVER write "Month YYYY" as a placeholder — that is worse than omitting it.
     }
   ],
   "languages": [ // optional, only if present in original CV
@@ -426,6 +447,20 @@ Respond in JSON format:
       "language": "English",
       "proficiency": "Native/Fluent/Professional"
     }
+  ],
+  "leadership": [ // REQUIRED if original CV has Leadership/Extracurricular/Activities/Volunteer section
+    {
+      "title": "Role Title (e.g. Treasurer, VP of Finance, Founder)",
+      "organization": "Organization Name",
+      "location": "City, Country", // optional
+      "startDate": "Month YYYY",
+      "endDate": "Month YYYY or Present",
+      "bullets": [
+        "Achievement or responsibility from this role..."
+      ]
+    }
+    // Include ALL leadership/extracurricular roles from the original CV.
+    // Do NOT merge them or summarize them vaguely.
   ]
 }
 
@@ -475,6 +510,13 @@ Before responding, verify:
 □ Optimized count must be >= original count (ZERO metrics can be lost!)
 □ Verify ALL metric types are preserved: volumes, revenue, rankings, time periods, satisfaction scores
 □ If original had ACHIEVEMENTS section → EACH item must be in a relevant experience bullet
+□ FINANCIAL FIGURES AUDIT: List every dollar/euro/monetary amount in original. Verify EACH appears verbatim in output. ($9M+ must be $9M+. $500K must be $500K. No exceptions.)
+
+🎓 LEADERSHIP / EXTRACURRICULAR CHECK:
+□ Does the original CV have a Leadership, Activities, Extracurricular, or Volunteer section?
+□ If YES → "leadership" array in JSON MUST be present and populated
+□ Every individual role (Treasurer, VP, President, Founder, etc.) must be its own entry
+□ If you did not include "leadership" in your JSON but the original had it → YOU FAILED, add it now
 
 🔄 MUST BE DIFFERENT FROM ORIGINAL (these should be noticeably improved):
 □ Professional summary → COMPLETELY REWRITTEN (no clichés!) + TOP achievements included

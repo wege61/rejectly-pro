@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import { GeneratedCV, CVExperience, CVEducation, CVCertification } from "@/types/cv";
+import { GeneratedCV, CVExperience, CVEducation, CVCertification, CVLeadership } from "@/types/cv";
 import { loadFontsToDocument } from "./fontLoader";
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -24,6 +24,7 @@ const LABELS = {
     skills: 'SKILLS',
     certifications: 'CERTIFICATIONS & COURSES',
     languages: 'LANGUAGES',
+    leadership: 'LEADERSHIP & ACTIVITIES',
   },
   tr: {
     professionalSummary: 'ÖZET',
@@ -32,6 +33,7 @@ const LABELS = {
     skills: 'YETENEKLER',
     certifications: 'SERTİFİKALAR VE KURSLAR',
     languages: 'DİLLER',
+    leadership: 'LİDERLİK VE AKTİVİTELER',
   },
 };
 
@@ -432,6 +434,60 @@ export async function generateCVPDF(
   }
 
   // ==========================================
+  // 5b. LEADERSHIP & ACTIVITIES
+  // ==========================================
+  const validLeadership = (cv.leadership || []).filter(l => l.title?.trim() !== '' || l.organization?.trim() !== '');
+  const sortedLeadership = [...validLeadership].sort((a, b) => {
+    const dateA = a.endDate ? a.endDate : a.startDate;
+    const dateB = b.endDate ? b.endDate : b.startDate;
+    return parseDateForSort(dateB) - parseDateForSort(dateA);
+  });
+
+  if (sortedLeadership.length > 0) {
+    const startY = yPosition;
+    drawSectionTitle(L.leadership);
+
+    sortedLeadership.forEach((role) => {
+      checkPageBreak(12);
+
+      const dateText = role.startDate === role.endDate
+        ? role.startDate
+        : [role.startDate, role.endDate || (role.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
+      drawSplitRow(role.title, dateText, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
+      yPosition += 5.5;
+
+      let orgLoc = role.organization || '';
+      if (role.location) orgLoc += ` • ${role.location}`;
+      doc.setFont('Roboto', 'bold');
+      doc.setFontSize(FONTS.subtitle);
+      doc.setTextColor(COLORS.secondary);
+      doc.text(orgLoc, marginX, yPosition);
+      yPosition += 6.5;
+
+      if (role.bullets && role.bullets.length > 0) {
+        doc.setFont('Roboto', 'normal');
+        doc.setFontSize(FONTS.body);
+        doc.setTextColor(COLORS.bullet);
+
+        role.bullets.forEach((bullet) => {
+          checkPageBreak(7);
+          doc.text('•', marginX + 3, yPosition);
+          const bulletLines = getLines(bullet.trim(), contentWidth - 8);
+          bulletLines.forEach((line, lineIndex) => {
+            if (lineIndex > 0) { checkPageBreak(5); yPosition += 5; }
+            doc.text(line, marginX + 8, yPosition);
+          });
+          yPosition += 6;
+        });
+      }
+
+      yPosition += 8;
+    });
+
+    if (highlightSection === 'leadership') drawHighlightBorder(startY, yPosition);
+  }
+
+  // ==========================================
   // 6. SKILLS
   // ==========================================
   if (cv.skills.technical.length > 0) {
@@ -451,6 +507,31 @@ export async function generateCVPDF(
     });
     
     if (highlightSection === "skills") drawHighlightBorder(startY, yPosition);
+  }
+
+  // ==========================================
+  // 7. LANGUAGES
+  // ==========================================
+  const validLanguages = (cv.languages || []).filter(l => l.language?.trim() !== '');
+  if (validLanguages.length > 0) {
+    const startY = yPosition;
+    drawSectionTitle(L.languages);
+
+    doc.setFont('Roboto', 'normal');
+    doc.setFontSize(FONTS.body);
+    doc.setTextColor(COLORS.bullet);
+
+    const langText = validLanguages
+      .map(l => l.proficiency ? `${l.language} (${l.proficiency})` : l.language)
+      .join(' • ');
+    const langLines = getLines(langText, contentWidth);
+    langLines.forEach((line) => {
+      checkPageBreak(5.5);
+      doc.text(line, marginX, yPosition);
+      yPosition += 5.5;
+    });
+
+    if (highlightSection === 'languages') drawHighlightBorder(startY, yPosition);
   }
 
   return doc;

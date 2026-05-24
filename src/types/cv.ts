@@ -42,6 +42,15 @@ export interface CVLanguage {
   proficiency: string;
 }
 
+export interface CVLeadership {
+  title: string;
+  organization: string;
+  location?: string;
+  startDate: string;
+  endDate: string;
+  bullets: string[];
+}
+
 export interface GeneratedCV {
   contact: CVContact;
   summary: string;
@@ -50,6 +59,7 @@ export interface GeneratedCV {
   skills: CVSkills;
   certifications?: CVCertification[];
   languages?: CVLanguage[];
+  leadership?: CVLeadership[];
   photoUrl?: string;
   themeColor?: string;
 }

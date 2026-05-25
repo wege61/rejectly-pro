@@ -6586,7 +6586,42 @@ export default function ReportDetailPage() {
         sections.push('');
       }
 
+      // Certifications
+      if (cv.certifications && cv.certifications.length > 0) {
+        sections.push('CERTIFICATIONS & COURSES');
+        cv.certifications.forEach((cert: { name: string; issuer?: string; date?: string | null }) => {
+          const parts = [cert.name, cert.issuer, cert.date].filter(Boolean);
+          sections.push(parts.join(', '));
+        });
+        sections.push('');
+      }
+
+      // Leadership & Activities
+      if ((cv as any).leadership && (cv as any).leadership.length > 0) {
+        sections.push('LEADERSHIP & ACTIVITIES');
+        (cv as any).leadership.forEach((role: any) => {
+          sections.push(`${role.title || ''} at ${role.organization || ''}`);
+          if (role.startDate || role.endDate) {
+            sections.push(`${role.startDate || ''} - ${role.endDate || ''}`);
+          }
+          if (role.bullets && role.bullets.length > 0) {
+            role.bullets.forEach((bullet: string) => sections.push(`• ${bullet}`));
+          }
+          sections.push('');
+        });
+      }
+
+      // Languages
+      if (cv.languages && cv.languages.length > 0) {
+        sections.push('LANGUAGES');
+        cv.languages.forEach((lang: { language: string; proficiency: string }) => {
+          sections.push(`${lang.language}: ${lang.proficiency}`);
+        });
+        sections.push('');
+      }
+
       const cvText = sections.join('\n');
+
 
       const response = await fetch('/api/ats/check', {
         method: 'POST',

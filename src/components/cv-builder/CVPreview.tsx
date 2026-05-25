@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useCVStore } from "./store";
 import { motion } from "framer-motion";
-import type { CVExperience, CVEducation, CVCertification } from '@/types/cv';
+import type { CVExperience, CVEducation, CVCertification, CVLeadership, CVLanguage } from '@/types/cv';
 
 const Paper = styled.div`
   width: 100%;
@@ -124,7 +124,16 @@ export function CVPreview() {
     return parseDateForSort(dateToCompareB) - parseDateForSort(dateToCompareA);
   });
 
-  const validCerts = (cv.certifications || []).filter(c => c.name?.trim() !== "");
+  const validCerts = (cv.certifications || []).filter(c => c.name?.trim() !== '');
+
+  const validLeadership = (cv.leadership || []).filter(l => l.title?.trim() !== '' || l.organization?.trim() !== '');
+  const sortedLeadership = [...validLeadership].sort((a, b) => {
+    const dateA = a.endDate ? a.endDate : a.startDate;
+    const dateB = b.endDate ? b.endDate : b.startDate;
+    return parseDateForSort(dateB) - parseDateForSort(dateA);
+  });
+
+  const validLanguages = (cv.languages || []).filter(l => l.language?.trim() !== '');
 
   const theme = cv.themeColor || '#000000';
 
@@ -211,11 +220,14 @@ export function CVPreview() {
                 </span>
                 <span style={{ color: '#666', fontSize: '13px' }}>{edu.graduationDate}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: '4px' }}>
-                <span style={{ fontSize: '14px', color: '#444' }}>
-                  {[edu.institution, edu.location].filter(Boolean).join(', ')}
-                </span>
+              <div style={{ fontSize: '14px', color: '#444', marginTop: '2px' }}>
+                {[edu.institution, edu.location].filter(Boolean).join(', ')}
               </div>
+              {edu.details && (
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '4px', lineHeight: 1.5 }}>
+                  {edu.details}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -241,12 +253,53 @@ export function CVPreview() {
         </div>
       )}
 
+      {/* Leadership & Activities Section */}
+      {(sortedLeadership.length > 0) && (
+        <div style={{ marginBottom: '24px' }}>
+          <SectionTitle $theme={theme}>Leadership &amp; Activities</SectionTitle>
+          {sortedLeadership.map((role: CVLeadership, idx: number) => (
+            <div key={idx} style={{ marginBottom: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+                <span style={{ fontWeight: 600, fontSize: '14px' }}>{role.title}</span>
+                {(role.startDate || role.endDate) && (
+                  <span style={{ color: '#666', fontSize: '13px' }}>
+                    {[role.startDate, role.endDate || (role.startDate ? 'Present' : '')].filter(Boolean).join(' — ')}
+                  </span>
+                )}
+              </div>
+              <div style={{ fontSize: '14px', color: '#444', fontWeight: 500, marginBottom: '6px' }}>
+                {role.organization}{role.location ? ` • ${role.location}` : ''}
+              </div>
+              {role.bullets && role.bullets.length > 0 && (
+                <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
+                  {role.bullets.map((bullet: string, i: number) => (
+                    <li key={i} style={{ marginBottom: '3px' }}>{bullet}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Skills Section */}
       {(cv.skills.technical.length > 0) && (
         <div style={{ marginBottom: '24px' }}>
           <SectionTitle $theme={theme}>Skills</SectionTitle>
           <div style={{ fontSize: '13px', color: '#333', lineHeight: 1.6 }}>
             {cv.skills.technical.join(' • ')}
+          </div>
+        </div>
+      )}
+
+      {/* Languages Section */}
+      {(validLanguages.length > 0) && (
+        <div style={{ marginBottom: '24px' }}>
+          <SectionTitle $theme={theme}>Languages</SectionTitle>
+          <div style={{ fontSize: '13px', color: '#333', lineHeight: 1.6 }}>
+            {validLanguages.map((l: CVLanguage) =>
+              l.proficiency ? `${l.language} (${l.proficiency})` : l.language
+            ).join(' • ')}
           </div>
         </div>
       )}

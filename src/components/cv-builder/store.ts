@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { GeneratedCV, CVEducation, CVExperience, CVCertification } from '@/types/cv';
+import type { GeneratedCV, CVEducation, CVExperience, CVCertification, CVLeadership } from '@/types/cv';
 
 // Initial empty CV state
 const initialCVState: GeneratedCV = {
@@ -21,6 +21,7 @@ const initialCVState: GeneratedCV = {
   },
   certifications: [],
   languages: [],
+  leadership: [],
   themeColor: "#000000",
 };
 
@@ -48,6 +49,9 @@ interface CVState {
   addCertification: (cert: CVCertification) => void;
   updateCertification: (index: number, cert: Partial<CVCertification>) => void;
   removeCertification: (index: number) => void;
+  addLeadership: (role: CVLeadership) => void;
+  updateLeadership: (index: number, role: Partial<CVLeadership>) => void;
+  removeLeadership: (index: number) => void;
   setStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
@@ -169,6 +173,20 @@ export const useCVStore = create<CVState>()(
       
       removeCertification: (index: number) => set((state: CVState) => ({
         cv: { ...state.cv, certifications: (state.cv.certifications || []).filter((_, i) => i !== index) }
+      })),
+
+      addLeadership: (role: CVLeadership) => set((state: CVState) => ({
+        cv: { ...state.cv, leadership: [...(state.cv.leadership || []), role] }
+      })),
+
+      updateLeadership: (index: number, rolePatch: Partial<CVLeadership>) => set((state: CVState) => {
+        const newRoles = [...(state.cv.leadership || [])];
+        newRoles[index] = { ...newRoles[index], ...rolePatch };
+        return { cv: { ...state.cv, leadership: newRoles } };
+      }),
+
+      removeLeadership: (index: number) => set((state: CVState) => ({
+        cv: { ...state.cv, leadership: (state.cv.leadership || []).filter((_, i) => i !== index) }
       })),
       
       setStep: (step: number) => set({ currentStep: step }),

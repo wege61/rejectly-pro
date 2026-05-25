@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import { GeneratedCV, CVExperience, CVEducation, CVCertification, CVLeadership } from "@/types/cv";
 import { loadFontsToDocument } from "./fontLoader";
+import { COLOR_TEMPLATES } from "./colorTemplates";
 
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace('#', '');
@@ -60,15 +61,9 @@ const parseDateForSort = (dateStr?: string | null) => {
 };
 
 const getColorTemplateHex = (templateName?: string): string | null => {
-  const templates: Record<string, string> = {
-    'modern-blue': '#2563eb', 
-    'classic-navy': '#1e3a8a',
-    'emerald-green': '#059669',
-    'royal-purple': '#7c3aed',
-    'crimson-red': '#dc2626',
-    'slate-grey': '#475569',
-  };
-  return templateName ? templates[templateName] || null : null;
+  if (!templateName) return null;
+  const template = COLOR_TEMPLATES.find(t => t.key === templateName);
+  return template ? template.colors.primary : null;
 };
 
 export async function generateCVPDF(

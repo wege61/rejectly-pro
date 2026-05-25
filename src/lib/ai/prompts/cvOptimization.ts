@@ -204,6 +204,40 @@ EXAMPLES OF FORBIDDEN CHANGES:
 If you change a financial figure, you are FALSIFYING the candidate's record. NEVER do this.
 ================================================================================
 
+🚨🚨🚨 CRITICAL: PRESERVE ALL CERTIFICATIONS — ZERO TOLERANCE 🚨🚨🚨
+================================================================================
+If the original CV has a Certifications, Courses, Licenses, or Awards section,
+EVERY SINGLE ENTRY must appear in your output's "certifications" array.
+Do NOT pick only the most impressive ones. Do NOT summarize or merge them.
+Do NOT move them to the education details field and skip the certifications array.
+
+STEP 1: Count how many certifications/courses/licenses/awards are in the original CV.
+STEP 2: Count how many are in your output's "certifications" array.
+STEP 3: The numbers MUST match. If any are missing → add them back immediately.
+
+FORBIDDEN BEHAVIOR:
+❌ Original has 6 certifications → Output has 2 (you dropped 4 — THIS IS FAILURE)
+❌ Moving certs to education.details instead of certifications array — NOT ALLOWED
+❌ Merging multiple certs into one entry — NOT ALLOWED
+
+✅ CORRECT: Every cert/course/license gets its own object in the certifications array.
+================================================================================
+
+🚨🚨🚨 CRITICAL: PRESERVE ALL LANGUAGES — ZERO TOLERANCE 🚨🚨🚨
+================================================================================
+If the original CV lists spoken languages (e.g., Portuguese, English, Spanish, Mandarin),
+ALL of them MUST appear in your output's "languages" array.
+Do NOT drop the languages array because you think it's optional.
+Do NOT omit any language that appears in the original CV.
+
+FORBIDDEN BEHAVIOR:
+❌ Original lists 4 languages → Output has 0 ("languages" array missing — THIS IS FAILURE)
+❌ Listing only the most obvious language (e.g., only English) — NOT ALLOWED
+
+✅ CORRECT: Every language mentioned in the original CV gets its own object with
+   language name and proficiency level (Fluent/Advanced/Intermediate/Beginner).
+================================================================================
+
 If the original has an "ACHIEVEMENTS" section:
 1. Each achievement becomes a bullet point in the relevant job experience
 2. Top 2-3 achievements are ALSO mentioned in the summary
@@ -512,6 +546,17 @@ Before responding, verify:
 □ Verify ALL metric types are preserved: volumes, revenue, rankings, time periods, satisfaction scores
 □ If original had ACHIEVEMENTS section → EACH item must be in a relevant experience bullet
 □ FINANCIAL FIGURES AUDIT: List every dollar/euro/monetary amount in original. Verify EACH appears verbatim in output. ($9M+ must be $9M+. $500K must be $500K. No exceptions.)
+
+🎓 CERTIFICATIONS AUDIT (MANDATORY):
+□ Count certifications/courses/licenses/awards in ORIGINAL CV
+□ Count entries in your output's "certifications" array
+□ The counts MUST match — if any are missing → add them back before responding
+□ Certs must be in the certifications array, NOT only buried in education.details
+
+🌍 LANGUAGES AUDIT (MANDATORY):
+□ Does the original CV list spoken languages?
+□ If YES → "languages" array in JSON MUST be present and populated with ALL of them
+□ If you output 0 languages but original had any → YOU FAILED, add them now
 
 🎓 LEADERSHIP / EXTRACURRICULAR CHECK:
 □ Does the original CV have a Leadership, Activities, Extracurricular, or Volunteer section?

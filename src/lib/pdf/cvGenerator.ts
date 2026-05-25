@@ -251,7 +251,9 @@ export async function generateCVPDF(
   const L = LABELS[lang];
 
   const drawSectionTitle = (title: string) => {
-    checkPageBreak(12);
+    // Require 26mm of space: enough for the title (~13.5mm) + first entry row
+    // This prevents orphan headers at the bottom of the page.
+    checkPageBreak(26);
     doc.setFont("Roboto", "bold");
     doc.setFontSize(FONTS.section);
     doc.setTextColor(COLORS.theme);
@@ -329,7 +331,8 @@ export async function generateCVPDF(
     drawSectionTitle(L.professionalExperience);
 
     sortedExperience.forEach((exp) => {
-      checkPageBreak(12);
+      // Require 16mm to ensure title + company + at least one bullet fits
+      checkPageBreak(16);
       
       // Don't duplicate date if start and end are the same month
       const dateText = exp.startDate === exp.endDate
@@ -456,7 +459,8 @@ export async function generateCVPDF(
     drawSectionTitle(L.leadership);
 
     sortedLeadership.forEach((role) => {
-      checkPageBreak(12);
+      // Require 16mm for title + organization + at least one bullet
+      checkPageBreak(16);
 
       const dateText = role.startDate === role.endDate
         ? role.startDate

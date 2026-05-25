@@ -426,10 +426,10 @@ export async function generateCVPDF(
     drawSectionTitle(L.certifications);
 
     validCerts.forEach((cert) => {
-      // Require 14mm for title + issuer
-      checkPageBreak(14);
+      // Require 12mm for title + issuer
+      checkPageBreak(12);
       drawSplitRow(cert.name, cert.date || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 5;
+      yPosition += 4; // Tighter gap between title and issuer
       
       const issuerLine = [cert.issuer, cert.credentialId ? `ID: ${cert.credentialId}` : ''].filter(Boolean).join(' • ');
       if (issuerLine) {
@@ -437,11 +437,11 @@ export async function generateCVPDF(
         doc.setFontSize(FONTS.subtitle);
         doc.setTextColor(COLORS.secondary);
         doc.text(issuerLine, marginX, yPosition);
-        yPosition += 5.5;
+        yPosition += 4; // Advance past the text
       } else {
-        yPosition += 2;
+        yPosition += 1;
       }
-      yPosition += 6;
+      yPosition += 3; // Gap between different certifications (reduced from 6)
     });
     
     if (highlightSection === "certifications") drawHighlightBorder(startY, yPosition);

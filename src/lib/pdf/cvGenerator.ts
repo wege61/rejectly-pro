@@ -263,9 +263,9 @@ export async function generateCVPDF(
     
     const letterSpacedTitle = title.split('').join(String.fromCharCode(8202));
     
-    yPosition += 6;
+    yPosition += 5;
     doc.text(letterSpacedTitle, marginX, yPosition);
-    yPosition += 3.5;
+    yPosition += 3;
     
     const [r, g, b] = hexToRgb(COLORS.theme);
     doc.setDrawColor(
@@ -276,7 +276,7 @@ export async function generateCVPDF(
     doc.setLineWidth(0.2);
     doc.line(marginX, yPosition, pageWidth - marginX, yPosition);
     
-    yPosition += 6.5;
+    yPosition += 5.5;
   };
 
   const drawSplitRow = (left: string, right: string | undefined, isBoldLeft: boolean, colorL: string, colorR: string, sizeL: number, sizeR: number) => {
@@ -310,12 +310,12 @@ export async function generateCVPDF(
     
     const summaryLines = getLines(cv.summary, contentWidth);
     summaryLines.forEach((line) => {
-      checkPageBreak(5.5);
+      checkPageBreak(5);
       doc.text(line, marginX, yPosition);
-      yPosition += 5.5; 
+      yPosition += 5; 
     });
     
-    yPosition += 6;
+    yPosition += 4;
     if (highlightSection === "summary") drawHighlightBorder(startY, yPosition);
   }
 
@@ -341,7 +341,7 @@ export async function generateCVPDF(
         ? exp.startDate
         : [exp.startDate, exp.endDate || (exp.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
       drawSplitRow(exp.title, dateText, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 5.5;
+      yPosition += 5;
       
       let companyLoc = exp.company || "";
       if (exp.location) companyLoc += ` • ${exp.location}`;
@@ -349,28 +349,28 @@ export async function generateCVPDF(
       doc.setFontSize(FONTS.subtitle);
       doc.setTextColor(COLORS.secondary);
       doc.text(companyLoc, marginX, yPosition);
-      yPosition += 6.5;
+      yPosition += 5;
 
       doc.setFont("Roboto", "normal");
       doc.setFontSize(FONTS.body);
       doc.setTextColor(COLORS.bullet);
 
       exp.bullets.forEach((bullet) => {
-        checkPageBreak(7);
+        checkPageBreak(6);
         doc.text("•", marginX + 3, yPosition);
 
         const bulletLines = getLines(bullet.trim(), contentWidth - 8);
         bulletLines.forEach((line, lineIndex) => {
           if (lineIndex > 0) {
-            checkPageBreak(5);
-            yPosition += 5;
+            checkPageBreak(4.5);
+            yPosition += 4.5;
           }
           doc.text(line, marginX + 8, yPosition);
         });
-        yPosition += 6;
+        yPosition += 5.5;
       });
       
-      yPosition += 8;
+      yPosition += 5;
     });
     
     if (highlightSection === "experience") drawHighlightBorder(startY, yPosition);
@@ -394,11 +394,24 @@ export async function generateCVPDF(
       if (edu.fieldOfStudy) degreeLine += ` in ${edu.fieldOfStudy}`;
 
       drawSplitRow(degreeLine, edu.graduationDate || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 5.5;
+      yPosition += 5;
 
       const institutionLine = [edu.institution, edu.location].filter(Boolean).join(', ');
       drawSplitRow(institutionLine, undefined, false, COLORS.secondary, COLORS.light, FONTS.subtitle, FONTS.date);
-      yPosition += 8;
+      yPosition += 5;
+
+      if (edu.details) {
+        doc.setFont('Roboto', 'normal');
+        doc.setFontSize(FONTS.body - 0.5);
+        doc.setTextColor(COLORS.secondary);
+        const detailLines = getLines(edu.details, contentWidth);
+        detailLines.forEach(line => {
+          checkPageBreak(4.5);
+          doc.text(line, marginX, yPosition);
+          yPosition += 4.5;
+        });
+        yPosition += 2;
+      }
     });
     
     if (highlightSection === "education") drawHighlightBorder(startY, yPosition);
@@ -454,7 +467,7 @@ export async function generateCVPDF(
         ? role.startDate
         : [role.startDate, role.endDate || (role.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
       drawSplitRow(role.title, dateText, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 5.5;
+      yPosition += 5;
 
       let orgLoc = role.organization || '';
       if (role.location) orgLoc += ` • ${role.location}`;
@@ -462,7 +475,7 @@ export async function generateCVPDF(
       doc.setFontSize(FONTS.subtitle);
       doc.setTextColor(COLORS.secondary);
       doc.text(orgLoc, marginX, yPosition);
-      yPosition += 6.5;
+      yPosition += 5;
 
       if (role.bullets && role.bullets.length > 0) {
         doc.setFont('Roboto', 'normal');
@@ -470,18 +483,18 @@ export async function generateCVPDF(
         doc.setTextColor(COLORS.bullet);
 
         role.bullets.forEach((bullet) => {
-          checkPageBreak(7);
+          checkPageBreak(6);
           doc.text('•', marginX + 3, yPosition);
           const bulletLines = getLines(bullet.trim(), contentWidth - 8);
           bulletLines.forEach((line, lineIndex) => {
-            if (lineIndex > 0) { checkPageBreak(5); yPosition += 5; }
+            if (lineIndex > 0) { checkPageBreak(4.5); yPosition += 4.5; }
             doc.text(line, marginX + 8, yPosition);
           });
-          yPosition += 6;
+          yPosition += 5.5;
         });
       }
 
-      yPosition += 8;
+      yPosition += 5;
     });
 
     if (highlightSection === 'leadership') drawHighlightBorder(startY, yPosition);

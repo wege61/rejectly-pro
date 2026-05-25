@@ -251,9 +251,10 @@ export async function generateCVPDF(
   const L = LABELS[lang];
 
   const drawSectionTitle = (title: string) => {
-    // Require 26mm of space: enough for the title (~13.5mm) + first entry row
-    // This prevents orphan headers at the bottom of the page.
-    checkPageBreak(26);
+    // Require 34mm of space: title (~13.5mm) + first entry row (up to 16mm) + buffer.
+    // This mathematically guarantees that the first entry will NOT trigger a page break
+    // right after the title is drawn, preventing orphan headers.
+    checkPageBreak(34);
     doc.setFont("Roboto", "bold");
     doc.setFontSize(FONTS.section);
     doc.setTextColor(COLORS.theme);
@@ -387,7 +388,8 @@ export async function generateCVPDF(
     drawSectionTitle(L.education);
 
     sortedEducation.forEach((edu) => {
-      checkPageBreak(10);
+      // Require 16mm for degree + institution
+      checkPageBreak(16);
       let degreeLine = edu.degree || "";
       if (edu.fieldOfStudy) degreeLine += ` in ${edu.fieldOfStudy}`;
 
@@ -424,9 +426,10 @@ export async function generateCVPDF(
     drawSectionTitle(L.certifications);
 
     validCerts.forEach((cert) => {
-      checkPageBreak(10);
+      // Require 14mm for title + issuer
+      checkPageBreak(14);
       drawSplitRow(cert.name, cert.date || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 5.5;
+      yPosition += 5;
       
       const issuerLine = [cert.issuer, cert.credentialId ? `ID: ${cert.credentialId}` : ''].filter(Boolean).join(' • ');
       if (issuerLine) {

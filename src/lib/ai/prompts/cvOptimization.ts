@@ -470,8 +470,10 @@ Respond in JSON format:
   },
   "certifications": [ // optional, only if present in original CV
     {
-      "name": "Certification Name",
-      "issuer": "Issuing Organization"
+      "name": "Certification/Course Name (e.g. Fundamental of Financial Planning)",
+      "issuer": "Issuing Organization (e.g. Goldman Sachs, Coursera, Udemy)"
+      // CRITICAL: You MUST cleanly separate the course/certification name from the issuing organization.
+      // Do NOT combine them into the 'name' field. 
       // "date" field: ONLY include if a real date exists in the original CV.
       // If the original has no date for this cert, OMIT the date field entirely.
       // NEVER write "Month YYYY" as a placeholder — that is worse than omitting it.

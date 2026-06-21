@@ -5,6 +5,7 @@ import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateOptimizedCVPrompt, generateCareerRecommendationsPrompt, generateInterviewPrepPrompt } from "@/lib/ai/prompts";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { postProcessCVForATS, GeneratedCVData } from "@/lib/ats/utils";
+import { detectLocale, LOCALE_TO_LANGUAGE, EN_MONTHS, PRESENT_MAP } from "@/lib/languageUtils";
 
 export async function POST(request: NextRequest) {
   console.log('\n\n🔴🔴🔴 CV GENERATE ENDPOINT CALLED 🔴🔴🔴\n\n');
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get request body
-    const { reportId, additionalTools = [], forceRegenerate = false, photoUrl, colorTemplate, userProvidedMetrics, academicDetails } = await request.json();
+    const { reportId, additionalTools = [], forceRegenerate = false, photoUrl, colorTemplate, userProvidedMetrics, targetLanguage, academicDetails } = await request.json();
 
     console.log('🔍 CV Generation Request:', {
       reportId,
@@ -140,12 +141,12 @@ export async function POST(request: NextRequest) {
     console.log('📊 Extracted metrics from CV:', extractedMetrics);
     console.log('🏆 Achievements section found:', achievementsSection ? 'YES' : 'NO');
 
-    // Detect output language from job posting text
+    // Use targetLanguage if provided by the user in the new Pro modal flow.
+    // Otherwise fallback to job lang or auto-detect.
     const jobTextsCombined = jobDocs.map((job: { text: string }) => job.text).join(' ');
-    const detectedLocale = detectLocale(jobTextsCombined);
-    const LOCALE_TO_LANGUAGE: Record<string, string> = {
-      'en': 'English', 'tr': 'Turkish', 'de': 'German', 'fr': 'French', 'es': 'Spanish',
-    };
+    const savedLang = jobDocs[0]?.lang;
+    const detectedLocale = targetLanguage || ((savedLang && savedLang !== 'en') ? savedLang : detectLocale(jobTextsCombined));
+    
     const outputLanguage = LOCALE_TO_LANGUAGE[detectedLocale] || 'English';
     console.log('🌍 Detected job posting language:', outputLanguage, `(locale: ${detectedLocale})`);
     
@@ -474,36 +475,7 @@ export async function POST(request: NextRequest) {
 // Locale-aware date post-processor
 // Uses Intl.DateTimeFormat so it works for ANY language, not just Turkish.
 // ---------------------------------------------------------------------------
-const EN_MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
 
-const PRESENT_MAP: Record<string, string> = {
-  tr: 'Devam Ediyor',
-  de: 'Bis heute',
-  fr: "Aujourd'hui",
-  es: 'Actualidad',
-  it: 'Presente',
-  pt: 'Presente',
-  nl: 'Heden',
-  ru: 'По настоящее время',
-  ar: 'حتى الآن',
-};
-
-/** Detect locale from CV text content. Returns BCP-47 locale string. */
-function detectLocale(text: string): string {
-  // Turkish
-  if (/[şçğıöüŞÇĞİÖÜ]/.test(text) || /\b(ve|ile|için|olan|olarak|müşteri|sağla)\b/i.test(text)) return 'tr';
-  // German
-  if (/[äöüßÄÖÜ]/.test(text) || /\b(und|mit|für|bei|das|ein|sind)\b/i.test(text)) return 'de';
-  // French
-  if (/[àâéèêëïîôùûüÿçœæ]/i.test(text) || /\b(et|avec|pour|dans|les|des|une)\b/i.test(text)) return 'fr';
-  // Spanish
-  if (/[ñ¿¡áéíóú]/i.test(text) || /\b(y|con|para|por|los|las|una)\b/i.test(text)) return 'es';
-  // Default
-  return 'en';
-}
 
 /** Build a map of English month name → localized month name for the given locale. */
 function buildMonthMap(locale: string): Record<string, string> {

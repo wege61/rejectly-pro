@@ -17,6 +17,21 @@ const sanitizeHtml = (html: string, options?: { ADD_ATTR?: string[] }): string =
   return DOMPurify.sanitize(html, options);
 };
 
+// SEO utility to automatically inject lazy loading and alt tags to in-content images
+const enhanceHtmlImages = (html: string, postTitle: string): string => {
+  if (!html) return html;
+  return html.replace(/<img([^>]*)>/gi, (match, p1) => {
+    let newImg = `<img${p1}`;
+    if (!/loading=/i.test(p1)) newImg += ` loading="lazy"`;
+    if (!/decoding=/i.test(p1)) newImg += ` decoding="async"`;
+    if (!/alt=/i.test(p1) || /alt=["']\s*["']/.test(p1)) {
+      newImg = newImg.replace(/alt=["'][^"']*["']/i, ''); // remove empty
+      newImg += ` alt="${postTitle.replace(/"/g, '&quot;')}"`;
+    }
+    return newImg + '>';
+  });
+};
+
 const Container = styled.div`
   min-height: 100vh;
   background-color: var(--bg-color);
@@ -695,8 +710,11 @@ export function BlogPostContent({ post, relatedPosts }: BlogPostContentProps) {
               itemProp="articleBody"
               dangerouslySetInnerHTML={{
                 __html: sanitizeHtml(
-                  addHeadingIds(post.content, extractHeadings(post.content)),
-                  { ADD_ATTR: ['target'] }
+                  enhanceHtmlImages(
+                    addHeadingIds(post.content, extractHeadings(post.content)),
+                    post.title
+                  ),
+                  { ADD_ATTR: ['target', 'loading', 'decoding'] }
                 )
               }}
             />

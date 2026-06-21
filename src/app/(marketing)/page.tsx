@@ -3318,11 +3318,11 @@ export default function Page() {
                 <HeroContent>
           <HeroTextColumn>
             <HeroTitle>
-              Stop Getting Auto-Rejected For Your First Job.
+              Free ATS Resume Checker: Stop Getting Auto-Rejected.
             </HeroTitle>
 
             <HeroSubtitle>
-              The system is rigged against new grads. <strong>Hack it.</strong> Our AI reverse-engineers the ATS, translating your university projects and internships into the exact corporate keywords recruiters demand.
+              The system is rigged against new grads. <strong>Rate your resume and get your ATS score.</strong> Our AI reverse-engineers the ATS, translating your university projects and internships into the exact corporate keywords recruiters demand.
             </HeroSubtitle>
 
             <ButtonGroup>

@@ -3,6 +3,7 @@ import Script from "next/script";
 import StyledComponentsRegistry from "@/lib/registry";
 import Providers from "@/components/Providers";
 import { OrganizationSchema, WebSiteSchema, ProductSchema, ReviewSchema } from "@/components/seo/StructuredData";
+import { CanonicalTag } from "@/components/seo/CanonicalTag";
 import { WebVitals } from "@/components/analytics/WebVitals";
 
 declare global {
@@ -15,11 +16,11 @@ declare global {
 export const metadata: Metadata = {
   metadataBase: new URL('https://rejectly.pro'),
   title: {
-    default: "Rejectly.pro - Bypass ATS Bots For Your First Job",
+    default: "Free ATS Resume Checker & Score Online | Rejectly.pro",
     template: "%s | Rejectly.pro"
   },
   description:
-    "Hack the ATS and land your first job. Our AI translates your university projects and internships into corporate keywords to bypass HR bots.",
+    "Get your free ATS resume score instantly. Hack the ATS and land your first job. Our AI translates your university projects and internships into corporate keywords to bypass HR bots.",
   keywords: [
     "new grad resume",
     "entry level ATS",
@@ -45,8 +46,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://rejectly.pro",
     siteName: "Rejectly.pro",
-    title: "Rejectly.pro - Bypass ATS Bots For Your First Job",
-    description: "Hack the ATS and land your first job. Our AI translates your university projects and internships into corporate keywords to bypass HR bots.",
+    title: "Free ATS Resume Checker & Score Online | Rejectly.pro",
+    description: "Get your free ATS resume score instantly. Hack the ATS and land your first job. Our AI translates your university projects and internships into corporate keywords to bypass HR bots.",
     images: [
       {
         url: "/og-image.png",
@@ -178,6 +179,7 @@ export default function RootLayout({
             `,
           }}
         />
+        <CanonicalTag />
       </head>
       <body suppressHydrationWarning>
         {/* Google Analytics */}

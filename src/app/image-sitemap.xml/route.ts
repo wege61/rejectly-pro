@@ -9,12 +9,11 @@ export async function GET() {
   try {
     const supabase = createClient(config.supabase.url, config.supabase.anonKey);
 
-    // Fetch published blog posts with images
+    // Fetch published blog posts with images and content
     const { data: posts, error } = await supabase
       .from("blog_posts")
-      .select("slug, title, featured_image, featured_image_alt, updated_at, published_at")
+      .select("slug, title, featured_image, featured_image_alt, updated_at, published_at, content")
       .eq("is_published", true)
-      .not("featured_image", "is", null)
       .order("published_at", { ascending: false });
 
     if (error) {
@@ -32,22 +31,57 @@ export async function GET() {
 
     const imageEntries = validPosts
       .map((post) => {
-        const imageUrl = post.featured_image.startsWith("/")
-          ? `${BASE_URL}${post.featured_image}`
-          : post.featured_image;
-
         const lastmod = post.updated_at || post.published_at || new Date().toISOString();
 
-        return `  <url>
-    <loc>${escapeXml(`${BASE_URL}/blog/${post.slug}`)}</loc>
+        let imageTags = '';
+        
+        // 1. Featured image
+        if (post.featured_image) {
+          const featuredUrl = post.featured_image.startsWith("/")
+            ? `${BASE_URL}${post.featured_image}`
+            : post.featured_image;
+          imageTags += `
     <image:image>
-      <image:loc>${escapeXml(imageUrl)}</image:loc>
+      <image:loc>${escapeXml(featuredUrl)}</image:loc>
       <image:title>${escapeXml(post.featured_image_alt || post.title)}</image:title>
       <image:caption>${escapeXml(post.title)}</image:caption>
-    </image:image>
+    </image:image>`;
+        }
+
+        // 2. In-content images
+        if (post.content) {
+          const imgRegex = /<img[^>]+src="([^">]+)"(?:[^>]+alt="([^">]*)")?[^>]*>/gi;
+          let match;
+          while ((match = imgRegex.exec(post.content)) !== null) {
+            let src = match[1];
+            if (!src) continue;
+            let alt = match[2] || post.title;
+            
+            if (src.startsWith('/')) {
+              src = `${BASE_URL}${src}`;
+            }
+
+            // Avoid duplicating the featured image
+            if (post.featured_image && src.includes(post.featured_image)) continue;
+
+            imageTags += `
+    <image:image>
+      <image:loc>${escapeXml(src)}</image:loc>
+      <image:title>${escapeXml(alt)}</image:title>
+      <image:caption>${escapeXml(alt)}</image:caption>
+    </image:image>`;
+          }
+        }
+
+        // If no images found for this post, don't include it in the sitemap
+        if (!imageTags) return null;
+
+        return `  <url>
+    <loc>${escapeXml(`${BASE_URL}/blog/${post.slug}`)}</loc>${imageTags}
     <lastmod>${new Date(lastmod).toISOString()}</lastmod>
   </url>`;
       })
+      .filter(Boolean)
       .join("\n");
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

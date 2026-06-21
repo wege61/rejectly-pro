@@ -2,6 +2,12 @@ import { getBlogPosts, getAllCategories, getAllTags } from "@/lib/blog";
 import { BlogListSchema } from "@/components/seo/StructuredData";
 import { BlogPageContent } from "@/components/blog/BlogPageContent";
 import type { BlogFilters } from "@/types/blog";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Rejectly.pro Blog | ATS Optimization & Resume Tips",
+  description: "Learn how to bypass the ATS, write the perfect resume, and get more interviews. Data-driven career advice for new grads and professionals.",
+};
 
 // ISR: Revalidate every 60 seconds for fresh content
 export const revalidate = 60;

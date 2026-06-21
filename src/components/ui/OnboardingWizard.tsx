@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/contexts/ToastContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { detectLocale } from "@/lib/languageUtils";
 
 const slideVariants = {
   enter: (direction: number) => ({
@@ -859,8 +860,12 @@ export function OnboardingWizard({
   // Preview State
   const [previewDocument, setPreviewDocument] = useState<{ title: string, url: string, isPdf: boolean } | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  
+  // Language State
+  const [targetLanguage, setTargetLanguage] = useState<string>("en");
+  const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
 
-  // Total steps is 2 (CV -> Job -> Analysis Loader -> Redirect)
+  // Total steps is 2 (CV -> Job -> Analysis)
   const totalSteps = 2;
   const progress = (currentStep / totalSteps) * 100;
 
@@ -880,7 +885,7 @@ export function OnboardingWizard({
   // Check if user has existing CV and Job when modal opens
   useEffect(() => {
     async function checkExistingDocuments() {
-      if (!isOpen) return;
+      if (currentStep < 1 || currentStep > 2) return;
 
       // Reset to step 1 when modal opens (unless we have saved state)
       const savedState = localStorage.getItem(WIZARD_STORAGE_KEY);
@@ -950,7 +955,8 @@ export function OnboardingWizard({
           const state = JSON.parse(savedState);
           // Only restore step if there was a saved state
           if (state.currentStep) {
-            setCurrentStep(state.currentStep);
+            // Cap at step 2 since we removed the 3rd step (Language Selection)
+            setCurrentStep(Math.min(state.currentStep, 2));
           }
           setUploadedCV(state.uploadedCV || null);
           setCvText(state.cvText || "");
@@ -968,7 +974,7 @@ export function OnboardingWizard({
 
   // Save wizard state to localStorage
   useEffect(() => {
-    if (isOpen && currentStep < 4) {
+    if (isOpen && currentStep < 3) {
       try {
         const state = {
           currentStep,
@@ -1445,7 +1451,6 @@ export function OnboardingWizard({
                           onClick={() => {
                             setSavedJob(job);
                             setSelectedJob(job.id);
-                            // Refined one-tap instantly triggers analysis
                             changeStep(3);
                             handleCreateAnalysis(job.id);
                           }}
@@ -1514,7 +1519,7 @@ export function OnboardingWizard({
                     }
                     if (finalJobId) {
                       changeStep(3);
-                      handleCreateAnalysis(finalJobId);
+                      handleCreateAnalysis(finalJobId!);
                     }
                   }}
                   disabled={!jobTitle || !jobDetails}
@@ -1530,7 +1535,7 @@ export function OnboardingWizard({
         if (isLoading && analysisProgressStep > 0) {
           return (
             <SlideContainer
-              key="step3-loading"
+              key="step4-loading"
               custom={direction}
               variants={slideVariants}
               initial="enter"

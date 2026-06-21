@@ -2,41 +2,13 @@ import { jsPDF } from "jspdf";
 import { GeneratedCV, CVExperience, CVEducation, CVCertification, CVLeadership } from "@/types/cv";
 import { loadFontsToDocument } from "./fontLoader";
 import { COLOR_TEMPLATES } from "./colorTemplates";
+import { detectLocale, CV_HEADINGS } from "@/lib/languageUtils";
 
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace('#', '');
   const color = parseInt(h.length === 3 ? h.split('').map(x => x + x).join('') : h, 16);
   return [(color >> 16) & 255, (color >> 8) & 255, color & 255];
 }
-
-function detectCVLanguage(cv: GeneratedCV): 'tr' | 'en' {
-  const text = [cv.summary, ...(cv.experience?.[0]?.bullets || [])].join(' ').toLowerCase();
-  const turkishChars = /[şçğıöüŞÇĞİÖÜ]/;
-  const turkishWords = /\b(ve|ile|için|olan|bir|bu|da|de|olarak|süreç|yönet|müşteri|sağla|artır)\b/i;
-  if (turkishChars.test(text) || turkishWords.test(text)) return 'tr';
-  return 'en';
-}
-
-const LABELS = {
-  en: {
-    professionalSummary: 'SUMMARY',
-    professionalExperience: 'EXPERIENCE & PROJECTS',
-    education: 'EDUCATION',
-    skills: 'SKILLS',
-    certifications: 'CERTIFICATIONS & COURSES',
-    languages: 'LANGUAGES',
-    leadership: 'LEADERSHIP & ACTIVITIES',
-  },
-  tr: {
-    professionalSummary: 'ÖZET',
-    professionalExperience: 'İŞ DENEYİMİ',
-    education: 'EĞİTİM',
-    skills: 'YETENEKLER',
-    certifications: 'SERTİFİKALAR VE KURSLAR',
-    languages: 'DİLLER',
-    leadership: 'LİDERLİK VE AKTİVİTELER',
-  },
-};
 
 export interface CVPDFOptions {
   colorTemplate?: string;
@@ -247,8 +219,12 @@ export async function generateCVPDF(
   doc.line(marginX, yPosition, pageWidth - marginX, yPosition);
   yPosition += 8; // Deep space before first section
 
-  const lang = detectCVLanguage(cv);
-  const L = LABELS[lang];
+  const allText = [
+    cv.summary,
+    ...cv.experience.map(e => `${e.title} ${e.bullets.join(" ")}`)
+  ].join(" ");
+  const lang = detectLocale(allText);
+  const L = CV_HEADINGS[lang] || CV_HEADINGS['en'];
 
   const drawSectionTitle = (title: string) => {
     // Require 34mm of space: title (~13.5mm) + first entry row (up to 16mm) + buffer.
@@ -300,7 +276,7 @@ export async function generateCVPDF(
   // ==========================================
   if (cv.summary) {
     const startY = yPosition;
-    drawSectionTitle(L.professionalSummary);
+    drawSectionTitle((L.summary || 'Summary').toUpperCase());
     
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
@@ -329,7 +305,7 @@ export async function generateCVPDF(
 
   if (sortedExperience.length > 0) {
     const startY = yPosition;
-    drawSectionTitle(L.professionalExperience);
+    drawSectionTitle((L.experience || 'Experience & Projects').toUpperCase());
 
     sortedExperience.forEach((exp) => {
       // Require 16mm to ensure title + company + at least one bullet fits
@@ -385,7 +361,7 @@ export async function generateCVPDF(
 
   if (sortedEducation.length > 0) {
     const startY = yPosition;
-    drawSectionTitle(L.education);
+    drawSectionTitle((L.education || 'Education').toUpperCase());
 
     sortedEducation.forEach((edu) => {
       // Require 16mm for degree + institution
@@ -423,7 +399,7 @@ export async function generateCVPDF(
   const validCerts = (cv.certifications || []).filter(c => c.name?.trim() !== "");
   if (validCerts.length > 0) {
     const startY = yPosition;
-    drawSectionTitle(L.certifications);
+    drawSectionTitle((L.certifications || 'Certifications & Courses').toUpperCase());
 
     validCerts.forEach((cert) => {
       // Require 12mm for title + issuer
@@ -459,7 +435,7 @@ export async function generateCVPDF(
 
   if (sortedLeadership.length > 0) {
     const startY = yPosition;
-    drawSectionTitle(L.leadership);
+    drawSectionTitle((L.leadership || 'Leadership & Activities').toUpperCase());
 
     sortedLeadership.forEach((role) => {
       // Require 16mm for title + organization + at least one bullet
@@ -507,7 +483,7 @@ export async function generateCVPDF(
   // ==========================================
   if (cv.skills.technical.length > 0) {
     const startY = yPosition;
-    drawSectionTitle(L.skills);
+    drawSectionTitle((L.skills || 'Skills').toUpperCase());
 
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
@@ -530,7 +506,7 @@ export async function generateCVPDF(
   const validLanguages = (cv.languages || []).filter(l => l.language?.trim() !== '');
   if (validLanguages.length > 0) {
     const startY = yPosition;
-    drawSectionTitle(L.languages);
+    drawSectionTitle((L.languages || 'Languages').toUpperCase());
 
     doc.setFont('Roboto', 'normal');
     doc.setFontSize(FONTS.body);

@@ -20,6 +20,7 @@ import { ToolSuggestionModal } from "@/components/features/ToolSuggestionModal";
 import { MetricQuestionsModal } from "@/components/features/MetricQuestionsModal";
 import { CVCustomizationModal } from "@/components/features/CVCustomizationModal";
 import { ScoreBreakdownModal } from "@/components/features/ScoreBreakdownModal";
+import { LanguageSelectionModal } from "@/components/features/LanguageSelectionModal";
 import { CareerRecommendationsSection } from "@/components/reports/CareerRecommendationsSection";
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerBody, DrawerFooter } from "@/components/ui/Drawer";
 import { CreditsCard } from "@/components/dashboard";
@@ -28,6 +29,7 @@ import { ToolSuggestionResponse } from "@/types/toolSuggestion";
 import { CVCustomizationOptions } from "@/types/cvCustomization";
 import { ScoreBreakdown, ScoreComponent } from "@/types/scoreBreakdown";
 import { PRICING, ROUTES } from "@/lib/constants";
+import { detectLocale } from "@/lib/languageUtils";
 import {
   Report,
   UserCredits,
@@ -6413,6 +6415,9 @@ export default function ReportDetailPage() {
   const [pendingMetrics, setPendingMetrics] = useState<Record<string, string>>({});
   const [cvPhotoBase64, setCvPhotoBase64] = useState<string | null>(null);
   const [isUpgradeConfirmModalOpen, setIsUpgradeConfirmModalOpen] = useState(false);
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const [targetLanguage, setTargetLanguage] = useState<string>("en");
+  const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
   const wasGeneratingRef = useRef(false);
   const [userCredits, setUserCredits] = useState<UserCredits>({
     credits: 0,
@@ -7180,6 +7185,7 @@ export default function ReportDetailPage() {
           colorTemplate: customization?.colorTemplateKey,
           userProvidedMetrics: pendingMetrics,
           forceRegenerate: true,
+          targetLanguage,
         }),
       });
       
@@ -7413,8 +7419,8 @@ export default function ReportDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reportId: report.id,
-
           forceRegenerate: true,
+          targetLanguage,
         }),
       });
 
@@ -9711,7 +9717,15 @@ export default function ReportDetailPage() {
             <button
               onClick={() => {
                 setIsUpgradeConfirmModalOpen(false);
-                handleUpgradeToPro();
+                
+                // Pre-detect language from original CV text if available
+                if (originalCvText) {
+                  const locale = detectLocale(originalCvText);
+                  setDetectedLanguage(locale);
+                  setTargetLanguage(locale);
+                }
+                
+                setIsLanguageModalOpen(true);
               }}
               disabled={isUpgrading}
               style={{
@@ -9743,11 +9757,25 @@ export default function ReportDetailPage() {
                 (e.target as HTMLButtonElement).style.boxShadow = '0 8px 24px rgba(53, 162, 159, 0.25)';
               }}
             >
-              {isUpgrading ? 'Upgrading...' : 'Confirm Upgrade'}
+              {isUpgrading ? 'Upgrading...' : 'Start Optimization'}
             </button>
           </div>
         </div>
       </Modal>
+
+      {/* Language Selection Modal */}
+      <LanguageSelectionModal
+        isOpen={isLanguageModalOpen}
+        onClose={() => setIsLanguageModalOpen(false)}
+        detectedLanguage={detectedLanguage}
+        selectedLanguage={targetLanguage}
+        setSelectedLanguage={setTargetLanguage}
+        onConfirm={(lang) => {
+          setTargetLanguage(lang);
+          setIsLanguageModalOpen(false);
+          handleUpgradeToPro();
+        }}
+      />
 
       {/* Motivational Footer */}
       <MotivationalFooterWrapper>

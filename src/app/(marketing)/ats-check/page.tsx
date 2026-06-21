@@ -7,6 +7,8 @@ export async function generateMetadata(props: { searchParams: Promise<{ score?: 
   const imageUrl = score ? `https://rejectly.pro/api/og/score?score=${score}` : "https://rejectly.pro/og-ats-checker.jpg";
   
   return {
+    title: "ATS Score Checker Free Online | Rate My Resume",
+    description: "Use our free ATS resume checker to get your ATS score instantly. Rate your resume online and bypass applicant tracking systems.",
     openGraph: {
       images: [
         {

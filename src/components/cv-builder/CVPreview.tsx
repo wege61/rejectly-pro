@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useCVStore } from "./store";
 import { motion } from "framer-motion";
 import type { CVExperience, CVEducation, CVCertification, CVLeadership, CVLanguage } from '@/types/cv';
+import { detectLocale, CV_HEADINGS } from "@/lib/languageUtils";
 
 const Paper = styled.div`
   width: 100%;
@@ -105,6 +106,14 @@ const parseDateForSort = (dateStr?: string | null) => {
 export function CVPreview() {
   const { cv } = useCVStore();
   
+  const allText = [
+    cv.summary,
+    ...cv.experience.map(e => `${e.title} ${e.bullets.join(" ")}`)
+  ].join(" ");
+  
+  const cvLanguage = detectLocale(allText);
+  const headings = CV_HEADINGS[cvLanguage] || CV_HEADINGS['en'];
+  
   const hasContactInfo = 
     cv.contact.name || 
     cv.contact.email || 
@@ -173,7 +182,7 @@ export function CVPreview() {
       {/* Summary Section (If exists) */}
       {cv.summary && (
         <div style={{ marginBottom: '24px' }}>
-          <SectionTitle $theme={theme}>Summary</SectionTitle>
+          <SectionTitle $theme={theme}>{headings.summary}</SectionTitle>
           <p style={{ fontSize: '13px', lineHeight: 1.6, color: '#333' }}>
             {cv.summary}
           </p>
@@ -183,7 +192,7 @@ export function CVPreview() {
       {/* Experience Section */}
       {(sortedExperience.length > 0) && (
         <div style={{ marginBottom: '24px' }}>
-          <SectionTitle $theme={theme}>Experience & Projects</SectionTitle>
+          <SectionTitle $theme={theme}>{headings.experience}</SectionTitle>
           {sortedExperience.map((exp: CVExperience, idx: number) => (
             <div key={idx} style={{ marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -210,7 +219,7 @@ export function CVPreview() {
       {/* Education Section */}
       {(sortedEducation.length > 0) && (
         <div style={{ marginBottom: '24px' }}>
-          <SectionTitle $theme={theme}>Education</SectionTitle>
+          <SectionTitle $theme={theme}>{headings.education}</SectionTitle>
           {sortedEducation.map((edu: CVEducation, idx: number) => (
             <div key={idx} style={{ marginBottom: '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
@@ -236,7 +245,7 @@ export function CVPreview() {
       {/* Certifications Section */}
       {(validCerts.length > 0) && (
         <div style={{ marginBottom: '24px' }}>
-          <SectionTitle $theme={theme}>Certifications & Courses</SectionTitle>
+          <SectionTitle $theme={theme}>{headings.certifications}</SectionTitle>
           {validCerts.map((cert: CVCertification, idx: number) => (
             <div key={idx} style={{ marginBottom: '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
@@ -256,7 +265,7 @@ export function CVPreview() {
       {/* Leadership & Activities Section */}
       {(sortedLeadership.length > 0) && (
         <div style={{ marginBottom: '24px' }}>
-          <SectionTitle $theme={theme}>Leadership &amp; Activities</SectionTitle>
+          <SectionTitle $theme={theme}>{headings.leadership}</SectionTitle>
           {sortedLeadership.map((role: CVLeadership, idx: number) => (
             <div key={idx} style={{ marginBottom: '14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
@@ -285,7 +294,7 @@ export function CVPreview() {
       {/* Skills Section */}
       {(cv.skills.technical.length > 0) && (
         <div style={{ marginBottom: '24px' }}>
-          <SectionTitle $theme={theme}>Skills</SectionTitle>
+          <SectionTitle $theme={theme}>{headings.skills}</SectionTitle>
           <div style={{ fontSize: '13px', color: '#333', lineHeight: 1.6 }}>
             {cv.skills.technical.join(' • ')}
           </div>
@@ -295,7 +304,7 @@ export function CVPreview() {
       {/* Languages Section */}
       {(validLanguages.length > 0) && (
         <div style={{ marginBottom: '24px' }}>
-          <SectionTitle $theme={theme}>Languages</SectionTitle>
+          <SectionTitle $theme={theme}>{headings.languages}</SectionTitle>
           <div style={{ fontSize: '13px', color: '#333', lineHeight: 1.6 }}>
             {validLanguages.map((l: CVLanguage) =>
               l.proficiency ? `${l.language} (${l.proficiency})` : l.language

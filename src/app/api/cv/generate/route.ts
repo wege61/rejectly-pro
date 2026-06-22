@@ -203,9 +203,8 @@ export async function POST(request: NextRequest) {
     // Post-process CV for ATS compliance (expand abbreviations, normalize dates, clean special chars)
     const generatedCV = postProcessCVForATS(rawGeneratedCV as GeneratedCVData);
 
-    // Localize dates based on job posting language
-    const jobTextsForLocale = jobDocs.map((j: { text: string }) => j.text).join(' ');
-    localizeCVDates(generatedCV, jobTextsForLocale);
+    // Localize dates based on output language
+    localizeCVDates(generatedCV, detectedLocale);
 
     // Add customization options to generated CV
     if (photoUrl) {
@@ -506,8 +505,7 @@ function localizeDateString(str: string, monthMap: Record<string, string>, prese
 }
 
 /** Post-process all date fields in a generated CV to use locale-appropriate month names. */
-function localizeCVDates(cv: GeneratedCVData, jobPostingText: string): void {
-  const locale = detectLocale(jobPostingText);
+function localizeCVDates(cv: GeneratedCVData, locale: string): void {
   if (locale === 'en') return; // No conversion needed
 
   const monthMap = buildMonthMap(locale);

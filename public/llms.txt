@@ -1,13 +1,18 @@
-# Rejectly.pro
+# Rejectly.pro — ATS Resume Checker
 
-> AI-powered resume optimization platform that helps job seekers beat Applicant Tracking Systems (ATS) and land more interviews.
+> Free ATS resume checker and AI-powered resume optimization platform. Check your resume's ATS compatibility score, identify missing keywords, and get optimized resumes that pass Applicant Tracking Systems.
 
-## What Rejectly Does
+## ATS Resume Checker
 
-Rejectly.pro analyzes resumes against specific job postings using GPT-4, identifies gaps and missing keywords, and generates optimized, ATS-friendly resumes in 30 seconds. 75% of resumes never reach a human recruiter — Rejectly fixes that.
+Rejectly.pro's free ATS resume checker analyzes your resume against 40+ criteria used by major Applicant Tracking Systems including Workday, Greenhouse, Taleo, and Lever. Upload your resume to get an instant ATS compatibility score with detailed feedback on formatting, keywords, and structure.
+
+- **URL**: https://rejectly.pro/ats-check
+- **Features**: Instant ATS score, keyword gap analysis, formatting checks, actionable fixes
+- **Price**: Free (no credit card required)
 
 ## Core Features
 
+- **Free ATS Resume Checker**: Upload your resume and get an instant ATS compatibility score analyzing 40+ criteria used by Fortune 500 ATS systems
 - **AI Resume Analysis**: GPT-4 powered analysis that identifies keyword gaps, formatting issues, and optimization opportunities
 - **ATS Optimization**: Ensures resumes pass automated screening systems with 85% higher pass rate
 - **Job Matching**: AI compares your resume against job descriptions to calculate compatibility and identify skill gaps
@@ -19,16 +24,17 @@ Rejectly.pro analyzes resumes against specific job postings using GPT-4, identif
 
 ## Who It's For
 
+- Job seekers who want to check their resume's ATS compatibility
 - Active job seekers applying to multiple positions
 - Career changers transitioning to new roles
 - Professionals frustrated with low interview response rates
-- Anyone navigating ATS-heavy application processes
+- New graduates and entry-level candidates navigating ATS-heavy application processes
 
-## How It Works
+## How the ATS Resume Checker Works
 
 1. Upload your resume (PDF, DOCX, or plain text)
-2. Paste the job description you're targeting
-3. Receive AI-powered analysis with ATS score, keyword gaps, and recommendations
+2. Optionally paste the job description you're targeting
+3. Receive AI-powered ATS analysis with compatibility score, keyword gaps, and recommendations
 4. Download your optimized, ATS-friendly resume
 
 ## Pricing
@@ -37,12 +43,12 @@ Rejectly.pro analyzes resumes against specific job postings using GPT-4, identif
 - **Starter**: $7 one-time — 10 credits ($0.70 per analysis)
 - **Pro**: $12/month — Unlimited analyses
 
-Free demo available without credit card.
+Free ATS resume checker demo available without credit card.
 
 ## Links
 
 - Website: https://www.rejectly.pro
-- ATS Optimizer: https://www.rejectly.pro/ats-optimizer
+- ATS Resume Checker: https://www.rejectly.pro/ats-check
 - CV Builder: https://www.rejectly.pro/cv-builder
 - Pricing: https://www.rejectly.pro/pricing
 - Blog: https://www.rejectly.pro/blog

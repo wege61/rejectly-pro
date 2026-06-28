@@ -3173,7 +3173,7 @@ export default function Page() {
             '@type': 'WebSite',
             name: 'Rejectly.pro',
             url: 'https://rejectly.pro',
-            description: 'AI-powered resume optimization and ATS checker. Create job-specific, ATS-optimized resumes for every application.',
+            description: 'Free ATS resume checker and AI resume optimizer. Check your resume against ATS systems, get your ATS compatibility score, and create job-specific optimized resumes.',
             potentialAction: {
               '@type': 'SearchAction',
               target: {
@@ -3249,7 +3249,7 @@ export default function Page() {
             '@context': 'https://schema.org',
             '@type': 'Product',
             name: 'Rejectly.pro AI Resume Optimizer',
-            description: 'AI-powered resume optimization and ATS checker',
+            description: 'Free ATS resume checker and AI-powered resume optimization tool',
             brand: {
               '@type': 'Organization',
               name: 'Rejectly.pro',
@@ -3336,7 +3336,7 @@ export default function Page() {
             </ButtonGroup>
             
             <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '-24px', marginBottom: '40px', textAlign: 'center', letterSpacing: '0.2px' }}>
-              No credit card required &bull; Free ATS analysis included
+              No credit card required &bull; <a href="/ats-check" style={{ color: 'var(--primary-500)', textDecoration: 'none' }}>Free ATS Resume Checker</a> included
             </div>
 
             <TrustIndicators>

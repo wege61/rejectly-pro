@@ -111,13 +111,16 @@ const UploadContainer = styled(motion.div)`
   width: 100%;
   position: relative;
   overflow: hidden;
-  background: var(--bg-color);
-  border: 2px dashed var(--border-color);
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: var(--primary-500);
-    background: linear-gradient(135deg, rgba(var(--primary-500-rgb), 0.05) 0%, rgba(var(--primary-500-rgb), 0.08) 100%);
+    border-color: rgba(53, 162, 159, 0.4);
+    box-shadow: 0 8px 32px -4px rgba(53, 162, 159, 0.15);
+    transform: translateY(-2px);
   }
 `;
 
@@ -143,9 +146,9 @@ const GridCell = styled.div<{ $isEven: boolean }>`
   width: 40px;
   height: 40px;
   flex-shrink: 0;
-  border-radius: 2px;
-  background: var(--bg-alt);
-  box-shadow: ${({ $isEven }) => !$isEven ? 'inset 0 0 1px 3px var(--bg-color)' : 'none'};
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.01);
+  box-shadow: ${({ $isEven }) => !$isEven ? 'inset 0 0 1px 1px rgba(255, 255, 255, 0.03)' : 'none'};
 `;
 
 const ContentContainer = styled.div`
@@ -733,17 +736,61 @@ const CTASecondaryButton = styled.a`
 `;
 
 const LoadingSection = styled.div`
-  text-align: center;
-  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  background: rgba(30, 41, 59, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  backdrop-filter: blur(10px);
+  max-width: 600px;
+  margin: 0 auto;
+`;
+
+const PulseRing = styled.div`
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(53, 162, 159, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 32px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(53,162,159,0.2) 0%, transparent 70%);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -40px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(53,162,159,0.1) 0%, transparent 70%);
+    animation: pulse 2s ease-in-out infinite 1s;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
 `;
 
 const LoadingSpinner = styled.div`
-  width: 60px;
-  height: 60px;
-  border: 4px solid var(--border-color);
-  border-top-color: #6366f1;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: var(--primary-500);
   border-radius: 50%;
-  margin: 0 auto 24px;
   animation: spin 1s linear infinite;
 
   @keyframes spin {
@@ -751,15 +798,18 @@ const LoadingSpinner = styled.div`
   }
 `;
 
-const LoadingText = styled.p`
-  font-size: 18px;
-  font-weight: 500;
+const LoadingText = styled.h3`
+  font-size: 20px;
+  font-weight: 600;
   color: var(--text-color);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  background: linear-gradient(to right, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 const LoadingSubtext = styled.p`
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-secondary);
 `;
 
@@ -1845,7 +1895,7 @@ export default function ATSCheckPage() {
   const handleFileChange = (newFile: File) => {
     setFile(newFile);
     setError(null);
-    // Don't auto-analyze, let user click the button so they can add job description
+    analyzeFile(newFile);
   };
 
   const handleRemove = (e: React.MouseEvent) => {
@@ -2005,18 +2055,22 @@ export default function ATSCheckPage() {
     <PageContainer>
       <HeroSection>
         
-        <Title>Find Out Why Your Entry-Level Resume is Getting Auto-Rejected</Title>
+        <Title>ATS Resume Checker — Check Your Resume Score Free</Title>
         <Subtitle>
-          Upload your resume to see if ATS bots can actually read your academic projects. We'll show you the exact formatting errors and missing keywords keeping you from getting an interview.
+          Upload your resume to our free ATS resume checker and get an instant compatibility score. We analyze your resume against 40+ criteria used by Workday, Greenhouse, Taleo & Lever to show you exact formatting errors and missing keywords keeping you from getting interviews.
         </Subtitle>
       </HeroSection>
 
       <MainContent>
         {isAnalyzing ? (
           <LoadingSection>
-            <LoadingSpinner />
-            <LoadingText>Analyzing your resume...</LoadingText>
-            <LoadingSubtext>Checking format, structure, keywords, and readability</LoadingSubtext>
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+              <PulseRing>
+                <LoadingSpinner />
+              </PulseRing>
+              <LoadingText>Scanning your resume...</LoadingText>
+              <LoadingSubtext>Checking formatting, keywords, and ATS readability against 40+ criteria.</LoadingSubtext>
+            </motion.div>
           </LoadingSection>
         ) : result ? (() => {
           // Faz 1: Calculate score analysis
@@ -2041,10 +2095,13 @@ export default function ATSCheckPage() {
 
           return (
           <ResultsSection style={{ position: "relative" }}>
+            <div style={{ position: "relative" }}>
             {/* The Full Report Container */}
             <div style={{ 
-               maxHeight: "1050px", 
+               maxHeight: "1400px", 
                overflow: "hidden", 
+               maskImage: "linear-gradient(to bottom, black 70%, transparent 100%)",
+               WebkitMaskImage: "linear-gradient(to bottom, black 70%, transparent 100%)",
             }}>
               {/* ATSFullResult Component */}
               <ATSFullResult
@@ -2127,11 +2184,13 @@ export default function ATSCheckPage() {
                 bottom: 0, 
                 left: 0, 
                 right: 0, 
-                height: "350px", 
+                height: "600px", 
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "flex-end",
-                background: "linear-gradient(to bottom, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.8) 50%, rgba(15, 23, 42, 1) 100%)",
+                background: "linear-gradient(to bottom, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.4) 40%, rgba(15, 23, 42, 0.95) 100%)",
+                backdropFilter: "blur(4px)",
+                WebkitBackdropFilter: "blur(4px)",
                 padding: "0 16px 40px",
                 zIndex: 10
             }}>
@@ -2176,6 +2235,7 @@ export default function ATSCheckPage() {
                   </CTASecondaryButton>
                 </CTAButtonGroup>
               </CTASection>
+            </div>
             </div>
 
             <TryAgainButton onClick={handleTryAgain}>
@@ -2294,31 +2354,7 @@ export default function ATSCheckPage() {
               </UploadContainer>
             </UploadWrapper>
 
-            {/* NEW: Job Description & Analyze Button */}
-            {file && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <JobDescriptionWrapper>
-                  <JDLabel>Target Job Description (Optional)</JDLabel>
-                  <JDTextarea
-                    value={jobDescription}
-                    onChange={(e) => setJobDescription(e.target.value)}
-                    placeholder="Paste an entry-level job description here to see which critical keywords your resume is missing. If left blank, we'll just run a general formatting check."
-                  />
-                </JobDescriptionWrapper>
 
-                <AnalyzeButton
-                  onClick={() => analyzeFile(file)}
-                  disabled={isAnalyzing}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {isAnalyzing ? "Analyzing..." : "Get My ATS Score"}
-                </AnalyzeButton>
-              </motion.div>
-            )}
 
             {error && <ErrorMessage>{error}</ErrorMessage>}
           </UploadSection>
@@ -2329,9 +2365,9 @@ export default function ATSCheckPage() {
 
       {/* SEO Content Section */}
       <SEOSection>
-        <SEOTitle>How our resume score checker works</SEOTitle>
+        <SEOTitle>How Our ATS Resume Checker Works</SEOTitle>
         <SEOSubtitle>
-          We analyze your resume strictly against the automated criteria used by companies to filter out junior candidates.
+          Our ATS resume checker analyzes your resume against the exact automated criteria used by Applicant Tracking Systems at Fortune 500 companies. Here's how it works.
         </SEOSubtitle>
 
         <BentoGrid>
@@ -2340,9 +2376,9 @@ export default function ATSCheckPage() {
               <UploadAnimation />
             </BentoHeader>
             <BentoContent>
-              <BentoTitle>Test Your Student Template</BentoTitle>
+              <BentoTitle>Upload & Scan Your Resume</BentoTitle>
               <BentoDescription>
-                Simply drag and drop your resume. See immediately if your Canva or Word template is actually readable by parsing bots.
+                Drag and drop your resume into our ATS resume checker. Instantly see if your template is readable by ATS parsing bots used by major employers.
               </BentoDescription>
             </BentoContent>
           </BentoCard>
@@ -2352,9 +2388,9 @@ export default function ATSCheckPage() {
               <ScoreAnimation />
             </BentoHeader>
             <BentoContent>
-              <BentoTitle>Get Your Reality Check</BentoTitle>
+              <BentoTitle>Get Your ATS Score</BentoTitle>
               <BentoDescription>
-                Receive an instant score detailing exact formatting errors, missing technical skills, and unreadable sections.
+                Receive an instant ATS compatibility score with detailed breakdown of formatting errors, missing keywords, and sections that ATS bots cannot parse.
               </BentoDescription>
             </BentoContent>
           </BentoCard>
@@ -2364,9 +2400,9 @@ export default function ATSCheckPage() {
               <OptimizeAnimation />
             </BentoHeader>
             <BentoContent>
-              <BentoTitle>Translate & Optimize</BentoTitle>
+              <BentoTitle>Fix & Optimize for ATS</BentoTitle>
               <BentoDescription>
-                Get actionable steps to rewrite your academic projects and hackathons into ATS-friendly professional language.
+                Get actionable suggestions to make your resume ATS-friendly — fix formatting, add missing keywords, and rewrite sections for maximum ATS pass rate.
               </BentoDescription>
             </BentoContent>
           </BentoCard>
@@ -2375,9 +2411,9 @@ export default function ATSCheckPage() {
         <SectionDivider style={{ marginTop: "80px", marginBottom: "80px" }} />
 
         <div>
-          <SEOTitle>Frequently asked questions</SEOTitle>
+          <SEOTitle>ATS Resume Checker FAQ</SEOTitle>
           <SEOSubtitle>
-            Everything you need to know about navigating the entry-level job market and ATS filters.
+            Everything you need to know about ATS resume checkers, how Applicant Tracking Systems work, and how to optimize your resume to pass ATS filters.
           </SEOSubtitle>
 
           <FAQList>
@@ -2433,6 +2469,48 @@ export default function ATSCheckPage() {
               <FAQAnswer $isOpen={openFAQs.includes("faq-3")}>
                 <FAQAnswerText>
                   ATS systems don't just check your formatting; they score you based on how well your resume matches the specific job you're applying for. Pasting the job description allows us to show you exactly which critical keywords you are missing.
+                </FAQAnswerText>
+              </FAQAnswer>
+            </FAQItem>
+
+            <FAQItem $isOpen={openFAQs.includes("faq-4")}>
+              <FAQQuestion onClick={() => toggleFAQ("faq-4")}>
+                <FAQQuestionText>Is this ATS resume checker really free?</FAQQuestionText>
+                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-4")}>
+                  {openFAQs.includes("faq-4") ? "−" : "+"}
+                </FAQQuestionIcon>
+              </FAQQuestion>
+              <FAQAnswer $isOpen={openFAQs.includes("faq-4")}>
+                <FAQAnswerText>
+                  Yes, our ATS resume checker is completely free. Upload your resume and get an instant ATS compatibility score with detailed feedback on formatting, keywords, and structure — no credit card or signup required for the basic scan.
+                </FAQAnswerText>
+              </FAQAnswer>
+            </FAQItem>
+
+            <FAQItem $isOpen={openFAQs.includes("faq-5")}>
+              <FAQQuestion onClick={() => toggleFAQ("faq-5")}>
+                <FAQQuestionText>Which ATS systems does this checker test against?</FAQQuestionText>
+                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-5")}>
+                  {openFAQs.includes("faq-5") ? "−" : "+"}
+                </FAQQuestionIcon>
+              </FAQQuestion>
+              <FAQAnswer $isOpen={openFAQs.includes("faq-5")}>
+                <FAQAnswerText>
+                  Our ATS resume checker tests your resume against parsing rules used by major Applicant Tracking Systems including Workday, Greenhouse, Taleo, Lever, iCIMS, and BambooHR — the systems used by over 99% of Fortune 500 companies.
+                </FAQAnswerText>
+              </FAQAnswer>
+            </FAQItem>
+
+            <FAQItem $isOpen={openFAQs.includes("faq-6")}>
+              <FAQQuestion onClick={() => toggleFAQ("faq-6")}>
+                <FAQQuestionText>How is an ATS resume checker different from a regular resume review?</FAQQuestionText>
+                <FAQQuestionIcon $isOpen={openFAQs.includes("faq-6")}>
+                  {openFAQs.includes("faq-6") ? "−" : "+"}
+                </FAQQuestionIcon>
+              </FAQQuestion>
+              <FAQAnswer $isOpen={openFAQs.includes("faq-6")}>
+                <FAQAnswerText>
+                  A regular resume review focuses on content quality and visual design. An ATS resume checker specifically tests whether automated software can correctly parse your resume — checking file format compatibility, section header recognition, keyword density, and structural elements that ATS bots use to screen candidates.
                 </FAQAnswerText>
               </FAQAnswer>
             </FAQItem>

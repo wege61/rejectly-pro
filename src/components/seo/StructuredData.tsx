@@ -5,7 +5,7 @@ export function OrganizationSchema() {
     name: 'Rejectly.pro',
     url: 'https://rejectly.pro',
     logo: 'https://rejectly.pro/logo.png',
-    description: 'AI-powered resume optimization platform that helps job seekers get past ATS systems and land more interviews.',
+    description: 'Free ATS resume checker and AI-powered resume optimization platform. Check your resume ATS compatibility score and get optimized resumes that pass Applicant Tracking Systems.',
     foundingDate: '2024',
     sameAs: [
       'https://twitter.com/rejectlypro',
@@ -33,7 +33,7 @@ export function WebSiteSchema() {
     '@type': 'WebSite',
     name: 'Rejectly.pro',
     url: 'https://rejectly.pro',
-    description: 'AI-powered resume optimization and ATS checker. Create job-specific, ATS-optimized resumes for every application.',
+    description: 'Free ATS resume checker and AI resume optimizer. Check your resume against ATS systems, get your ATS compatibility score, and create job-specific optimized resumes.',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -56,7 +56,7 @@ export function ProductSchema() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'Rejectly.pro Resume Optimizer',
+    name: 'Rejectly.pro ATS Resume Checker & Optimizer',
     operatingSystem: 'Web',
     applicationCategory: 'BusinessApplication',
     offers: {
@@ -85,8 +85,10 @@ export function ProductSchema() {
         },
       ],
     },
-    description: 'AI-powered resume optimization tool that analyzes your resume against job postings, identifies ATS compatibility issues, and provides actionable improvements to increase interview rates.',
+    description: 'Free ATS resume checker that analyzes your resume against Applicant Tracking Systems, identifies ATS compatibility issues, missing keywords, and provides actionable improvements to increase your ATS pass rate and interview callbacks.',
     featureList: [
+      'Free ATS Resume Checker',
+      'ATS Compatibility Score',
       'AI Resume Analysis',
       'ATS Optimization',
       'Job Matching Algorithm',
@@ -348,8 +350,8 @@ export function ReviewSchema() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: 'Rejectly.pro AI Resume Optimizer',
-    description: 'AI-powered resume optimization and ATS checker',
+    name: 'Rejectly.pro ATS Resume Checker',
+    description: 'Free ATS resume checker and AI-powered resume optimization tool',
     brand: {
       '@type': 'Organization',
       name: 'Rejectly.pro',

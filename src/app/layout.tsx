@@ -16,11 +16,11 @@ declare global {
 export const metadata: Metadata = {
   metadataBase: new URL('https://rejectly.pro'),
   title: {
-    default: "Free ATS Resume Checker & Score Online | Rejectly.pro",
+    default: "Rejectly.pro - Bypass ATS Bots For Your First Job",
     template: "%s | Rejectly.pro"
   },
   description:
-    "Get your free ATS resume score instantly. Hack the ATS and land your first job. Our AI translates your university projects and internships into corporate keywords to bypass HR bots.",
+    "Hack the ATS and land your first job. Our AI translates your university projects and internships into corporate keywords to bypass HR bots.",
   keywords: [
     "ATS resume checker",
     "ATS resume checker free",
@@ -51,8 +51,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://rejectly.pro",
     siteName: "Rejectly.pro",
-    title: "Free ATS Resume Checker & Score Online | Rejectly.pro",
-    description: "Get your free ATS resume score instantly. Hack the ATS and land your first job. Our AI translates your university projects and internships into corporate keywords to bypass HR bots.",
+    title: "Rejectly.pro - Bypass ATS Bots For Your First Job",
+    description: "Hack the ATS and land your first job. Our AI translates your university projects and internships into corporate keywords to bypass HR bots.",
     images: [
       {
         url: "/og-image.png",

@@ -237,6 +237,8 @@ If the original has an "ACHIEVEMENTS" section:
 ✅ PRESERVE ALL original metrics and achievements (integrate them better!)
 ✅ REORGANIZE skills by relevance to the target job
 ✅ STRICTLY PRESERVE all original technical keywords (if original says "React", do not rephrase to "frontend framework")
+✅ STRICTLY PRESERVE all original Job Titles, Companies, and Dates. DO NOT paraphrase "Customer Service" to "Customer Experience".
+✅ ZERO TOLERANCE FOR DROPPED METRICS: Every single number, percentage, or dollar amount from the original CV MUST appear in the experience bullets.
 ✅ ENHANCE wording with stronger action verbs throughout
 ✅ IMPROVE ATS compatibility with better formatting
 

@@ -223,7 +223,7 @@ FORBIDDEN BEHAVIOR:
 ❌ Listing only the most obvious language (e.g., only English) — NOT ALLOWED
 
 ✅ CORRECT: Every language mentioned in the original CV gets its own object with
-   language name and proficiency level (Fluent/Advanced/Intermediate/Beginner).
+   language name and proficiency level (e.g. Fluent, Advanced, Intermediate, Beginner) translated into ${outputLanguage}.
 ================================================================================
 
 If the original has an "ACHIEVEMENTS" section:
@@ -469,8 +469,8 @@ Respond in JSON format:
   ],
   "languages": [ // optional, only if present in original CV
     {
-      "language": "English",
-      "proficiency": "Native/Fluent/Professional"
+      "language": "Target Language Name",
+      "proficiency": "Proficiency translated into target language"
     }
   ],
   "leadership": [ // REQUIRED if original CV has Leadership/Extracurricular/Activities/Volunteer section

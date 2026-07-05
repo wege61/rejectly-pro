@@ -551,10 +551,11 @@ RULES:
 - ALL VALUES (summary text, bullet points, skill names, dates, proficiency levels, etc.) MUST be in the DETECTED language.
 - If the CV is in Turkish → write everything in Turkish.
   - Use Turkish month names: Ocak, Şubat, Mart, Nisan, Mayıs, Haziran, Temmuz, Ağustos, Eylül, Ekim, Kasım, Aralık
-  - Use "Devam Ediyor" instead of "Present" for current positions
+  - ALWAYS use the English word "Present" for current positions (our system will translate it)
   - Write section content in Turkish (e.g., summary, bullets)
 - If the CV is in English → write everything in English.
 - If the CV is in any other language → write everything in that language.
+  - ALWAYS use the English word "Present" for current positions (our system will translate it)
 - NEVER translate a non-English CV into English. Preserve the original language!
 =============================================================================
 

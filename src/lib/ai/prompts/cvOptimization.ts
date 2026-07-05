@@ -434,8 +434,8 @@ Respond in JSON format:
       "title": "Job Title",
       "company": "Company Name",
       "location": "City, Country",
-      "startDate": "Month YYYY", // Turkish: "Ocak 2025", English: "January 2025"
-      "endDate": "Month YYYY", // or "Present" (Turkish: "Devam Ediyor")
+      "startDate": "Month YYYY", // e.g., "January 2025" or localized equivalent
+      "endDate": "Month YYYY", // or "Present"
       "bullets": [
         "Achievement-focused bullet point demonstrating scope and impact...",
         "Another bullet incorporating keywords and STAR format...",
@@ -503,7 +503,7 @@ Guidelines:
 - Ensure every experience bullet demonstrates impact
 - Professional summary should be compelling
 - All dates MUST use month names in the CV's language (Turkish: "Ocak 2025", English: "January 2025")
-- For Turkish CVs, use "Devam Ediyor" instead of "Present" for current positions
+- For current positions, ALWAYS use the English word "Present" (our system will translate it automatically)
 - Keep professional tone throughout
 - Use standard ASCII characters only (avoid special Unicode symbols, emojis, or fancy characters)
 - Use simple quotes (""), not smart quotes or other variants

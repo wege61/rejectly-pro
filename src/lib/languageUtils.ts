@@ -143,55 +143,58 @@ export function detectLocale(text: string): string {
   
   if (!text) return 'en';
 
-  // Turkish — require Turkish-specific characters (ş, ğ, ı, İ, ü, ö, ç) for strong signal
+  // Turkish — require Turkish-specific characters (ş, ğ, ı, İ) for strong signal
   scores.tr += (text.match(/[şğıŞĞİ]/g) || []).length * 3;
   scores.tr += (text.match(/\b(ve|ile|için|olan|olarak|iletişim|geliştirme|deneyim|yıl|proje)\b/gi) || []).length * 2;
   
-  // German
-  scores.de += (text.match(/[ßäÄ]/g) || []).length * 2;
-  scores.de += (text.match(/\b(und|mit|für|bei|das|ein|sind|der|die|ist|werden|oder)\b/gi) || []).length;
+  // German — ß, ä, ö, ü are strong signals, plus distinctive German words
+  scores.de += (text.match(/[ßäöüÄÖÜ]/g) || []).length * 3;
+  scores.de += (text.match(/\b(und|mit|für|bei|das|ein|sind|der|die|ist|werden|oder|auch|nicht|über|nach|kann|diese|haben|einer|einem|eines|sehr|mehr|durch|unter|muss|soll|alle|wenn|aber|noch)\b/gi) || []).length * 2;
   
-  // French
-  scores.fr += (text.match(/[œæàâêîôùû]/g) || []).length * 2;
-  scores.fr += (text.match(/\b(et|avec|pour|dans|les|des|une|est|sur|qui|que)\b/gi) || []).length;
+  // French — é, è, ê, ç, à are very common in French text
+  scores.fr += (text.match(/[éèêëçàùûœæ]/gi) || []).length * 3;
+  scores.fr += (text.match(/\b(et|avec|pour|dans|les|des|une|est|sur|qui|que|nous|vous|sont|ont|pas|plus|cette|ces|aux|par|ses|leur|comme|être|avoir|tout|faire|aussi|bien|très|mais|chez)\b/gi) || []).length * 2;
   
-  // Spanish
-  scores.es += (text.match(/[ñ¿¡]/g) || []).length * 4;
-  scores.es += (text.match(/\b(y|con|para|por|los|las|una|el|del|como|más|la|que|en|de)\b/gi) || []).length;
+  // Spanish — ñ, ¿, ¡ are unique, plus common Spanish words
+  scores.es += (text.match(/[ñ¿¡áéíóú]/gi) || []).length * 3;
+  scores.es += (text.match(/\b(y|con|para|por|los|las|una|del|como|más|que|también|sobre|está|tiene|este|esta|todo|puede|desde|hasta|entre|cada|muy|pero|sin|según|otro|otra|otros)\b/gi) || []).length * 2;
 
-  // Italian
-  scores.it += (text.match(/\b(e|con|per|in|il|la|di|che|un|una|essere|sono|del)\b/gi) || []).length;
+  // Italian — è, à, ò, ù, ì are common Italian accents, plus distinctive words
+  scores.it += (text.match(/[èàòùì]/gi) || []).length * 3;
+  scores.it += (text.match(/\b(il|la|di|che|un|una|sono|del|della|delle|dei|degli|nel|nella|nelle|nei|negli|anche|come|più|questo|questa|con|per|essere|hanno|tutto|alla|allo|agli|alle|molto|ogni|stato|può|dalle|sulla|sulle)\b/gi) || []).length * 2;
   
-  // Portuguese
+  // Portuguese — ã, õ, ç are distinctive Portuguese characters
   scores.pt += (text.match(/[ãõçÃÕÇ]/g) || []).length * 4;
-  scores.pt += (text.match(/\b(e|com|para|em|os|as|um|uma|do|da|que|não)\b/gi) || []).length;
+  scores.pt += (text.match(/\b(e|com|para|em|os|as|um|uma|do|da|que|não|também|mais|como|está|este|esta|pode|desde|muito|pelo|pela|pelos|pelas|seu|sua|seus|suas|nos|nas|dos|das)\b/gi) || []).length * 2;
 
-  // Dutch
-  scores.nl += (text.match(/\b(en|met|voor|in|de|het|een|is|van|op|te|zijn|wij|ik)\b/gi) || []).length;
+  // Dutch — ij, aa, oo, ee digraphs + distinctive Dutch words not shared with English
+  scores.nl += (text.match(/\b(en|met|voor|het|een|van|zijn|wij|zij|ook|niet|maar|dan|naar|deze|die|dat|meer|wordt|worden|heeft|hebben|moet|moeten|over|alle|veel|door|bij|nog|wel|kan|kunnen|tot|uit|hun|onze)\b/gi) || []).length * 2;
+  // Dutch-specific digraphs and word patterns
+  scores.nl += (text.match(/\b\w*ij\w*\b/gi) || []).length;
+  scores.nl += (text.match(/\b(beschikken|ervaring|vaardigheden|ontwikkeling|verantwoordelijk|communicatie|samenwerking)\b/gi) || []).length * 3;
 
   // Russian (Cyrillic characters)
   scores.ru += (text.match(/[а-яА-Я]/g) || []).length * 3;
 
-
-  // Hungarian
-  scores.hu += (text.match(/[őűŐŰ]/g) || []).length * 3;
-  scores.hu += (text.match(/\b(és|hogy|nem|egy|van|az|meg)\b/gi) || []).length;
+  // Hungarian — ő, ű are unique to Hungarian, é, á, ö, ü are common
+  scores.hu += (text.match(/[őűŐŰ]/g) || []).length * 5;
+  scores.hu += (text.match(/[áéíóöúü]/gi) || []).length;
+  scores.hu += (text.match(/\b(és|hogy|nem|egy|van|az|meg|ezt|azt|vagy|mint|csak|már|még|kell|lehet|amely|ami|aki|lesz|volt|lett|között|szerint|után|alatt|felett|mellett|tapasztalat|készség|fejlesztés|kommunikáció)\b/gi) || []).length * 3;
 
   // Serbian (Cyrillic + Latin specifics)
-  scores.sr += (text.match(/[đžćčšĐŽĆČŠђјљњћџЂЈЉЊЋЏ]/g) || []).length * 2;
-  scores.sr += (text.match(/\b(za|od|do|kao|ili|ako)\b/gi) || []).length;
+  scores.sr += (text.match(/[đžćčšĐŽĆČŠђјљњћџЂЈЉЊЋЏ]/g) || []).length * 3;
+  scores.sr += (text.match(/\b(za|od|do|kao|ili|ako|ima|koji|koja|koje|nije|biti|sve|ovo|ovaj|može|treba|iskustvo|razvoj|komunikacija)\b/gi) || []).length * 2;
 
-  // Romanian
+  // Romanian — ă, â, î, ș, ț are unique Romanian characters
   scores.ro += (text.match(/[ăâîșțĂÂÎȘȚ]/g) || []).length * 3;
-  scores.ro += (text.match(/\b(și|în|din|la|un|cu|pe|să|pentru|este)\b/gi) || []).length;
+  scores.ro += (text.match(/\b(și|în|din|la|un|cu|pe|să|pentru|este|sunt|care|mai|dar|sau|acest|această|poate|trebui|experiență|dezvoltare|comunicare|abilități)\b/gi) || []).length * 2;
   
-  // English — use more keywords and weight them higher since English is the dominant language
-  // for job postings and should be hard to override by accident
-  scores.en += (text.match(/\b(the|and|with|for|that|this|are|is|to|of|in|have|has|will|you|your|our|team|work|experience|skills|role|about|company|requirements|responsible|management|development|position)\b/gi) || []).length;
+  // English — use distinctive English words that are unlikely in other languages
+  scores.en += (text.match(/\b(the|and|with|for|that|this|are|is|to|of|in|have|has|will|you|your|our|team|work|experience|skills|role|about|company|requirements|responsible|management|development|position|should|would|could|been|being|their|they|which|were|what|when|where|while)\b/gi) || []).length;
 
-  // English gets a base advantage — it's the default language and should only be
-  // overridden when there's strong evidence of another language (special chars, etc.)
-  scores.en += 5;
+  // English gets a small base advantage — it's the default language and should only be
+  // overridden when there's clear evidence of another language
+  scores.en += 3;
 
   let maxScore = 0;
   let detected = 'en'; // default

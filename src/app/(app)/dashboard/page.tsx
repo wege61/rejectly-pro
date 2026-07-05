@@ -1891,11 +1891,9 @@ export default function DashboardPage() {
             .select("id", { count: "exact", head: true })
             .eq("user_id", user.id),
           supabase
-            .from("documents")
+            .from("optimized_cvs")
             .select("id", { count: "exact", head: true })
-            .eq("user_id", user.id)
-            .eq("type", "cv")
-            .eq("source", "ats-optimizer"),
+            .eq("user_id", user.id),
         ]);
 
         setStats({
@@ -2059,10 +2057,10 @@ export default function DashboardPage() {
               onClick={() => router.push(ROUTES.APP.COVER_LETTERS)}
             />
             <BentoCard
-              name="ATS-Ready CVs"
+              name="ATS-Ready Resumes"
               className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4"
               Icon={ATSOptimizerIcon}
-              description="Rewrite your CV to pass ATS bots before a human ever sees it"
+              description="AI-tailored resumes that bypass filters and get you interviews, even without experience"
               href={ROUTES.APP.ATS_OPTIMIZER}
               cta="Optimize Resume"
               value={stats.totalOptimizedCVs}
@@ -2136,7 +2134,7 @@ export default function DashboardPage() {
               <EmptyState
                 icon={<EmptyState.DocumentIcon />}
                 title="No analyses yet"
-                description="Paste your CV + a job posting and see exactly why you're getting rejected — then fix it."
+                description="Paste your base resume and your dream job posting. We'll show you how to beat the competition and land the interview."
                 action={{
                   label: "Run My First Analysis",
                   onClick: () => setIsWizardOpen(true),
@@ -2218,9 +2216,9 @@ export default function DashboardPage() {
           <SpotlightOverlay $show={showFABHint} onClick={handleDismissFABHint} />
           <SpotlightCircle />
           <HintContainer>
-            <HintText>Ready to Beat the ATS?</HintText>
+            <HintText>Land Your First Job</HintText>
             <HintSubtext>
-              Upload your CV + a job posting to see your score
+              Upload your resume + a job posting to get started
             </HintSubtext>
             <ArrowContainer>
               <ArrowText>Click here</ArrowText>

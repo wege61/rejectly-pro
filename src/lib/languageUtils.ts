@@ -143,9 +143,9 @@ export function detectLocale(text: string): string {
   
   if (!text) return 'en';
 
-  // Turkish
-  scores.tr += (text.match(/[şğşıŞĞ]/g) || []).length * 2;
-  scores.tr += (text.match(/\b(ve|ile|için|olan|olarak|bir|bu|iletişim|geliştirme)\b/gi) || []).length;
+  // Turkish — require Turkish-specific characters (ş, ğ, ı, İ, ü, ö, ç) for strong signal
+  scores.tr += (text.match(/[şğıŞĞİ]/g) || []).length * 3;
+  scores.tr += (text.match(/\b(ve|ile|için|olan|olarak|iletişim|geliştirme|deneyim|yıl|proje)\b/gi) || []).length * 2;
   
   // German
   scores.de += (text.match(/[ßäÄ]/g) || []).length * 2;
@@ -185,8 +185,13 @@ export function detectLocale(text: string): string {
   scores.ro += (text.match(/[ăâîșțĂÂÎȘȚ]/g) || []).length * 3;
   scores.ro += (text.match(/\b(și|în|din|la|un|cu|pe|să|pentru|este)\b/gi) || []).length;
   
-  // English
-  scores.en += (text.match(/\b(and|with|for|the|that|this|are|is|to|of|in|a)\b/gi) || []).length;
+  // English — use more keywords and weight them higher since English is the dominant language
+  // for job postings and should be hard to override by accident
+  scores.en += (text.match(/\b(the|and|with|for|that|this|are|is|to|of|in|have|has|will|you|your|our|team|work|experience|skills|role|about|company|requirements|responsible|management|development|position)\b/gi) || []).length;
+
+  // English gets a base advantage — it's the default language and should only be
+  // overridden when there's strong evidence of another language (special chars, etc.)
+  scores.en += 5;
 
   let maxScore = 0;
   let detected = 'en'; // default

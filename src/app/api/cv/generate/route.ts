@@ -145,7 +145,12 @@ export async function POST(request: NextRequest) {
     // Otherwise fallback to job lang or auto-detect.
     const jobTextsCombined = jobDocs.map((job: { text: string }) => job.text).join(' ');
     const savedLang = jobDocs[0]?.lang;
+    // Determine the language the AI should write in
     const detectedLocale = targetLanguage || ((savedLang && savedLang !== 'en') ? savedLang : detectLocale(jobTextsCombined));
+    // For date localization, use the SAME language the AI was told to write in.
+    // This prevents the bug where AI writes in English but dates get localized to Turkish
+    // because detectLocale misidentified the job posting language.
+    const dateLocale = detectedLocale;
     
     const outputLanguage = LOCALE_TO_LANGUAGE[detectedLocale] || 'English';
     console.log('🌍 Detected job posting language:', outputLanguage, `(locale: ${detectedLocale})`);
@@ -202,8 +207,11 @@ export async function POST(request: NextRequest) {
     // Post-process CV for ATS compliance (expand abbreviations, normalize dates, clean special chars)
     const generatedCV = postProcessCVForATS(rawGeneratedCV as GeneratedCVData);
 
-    // Localize dates based on output language
-    localizeCVDates(generatedCV, detectedLocale);
+    // NOTE: We no longer call localizeCVDates() here because the AI is already
+    // instructed to write dates in the correct language via the system prompt
+    // (e.g., "Present" for English, "Devam Ediyor" for Turkish).
+    // The old localizeCVDates call was causing a double-conversion bug:
+    // AI writes "Present" → detectLocale misidentifies as Turkish → converts to "Devam Ediyor".
 
     // Add customization options to generated CV
     if (photoUrl) {

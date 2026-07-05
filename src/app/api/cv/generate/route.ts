@@ -173,7 +173,6 @@ export async function POST(request: NextRequest) {
       report.cv.text,
       jobDocs.map((job: { text: string }) => job.text),
       analysisResults,
-      false, // fakeItMode is retired
       additionalTools,
       extractedMetrics,
       achievementsSection,

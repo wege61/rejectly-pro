@@ -210,17 +210,11 @@ export function generateImprovementBreakdownPrompt(
   jobTexts: string[],
   missingKeywords: string[],
   originalScore: number,
-  optimizedScore: number,
-  fakeItMode: boolean = false
+  optimizedScore: number
 ): string {
   const actualDifference = optimizedScore - originalScore;
 
   return `You are a CV optimization analyst. Explain exactly how the optimized CV improved upon the original.
-
-${fakeItMode ? `
-⚠️ FAKE IT MODE ANALYSIS ⚠️
-This CV was optimized in "Fake It Until You Make It" mode, meaning ALL missing keywords were aggressively added, even if the candidate doesn't have real experience with them. Frame problems and solutions accordingly.
-` : ''}
 
 =============================================================================
 ORIGINAL CV
@@ -384,20 +378,6 @@ QUALITY CHECKLIST
 □ Impact values proportional to importance
 □ Categories and sections from allowed lists
 □ Reasons explain WHY change improves matching
-${fakeItMode ? '□ Problem descriptions acknowledge aggressive keyword addition without real experience' : ''}
-
-${fakeItMode ? `
-=============================================================================
-FAKE IT MODE SPECIFIC GUIDELINES
-=============================================================================
-When describing problems and solutions in Fake It Mode:
-- Problem descriptions should mention "missing keywords despite no real experience"
-- Use phrases like "aggressively added", "strategically placed without verification"
-- Be honest that keywords were added even without candidate experience
-- Example problem: "CV completely missing 'Machine Learning' keywords despite candidate having no ML experience"
-- Example solution: "Added ML keywords throughout skills and experience to match job requirements"
-- Severity should reflect keyword importance to job posting, not candidate's actual experience
-` : ''}
 
 Respond with ONLY the JSON object. Verify math: impacts must sum to ${actualDifference}.`;
 }

@@ -2866,6 +2866,12 @@ export default function Page() {
     },
   ];
 
+  const Check = () => (
+    <svg style={{flexShrink: 0, marginTop: '2px', marginRight: '12px', color: 'var(--primary-500)'}} width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+  );
+
   const featureCards: Card[] = [
     {
       src: "/reports-list.png",
@@ -2873,26 +2879,25 @@ export default function Page() {
       category: "Match Intelligence",
       content: (
         <div>
-          <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
-            <img
-              src="/reports-list.png"
-              alt="Job Match Analysis Dashboard"
-              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}
-            />
-            <img
-              src="/reports-detail.png"
-              alt="Detailed Match Report"
-              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }}
-            />
+          <div style={{ position: 'relative', width: '100%', marginBottom: '56px', paddingRight: '20px' }}>
+            <div style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <img src="/reports-list.png" alt="Job Match Analysis Dashboard" style={{ width: '100%', display: 'block' }} />
+            </div>
+            <div style={{ position: 'absolute', bottom: '-20%', right: '-5%', width: '75%', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)' }}>
+              <img src="/reports-detail.png" alt="Detailed Match Report" style={{ width: '100%', display: 'block' }} />
+            </div>
           </div>
-          <p>Upload your resume. Paste the job description. Get a new resume rewritten specifically for that role — with the right keywords, structure, and emphasis to pass the filter and impress the human behind it.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Precise match score against the job description</li>
-            <li>Missing skills and keywords, ranked by impact</li>
-            <li>A fully rewritten, optimized resume tailored to this specific role</li>
-            <li>Cover letter, interview prep, and career roadmap included</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Every application gets its own resume. That&apos;s the unfair advantage.</p>
+          <p style={{ fontSize: '18px', color: 'var(--text-color)', fontWeight: 500 }}>Upload your resume. Paste the job description.</p>
+          <p style={{ marginTop: '12px', marginBottom: '32px' }}>Get a new resume rewritten specifically for that role — with the right keywords, structure, and emphasis to pass the filter and impress the human behind it.</p>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display: 'flex' }}><Check /> <span><strong>Precise match score</strong> against the job description</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span><strong>Missing skills</strong> and keywords, ranked by impact</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>A fully rewritten, optimized resume <strong>tailored to this specific role</strong></span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Cover letter, interview prep, and career roadmap included</span></div>
+          </div>
+          
+          <p style={{ marginTop: '32px', fontSize: '15px', color: 'var(--primary-500)', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>Every application gets its own resume. That&apos;s the unfair advantage.</p>
         </div>
       ),
     },
@@ -2902,27 +2907,25 @@ export default function Page() {
       category: "ATS Optimization",
       content: (
         <div>
-          <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
-            <img
-              src="/ats-screenshot-1.png"
-              alt="ATS Optimization Dashboard"
-              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}
-            />
-            <img
-              src="/ats-screenshot-2.png"
-              alt="ATS Optimization Detail"
-              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }}
-            />
+          <div style={{ position: 'relative', width: '100%', marginBottom: '56px', paddingRight: '20px' }}>
+            <div style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <img src="/ats-screenshot-1.png" alt="ATS Optimization Dashboard" style={{ width: '100%', display: 'block' }} />
+            </div>
+            <div style={{ position: 'absolute', bottom: '-20%', right: '-5%', width: '75%', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)' }}>
+              <img src="/ats-screenshot-2.png" alt="ATS Optimization Detail" style={{ width: '100%', display: 'block' }} />
+            </div>
           </div>
-          <p>Don&apos;t have a specific job in mind yet? No problem.</p>
-          <p style={{ marginTop: '16px' }}>Upload your CV — no job description needed. Our AI scores it against Workday, Greenhouse, Taleo, and Lever ATS systems, then rewrites it to pass them all.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>No job description required — works with just your CV</li>
-            <li>Compatibility tested against 4 major ATS platforms</li>
-            <li>Instant before &amp; after score — see the real difference</li>
-            <li>Export-ready in PDF, exactly as needed</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>The safety net before you start applying.</p>
+          <p style={{ fontSize: '18px', color: 'var(--text-color)', fontWeight: 500 }}>Don&apos;t have a specific job in mind yet? No problem.</p>
+          <p style={{ marginTop: '12px', marginBottom: '32px' }}>Upload your CV — no job description needed. Our AI scores it against Workday, Greenhouse, Taleo, and Lever ATS systems, then rewrites it to pass them all.</p>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display: 'flex' }}><Check /> <span>No job description required — works with just your CV</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Compatibility tested against <strong>4 major ATS platforms</strong></span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Instant before &amp; after score — see the real difference</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Export-ready in PDF, exactly as needed</span></div>
+          </div>
+          
+          <p style={{ marginTop: '32px', fontSize: '15px', color: 'var(--primary-500)', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>The safety net before you start applying.</p>
         </div>
       ),
     },
@@ -2932,26 +2935,23 @@ export default function Page() {
       category: "Cover Letters",
       content: (
         <div>
-          <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
-            <img
-              src="/cover-letters-list.png"
-              alt="Cover Letters Dashboard"
-              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}
-            />
-            <img
-              src="/cover-letters-detail.png"
-              alt="Generated Cover Letter"
-              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }}
-            />
+          <div style={{ position: 'relative', width: '100%', marginBottom: '56px', paddingRight: '20px' }}>
+            <div style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <img src="/cover-letters-list.png" alt="Cover Letters Dashboard" style={{ width: '100%', display: 'block' }} />
+            </div>
+            <div style={{ position: 'absolute', bottom: '-20%', right: '-5%', width: '75%', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 24px 64px rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)' }}>
+              <img src="/cover-letters-detail.png" alt="Generated Cover Letter" style={{ width: '100%', display: 'block' }} />
+            </div>
           </div>
-          <p>Generic cover letters get deleted. Personalized ones get replies.</p>
-          <p style={{ marginTop: '16px' }}>Choose your tone, length, and template. We handle the rest — in seconds.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Written specifically for this role and this company</li>
-            <li>Tone options: professional, confident, conversational</li>
-            <li>Highlights your most relevant achievements naturally</li>
-            <li>Reads like you spent hours on it. Takes seconds.</li>
-          </ul>
+          <p style={{ fontSize: '18px', color: 'var(--text-color)', fontWeight: 500 }}>Generic cover letters get deleted. Personalized ones get replies.</p>
+          <p style={{ marginTop: '12px', marginBottom: '32px' }}>Choose your tone, length, and template. We handle the rest — in seconds.</p>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display: 'flex' }}><Check /> <span>Written specifically for this role and this company</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Tone options: professional, confident, conversational</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Highlights your most relevant achievements naturally</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Reads like you spent hours on it. <strong>Takes seconds.</strong></span></div>
+          </div>
         </div>
       ),
     },
@@ -2961,15 +2961,17 @@ export default function Page() {
       category: "Interview Prep",
       content: (
         <div>
-          <p>Real interviewers don&apos;t go easy on you. Neither do we.</p>
-          <p style={{ marginTop: '16px' }}>Practice with an AI that asks the exact questions your interviewer will — and tells you, honestly, how you did.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Questions generated from the actual job description</li>
-            <li>Behavioral, Technical, Weak Spots, and Ask Them modes</li>
-            <li>Feedback on tone, structure, and filler words</li>
-            <li>Sharper every round</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Walk in knowing you&apos;ve already passed the hardest one.</p>
+          <p style={{ fontSize: '18px', color: 'var(--text-color)', fontWeight: 500 }}>Real interviewers don&apos;t go easy on you. Neither do we.</p>
+          <p style={{ marginTop: '12px', marginBottom: '32px' }}>Practice with an AI that asks the exact questions your interviewer will — and tells you, honestly, how you did.</p>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display: 'flex' }}><Check /> <span>Questions generated from the actual job description</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Behavioral, Technical, Weak Spots, and "Ask Them" modes</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Feedback on tone, structure, and filler words</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Sharper every round</span></div>
+          </div>
+          
+          <p style={{ marginTop: '32px', fontSize: '15px', color: 'var(--primary-500)', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>Walk in knowing you&apos;ve already passed the hardest one.</p>
         </div>
       ),
     },
@@ -2979,15 +2981,17 @@ export default function Page() {
       category: "Resume Builder",
       content: (
         <div>
-          <p>No resume? No problem.</p>
-          <p style={{ marginTop: '16px' }}>We guide you through every section — from contact info to your biggest achievements — and build a clean, ATS-friendly resume around your answers.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Step-by-step guided builder, no guesswork</li>
-            <li>ATS-optimized formatting built in from the start</li>
-            <li>Professional templates that impress both software and humans</li>
-            <li>Completely free — no credits needed</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>From blank page to first application.</p>
+          <p style={{ fontSize: '18px', color: 'var(--text-color)', fontWeight: 500 }}>No resume? No problem.</p>
+          <p style={{ marginTop: '12px', marginBottom: '32px' }}>We guide you through every section — from contact info to your biggest achievements — and build a clean, ATS-friendly resume around your answers.</p>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display: 'flex' }}><Check /> <span>Step-by-step guided builder, no guesswork</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>ATS-optimized formatting built in from the start</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Professional templates that impress both software and humans</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Completely free — no credits needed</span></div>
+          </div>
+          
+          <p style={{ marginTop: '32px', fontSize: '15px', color: 'var(--primary-500)', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>From blank page to first application.</p>
         </div>
       ),
     },
@@ -2997,15 +3001,17 @@ export default function Page() {
       category: "Career Intelligence",
       content: (
         <div>
-          <p>Getting the job is step one. Getting ahead is everything after.</p>
-          <p style={{ marginTop: '16px' }}>Based on your resume and target role, we map the certifications, courses, and projects that will move your career forward — ranked by real impact.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Personalized to your field and current level</li>
-            <li>Ranked by impact and time investment</li>
-            <li>Specific enough to act on today</li>
-            <li>Updated as your profile evolves</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Your next level is closer than you think.</p>
+          <p style={{ fontSize: '18px', color: 'var(--text-color)', fontWeight: 500 }}>Getting the job is step one. Getting ahead is everything after.</p>
+          <p style={{ marginTop: '12px', marginBottom: '32px' }}>Based on your resume and target role, we map the certifications, courses, and projects that will move your career forward — ranked by real impact.</p>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display: 'flex' }}><Check /> <span>Personalized to your field and current level</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Ranked by impact and time investment</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Specific enough to act on today</span></div>
+            <div style={{ display: 'flex' }}><Check /> <span>Updated as your profile evolves</span></div>
+          </div>
+          
+          <p style={{ marginTop: '32px', fontSize: '15px', color: 'var(--primary-500)', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>Your next level is closer than you think.</p>
         </div>
       ),
     },
@@ -3327,22 +3333,22 @@ export default function Page() {
 
             <ButtonGroup>
               <PrimaryButton href="#demo">
-                Analyze for Free
+                Roast My Resume (Free)
               </PrimaryButton>
               <SecondaryButton href={ROUTES.PUBLIC.HOW_IT_WORKS}>
-                How It Works
+                See All 6 Tools
                 <ArrowRightIcon />
               </SecondaryButton>
             </ButtonGroup>
             
             <div style={{ fontSize: '13px', color: 'var(--text-tertiary)', marginTop: '-24px', marginBottom: '40px', textAlign: 'center', letterSpacing: '0.2px' }}>
-              No credit card required &bull; <a href="/ats-check" style={{ color: 'var(--primary-500)', textDecoration: 'none' }}>Free ATS Resume Checker</a> included
+              No credit card required &bull; <a href="/ats-check" style={{ color: 'var(--primary-500)', textDecoration: 'none' }}>Free AI ATS Audit</a> included
             </div>
 
             <TrustIndicators>
               <TrustItem>
-                <div className="number">4</div>
-                <div className="label">AI-Powered Tools</div>
+                <div className="number">6</div>
+                <div className="label">Career Hacking Tools</div>
               </TrustItem>
               <TrustItem>
                 <div className="number">40+</div>

@@ -126,14 +126,17 @@ const NavButton = styled.button`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
+  background: rgba(150, 150, 150, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 
   &:hover:not(:disabled) {
-    background: var(--bg-color);
-    border-color: var(--primary-500);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
   }
 
   &:disabled {
@@ -198,21 +201,24 @@ const ModalCloseButton = styled.button`
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--text-color);
-  border: none;
+  background: rgba(150, 150, 150, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   z-index: 1120;
 
   &:hover {
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.9);
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
   }
 
   svg {
-    width: 20px;
-    height: 20px;
-    color: var(--bg-color);
+    width: 18px;
+    height: 18px;
+    color: white;
   }
 
   @media (min-width: 768px) {
@@ -234,11 +240,13 @@ const ModalCategory = styled(motion.p)`
 const ModalTitle = styled(motion.p)`
   margin-top: 16px;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--text-color);
 
   @media (min-width: 768px) {
-    font-size: 40px;
+    font-size: 44px;
+    letter-spacing: -0.03em;
   }
 `;
 
@@ -265,15 +273,27 @@ const CardButton = styled(motion.button)`
   overflow: hidden;
   border-radius: 24px;
   background: var(--bg-alt);
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   cursor: pointer;
   height: 320px;
   width: 224px;
   text-align: left;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 
   @media (min-width: 768px) {
     height: 480px;
     width: 360px;
+  }
+
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  &:hover > div:first-child {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 40%, transparent 100%);
   }
 `;
 
@@ -283,7 +303,8 @@ const CardGradient = styled.div`
   inset: 0;
   z-index: 30;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, transparent 40%, transparent 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, transparent 40%, transparent 100%);
+  transition: background 0.3s ease;
 `;
 
 const CardContent = styled.div`
@@ -479,6 +500,7 @@ export const AppleCard = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               layoutId={layout ? `card-${card.title}` : undefined}
+              transition={{ type: "spring", stiffness: 220, damping: 25, mass: 1 }}
             >
               <ModalCloseButton onClick={handleClose}>
                 <CloseIcon />
@@ -500,7 +522,7 @@ export const AppleCard = ({
       >
         <CardGradient />
         <CardContent>
-          <CardCategory layoutId={layout ? `category-${card.category}` : undefined}>
+          <CardCategory layoutId={layout ? `category-${card.title}` : undefined}>
             {card.category}
           </CardCategory>
           <CardTitle layoutId={layout ? `title-${card.title}` : undefined}>

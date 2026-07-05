@@ -6919,7 +6919,6 @@ export default function ReportDetailPage() {
       console.log("🔍 Cache validation:", {
         hasValidScore,
         hasValidBreakdown,
-        fakeItMode: data.fake_it_mode,
         willLoadFromCache: hasValidScore,
         hasOptimizedAtsScore: typeof data.ats_score_optimized === 'number',
         hasOriginalAtsScore: data.cv && typeof data.cv.ats_score === 'number'

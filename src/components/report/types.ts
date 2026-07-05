@@ -102,7 +102,6 @@ export interface Report {
   optimized_score: number | null;
   improvement_breakdown: Improvement[] | null;
   fake_skills_recommendations: FakeSkillRecommendation[] | null;
-  fake_it_mode: boolean;
   score_breakdown: ScoreBreakdown | null;
   optimized_score_breakdown: ScoreBreakdown | null;
   ats_score_optimized: number | null;

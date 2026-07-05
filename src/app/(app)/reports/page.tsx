@@ -668,23 +668,7 @@ const ReportCard = styled.div`
   }
 `;
 
-const FakeItBanner = styled.div`
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  color: rgba(255, 255, 255, 0.75);
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 500;
-  border-radius: 9999px;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`;
+
 
 const CardContent = styled.div`
   padding: 24px;

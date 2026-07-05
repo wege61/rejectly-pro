@@ -6,7 +6,6 @@
 
 export interface ScoringOptions {
   isOptimizedCV?: boolean;
-  fakeItMode?: boolean;
   originalScore?: number;
   originalCVText?: string;
 }
@@ -17,7 +16,7 @@ export function generateSystematicScoringPrompt(
   options: ScoringOptions = {}
 ): string {
   const currentDate = new Date().toISOString();
-  const { isOptimizedCV = false, fakeItMode = false, originalScore = 0, originalCVText = '' } = options;
+  const { isOptimizedCV = false, originalScore = 0, originalCVText = '' } = options;
 
   // Generate optimized CV warning section if applicable
   let optimizedCVWarning = '';
@@ -35,18 +34,6 @@ When evaluating categories, ensure your rigorous mathematical calculation natura
 If your strict calculation falls below the original score, you are missing context or being punitively strict. Recalibrate your points upwards to reflect the optimized phrasing.
 `;
 
-    if (fakeItMode) {
-      optimizedCVWarning += `
-FAKE IT MODE SCORING RULES:
-- Skills in skills section WITHOUT job history evidence = 0.5 credit (not full)
-- Skills WITH job history evidence = full credit (these are real)
-- The improvement from fake keywords should be LIMITED
-- Maximum realistic improvement: +25 points from original score
-- If original was 0-20%, optimized should realistically be 20-40%
-- If original was 20-40%, optimized should realistically be 40-55%
-`;
-    }
-    
     optimizedCVWarning += `
 ORIGINAL CV FOR REFERENCE:
 """

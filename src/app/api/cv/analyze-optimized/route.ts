@@ -244,8 +244,7 @@ export async function POST(request: NextRequest) {
         jobDocs.map((job) => job.text),
         (report.keywords as { missing?: string[] })?.missing || [],
         originalScore,
-        optimizedScore,
-        false // fakeItMode is retired
+        optimizedScore
       );
 
       const breakdownCompletion = await openai.chat.completions.create({

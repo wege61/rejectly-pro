@@ -770,22 +770,7 @@ const RecentReportCard = styled.div`
   }
 `;
 
-const RecentReportFakeItBanner = styled.div`
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: var(--bg-alt);
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 500;
-  border-radius: 6px;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`;
+
 
 const RecentReportCardContent = styled.div`
   padding: 24px;

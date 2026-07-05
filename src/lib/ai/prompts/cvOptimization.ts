@@ -14,7 +14,6 @@ export function generateOptimizedCVPrompt(
     roleRecommendations?: Array<{ title: string; fit: number }>;
     atsFlags?: string[];
   },
-  fakeItMode: boolean = false,
   additionalTools: string[] = [],
   extractedMetrics: string[] = [],
   achievementsSection: string = '',
@@ -143,22 +142,6 @@ ${additionalTools.map(tool => `- ${tool}`).join("\n")}
 The user specifically confirmed these tools - they MUST appear in the optimized CV, not just in skills but woven into the experience narrative.
 ` : ""}
 
-${fakeItMode ? `
-═══════════════════════════════════════════════════════
-⚠️ FAKE IT UNTIL YOU MAKE IT MODE ENABLED ⚠️
-═══════════════════════════════════════════════════════
-The candidate has explicitly chosen to add skills they don't have yet.
-
-MISSING KEYWORDS TO ADD: ${analysisResults.missingKeywords.join(", ")}
-
-YOU MUST:
-✅ Add ALL of these missing keywords to the skills section
-✅ Integrate these keywords into experience bullets where plausible
-✅ Be aggressive with keyword placement throughout the CV
-✅ The candidate understands these are aspirational skills
-
-TASK: Create an optimized CV that includes ALL missing keywords.
-` : `
 ═══════════════════════════════════════════════════════
 🛡️ HONEST MODE - AGGRESSIVE OPTIMIZATION WITHOUT NEW SKILLS
 ═══════════════════════════════════════════════════════
@@ -508,15 +491,6 @@ Respond in JSON format:
 }
 
 Guidelines:
-${fakeItMode ? `
-🚀 FAKE IT MODE GUIDELINES:
-- Add ALL missing keywords from the list above to skills section
-- Integrate keywords naturally into experience bullets where possible
-- NEVER fabricate companies, job positions, or dates (keep those real)
-- You may add skills the candidate doesn't have - they chose this mode
-- Add missing keywords primarily to: skills section, professional summary, experience bullets
-- Be bold with keyword placement - that's the point of this mode
-` : `
 🛡️ SMART HONEST MODE GUIDELINES:
 - Preserve ALL factual information from original CV (companies, titles, dates, degrees)
 - ADD related/transferable skills that connect to existing background
@@ -525,7 +499,6 @@ ${fakeItMode ? `
 - Enhance existing bullets to include relevant keywords from job posting
 - Focus on making existing capabilities more discoverable while maintaining integrity
 - When adding skills, ensure they're plausible given candidate's background
-`}
 - Enhance wording and presentation, not fabricate facts
 - Ensure every experience bullet demonstrates impact
 - Professional summary should be compelling
@@ -581,7 +554,7 @@ Before responding, verify:
 📋 VALIDATION CHECKLIST:
 ${additionalTools.length > 0 ? `□ CRITICAL: ALL ${additionalTools.length} user-confirmed tools (${additionalTools.join(', ')}) are in skills.technical array
 □ CRITICAL: Each user-confirmed tool appears in at least ONE experience bullet point` : ''}
-${fakeItMode ? '□ All missing keywords aggressively added per Fake It Mode' : '□ Bullets enhanced with quantified metrics'}
+□ Bullets enhanced with quantified metrics
 □ Skills.technical array has 10-12+ items (COUNT THEM!)
 □ Skills.soft array has 4-5 items MAX (COUNT THEM!)
 □ Hard to soft skills ratio is 70/30 or better

@@ -575,21 +575,21 @@ export default function FeaturesPage() {
         {/* ─── HERO ─── */}
         <HeroSection>
           <HeroEyebrow>
-            <Sparkles /> 6 AI-Powered Tools
+            <Sparkles /> The 6-Tool Career Hacker
           </HeroEyebrow>
           <HeroTitle>
-            Every tool you need.<br />
-            One platform.
+            The system is rigged.<br />
+            Hack it.
           </HeroTitle>
           <HeroSubtitle>
-            From building your first resume to acing the interview — Rejectly gives you a complete, AI-powered application package tailored to every job you apply for.
+            From building your first resume to acing the interview — Rejectly translates your university projects and internships into the exact corporate keywords recruiters demand. Unfair advantage included.
           </HeroSubtitle>
           <HeroCTA>
             <PrimaryBtn href={ROUTES.AUTH.SIGNUP}>
-              Get Started Free <ArrowRight />
+              Roast My Resume (Free) <ArrowRight />
             </PrimaryBtn>
             <GhostBtn href="#tools">
-              Explore Tools <ArrowRight />
+              See The Hacks <ArrowRight />
             </GhostBtn>
           </HeroCTA>
         </HeroSection>

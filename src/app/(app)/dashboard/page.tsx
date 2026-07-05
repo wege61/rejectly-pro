@@ -2049,7 +2049,7 @@ export default function DashboardPage() {
               name="Cover Letters"
               className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2"
               Icon={CoverLettersIcon}
-              description="AI-written cover letters tailored to each job — even with zero experience"
+              description="Perfectly tailored cover letters for each job — even with zero experience"
               href={ROUTES.APP.COVER_LETTERS}
               cta="View Letters"
               value={stats.totalCoverLetters}
@@ -2060,7 +2060,7 @@ export default function DashboardPage() {
               name="ATS-Ready Resumes"
               className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4"
               Icon={ATSOptimizerIcon}
-              description="AI-tailored resumes that bypass filters and get you interviews, even without experience"
+              description="Tailor-made resumes that bypass filters and get you interviews, even without experience"
               href={ROUTES.APP.ATS_OPTIMIZER}
               cta="Optimize Resume"
               value={stats.totalOptimizedCVs}

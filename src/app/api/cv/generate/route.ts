@@ -207,11 +207,13 @@ export async function POST(request: NextRequest) {
     // Post-process CV for ATS compliance (expand abbreviations, normalize dates, clean special chars)
     const generatedCV = postProcessCVForATS(rawGeneratedCV as GeneratedCVData);
 
-    // NOTE: We no longer call localizeCVDates() here because the AI is already
-    // instructed to write dates in the correct language via the system prompt
-    // (e.g., "Present" for English, "Devam Ediyor" for Turkish).
-    // The old localizeCVDates call was causing a double-conversion bug:
-    // AI writes "Present" → detectLocale misidentifies as Turkish → converts to "Devam Ediyor".
+    // Safety net: ensure dates are localized for non-English CVs.
+    // For English (detectedLocale === 'en'), this is a no-op (returns immediately).
+    // For German/Hungarian/Turkish/etc., it catches any "Present" or English month names
+    // that the AI may have missed localizing.
+    // NOTE: The root cause of the old "Devam Ediyor in English CVs" bug was detectLocale()
+    // misidentifying English as Turkish — that has been fixed with a +5 English base score.
+    localizeCVDates(generatedCV, detectedLocale);
 
     // Add customization options to generated CV
     if (photoUrl) {

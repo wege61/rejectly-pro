@@ -86,20 +86,26 @@ const ProfilePhoto = styled.div`
 
 const parseDateForSort = (dateStr?: string | null) => {
   if (!dateStr || dateStr.trim() === '') return 0;
+  
   const lower = dateStr.toLowerCase();
   if (lower.includes('present') || lower.includes('devam') || lower.includes('current')) {
     return Infinity; // Always newest
   }
+  
   const d = new Date(dateStr);
   if (!isNaN(d.getTime())) {
     return d.getTime();
   }
+  
   // Fallback: extract 4 digit year
   const match = dateStr.match(/\d{4}/);
   if (match) {
     return parseInt(match[0]) * 31556952000; // rough ms value for a year to sort cleanly
   }
-  return 0; // If completely unparseable string, treat as oldest
+  
+  // If the date string has text but no year (e.g. "Bis heute", "Aujourd'hui", "Настоящее время")
+  // it is almost certainly a translated version of "Present". Treat it as Infinity.
+  return Infinity; 
 };
 
 

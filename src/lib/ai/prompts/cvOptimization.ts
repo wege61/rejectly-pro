@@ -253,7 +253,6 @@ MANDATORY TRANSFORMATIONS:
 5. Action verbs → Replace weak verbs (managed, helped, worked) with strong ones (spearheaded, pioneered, drove, accelerated)
 
 TASK: Create a SIGNIFICANTLY IMPROVED CV that PRESERVES all original achievements while presenting them more powerfully.
-`}
 
 IMPORTANT INSTRUCTIONS:
 - Extract and preserve ALL personal information (name, email, phone, location, LinkedIn, portfolio)

@@ -165,6 +165,9 @@ export function CertificationForm() {
                   placeholder="e.g. AWS Certified Solutions Architect" 
                   value={cert.name}
                   onChange={(e) => updateCertification(index, { name: e.target.value })}
+                  onFocus={(e) => {
+                    if (e.target.value === "Level 3 Security Clearance" || e.target.value === "Hazardous Environment (HEV) Suit Operations Mark IV") updateCertification(index, { name: "" });
+                  }}
                 />
               </InputGroup>
             </Row>
@@ -176,6 +179,9 @@ export function CertificationForm() {
                   placeholder="e.g. Amazon Web Services" 
                   value={cert.issuer || ""}
                   onChange={(e) => updateCertification(index, { issuer: e.target.value })}
+                  onFocus={(e) => {
+                    if (e.target.value === "Black Mesa Research Facility" || e.target.value === "Black Mesa Training Facility") updateCertification(index, { issuer: "" });
+                  }}
                 />
               </InputGroup>
               

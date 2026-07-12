@@ -291,8 +291,10 @@ export function SummaryForm() {
             <Textarea 
               value={cv.summary}
               onChange={(e) => updateSummary(e.target.value)}
+              onFocus={(e) => {
+                if (e.target.value.startsWith("Theoretical Physicist with expertise in anomalous")) updateSummary("");
+              }}
               placeholder="e.g. Results-driven professional with 7+ years of experience..."
-              autoFocus
             />
           </motion.div>
         )}

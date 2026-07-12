@@ -90,6 +90,34 @@ export async function getBlogPosts(filters: BlogFilters = {}): Promise<{
   return { posts, total, page, pageSize, totalPages };
 }
 
+// Same as getBlogPosts but uses the direct client without cookies,
+// allowing the route to be statically generated (SSG) at build time.
+export async function getLatestBlogPostsStatic(limit = 10): Promise<BlogPostWithRelations[]> {
+  const supabase = createDirectClient(config.supabase.url, config.supabase.anonKey);
+
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select(`
+      *,
+      category:blog_categories(*),
+      tags:blog_post_tags(tag:blog_tags(*))
+    `)
+    .eq('is_published', true)
+    .order('published_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('Error fetching static blog posts:', error);
+    return [];
+  }
+
+  return (data || []).map((post: BlogPost & { category: BlogCategory | null, tags: any[] }) => ({
+    ...post,
+    category: post.category || null,
+    tags: post.tags?.map((t: any) => t.tag) || [],
+  }));
+}
+
 export async function getBlogPostBySlug(slug: string): Promise<BlogPostWithRelations | null> {
   const supabase = await createClient();
 

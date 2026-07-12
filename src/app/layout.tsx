@@ -3,7 +3,6 @@ import Script from "next/script";
 import StyledComponentsRegistry from "@/lib/registry";
 import Providers from "@/components/Providers";
 import { OrganizationSchema, WebSiteSchema, ProductSchema, ReviewSchema } from "@/components/seo/StructuredData";
-import { CanonicalTag } from "@/components/seo/CanonicalTag";
 import { WebVitals } from "@/components/analytics/WebVitals";
 
 declare global {
@@ -184,7 +183,6 @@ export default function RootLayout({
             `,
           }}
         />
-        <CanonicalTag />
       </head>
       <body suppressHydrationWarning>
         {/* Google Analytics */}

@@ -7,6 +7,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ROUTES } from "@/lib/constants";
 import { Footer } from "@/components/ui/Footer";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
+import { FeaturedGuides } from "@/components/marketing/FeaturedGuides";
 import { AnimatedATSScanner } from "@/components/marketing/AnimatedATSScanner";
 import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
 import { ProblemBentoGrid } from "@/components/marketing/ProblemBentoGrid";
@@ -3998,9 +3999,9 @@ export default function Page() {
       <Divider />
 
       {/* SECONDARY CTA SECTION */}
-      <SecondaryCTA />
+      <FeaturedGuides />
 
-      <Divider />
+      <SecondaryCTA />
 
       <Footer />
     </Container>

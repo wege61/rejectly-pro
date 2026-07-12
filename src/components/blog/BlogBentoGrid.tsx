@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Link from "next/link";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -199,7 +200,7 @@ const PaginationWrapper = styled.div`
   margin-top: 48px;
 `;
 
-const PageButton = styled.button<{ $active?: boolean }>`
+const PageButton = styled(Link)<{ $active?: boolean; $disabled?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -212,6 +213,7 @@ const PageButton = styled.button<{ $active?: boolean }>`
   border: none;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  text-decoration: none;
 
   ${({ $active }) =>
     $active
@@ -229,14 +231,12 @@ const PageButton = styled.button<{ $active?: boolean }>`
     }
   `}
 
-  &:disabled {
+  ${({ $disabled }) =>
+    $disabled &&
+    `
     opacity: 0.3;
-    cursor: not-allowed;
-    &:hover {
-      background: transparent;
-      color: var(--text-secondary);
-    }
-  }
+    pointer-events: none;
+  `}
 
   svg {
     width: 18px;
@@ -340,7 +340,18 @@ interface BlogBentoGridProps {
 }
 
 export function BlogBentoGrid({ posts }: BlogBentoGridProps) {
+  const searchParams = useSearchParams();
+  const pageParam = searchParams.get("page");
+  
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    if (pageParam) {
+      setCurrentPage(parseInt(pageParam, 10) || 1);
+    } else {
+      setCurrentPage(1);
+    }
+  }, [pageParam]);
 
   if (!posts || posts.length === 0) {
     return (
@@ -354,12 +365,19 @@ export function BlogBentoGrid({ posts }: BlogBentoGridProps) {
   }
 
   const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
-  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
-  const endIndex = startIndex + POSTS_PER_PAGE;
-  const currentPosts = posts.slice(startIndex, endIndex);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  const createPageUrl = (pageNumber: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (pageNumber === 1) {
+      params.delete("page");
+    } else {
+      params.set("page", pageNumber.toString());
+    }
+    const query = params.toString();
+    return query ? `?${query}` : "/blog";
+  };
+
+  const handlePageClick = () => {
     const gridElement = document.getElementById("blog-bento-grid");
     if (gridElement) {
       gridElement.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -399,14 +417,32 @@ export function BlogBentoGrid({ posts }: BlogBentoGridProps) {
           transition={{ duration: 0.25 }}
         >
           <BentoGrid>
-            {currentPosts.map((post, index) => (
-              <BlogBentoItem
-                key={post.id}
-                post={post}
-                index={index}
-                featured={getLayoutPattern(startIndex + index)}
-              />
-            ))}
+            {posts.map((post, index) => {
+              const postPage = Math.floor(index / POSTS_PER_PAGE) + 1;
+              const isCurrentPage = postPage === currentPage;
+              
+              return (
+                <div 
+                  key={post.id}
+                  style={isCurrentPage ? undefined : { 
+                    position: "absolute", 
+                    width: "1px", 
+                    height: "1px", 
+                    overflow: "hidden",
+                    clip: "rect(0,0,0,0)",
+                    whiteSpace: "nowrap",
+                    border: 0 
+                  }}
+                  aria-hidden={!isCurrentPage}
+                >
+                  <BlogBentoItem
+                    post={post}
+                    index={index}
+                    featured={getLayoutPattern(index)}
+                  />
+                </div>
+              );
+            })}
           </BentoGrid>
         </motion.div>
       </AnimatePresence>
@@ -414,8 +450,10 @@ export function BlogBentoGrid({ posts }: BlogBentoGridProps) {
       {totalPages > 1 && (
         <PaginationWrapper>
           <PageButton
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
+            href={createPageUrl(currentPage - 1)}
+            onClick={handlePageClick}
+            $disabled={currentPage === 1}
+            scroll={false}
             aria-label="Previous page"
           >
             <ChevronLeft />
@@ -427,8 +465,10 @@ export function BlogBentoGrid({ posts }: BlogBentoGridProps) {
             ) : (
               <PageButton
                 key={page}
-                onClick={() => handlePageChange(page)}
+                href={createPageUrl(page as number)}
+                onClick={handlePageClick}
                 $active={page === currentPage}
+                scroll={false}
                 aria-label={`Page ${page}`}
               >
                 {page}
@@ -437,8 +477,10 @@ export function BlogBentoGrid({ posts }: BlogBentoGridProps) {
           )}
 
           <PageButton
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
+            href={createPageUrl(currentPage + 1)}
+            onClick={handlePageClick}
+            $disabled={currentPage === totalPages}
+            scroll={false}
             aria-label="Next page"
           >
             <ChevronRight />

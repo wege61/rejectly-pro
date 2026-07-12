@@ -114,11 +114,12 @@ interface AutocompleteInputProps {
   value: string;
   onChange: (val: string) => void;
   onSelect?: (val: string, context?: any) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   placeholder?: string;
   fetchType: "university" | "company" | "location" | "field_of_study" | "job_title";
 }
 
-export function AutocompleteInput({ value, onChange, onSelect, placeholder, fetchType }: AutocompleteInputProps) {
+export function AutocompleteInput({ value, onChange, onSelect, onFocus, placeholder, fetchType }: AutocompleteInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
@@ -245,8 +246,9 @@ export function AutocompleteInput({ value, onChange, onSelect, placeholder, fetc
           onChange(e.target.value);
           setIsOpen(true);
         }}
-        onFocus={() => {
+        onFocus={(e) => {
           if (fetchType === "field_of_study" || fetchType === "job_title" || value.length >= 3) setIsOpen(true);
+          if (onFocus) onFocus(e);
         }}
         placeholder={placeholder}
       />

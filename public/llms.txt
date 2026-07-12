@@ -47,9 +47,9 @@ Free ATS resume checker demo available without credit card.
 
 ## Links
 
-- Website: https://www.rejectly.pro
-- ATS Resume Checker: https://www.rejectly.pro/ats-check
-- CV Builder: https://www.rejectly.pro/cv-builder
-- Pricing: https://www.rejectly.pro/pricing
-- Blog: https://www.rejectly.pro/blog
-- Contact: https://www.rejectly.pro/contact
+- Website: https://rejectly.pro
+- ATS Resume Checker: https://rejectly.pro/ats-check
+- CV Builder: https://rejectly.pro/cv-builder
+- Pricing: https://rejectly.pro/pricing
+- Blog: https://rejectly.pro/blog
+- Contact: https://rejectly.pro/contact

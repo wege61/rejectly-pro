@@ -2,27 +2,79 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { GeneratedCV, CVEducation, CVExperience, CVCertification, CVLeadership } from '@/types/cv';
 
-// Initial empty CV state
+// Initial placeholder CV state (Showcase for new users - Gordon Freeman Edition)
 const initialCVState: GeneratedCV = {
   contact: {
-    name: "",
-    email: "",
-    phone: "",
-    location: "",
-    linkedin: "",
-    portfolio: ""
+    name: "Gordon Freeman, Ph.D.",
+    email: "gfreeman@blackmesa.gov",
+    phone: "(Classified)",
+    location: "Black Mesa Research Facility, NM",
+    linkedin: "linkedin.com/in/freeman-phd",
+    portfolio: "blackmesa.gov/personnel/gfreeman"
   },
-  summary: "",
-  experience: [],
-  education: [],
+  summary: "Theoretical Physicist with expertise in anomalous materials, quantum teleportation, and interdimensional rift containment. Proven track record of surviving resonance cascades and leading resistance movements. Adept at rapid problem-solving under extreme hostile conditions using highly advanced HEV suit technology and improvised tools.",
+  experience: [
+    {
+      company: "The Resistance",
+      title: "Key Operative & Freedom Fighter",
+      location: "City 17",
+      startDate: "2020-01",
+      endDate: "Present",
+      current: true,
+      description: "",
+      bullets: [
+        "Spearheaded the global uprising against the Universal Union (Combine) through targeted strikes on key infrastructure, including Nova Prospekt.",
+        "Operated the experimental Zero-Point Energy Field Manipulator (Gravity Gun) to solve complex physics-based puzzles and neutralize heavily armored threats.",
+        "Led squad-based urban combat operations resulting in the successful destabilization of the Citadel's dark energy reactor."
+      ]
+    },
+    {
+      company: "Black Mesa Research Facility",
+      title: "Research Associate - Anomalous Materials",
+      location: "Black Mesa, NM",
+      startDate: "1999-05",
+      endDate: "2000-05",
+      current: false,
+      description: "",
+      bullets: [
+        "Handled extremely hazardous extra-dimensional crystalline samples (Sample GG-3883) in the Anti-Mass Spectrometer.",
+        "Successfully navigated complex laboratory environments during total structural failure, hazardous material spills, and aggressive alien deployment.",
+        "Single-handedly suppressed hostile military clean-up crews and Xen fauna to secure the Lambda Complex teleportation labs."
+      ]
+    }
+  ],
+  education: [
+    {
+      institution: "Massachusetts Institute of Technology (MIT)",
+      degree: "Ph.D. in Theoretical Physics",
+      location: "Cambridge, MA",
+      startDate: "1995-09",
+      endDate: "1999-05",
+      description: "Thesis: Observation of Einstein-Podolsky-Rosen Entanglement on Supraquantum Structures by Induction Through Nonlinear Transuranic Crystal."
+    }
+  ],
   skills: {
-    technical: [],
+    technical: ["Theoretical Physics", "Quantum Mechanics", "HEV Suit Operations", "Zero-Point Energy Manipulation", "Tactical Combat", "Xen Biology", "Submachine Guns", "Crowbar Proficiency"],
     soft: []
   },
-  certifications: [],
+  certifications: [
+    {
+      name: "Level 3 Security Clearance",
+      issuer: "Black Mesa Research Facility",
+      date: "1999-05",
+      url: ""
+    },
+    {
+      name: "Hazardous Environment (HEV) Suit Operations Mark IV",
+      issuer: "Black Mesa Training Facility",
+      date: "1999-04",
+      url: ""
+    }
+  ],
   languages: [],
   leadership: [],
-  themeColor: "#000000",
+  themeColor: "#E5691F", // Half-Life Orange
+  photoUrl: "/gordon-freeman.png",
 };
 
 interface CVState {

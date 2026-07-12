@@ -306,6 +306,9 @@ export function ExperienceForm() {
                   placeholder="e.g. Frontend Engineer OR Capstone Project" 
                   value={exp.title}
                   onChange={(val) => updateExperience(index, { title: val })}
+                  onFocus={(e) => {
+                    if (e.target.value === "Key Operative & Freedom Fighter" || e.target.value === "Research Associate - Anomalous Materials") updateExperience(index, { title: "" });
+                  }}
                   fetchType="job_title"
                 />
               </InputGroup>
@@ -318,6 +321,9 @@ export function ExperienceForm() {
                   placeholder="e.g. Apple OR University Name" 
                   value={exp.company}
                   onChange={(val) => updateExperience(index, { company: val })}
+                  onFocus={(e) => {
+                    if (e.target.value === "The Resistance" || e.target.value === "Black Mesa Research Facility") updateExperience(index, { company: "" });
+                  }}
                   fetchType="company"
                 />
               </InputGroup>
@@ -327,6 +333,9 @@ export function ExperienceForm() {
                   placeholder="e.g. Cupertino, CA" 
                   value={exp.location || ""}
                   onChange={(val) => updateExperience(index, { location: val })}
+                  onFocus={(e) => {
+                    if (e.target.value === "City 17" || e.target.value === "Black Mesa, NM") updateExperience(index, { location: "" });
+                  }}
                   fetchType="location"
                 />
               </InputGroup>
@@ -369,6 +378,9 @@ export function ExperienceForm() {
                     <BulletTextarea 
                       value={bullet} 
                       onChange={(e) => updateExperienceBullet(index, bIndex, e.target.value)}
+                      onFocus={(e) => {
+                        if (e.target.value.includes("Universal Union") || e.target.value.includes("Zero-Point Energy") || e.target.value.includes("dark energy reactor") || e.target.value.includes("extra-dimensional crystalline") || e.target.value.includes("structural failure") || e.target.value.includes("hostile military clean-up")) updateExperienceBullet(index, bIndex, "");
+                      }}
                       placeholder="Describe what you accomplished..."
                     />
                   </div>

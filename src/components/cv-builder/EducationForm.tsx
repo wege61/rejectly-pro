@@ -256,6 +256,9 @@ export function EducationForm() {
                   value={edu.institution}
                   onChange={(val) => updateEducation(index, { institution: val, location: "" })}
                   onSelect={(val, context) => fetchSchoolLocation(val, index, context)}
+                  onFocus={(e) => {
+                    if (e.target.value === "Massachusetts Institute of Technology (MIT)") updateEducation(index, { institution: "" });
+                  }}
                   fetchType="university"
                 />
               </InputGroup>
@@ -300,6 +303,9 @@ export function EducationForm() {
                     placeholder="e.g. Computer Science" 
                     value={edu.fieldOfStudy ?? ""}
                     onChange={(val) => updateEducation(index, { fieldOfStudy: val })}
+                    onFocus={(e) => {
+                      if (e.target.value === "Theoretical Physics") updateEducation(index, { fieldOfStudy: "" });
+                    }}
                     fetchType="field_of_study"
                   />
                 </InputGroup>

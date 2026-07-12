@@ -80,24 +80,27 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
-
   // Korumalı sayfalara giriş yapmamış kullanıcı erişmeye çalışırsa
   const isProtectedRoute = PROTECTED_ROUTES.some(route =>
     pathname === route || pathname.startsWith(`${route}/`)
   );
 
-  if (isProtectedRoute && !user) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
   // Auth sayfalarına giriş yapmış kullanıcı erişmeye çalışırsa
   const isAuthRoute = AUTH_ROUTES.some(route => pathname === route);
 
-  if (isAuthRoute && user) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Sadece yetki gerektiren sayfalarda Supabase sorgusu yap (Performans Optimizasyonu)
+  if (isProtectedRoute || isAuthRoute) {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (isProtectedRoute && !user) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    if (isAuthRoute && user) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
   return response;

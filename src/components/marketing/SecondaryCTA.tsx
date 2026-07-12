@@ -48,6 +48,7 @@ const ContentSection = styled.div`
     flex-shrink: 0;
     padding: 72px 56px;
     text-align: left;
+    max-width: 520px;
   }
 `;
 
@@ -78,10 +79,12 @@ const ButtonGroup = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 24px;
+  flex-wrap: wrap;
 
   @media (min-width: 1024px) {
     justify-content: flex-start;
+    flex-wrap: nowrap;
   }
 `;
 
@@ -90,12 +93,13 @@ const PrimaryButton = styled.a`
   align-items: center;
   justify-content: center;
   gap: 8px;
+  white-space: nowrap;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
     rgba(238, 90, 90, 0.82);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: #FFFFFF;
-  padding: 14px 32px;
+  padding: 12px 28px;
   border-radius: 9999px;
   font-weight: 700;
   font-size: 16px;
@@ -139,6 +143,7 @@ const SecondaryButton = styled.a`
   text-decoration: none;
   transition: opacity 0.2s ease;
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  white-space: nowrap;
 
   &:hover {
     opacity: 0.7;

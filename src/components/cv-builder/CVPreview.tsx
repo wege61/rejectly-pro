@@ -7,7 +7,7 @@ import { detectLocale, CV_HEADINGS } from "@/lib/languageUtils";
 const Paper = styled.div`
   width: 100%;
   max-width: 780px; 
-  aspect-ratio: 1 / 1.414;
+  min-height: 1103px; /* Standard A4 height relative to 780px width */
   background: #fff;
   border-radius: 4px;
   box-shadow: 0 24px 48px rgba(0,0,0,0.6), 0 0 1px rgba(255,255,255,0.2);
@@ -16,8 +16,13 @@ const Paper = styled.div`
   padding: 48px;
   color: #1a1a1a;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  overflow: hidden;
   position: relative;
+  height: max-content;
+
+  @media (max-width: 780px) {
+    /* Maintain A4 proportion minimally on smaller screens */
+    min-height: 141.4vw;
+  }
 `;
 
 const Header = styled.div<{ $theme: string }>`

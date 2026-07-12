@@ -169,7 +169,9 @@ export function BasicsForm() {
             placeholder="e.g. Alex Chen" 
             value={cv.contact.name}
             onChange={(e) => updateContact({ name: e.target.value })}
-            autoFocus
+            onFocus={(e) => {
+              if (e.target.value === "Gordon Freeman, Ph.D.") updateContact({ name: "" });
+            }}
           />
         </InputGroup>
       </Row>
@@ -182,6 +184,9 @@ export function BasicsForm() {
             placeholder="alex@example.com" 
             value={cv.contact.email}
             onChange={(e) => updateContact({ email: e.target.value })}
+            onFocus={(e) => {
+              if (e.target.value === "gfreeman@blackmesa.gov") updateContact({ email: "" });
+            }}
           />
         </InputGroup>
         <InputGroup style={{ flex: 1 }}>
@@ -191,6 +196,9 @@ export function BasicsForm() {
             placeholder="+1 234 567 890" 
             value={cv.contact.phone}
             onChange={(e) => updateContact({ phone: e.target.value })}
+            onFocus={(e) => {
+              if (e.target.value === "(Classified)") updateContact({ phone: "" });
+            }}
           />
         </InputGroup>
       </Row>
@@ -202,6 +210,9 @@ export function BasicsForm() {
             placeholder="e.g. San Francisco, CA" 
             value={cv.contact.location ?? ""}
             onChange={(val) => updateContact({ location: val })}
+            onFocus={(e) => {
+              if (e.target.value === "Black Mesa Research Facility, NM") updateContact({ location: "" });
+            }}
             fetchType="location"
           />
         </InputGroup>
@@ -214,6 +225,9 @@ export function BasicsForm() {
             placeholder="linkedin.com/in/alexchen" 
             value={cv.contact.linkedin || ""}
             onChange={(e) => updateContact({ linkedin: e.target.value })}
+            onFocus={(e) => {
+              if (e.target.value === "linkedin.com/in/freeman-phd") updateContact({ linkedin: "" });
+            }}
           />
         </InputGroup>
         <InputGroup style={{ flex: 1 }}>
@@ -222,6 +236,9 @@ export function BasicsForm() {
             placeholder="alexchen.dev" 
             value={cv.contact.portfolio || ""}
             onChange={(e) => updateContact({ portfolio: e.target.value })}
+            onFocus={(e) => {
+              if (e.target.value === "blackmesa.gov/personnel/gfreeman") updateContact({ portfolio: "" });
+            }}
           />
         </InputGroup>
       </Row>

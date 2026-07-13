@@ -64,7 +64,15 @@
       "Bash(pdftotext \"/Users/ozgunegeoner/Downloads/siliconfriendly-rejectly.pro-L0.pdf\" -)",
       "Bash(git commit:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:universities.hipolabs.com)"
+      "WebFetch(domain:universities.hipolabs.com)",
+      "Bash(npm view *)",
+      "WebFetch(domain:www.remotion.dev)",
+      "Bash(pnpm add *)",
+      "Bash(npx remotion *)",
+      "Bash(open out/rejectly-demo-1080p.mp4)",
+      "Bash(npx eslint *)",
+      "Bash(git stash *)",
+      "Bash(python3 -)"
     ],
     "deny": [],
     "ask": []

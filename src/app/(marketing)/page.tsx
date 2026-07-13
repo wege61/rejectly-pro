@@ -8,7 +8,7 @@ import { ROUTES } from "@/lib/constants";
 import { Footer } from "@/components/ui/Footer";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
 import { FeaturedGuides } from "@/components/marketing/FeaturedGuides";
-import { AnimatedATSScanner } from "@/components/marketing/AnimatedATSScanner";
+import { HeroResumeMorph } from "@/components/marketing/HeroResumeMorph";
 import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
 import { ProblemBentoGrid } from "@/components/marketing/ProblemBentoGrid";
 import { LampContainer } from "@/components/ui/LampContainer";
@@ -22,7 +22,6 @@ import {
 import { FileUpload } from "@/components/ui/FileUpload";
 import { DemoTextarea as NewDemoTextarea } from "@/components/ui/DemoTextarea";
 import { Carousel, AppleCard, Card } from "@/components/ui/AppleCarousel";
-import { b } from "framer-motion/client";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -300,7 +299,8 @@ const HeroContent = styled.div`
   text-align: center;
   
   @media (min-width: 1024px) {
-    grid-template-columns: 1.1fr 0.9fr;
+    /* Even split: the résumé visual needs room for its callout gutter. */
+    grid-template-columns: 1fr 1fr;
     text-align: left;
   }
 `;
@@ -317,11 +317,15 @@ const HeroTextColumn = styled.div`
 `;
 
 const HeroVisualColumn = styled.div`
-  display: none;
-  
-  @media (min-width: 1024px) {
-    display: block;
-    animation: ${fadeIn} 0.6s ease-out 0.3s backwards;
+  display: block;
+  width: 100%;
+  animation: ${fadeIn} 0.6s ease-out 0.3s backwards;
+
+  /* Below the two-column breakpoint the visual sits under the copy, so keep it
+     narrow enough that the CTA is still reachable without a long scroll. */
+  @media (max-width: 1023px) {
+    max-width: 380px;
+    margin: 0 auto;
   }
 `;
 
@@ -3363,7 +3367,7 @@ export default function Page() {
           </HeroTextColumn>
 
           <HeroVisualColumn>
-            <AnimatedATSScanner />
+            <HeroResumeMorph />
           </HeroVisualColumn>
         </HeroContent>
         </AppleHeroBackground>

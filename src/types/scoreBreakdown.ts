@@ -238,8 +238,8 @@ export function normalizeScoreBreakdown(raw: ScoreBreakdown): ScoreBreakdown {
 
     // Experience: earnedPoints = yearsScore + seniorityScore
     if (comp.name === 'Experience Level' || comp.name === 'Experience Match') {
-      // OVERRIDE: If the AI hallucinates points for 0 relevant years, crush it.
-      if (d.yearsCandidate === 0) {
+      // OVERRIDE: If candidate has 0 years, only crush if job REQUIRES experience (>0)
+      if (d.yearsCandidate === 0 && (d.yearsRequired ?? 0) > 0) {
         d.yearsScore = 0;
         d.seniorityScore = 0;
         d.seniorityCandidate = "none";
@@ -248,7 +248,7 @@ export function normalizeScoreBreakdown(raw: ScoreBreakdown): ScoreBreakdown {
         derivedPoints = d.yearsScore + d.seniorityScore;
       } else if (d.yearsRequired != null && d.seniorityScore != null) {
         let yearsScore = d.yearsScore ?? 0;
-        if (d.yearsRequired === 0 && (d.yearsCandidate ?? 0) > 0) {
+        if (d.yearsRequired === 0) {
           yearsScore = 15; // Requirement is met trivially
         }
         derivedPoints = yearsScore + d.seniorityScore;

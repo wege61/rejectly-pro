@@ -41,11 +41,18 @@ ${academicDetails.coursework ? `- Relevant Coursework: ${academicDetails.coursew
 ${academicDetails.capstone ? `- Capstone/Major Project: ${academicDetails.capstone}` : ''}
 
 CRITICAL INTEGRATION REQUIREMENTS:
-- Integrate the Capstone/Major Project as a fully fleshed-out professional project experience in the Experience or Projects section.
-- Add the GPA and Relevant Coursework to the Education section.
+${academicDetails.capstone ? '- Integrate the Capstone/Major Project as a fully fleshed-out professional project experience in the Experience or Projects section.\n- STRICT CAPSTONE ROLE RULE: For solo/individual academic projects (like a thesis), use a neutral role title like "Individual Academic Project", "Student Researcher", or completely omit the role. DO NOT inflate titles to "Project Manager", "Lead Designer", or "Руководитель проекта" unless the user explicitly stated they led a team.' : ''}
+${(academicDetails.gpa || academicDetails.coursework) ? '- Create a new string key called "details" inside the relevant "education" array object, and put the GPA and Relevant Coursework there.' : '- DO NOT output a "details" field in the education array at all. OMIT it completely.'}
 - Treat these academic details as real, professional-grade qualifications to boost the ATS score.
 ================================================================================
-` : '';
+` : `
+🚫 STRICT ACADEMIC DETAILS BAN 🚫
+================================================================================
+The candidate has NOT provided a GPA or specific coursework.
+DO NOT invent a GPA. DO NOT invent coursework. DO NOT use placeholder text (e.g., "[insert GPA here]").
+The "details" field in the Education section MUST BE OMITTED completely for all education entries.
+================================================================================
+`;
 
   const metricsWarning = extractedMetrics.length > 0 ? `
 🚨🚨🚨 MANDATORY METRICS - THESE MUST ALL APPEAR IN YOUR OUTPUT! 🚨🚨🚨
@@ -69,6 +76,24 @@ Integrate these into the relevant job experience bullets!
 ` : '';
 
   return `You are an ATS bypass specialist and mentor for entry-level candidates. Your goal is to create a CV that hacks ATS filters by translating academic/junior experience into corporate keywords.
+
+================================================================================
+GROUNDING RULES (HIGHEST PRIORITY — override all other instructions)
+================================================================================
+1. FACTS ARE IMMUTABLE. Job titles, employers, dates, degrees, and the nature of each role must be reproduced exactly as provided by the user. Never upgrade a title, never reframe a job as a different profession.
+
+2. NO FABRICATED METRICS. Never invent numbers, percentages, or quantified outcomes. If the user provided no metric for an achievement, write the achievement without one. A resume with zero metrics is acceptable; a resume with invented metrics is a critical failure.
+
+3. NO INVENTED RESPONSIBILITIES. Every bullet point must be traceable to something the user actually stated. You may REWORD and RESTRUCTURE user-provided content (stronger verbs, clearer phrasing, relevance ordering). You may NOT ADD duties, projects, tools, or outcomes the user never mentioned.
+
+4. EXPERIENCE CLAIMS MUST MATCH THE TIMELINE. Before writing any "X years of experience in Y" claim, verify it against the work history dates AND role types. Years spent in unrelated jobs do not count toward professional experience in the target field. A recent graduate with no design jobs has 0 years of professional design experience — frame them as a graduate with strong project work, not a seasoned professional.
+
+5. TAILORING = SELECTION + EMPHASIS, NOT INVENTION. To match a job posting, reorder and emphasize the user's real experience and skills. If the user lacks a requirement from the posting, OMIT it — do not manufacture it.
+
+6. EDUCATION PROJECTS ARE LEGITIMATE MATERIAL. Thesis work, coursework, and personal projects provided by the user SHOULD be used prominently for junior candidates — this is the honest way to fill an experience gap.
+
+7. SELF-CHECK BEFORE OUTPUT. Review every sentence and ask: "Did the user tell me this, or did I infer it?" Remove or soften anything inferred. When uncertain, choose the weaker, truthful claim.
+================================================================================
 
 ================================================================================
 OUTPUT LANGUAGE: ${outputLanguage.toUpperCase()}
@@ -446,13 +471,25 @@ Respond in JSON format:
     }
     // Continue with older positions in reverse chronological order...
   ],
+  "projects": [ // optional, REQUIRED if candidate provided Capstone/Major Project details
+    {
+      "name": "Project Name",
+      "role": "Role (e.g. Individual Academic Project, Lead Developer)", // optional
+      "url": "Project URL", // optional
+      "startDate": "Month YYYY", // optional
+      "endDate": "Month YYYY", // optional
+      "bullets": [
+        "Achievement-focused bullet point about the project...",
+        "Another bullet demonstrating skills used..."
+      ]
+    }
+  ],
   "education": [
     {
       "degree": "Degree Name",
       "institution": "University Name",
       "location": "City, Country",
-      "graduationDate": "Month YYYY",
-      "details": "GPA: 3.8/4.0, Honors, relevant coursework" // optional
+      "graduationDate": "Month YYYY"
     }
   ],
   "skills": {
@@ -489,7 +526,8 @@ Respond in JSON format:
     }
     // Include ALL leadership/extracurricular roles from the original CV.
     // Do NOT merge them or summarize them vaguely.
-  ]
+  ],
+  "isEntryLevel": true // MUST be set to true if the candidate provided academic details (GPA/coursework/capstone) or has zero relevant formal work experience
 }
 
 Guidelines:
@@ -573,6 +611,14 @@ If the summary and bullets look almost identical → YOU FAILED. Rewrite them!
 If ANY achievement from original is missing → YOU FAILED. Add them back!
 If ANY bullet exceeds 120 characters → YOU FAILED. Split it into 2 bullets!
 The optimized CV should be NOTICEABLY BETTER, not a copy of the original.
+
+🔴 FINAL ANTI-HALLUCINATION VALIDATION PASS (CRITICAL):
+□ Did you strictly follow Rule 3 (No invented responsibilities)?
+□ Did you strictly follow Rule 4 (Experience claims match timeline)? If the user has ZERO jobs in the target field, does your summary say "X years of experience"? If yes → YOU FAILED. Remove the years claim immediately and reframe as a recent graduate/junior.
+□ Did you strictly follow Rule 5 (Selection + Emphasis, not invention)?
+□ Compare generated output against user input. FLAG AND FIX any bullet containing a number, metric, or percentage not present in the source data.
+□ RETAIL/SURVIVAL JOBS CHECK: Did you inject target-field keywords (e.g. "design", "graphic") into unrelated jobs (e.g. Cashier, Barista) where the user never mentioned them? If yes → YOU FAILED. Keep unrelated jobs honest and concise. Do not invent design duties for a cashier.
+□ EDUCATION DETAILS CHECK: Did you output a "details" field in the education array with fake/placeholder GPA or coursework (e.g. "[insert GPA here]")? If the user did not provide a GPA, the "details" field MUST BE COMPLETELY OMITTED. If you invented one or used placeholders → YOU FAILED. Remove the "details" key entirely.
 
 Respond with ONLY the JSON object. No explanations, no markdown.`;
 }

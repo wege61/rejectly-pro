@@ -211,6 +211,27 @@ export async function POST(request: NextRequest) {
     // Check both direct finalScore and nested calculation.finalScore
     let optimizedScore = optimizedScoreBreakdown.finalScore ||
                           optimizedScoreBreakdown.calculation?.finalScore || 0;
+
+    // --- SANITY BOUNDS CHECK FOR ENTRY-LEVEL PROFILES ---
+    const jobAnalysis = optimizedScoreBreakdown.jobAnalysis;
+    const isEntryLevelJob = jobAnalysis?.requiredYears === 0 || jobAnalysis?.detectedLevel === "entry" || jobAnalysis?.detectedLevel === "junior";
+    
+    if (isEntryLevelJob) {
+      const eduDetails = optimizedScoreBreakdown.components.educationCerts?.details;
+      const edScore = typeof eduDetails === 'object' ? eduDetails?.educationScore : 0;
+      const isRelatedEdu = edScore !== undefined && edScore >= 4; // 6=exact, 4=related
+
+      const hardSkillsDetails = optimizedScoreBreakdown.components.hardSkills?.details || optimizedScoreBreakdown.components.skillsMatch?.details;
+      const skillsMatchRatio = (typeof hardSkillsDetails === 'object' && hardSkillsDetails?.requiredSkillsTotal && hardSkillsDetails.requiredSkillsTotal > 0)
+        ? (hardSkillsDetails.requiredSkillsMatched || 0) / hardSkillsDetails.requiredSkillsTotal
+        : 0;
+
+      if (isRelatedEdu && skillsMatchRatio >= 0.6 && optimizedScore < 55) {
+        console.error("Anomaly detected: Entry-level score sanity bounds failed on OPTIMIZED CV.", JSON.stringify(optimizedScoreBreakdown, null, 2));
+        throw new Error("Anomaly detected: Optimized score falls below entry-level sanity bounds.");
+      }
+    }
+    // ----------------------------------------------------
                           
     // Failsafe: Optimization should realistically never score lower mathematically
     if (optimizedScore < originalScore) {

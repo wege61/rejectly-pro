@@ -517,6 +517,14 @@ export interface GeneratedCVData {
     technical: string[];
     soft: string[];
   };
+  projects?: Array<{
+    name: string;
+    role?: string;
+    url?: string;
+    startDate?: string;
+    endDate?: string;
+    bullets?: string[];
+  }>;
   certifications?: Array<{
     name: string;
     issuer: string;
@@ -526,6 +534,14 @@ export interface GeneratedCVData {
     language: string;
     proficiency: string;
   }>;
+  leadership?: Array<{
+    title: string;
+    organization: string;
+    startDate: string;
+    endDate: string;
+    bullets: string[];
+  }>;
+  isEntryLevel?: boolean;
 }
 
 export function postProcessCVForATS(cv: GeneratedCVData): GeneratedCVData {

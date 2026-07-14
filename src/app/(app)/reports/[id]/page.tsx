@@ -7183,6 +7183,7 @@ export default function ReportDetailPage() {
           photoUrl,
           colorTemplate: customization?.colorTemplateKey,
           userProvidedMetrics: pendingMetrics,
+          academicDetails: customization?.academicDetails,
           forceRegenerate: true,
           targetLanguage,
         }),

@@ -104,6 +104,27 @@ export async function POST(request: NextRequest) {
     const finalScore = scoreBreakdown.finalScore ||
                       scoreBreakdown.calculation?.finalScore || 0;
 
+    // --- SANITY BOUNDS CHECK FOR ENTRY-LEVEL PROFILES ---
+    const jobAnalysis = scoreBreakdown.jobAnalysis;
+    const isEntryLevelJob = jobAnalysis?.requiredYears === 0 || jobAnalysis?.detectedLevel === "entry" || jobAnalysis?.detectedLevel === "junior";
+    
+    if (isEntryLevelJob) {
+      const eduDetails = scoreBreakdown.components.educationCerts?.details;
+      const edScore = typeof eduDetails === 'object' ? eduDetails?.educationScore : 0;
+      const isRelatedEdu = edScore !== undefined && edScore >= 4; // 6=exact, 4=related
+
+      const hardSkillsDetails = scoreBreakdown.components.hardSkills?.details || scoreBreakdown.components.skillsMatch?.details;
+      const skillsMatchRatio = (typeof hardSkillsDetails === 'object' && hardSkillsDetails?.requiredSkillsTotal && hardSkillsDetails.requiredSkillsTotal > 0)
+        ? (hardSkillsDetails.requiredSkillsMatched || 0) / hardSkillsDetails.requiredSkillsTotal
+        : 0;
+
+      if (isRelatedEdu && skillsMatchRatio >= 0.6 && finalScore < 55) {
+        console.error("Anomaly detected: Entry-level score sanity bounds failed.", JSON.stringify(scoreBreakdown, null, 2));
+        throw new Error("Anomaly detected: Score falls below entry-level sanity bounds.");
+      }
+    }
+    // ----------------------------------------------------
+
     // Save report to database with score breakdown
     const { data: report, error: reportError } = await supabase
       .from("reports")

@@ -33,7 +33,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Certifications & Courses",
     leadership: "Leadership & Activities",
     skills: "Skills",
-    languages: "Languages"
+    languages: "Languages",
+    projects: "Projects",
+    experience_only: "Experience"
   },
   ru: {
     summary: "Резюме",
@@ -42,7 +44,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Сертификаты и курсы",
     leadership: "Лидерство и мероприятия",
     skills: "Навыки",
-    languages: "Языки"
+    languages: "Языки",
+    projects: "Проекты",
+    experience_only: "Опыт работы"
   },
   tr: {
     summary: "Özet",
@@ -51,7 +55,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Sertifikalar ve Kurslar",
     leadership: "Liderlik ve Etkinlikler",
     skills: "Yetenekler",
-    languages: "Diller"
+    languages: "Diller",
+    projects: "Projeler",
+    experience_only: "Deneyim"
   },
   de: {
     summary: "Zusammenfassung",

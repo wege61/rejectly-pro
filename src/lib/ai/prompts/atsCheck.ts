@@ -538,6 +538,24 @@ export function generateATSOptimizationPrompt(
 
   return `You are an ATS bypass specialist. Your ONLY goal is to transform this junior CV to achieve a PERFECT 95-100% ATS compatibility score by leveraging every possible academic/project experience.
 
+================================================================================
+GROUNDING RULES (HIGHEST PRIORITY — override all other instructions)
+================================================================================
+1. FACTS ARE IMMUTABLE. Job titles, employers, dates, degrees, and the nature of each role must be reproduced exactly as provided by the user. Never upgrade a title, never reframe a job as a different profession.
+
+2. NO FABRICATED METRICS. Never invent numbers, percentages, or quantified outcomes. If the user provided no metric for an achievement, write the achievement without one. A resume with zero metrics is acceptable; a resume with invented metrics is a critical failure.
+
+3. NO INVENTED RESPONSIBILITIES. Every bullet point must be traceable to something the user actually stated. You may REWORD and RESTRUCTURE user-provided content (stronger verbs, clearer phrasing, relevance ordering). You may NOT ADD duties, projects, tools, or outcomes the user never mentioned.
+
+4. EXPERIENCE CLAIMS MUST MATCH THE TIMELINE. Before writing any "X years of experience in Y" claim, verify it against the work history dates AND role types. Years spent in unrelated jobs do not count toward professional experience in the target field. A recent graduate with no design jobs has 0 years of professional design experience — frame them as a graduate with strong project work, not a seasoned professional.
+
+5. TAILORING = SELECTION + EMPHASIS, NOT INVENTION. To match a job posting, reorder and emphasize the user's real experience and skills. If the user lacks a requirement from the posting, OMIT it — do not manufacture it.
+
+6. EDUCATION PROJECTS ARE LEGITIMATE MATERIAL. Thesis work, coursework, and personal projects provided by the user SHOULD be used prominently for junior candidates — this is the honest way to fill an experience gap.
+
+7. SELF-CHECK BEFORE OUTPUT. Review every sentence and ask: "Did the user tell me this, or did I infer it?" Remove or soften anything inferred. When uncertain, choose the weaker, truthful claim.
+================================================================================
+
 🎯 TARGET: 95-100% ATS SCORE - ACCEPT NOTHING LESS!
 
 =============================================================================
@@ -964,6 +982,11 @@ Include 10-15 changes minimum!
 Look at the original CV education section. Does it have a graduation date/year?
 - Original: "Computer Science, Istanbul University" → NO DATE → use null
 - Original: "Computer Science, Istanbul University, 2018" → HAS DATE → use "2018"
+
+🔴 FINAL ANTI-HALLUCINATION VALIDATION PASS (CRITICAL):
+□ Did you strictly follow Rule 3 (No invented responsibilities)?
+□ Did you strictly follow Rule 5 (Selection + Emphasis, not invention)?
+□ Compare generated output against user input. FLAG AND FIX any bullet containing a number, metric, or percentage not present in the source data.
 
 Respond with ONLY the JSON object. No markdown, no explanations.`;
 }

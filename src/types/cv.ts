@@ -51,6 +51,15 @@ export interface CVLeadership {
   bullets: string[];
 }
 
+export interface CVProject {
+  name: string;
+  role?: string;
+  url?: string;
+  startDate?: string;
+  endDate?: string;
+  bullets?: string[];
+}
+
 export interface GeneratedCV {
   contact: CVContact;
   summary: string;
@@ -60,6 +69,8 @@ export interface GeneratedCV {
   certifications?: CVCertification[];
   languages?: CVLanguage[];
   leadership?: CVLeadership[];
+  projects?: CVProject[];
+  isEntryLevel?: boolean;
   photoUrl?: string;
   themeColor?: string;
 }

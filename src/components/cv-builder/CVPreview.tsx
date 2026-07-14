@@ -144,6 +144,8 @@ export function CVPreview() {
     return parseDateForSort(dateToCompareB) - parseDateForSort(dateToCompareA);
   });
 
+  const validProjects = (cv.projects || []).filter(p => p.name?.trim() !== '');
+
   const validCerts = (cv.certifications || []).filter(c => c.name?.trim() !== '');
 
   const validLeadership = (cv.leadership || []).filter(l => l.title?.trim() !== '' || l.organization?.trim() !== '');
@@ -200,31 +202,119 @@ export function CVPreview() {
         </div>
       )}
 
-      {/* Experience Section */}
-      {(sortedExperience.length > 0) && (
-        <div style={{ marginBottom: '24px' }}>
-          <SectionTitle $theme={theme}>{headings.experience}</SectionTitle>
-          {sortedExperience.map((exp: CVExperience, idx: number) => (
-            <div key={idx} style={{ marginBottom: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{ fontWeight: 600, fontSize: '14px' }}>{exp.title}</span>
-                {(exp.startDate || exp.endDate) && (
-                  <span style={{ color: '#666', fontSize: '13px' }}>
-                    {[exp.startDate, exp.endDate || (exp.startDate ? 'Present' : '')].filter(Boolean).join(' — ')}
-                  </span>
-                )}
-              </div>
-              <div style={{ fontSize: '14px', marginBottom: '8px', color: '#444', fontWeight: 500 }}>
-                {exp.company} {exp.location && `• ${exp.location}`}
-              </div>
-              <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
-                {exp.bullets.map((bullet: string, i: number) => (
-                  <li key={i} style={{ marginBottom: '4px' }}>{bullet}</li>
-                ))}
-              </ul>
+      {/* Experience & Projects Sections */}
+      {cv.isEntryLevel ? (
+        <>
+          {validProjects.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <SectionTitle $theme={theme}>{headings.projects || 'Projects'}</SectionTitle>
+              {validProjects.map((proj: CVProject, idx: number) => (
+                <div key={idx} style={{ marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: 600, fontSize: '14px' }}>{proj.name}</span>
+                    {(proj.startDate || proj.endDate) && (
+                      <span style={{ color: '#666', fontSize: '13px' }}>
+                        {[proj.startDate, proj.endDate || (proj.startDate ? 'Present' : '')].filter(Boolean).join(' — ')}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: '14px', marginBottom: '8px', color: '#444', fontWeight: 500 }}>
+                    {proj.role || 'Project'} {proj.url && `• ${proj.url}`}
+                  </div>
+                  {proj.bullets && proj.bullets.length > 0 && (
+                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
+                      {proj.bullets.map((bullet: string, i: number) => (
+                        <li key={i} style={{ marginBottom: '4px' }}>{bullet}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          )}
+          {sortedExperience.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <SectionTitle $theme={theme}>{validProjects.length > 0 ? (headings.experience_only || 'Experience') : (headings.experience || 'Experience & Projects')}</SectionTitle>
+              {sortedExperience.map((exp: CVExperience, idx: number) => (
+                <div key={idx} style={{ marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: 600, fontSize: '14px' }}>{exp.title}</span>
+                    {(exp.startDate || exp.endDate) && (
+                      <span style={{ color: '#666', fontSize: '13px' }}>
+                        {[exp.startDate, exp.endDate || (exp.startDate ? 'Present' : '')].filter(Boolean).join(' — ')}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: '14px', marginBottom: '8px', color: '#444', fontWeight: 500 }}>
+                    {exp.company} {exp.location && `• ${exp.location}`}
+                  </div>
+                  <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
+                    {exp.bullets.map((bullet: string, i: number) => (
+                      <li key={i} style={{ marginBottom: '4px' }}>{bullet}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          {sortedExperience.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <SectionTitle $theme={theme}>{headings.experience}</SectionTitle>
+              {sortedExperience.map((exp: CVExperience, idx: number) => (
+                <div key={idx} style={{ marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: 600, fontSize: '14px' }}>{exp.title}</span>
+                    {(exp.startDate || exp.endDate) && (
+                      <span style={{ color: '#666', fontSize: '13px' }}>
+                        {[exp.startDate, exp.endDate || (exp.startDate ? 'Present' : '')].filter(Boolean).join(' — ')}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: '14px', marginBottom: '8px', color: '#444', fontWeight: 500 }}>
+                    {exp.company} {exp.location && `• ${exp.location}`}
+                  </div>
+                  <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
+                    {exp.bullets.map((bullet: string, i: number) => (
+                      <li key={i} style={{ marginBottom: '4px' }}>{bullet}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+          {validProjects.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              {sortedExperience.length === 0 && (
+                <SectionTitle $theme={theme}>{headings.projects || 'Projects'}</SectionTitle>
+              )}
+              {validProjects.map((proj: CVProject, idx: number) => (
+                <div key={idx} style={{ marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: 600, fontSize: '14px' }}>{proj.name}</span>
+                    {(proj.startDate || proj.endDate) && (
+                      <span style={{ color: '#666', fontSize: '13px' }}>
+                        {[proj.startDate, proj.endDate || (proj.startDate ? 'Present' : '')].filter(Boolean).join(' — ')}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: '14px', marginBottom: '8px', color: '#444', fontWeight: 500 }}>
+                    {proj.role || 'Project'} {proj.url && `• ${proj.url}`}
+                  </div>
+                  {proj.bullets && proj.bullets.length > 0 && (
+                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
+                      {proj.bullets.map((bullet: string, i: number) => (
+                        <li key={i} style={{ marginBottom: '4px' }}>{bullet}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Education Section */}

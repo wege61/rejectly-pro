@@ -296,22 +296,23 @@ export async function generateCVPDF(
   // ==========================================
   // 3. EXPERIENCE
   // ==========================================
-  const validExperience = cv.experience.filter(e => e.title?.trim() !== "" || e.company?.trim() !== "");
-  const sortedExperience = [...validExperience].sort((a, b) => {
-    const dateA = a.endDate ? a.endDate : a.startDate;
-    const dateB = b.endDate ? b.endDate : b.startDate;
-    return parseDateForSort(dateB) - parseDateForSort(dateA);
-  });
+  const renderExperienceSection = () => {
+    const validExperience = cv.experience.filter(e => e.title?.trim() !== "" || e.company?.trim() !== "");
+    const sortedExperience = [...validExperience].sort((a, b) => {
+      const dateA = a.endDate ? a.endDate : a.startDate;
+      const dateB = b.endDate ? b.endDate : b.startDate;
+      return parseDateForSort(dateB) - parseDateForSort(dateA);
+    });
 
-  if (sortedExperience.length > 0) {
+    if (sortedExperience.length === 0) return;
+
     const startY = yPosition;
-    drawSectionTitle((L.experience || 'Experience & Projects').toUpperCase());
+    const validProjects = (cv.projects || []).filter(p => p.name?.trim() !== "");
+    drawSectionTitle(((cv.isEntryLevel && validProjects.length > 0) ? (L.experience_only || 'Experience') : (L.experience || 'Experience & Projects')).toUpperCase());
 
     sortedExperience.forEach((exp) => {
-      // Require 16mm to ensure title + company + at least one bullet fits
       checkPageBreak(16);
       
-      // Don't duplicate date if start and end are the same month
       const dateText = exp.startDate === exp.endDate
         ? exp.startDate
         : [exp.startDate, exp.endDate || (exp.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
@@ -349,6 +350,73 @@ export async function generateCVPDF(
     });
     
     if (highlightSection === "experience") drawHighlightBorder(startY, yPosition);
+  };
+
+  const renderProjectsSection = () => {
+    const validProjects = (cv.projects || []).filter(p => p.name?.trim() !== "");
+    if (validProjects.length === 0) return;
+
+    const startY = yPosition;
+    const validExperience = cv.experience.filter(e => e.title?.trim() !== "" || e.company?.trim() !== "");
+    
+    // Only draw title if experience was empty, or if it's entry level (so they are split)
+    if (validExperience.length === 0 || cv.isEntryLevel) {
+      drawSectionTitle((L.projects || 'Projects').toUpperCase());
+    }
+
+    validProjects.forEach((proj) => {
+      checkPageBreak(16);
+      
+      const dateText = proj.startDate === proj.endDate
+        ? proj.startDate
+        : [proj.startDate, proj.endDate || (proj.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
+      drawSplitRow(proj.name, dateText, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
+      yPosition += 5;
+      
+      let roleLoc = proj.role || "Project";
+      if (proj.url) roleLoc += ` • ${proj.url}`;
+      doc.setFont("Roboto", "bold"); 
+      doc.setFontSize(FONTS.subtitle);
+      doc.setTextColor(COLORS.secondary);
+      doc.text(roleLoc, marginX, yPosition);
+      yPosition += 5;
+
+      doc.setFont("Roboto", "normal");
+      doc.setFontSize(FONTS.body);
+      doc.setTextColor(COLORS.bullet);
+
+      if (proj.bullets) {
+        proj.bullets.forEach((bullet) => {
+          checkPageBreak(6);
+          doc.text("•", marginX + 3, yPosition);
+
+          const bulletLines = getLines(bullet.trim(), contentWidth - 8);
+          bulletLines.forEach((line, lineIndex) => {
+            if (lineIndex > 0) {
+              checkPageBreak(4.5);
+              yPosition += 4.5;
+            }
+            doc.text(line, marginX + 8, yPosition);
+          });
+          yPosition += 5.5;
+        });
+      }
+      
+      yPosition += 5;
+    });
+    
+    if (highlightSection === "experience" && validExperience.length === 0) {
+      drawHighlightBorder(startY, yPosition);
+    }
+  };
+
+  // Render based on ordering rules
+  if (cv.isEntryLevel) {
+    renderProjectsSection();
+    renderExperienceSection();
+  } else {
+    renderExperienceSection();
+    renderProjectsSection();
   }
 
   // ==========================================

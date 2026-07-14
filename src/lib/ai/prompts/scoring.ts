@@ -107,9 +107,26 @@ CERTIFICATIONS: Required certs (e.g., "AWS Certified", "PMP required")
 SENIORITY: Job level (Junior/Mid/Senior/Lead/Manager)
 
 =============================================================================
-STEP 2: SCORING CATEGORIES (FIXED WEIGHTS - NO EXCEPTIONS!)
+STEP 2A: DETECT SENIORITY & SELECT RUBRIC (CRITICAL!)
 =============================================================================
+First, determine the job posting seniority (ENTRY/JUNIOR vs MID/SENIOR).
+You MUST use the correct weight profile based on this detection!
 
+Profile A: ENTRY / JUNIOR (0-2 years, intern, fresh graduate)
+┌─────────────────────────────────┬────────────┬─────────────────────────────┐
+│ Category                        │ Max Points │ What It Measures            │
+├─────────────────────────────────┼────────────┼─────────────────────────────┤
+│ 1. HARD SKILLS MATCH            │ 35         │ Technical skills & tools    │
+│ 2. EXPERIENCE LEVEL             │ 25         │ Years + seniority match     │
+│ 3. INDUSTRY & DOMAIN            │ 20         │ Education field mapping     │
+│ 4. EDUCATION & CERTIFICATIONS   │ 10         │ Degrees & credentials       │
+│ 5. ROLE-SPECIFIC REQUIREMENTS   │ 10         │ Special job requirements    │
+├─────────────────────────────────┼────────────┼─────────────────────────────┤
+│ TOTAL                           │ 100        │                             │
+└─────────────────────────────────┴────────────┴─────────────────────────────┘
+Rationale: Maintain consistent max points to prevent UI glitches, but use Junior Exceptions within categories to award points based on education instead of professional experience.
+
+Profile B: MID / SENIOR (3+ years, Lead, Manager)
 ┌─────────────────────────────────┬────────────┬─────────────────────────────┐
 │ Category                        │ Max Points │ What It Measures            │
 ├─────────────────────────────────┼────────────┼─────────────────────────────┤
@@ -123,23 +140,32 @@ STEP 2: SCORING CATEGORIES (FIXED WEIGHTS - NO EXCEPTIONS!)
 └─────────────────────────────────┴────────────┴─────────────────────────────┘
 
 =============================================================================
-CATEGORY 1: HARD SKILLS MATCH (35 points max)
+STEP 2B: CATEGORY SCORING GUIDELINES
+=============================================================================
+=============================================================================
+CATEGORY 1: HARD SKILLS MATCH
 =============================================================================
 This is the MOST IMPORTANT category. Be STRICT.
 
 STEP 1A: List ALL required skills from job posting
 STEP 1B: For EACH skill, check if CV has it with EVIDENCE
 
+🚨 BUGFIX MATCHER RULES (CRITICAL):
+- Normalize case, unicode, and bullet separators (•, |, commas) before matching. For example, "Adobe Illustrator • Figma" MUST match a requirement for "Illustrator" and "Figma".
+- Match across the ENTIRE resume text, not just the experience section.
+- Handle RU/EN mixed resumes: maintain a mental synonym map (e.g., "Графический дизайн" ↔ "Graphic Design", "Иллюстрирование" ↔ "Illustration"). Do not flag as missing if a translated equivalent exists!
+
 SKILL SCORING RULES:
 ┌────────────────────────────────────────┬─────────────────┐
 │ Skill Evidence Level                   │ Credit          │
 ├────────────────────────────────────────┼─────────────────┤
 │ Skill + project/job using it           │ 1.0 (full)      │
-│ Skill listed in skills section only    │ 0.5 (half)      │
+│ Skill listed in skills section only    │ 0.5 (half) *    │
 │ "Familiar with" or "exposure to"       │ 0.25 (quarter)  │
 │ Similar/related skill (not exact)      │ 0.25 (quarter)  │
 │ Skill not mentioned at all             │ 0.0 (zero)      │
 └────────────────────────────────────────┴─────────────────┘
+* ⭐ JUNIOR EXCEPTION: For ENTRY/JUNIOR analyses, accept as FULL evidence (1.0) a skill listed in the skills section AND mentioned anywhere in education, thesis, projects, or portfolio context. Retail/unrelated job bullets are NOT expected to demonstrate design/tech skills — absence there must not downgrade the skill.
 
 ⭐ IMPLIED SKILLS RULE (Frontend Roles):
 For frontend/web developer roles, if the candidate demonstrates a modern JS framework
@@ -155,8 +181,8 @@ FORMULA:
 - Count total PREFERRED skills from job (T_pref)
 - Calculate matched required skills with evidence weights (M_req)
 - Calculate matched preferred skills with evidence weights (M_pref)
-- Required skills score = (M_req / T_req) * 28 points (80% of category)
-- Preferred skills score = (M_pref / T_pref) * 7 points (20% of category)
+- Required skills score = (M_req / T_req) * (80% of Category Max Points)
+- Preferred skills score = (M_pref / T_pref) * (20% of Category Max Points)
 - Category total = Required score + Preferred score
 
 EXAMPLE:
@@ -186,12 +212,18 @@ STEP 2A: Extract required years from job posting
 
 ⭐⭐ ENTRY-LEVEL PARSING RULE (CRITICAL) ⭐⭐
 If the job posting contains ANY of the following phrases, set yearsRequired = 0:
-- "entry-level", "entry level"
+- "entry-level", "entry level", "junior" (with no explicit years stated)
 - "0-X years" (e.g. "0-2 years", "0-1 years")
 - "no experience required", "no prior experience"
-- "new graduates welcome", "fresh graduates"
-- "junior" in the job title WITH no explicit minimum years stated
-When yearsRequired = 0 and the candidate has ANY relevant experience (including projects/coursework), AUTOMATICALLY award yearsScore = 15.
+- "new graduates welcome", "fresh graduates", "intern", "internship"
+- "без опыта", "учебными проектами", "дипломные работы", "начинающий", "стажер"
+
+REQUIREMENT-RELATIVE EXPERIENCE SCORING:
+Experience score must measure the GAP between required and actual, not absolute years.
+- When yearsRequired == 0 OR seniority is intern/junior/entry:
+  → Relevant projects, thesis work, internships, or coursework COUNT AS qualifying experience.
+  → A candidate with relevant projects and no professional experience MUST score 80-100% of this category.
+- NEVER output contradictory fields: if experience extraction returns "Projects & internships", the seniorityCandidate level MUST NOT be "none" (use "junior" or "entry"). Derive the level from the same extraction, single source of truth.
 
 STEP 2B: Calculate candidate's RELEVANT years (not total career years!)
 ⚠️ ONLY count years where the daily professional scope closely matches the target role. 
@@ -269,25 +301,30 @@ Total: 0 + 0 = 0 points (out of 25) ← THIS IS CORRECT!
 =============================================================================
 CATEGORY 3: INDUSTRY & DOMAIN (20 points max)
 =============================================================================
-Measures relevance of past work to the target industry/domain.
+Measures relevance of past work (or Degree Field for Entry-Level Candidates) to the target industry/domain.
 
 INDUSTRY MATCH TABLE:
 ┌─────────────────────────────────────────┬─────────────────┐
 │ Industry Match Level                    │ Points (of 12)  │
 ├─────────────────────────────────────────┼─────────────────┤
-│ EXACT: Same industry (FinTech→FinTech)  │ 12              │
-│ RELATED: Adjacent (Banking→FinTech)     │ 8               │
-│ TRANSFERABLE: Some overlap (Retail→Ecom)│ 5               │
-│ DIFFERENT: Minimal relevance            │ 2               │
-│ NONE: Completely unrelated field        │ 0               │
+│ EXACT: Same industry OR Matching Degree   │ 12              │
+│ RELATED: Adjacent OR Minor Degree overlap │ 8               │
+│ TRANSFERABLE: Some overlap (Retail→Ecom)  │ 5               │
+│ DIFFERENT: Minimal relevance              │ 2               │
+│ NONE: Completely unrelated field          │ 0               │
 └─────────────────────────────────────────┴─────────────────┘
-⭐ JUNIOR EXCEPTION: For entry-level roles, academic environments (Universities) or personal project work count as "RELATED: Adjacent" (8 points) to Software/Tech industries, not NONE.
+
+⭐⭐ ENTRY-LEVEL DEGREE OVERRIDE (CRITICAL) ⭐⭐
+If the job posting is entry-level (yearsRequired=0 or junior):
+1. IGNORE unrelated "survival jobs" (e.g., retail, barista) when evaluating this category.
+2. The candidate's EDUCATION DEGREE is their primary industry.
+3. If their degree matches the job (e.g., Graphic Design degree for a Graphic Design job), you MUST select "EXACT" (12 points) for Industry and "Deep expertise" (8 points) for Domain.
 
 DOMAIN EXPERTISE TABLE:
 ┌─────────────────────────────────────────┬─────────────────┐
 │ Domain Knowledge Level                  │ Points (of 8)   │
 ├─────────────────────────────────────────┼─────────────────┤
-│ Deep expertise (3+ years in domain)     │ 8               │
+│ Deep expertise (3+ years or Degree)     │ 8               │
 │ Solid experience (1-3 years)            │ 6               │
 │ Some exposure (projects/coursework)     │ 3               │
 │ No domain experience                    │ 0               │
@@ -400,6 +437,10 @@ STEP 5: DETERMINE HR VERDICT
 │ 0-29%           │ "would_not_interview" - Wrong fit, do not proceed      │
 └─────────────────┴────────────────────────────────────────────────────────┘
 
+⭐⭐ ENTRY-LEVEL TONE RULE ⭐⭐
+When an entry-level profile is detected, REPLACE generic "Significant gaps" framing with gap-specific, actionable copy.
+For example, instead of "Lacks professional experience", say "Add your thesis/portfolio projects to strengthen evidence for X". Be encouraging but objective. A junior applying to a junior job shouldn't be framed as a failure.
+
 =============================================================================
 RESPONSE FORMAT (STRICT JSON)
 =============================================================================
@@ -426,14 +467,14 @@ RESPONSE FORMAT (STRICT JSON)
   "components": {
     "hardSkills": {
       "name": "Hard Skills Match",
-      "maxPoints": 35,
+      "maxPoints": <40 for junior, 35 for senior>,
       "details": {
         "requiredSkillsTotal": <number>,
         "requiredSkillsMatched": <number with decimals for partial>,
         "preferredSkillsTotal": <number>,
         "preferredSkillsMatched": <number with decimals for partial>
       },
-      "earnedPoints": <0-35>,
+      "earnedPoints": <number up to maxPoints>,
       "percentage": <0-100>,
       "matchedSkills": [
         {"skill": "Python", "evidence": "3 years in backend roles", "credit": 1.0},
@@ -446,49 +487,49 @@ RESPONSE FORMAT (STRICT JSON)
     },
     "experienceLevel": {
       "name": "Experience Level",
-      "maxPoints": 25,
+      "maxPoints": <10 for junior, 25 for senior>,
       "details": {
         "yearsRequired": <number>,
         "yearsCandidate": <number>,
         "yearsGap": <number>,
-        "yearsScore": <0-15 (CRITICAL: MUST be 0 if yearsCandidate=0 and background is unrelated)>,
+        "yearsScore": <number>,
         "seniorityRequired": "<level>",
-        "seniorityCandidate": "<level (CRITICAL: MUST be 'none' if yearsCandidate=0 and background is unrelated)>",
-        "seniorityScore": <0-10 (CRITICAL: MUST be 0 if yearsCandidate=0 and background is unrelated)>
+        "seniorityCandidate": "<level>",
+        "seniorityScore": <number>
       },
-      "earnedPoints": <0-25>,
+      "earnedPoints": <number up to maxPoints>,
       "percentage": <0-100>
     },
     "industryDomain": {
       "name": "Industry & Domain",
-      "maxPoints": 20,
+      "maxPoints": <0 for junior, 20 for senior>,
       "details": {
         "industryMatch": "<exact|related|transferable|different|none>",
-        "industryScore": <0-12>,
+        "industryScore": <number>,
         "domainExperience": "<deep|solid|some|none>",
-        "domainScore": <0-8>
+        "domainScore": <number>
       },
-      "earnedPoints": <0-20>,
+      "earnedPoints": <number up to maxPoints>,
       "percentage": <0-100>
     },
     "educationCerts": {
       "name": "Education & Certifications",
-      "maxPoints": 10,
+      "maxPoints": <30 for junior, 10 for senior>,
       "details": {
         "educationMatch": "<exact|related|any|none|bootcamp>",
-        "educationScore": <0-6>,
+        "educationScore": <number>,
         "certMatch": "<all|none_required|some|related|none>",
-        "certScore": <0-4>
+        "certScore": <number>
       },
-      "earnedPoints": <0-10>,
+      "earnedPoints": <number up to maxPoints>,
       "percentage": <0-100>
     },
     "roleSpecific": {
       "name": "Role-Specific Requirements",
-      "maxPoints": 10,
+      "maxPoints": <20 for junior, 10 for senior>,
       "requirementsMet": ["English fluency", "Agile experience"],
       "requirementsNotMet": ["Security clearance"],
-      "earnedPoints": <0-10>,
+      "earnedPoints": <number up to maxPoints>,
       "percentage": <0-100>
     }
   },
@@ -555,6 +596,7 @@ your own detail fields. If they contradict each other, FIX the earnedPoints.
 
 □ INDUSTRY: earnedPoints MUST = industryScore + domainScore from details.
   If industryMatch="exact" → industryScore MUST be 12.
+  CRITICAL DEGREE OVERRIDE: If yearsRequired=0 (or job is entry-level) AND candidate's Degree Field matches the job's industry (e.g. Design Degree for Design Job), YOU MUST SET industryMatch="exact" (12) and domainScore=8. Do not penalize for unrelated retail jobs!
 
 □ EDUCATION: earnedPoints MUST = educationScore + certScore from details.
 

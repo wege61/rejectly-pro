@@ -10,7 +10,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BlogPostWithRelations } from "@/types/blog";
 
-const POSTS_PER_PAGE = 6;
+const POSTS_PER_PAGE = 8;
 
 const BentoGridWrapper = styled.div`
   display: grid;
@@ -256,6 +256,30 @@ const GridContainer = styled.div`
   min-height: 400px;
 `;
 
+// Direct child of the grid — this is the actual grid item, so the
+// full-width span has to live here (not on the nested CardLink).
+const GridItem = styled.div<{ $featured?: boolean; $hidden?: boolean }>`
+  ${({ $featured }) =>
+    $featured &&
+    `
+    @media (min-width: 768px) {
+      grid-column: span 2;
+    }
+  `}
+
+  ${({ $hidden }) =>
+    $hidden &&
+    `
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  `}
+`;
+
 const BentoGrid = ({
   className,
   children,
@@ -330,9 +354,11 @@ const BlogBentoItem = ({ post, index, featured }: BlogBentoItemProps) => {
 };
 
 const getLayoutPattern = (index: number): boolean => {
-  // Every 3rd cycle: featured (wide) card
-  // Pattern: featured, normal, normal, normal, featured, normal...
-  return index % 5 === 0;
+  // Bookend layout per page of 8:
+  //   featured (full-width) | 6 normal (2 cols x 3 rows) | featured (full-width)
+  // i.e. the first and last post of each page span both columns.
+  const posInPage = ((index % POSTS_PER_PAGE) + POSTS_PER_PAGE) % POSTS_PER_PAGE;
+  return posInPage === 0 || posInPage === POSTS_PER_PAGE - 1;
 };
 
 interface BlogBentoGridProps {
@@ -420,27 +446,21 @@ export function BlogBentoGrid({ posts }: BlogBentoGridProps) {
             {posts.map((post, index) => {
               const postPage = Math.floor(index / POSTS_PER_PAGE) + 1;
               const isCurrentPage = postPage === currentPage;
-              
+              const featured = getLayoutPattern(index);
+
               return (
-                <div 
+                <GridItem
                   key={post.id}
-                  style={isCurrentPage ? undefined : { 
-                    position: "absolute", 
-                    width: "1px", 
-                    height: "1px", 
-                    overflow: "hidden",
-                    clip: "rect(0,0,0,0)",
-                    whiteSpace: "nowrap",
-                    border: 0 
-                  }}
+                  $featured={featured}
+                  $hidden={!isCurrentPage}
                   aria-hidden={!isCurrentPage}
                 >
                   <BlogBentoItem
                     post={post}
                     index={index}
-                    featured={getLayoutPattern(index)}
+                    featured={featured}
                   />
-                </div>
+                </GridItem>
               );
             })}
           </BentoGrid>

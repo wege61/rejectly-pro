@@ -13,7 +13,7 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 
 // Types
 type Card = {
-  src: string;
+  src?: string;
   title: string;
   category: string;
   content: React.ReactNode;
@@ -185,6 +185,7 @@ const ModalContent = styled(motion.div)`
   font-family: inherit;
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 24px 64px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 
   @media (min-width: 768px) {
     padding: 56px;
@@ -355,6 +356,142 @@ const CardImage = styled.img<{ $isLoading: boolean }>`
   mask-image: linear-gradient(to top, black 40%, transparent 100%);
   -webkit-mask-image: linear-gradient(to top, black 40%, transparent 100%);
 `;
+
+// Branded gradient poster — collapsed-card visual for features without a product screenshot
+const CardPoster = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background:
+    radial-gradient(135% 105% at 0% 0%, rgba(238, 90, 90, 0.42) 0%, transparent 55%),
+    radial-gradient(120% 120% at 100% 100%, rgba(120, 90, 200, 0.22) 0%, transparent 50%),
+    linear-gradient(165deg, #201f22 0%, #0f0f10 100%);
+`;
+
+// ---- Shared expanded-card content primitives ----
+// One source of truth so spacing/clipping never drift between cards again.
+
+const CheckMark = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+);
+
+// Stacked "hero" screenshots. Both images share the content column's width
+// (so they align with the body text), the detail shot is flush-right with a
+// proportional overhang, and the frame reserves matching space below it.
+const StackFrame = styled.div`
+  position: relative;
+  width: 100%;
+  margin-bottom: clamp(28px, 8%, 60px);
+`;
+
+const StackBase = styled.img`
+  display: block;
+  width: 88%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+`;
+
+const StackDetail = styled.img`
+  position: absolute;
+  right: 0;
+  bottom: -8%;
+  width: 60%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+`;
+
+export const ScreenshotStack = ({
+  base,
+  detail,
+  baseAlt = "",
+  detailAlt = "",
+}: {
+  base: string;
+  detail?: string;
+  baseAlt?: string;
+  detailAlt?: string;
+}) => (
+  <StackFrame>
+    <StackBase src={base} alt={baseAlt} loading="lazy" decoding="async" />
+    {detail && (
+      <StackDetail src={detail} alt={detailAlt} loading="lazy" decoding="async" />
+    )}
+  </StackFrame>
+);
+
+export const CardLead = styled.p`
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  font-weight: 500;
+  color: var(--text-color);
+`;
+
+export const CardText = styled.p`
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+`;
+
+export const CardKicker = styled.p`
+  margin: 32px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+`;
+
+const FeatureListWrapper = styled.ul`
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  li svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--accent);
+  }
+
+  strong {
+    color: var(--text-color);
+    font-weight: 600;
+  }
+`;
+
+export const FeatureList = ({ items }: { items: React.ReactNode[] }) => (
+  <FeatureListWrapper>
+    {items.map((item, i) => (
+      <li key={i}>
+        <CheckMark />
+        <span>{item}</span>
+      </li>
+    ))}
+  </FeatureListWrapper>
+);
 
 // Carousel Component
 export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
@@ -529,14 +666,18 @@ export const AppleCard = ({
             {card.title}
           </CardTitle>
         </CardContent>
-        <CardImage
-          src={card.src}
-          alt={card.title}
-          $isLoading={isLoading}
-          onLoad={() => setIsLoading(false)}
-          loading="lazy"
-          decoding="async"
-        />
+        {card.src ? (
+          <CardImage
+            src={card.src}
+            alt={card.title}
+            $isLoading={isLoading}
+            onLoad={() => setIsLoading(false)}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <CardPoster />
+        )}
       </CardButton>
     </>
   );

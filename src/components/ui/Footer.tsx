@@ -125,20 +125,27 @@ const BrandLogo = styled.div`
 const CtaButton = styled(Link)`
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   margin-top: 24px;
-  padding: 11px 18px;
-  border-radius: 10px;
+  padding: 11px 22px;
+  border-radius: 9999px;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
   color: #fff;
-  background: var(--gradient-accent);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 100%),
+    rgba(238, 90, 90, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 16px rgba(238, 90, 90, 0.35);
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
 
   &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.28);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 100%),
+      rgba(238, 90, 90, 0.92);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 4px 20px rgba(238, 90, 90, 0.5);
   }
 
   svg {

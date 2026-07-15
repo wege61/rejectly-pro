@@ -34,14 +34,8 @@ export function WebSiteSchema() {
     name: 'Rejectly.pro',
     url: 'https://rejectly.pro',
     description: 'Free ATS resume checker and AI resume optimizer. Check your resume against ATS systems, get your ATS compatibility score, and create job-specific optimized resumes.',
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: 'https://rejectly.pro/blog?search={search_term_string}',
-      },
-      'query-input': 'required name=search_term_string',
-    },
+    // No SearchAction: Google retired the sitelinks searchbox (2024), and the
+    // {search_term_string} placeholder gets crawled as a literal URL (seen in GSC).
   }
 
   return (

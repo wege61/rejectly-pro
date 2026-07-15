@@ -5,7 +5,7 @@ import { Footer } from "@/components/ui/Footer";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { FlipWords } from "@/components/ui/FlipWords";
 import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
-import { Carousel, AppleCard, Card } from "@/components/ui/AppleCarousel";
+import { Carousel, AppleCard, Card, ScreenshotStack, CardLead, CardKicker, FeatureList as CardFeatureList } from "@/components/ui/AppleCarousel";
 
 // ==================== STYLED COMPONENTS ====================
 const Container = styled.div`
@@ -441,16 +441,18 @@ export default function HowItWorksPage() {
       title: "The ATS Filter Reverse-Engineering",
       category: "Hack The Filter",
       content: (
-        <div>
-          <p>See exactly why the bot rejected you. Our AI reverse-engineers the job description and reveals:</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>The exact corporate keywords the ATS is filtering for</li>
-            <li>Where your academic projects fall short of the algorithm</li>
-            <li>Action verbs that bypass junior-level filters</li>
-            <li>How to quantify school projects to look like real experience</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Don&apos;t guess what the recruiter wants. Know exactly what the bot needs.</p>
-        </div>
+        <>
+          <CardLead>See exactly why the bot rejected you. Our AI reverse-engineers the job description and reveals:</CardLead>
+          <CardFeatureList
+            items={[
+              <>The exact corporate keywords the ATS is filtering for</>,
+              <>Where your academic projects fall short of the algorithm</>,
+              <>Action verbs that bypass junior-level filters</>,
+              <>How to quantify school projects to look like real experience</>,
+            ]}
+          />
+          <CardKicker>Don&apos;t guess what the recruiter wants. Know exactly what the bot needs.</CardKicker>
+        </>
       ),
     },
     {
@@ -458,28 +460,24 @@ export default function HowItWorksPage() {
       title: "Score Your Resume Against Any Job",
       category: "Match Intelligence",
       content: (
-        <div>
-          <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
-            <img 
-              src="/reports-list.png" 
-              alt="AI Job Matching Dashboard List" 
-              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }} 
-            />
-            <img 
-              src="/reports-detail.png" 
-              alt="Detailed Match Analysis View" 
-              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }} 
-            />
-          </div>
-          <p>Don't apply blindly. Paste the job description you want, and our AI will score your current resume against the exact corporate requirements.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Instant match score for the specific job posting</li>
-            <li>Identifies the exact skills and keywords you're missing</li>
-            <li>Highlights where your university tech stack matches the job</li>
-            <li>Warns you if your CV needs a major rewrite to pass</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Know if you can pass the filter before you even apply.</p>
-        </div>
+        <>
+          <ScreenshotStack
+            base="/reports-list.png"
+            detail="/reports-detail.png"
+            baseAlt="AI Job Matching Dashboard List"
+            detailAlt="Detailed Match Analysis View"
+          />
+          <CardLead>Don&apos;t apply blindly. Paste the job description you want, and our AI will score your current resume against the exact corporate requirements.</CardLead>
+          <CardFeatureList
+            items={[
+              <>Instant match score for the specific job posting</>,
+              <>Identifies the exact skills and keywords you&apos;re missing</>,
+              <>Highlights where your university tech stack matches the job</>,
+              <>Warns you if your CV needs a major rewrite to pass</>,
+            ]}
+          />
+          <CardKicker>Know if you can pass the filter before you even apply.</CardKicker>
+        </>
       ),
     },
     {
@@ -487,28 +485,24 @@ export default function HowItWorksPage() {
       title: "The Human Hook (Cover Letters)",
       category: "Personalized Outreach",
       content: (
-        <div>
-          <div style={{ position: 'relative', width: '100%', marginBottom: '48px', paddingRight: '20px' }}>
-            <img 
-              src="/cover-letters-list.png" 
-              alt="Cover Letters Dashboard" 
-              style={{ width: '100%', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }} 
-            />
-            <img 
-              src="/cover-letters-detail.png" 
-              alt="Generated Cover Letter Detail View" 
-              style={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '70%', borderRadius: '12px', boxShadow: '0 16px 48px rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)' }} 
-            />
-          </div>
-          <p>Once you beat the bot, you need to convince the human. Generate cover letters that explain why your hunger beats 3 years of mediocre experience.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Frames academic work as high-impact projects</li>
-            <li>Directly addresses the lack of formal experience with confidence</li>
-            <li>Matches the specific company culture and tone</li>
-            <li>Instantly generated from your ATS-optimized resume</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Prove you&apos;re the junior they need to hire.</p>
-        </div>
+        <>
+          <ScreenshotStack
+            base="/cover-letters-list.png"
+            detail="/cover-letters-detail.png"
+            baseAlt="Cover Letters Dashboard"
+            detailAlt="Generated Cover Letter Detail View"
+          />
+          <CardLead>Once you beat the bot, you need to convince the human. Generate cover letters that explain why your hunger beats 3 years of mediocre experience.</CardLead>
+          <CardFeatureList
+            items={[
+              <>Frames academic work as high-impact projects</>,
+              <>Directly addresses the lack of formal experience with confidence</>,
+              <>Matches the specific company culture and tone</>,
+              <>Instantly generated from your ATS-optimized resume</>,
+            ]}
+          />
+          <CardKicker>Prove you&apos;re the junior they need to hire.</CardKicker>
+        </>
       ),
     },
     {
@@ -516,16 +510,18 @@ export default function HowItWorksPage() {
       title: "The Corporate Translator",
       category: "Resume Builder",
       content: (
-        <div>
-          <p>Turn &quot;built a react app for class&quot; into &quot;Architected a scalable frontend application.&quot; Our builder speaks corporate.</p>
-          <ul style={{ marginTop: '16px', paddingLeft: '20px' }}>
-            <li>Translates student terminology into HR keywords</li>
-            <li>Templates designed specifically to bypass modern ATS systems</li>
-            <li>Automatic keyword density optimization</li>
-            <li>Hides junior-level tells and highlights actual capabilities</li>
-          </ul>
-          <p style={{ marginTop: '16px' }}>Built from the ground up to get you that first interview.</p>
-        </div>
+        <>
+          <CardLead>Turn &quot;built a react app for class&quot; into &quot;Architected a scalable frontend application.&quot; Our builder speaks corporate.</CardLead>
+          <CardFeatureList
+            items={[
+              <>Translates student terminology into HR keywords</>,
+              <>Templates designed specifically to bypass modern ATS systems</>,
+              <>Automatic keyword density optimization</>,
+              <>Hides junior-level tells and highlights actual capabilities</>,
+            ]}
+          />
+          <CardKicker>Built from the ground up to get you that first interview.</CardKicker>
+        </>
       ),
     },
   ];

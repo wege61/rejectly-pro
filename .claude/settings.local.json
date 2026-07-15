@@ -72,7 +72,17 @@
       "Bash(open out/rejectly-demo-1080p.mp4)",
       "Bash(npx eslint *)",
       "Bash(git stash *)",
-      "Bash(python3 -)"
+      "Bash(python3 -)",
+      "Bash(npx --yes playwright@1.49.1 --version)",
+      "Bash(npm i *)",
+      "Bash(sips -g pixelHeight -g pixelWidth role-full.png)",
+      "Bash(sips -c 2200 1440 --cropOffset 0 0 role-full.png --out role-top.png)",
+      "Bash(sips -c 2079 1440 --cropOffset 2200 0 role-full.png --out role-bottom.png)",
+      "Bash(sips -g pixelHeight se-desktop.png nurse-desktop.png)",
+      "Bash(sips -c 1650 1440 --cropOffset 0 0 se-desktop.png --out se-1.png)",
+      "Bash(sips -c 1650 1440 --cropOffset 1650 0 se-desktop.png --out se-2.png)",
+      "Bash(sips -c 1538 1440 --cropOffset 3300 0 se-desktop.png --out se-3.png)",
+      "Bash(sips -c 1700 1440 --cropOffset 0 0 nurse-desktop.png --out nurse-1.png)"
     ],
     "deny": [],
     "ask": []

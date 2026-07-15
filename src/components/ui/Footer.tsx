@@ -6,8 +6,12 @@ import { ROUTES } from "@/lib/constants";
 
 const FooterWrapper = styled.footer`
   position: relative;
-  margin-top: 80px;
+  margin-top: 56px;
   background: var(--bg-color);
+
+  @media (min-width: 768px) {
+    margin-top: 80px;
+  }
 
   &::before {
     content: '';
@@ -16,50 +20,54 @@ const FooterWrapper = styled.footer`
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(238, 90, 90, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.35), transparent);
   }
 `;
 
 const FooterContent = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 48px 24px;
+  padding: 48px 24px 32px;
 `;
 
 const FooterGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 40px 32px;
-  margin-bottom: 48px;
 
   @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   @media (min-width: 1024px) {
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2.2fr 1fr 1fr 1fr;
+    gap: 48px;
   }
 `;
 
-const FooterColumn = styled.section`
-  h3 {
-    font-weight: 700;
-    font-size: 18px;
-    margin-bottom: 16px;
-    color: var(--text-color);
-  }
-
-  h4 {
-    font-weight: 600;
-    font-size: 16px;
-    margin-bottom: 16px;
-    color: var(--text-color);
+const BrandColumn = styled.div`
+  @media (min-width: 640px) and (max-width: 1023px) {
+    grid-column: 1 / -1;
+    max-width: 480px;
   }
 
   p {
     color: var(--text-secondary);
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.65;
+    margin: 0;
+    max-width: 34ch;
+  }
+`;
+
+const FooterColumn = styled.nav`
+  h3 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-color);
+    margin: 0 0 18px;
   }
 
   ul {
@@ -71,9 +79,108 @@ const FooterColumn = styled.section`
     gap: 12px;
   }
 
-  li a {
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     color: var(--text-secondary);
     font-size: 14px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--text-color);
+    }
+  }
+`;
+
+const Tag = styled.span`
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px solid rgba(var(--accent-rgb), 0.25);
+`;
+
+const BrandLogo = styled.div`
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  margin-bottom: 14px;
+  background: linear-gradient(135deg, #fff 0%, #a5a5a5 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  display: inline-block;
+
+  span {
+    color: var(--accent);
+    -webkit-text-fill-color: var(--accent);
+  }
+`;
+
+const CtaButton = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #fff;
+  background: var(--gradient-accent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.28);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
+const CtaNote = styled.p`
+  && {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+`;
+
+const SeoLinks = styled.section`
+  margin-top: 48px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border-color);
+
+  h3 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-color);
+    margin: 0 0 14px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+
+  a {
+    color: var(--text-secondary);
+    font-size: 13px;
     text-decoration: none;
     transition: color 0.2s ease;
 
@@ -84,31 +191,35 @@ const FooterColumn = styled.section`
 `;
 
 const FooterBottom = styled.div`
+  margin-top: 40px;
+  padding-top: 24px;
   border-top: 1px solid var(--border-color);
-  padding-top: 32px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   align-items: center;
   justify-content: space-between;
 
   @media (min-width: 768px) {
     flex-direction: row;
   }
-
-  p {
-    color: var(--text-secondary);
-    font-size: 14px;
-  }
 `;
 
-const FooterLinks = styled.nav`
+const LegalRow = styled.div`
   display: flex;
-  gap: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+
+  p {
+    margin: 0;
+  }
 
   a {
     color: var(--text-secondary);
-    font-size: 14px;
     text-decoration: none;
     transition: color 0.2s ease;
 
@@ -118,109 +229,81 @@ const FooterLinks = styled.nav`
   }
 `;
 
+const SocialRow = styled.div`
+  display: flex;
+  gap: 12px;
+`;
+
 const SocialIcon = styled.a`
-  color: var(--text-secondary);
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 
   &:hover {
     color: var(--accent);
+    border-color: rgba(var(--accent-rgb), 0.4);
     transform: translateY(-2px);
   }
 `;
 
-const BrandLogo = styled.div`
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  margin-bottom: 16px;
-  background: linear-gradient(135deg, #fff 0%, #a5a5a5 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-  
-  span {
-    color: var(--accent);
-    -webkit-text-fill-color: var(--accent);
-  }
-`;
-
-const TrustBadge = styled.div`
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  .stars {
-    color: #f59e0b;
-    font-size: 14px;
-    letter-spacing: 2px;
-  }
-  
-  .text {
-    font-size: 13px;
-    color: var(--text-secondary);
-    font-weight: 500;
-  }
-`;
-
-const SystemStatus = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  margin-top: 16px;
-
-  @media (min-width: 768px) {
-    margin-top: 0;
-  }
-
-  .dot {
-    width: 8px;
-    height: 8px;
-    background: #10b981;
-    border-radius: 50%;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-  }
-`;
+const RESUME_GUIDES = [
+  { slug: "software-engineer", label: "Software Engineer" },
+  { slug: "product-manager", label: "Product Manager" },
+  { slug: "data-analyst", label: "Data Analyst" },
+  { slug: "marketing-manager", label: "Marketing Manager" },
+  { slug: "project-manager", label: "Project Manager" },
+  { slug: "ux-designer", label: "UX Designer" },
+  { slug: "business-analyst", label: "Business Analyst" },
+  { slug: "sales-representative", label: "Sales Representative" },
+  { slug: "human-resources", label: "Human Resources" },
+  { slug: "accountant", label: "Accountant" },
+  { slug: "nurse", label: "Nurse" },
+  { slug: "teacher", label: "Teacher" },
+];
 
 export function Footer() {
   return (
     <FooterWrapper>
       <FooterContent>
         <FooterGrid>
-          <FooterColumn>
+          <BrandColumn>
             <BrandLogo>Rejectly<span>.pro</span></BrandLogo>
             <p>AI-powered resume analysis to help you land your dream job faster and smarter.</p>
-            <TrustBadge>
-              <div className="stars">★★★★★</div>
-              <div className="text">4.9/5 from 10,000+ job seekers</div>
-            </TrustBadge>
-          </FooterColumn>
-          <FooterColumn>
-            <h4>Product</h4>
+            <CtaButton href={ROUTES.PUBLIC.ATS_CHECK}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6" />
+                <path d="m9 15 2 2 4-4" />
+              </svg>
+              Check your resume
+            </CtaButton>
+            <CtaNote>Free ATS scan — no signup required.</CtaNote>
+          </BrandColumn>
+
+          <FooterColumn aria-label="Product">
+            <h3>Product</h3>
             <ul>
               <li>
-                <Link href="/#features">Features</Link>
+                <Link href={ROUTES.PUBLIC.FEATURES}>Features</Link>
               </li>
               <li>
                 <Link href={ROUTES.PUBLIC.PRICING}>Pricing</Link>
+              </li>
+              <li>
+                <Link href={ROUTES.APP.COVER_LETTERS}>
+                  Cover Letter AI <Tag>Credits</Tag>
+                </Link>
               </li>
               <li>
                 <Link href="/#demo">Demo</Link>
@@ -230,8 +313,9 @@ export function Footer() {
               </li>
             </ul>
           </FooterColumn>
-          <FooterColumn>
-            <h4>Free Tools</h4>
+
+          <FooterColumn aria-label="Free tools">
+            <h3>Free Tools</h3>
             <ul>
               <li>
                 <Link href={ROUTES.PUBLIC.ATS_CHECK}>ATS Resume Checker</Link>
@@ -240,56 +324,66 @@ export function Footer() {
                 <Link href={ROUTES.PUBLIC.CV_BUILDER}>Free CV Builder</Link>
               </li>
               <li>
-                <span style={{ fontSize: '14px', color: 'var(--text-secondary)', cursor: 'not-allowed', opacity: 0.6 }}>Cover Letter AI <span style={{ fontSize: '10px', background: 'var(--accent)', color: '#fff', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px' }}>Soon</span></span>
+                <Link href={ROUTES.PUBLIC.BLOG}>ATS Guides</Link>
+              </li>
+              <li>
+                <Link href={ROUTES.PUBLIC.HOW_IT_WORKS}>How It Works</Link>
               </li>
             </ul>
           </FooterColumn>
-          <FooterColumn>
-            <h4>Company</h4>
+
+          <FooterColumn aria-label="Company">
+            <h3>Company</h3>
             <ul>
               <li>
                 <Link href={ROUTES.PUBLIC.ABOUT}>About Us</Link>
               </li>
               <li>
-                <Link href={ROUTES.PUBLIC.BLOG}>ATS Guides</Link>
-              </li>
-              <li>
                 <Link href={ROUTES.PUBLIC.CONTACT}>Contact</Link>
               </li>
-            </ul>
-          </FooterColumn>
-          <FooterColumn>
-            <h4>Support</h4>
-            <ul>
               <li>
-                <Link href={ROUTES.PUBLIC.FAQ}>Help & FAQ</Link>
-              </li>
-              <li>
-                <Link href={ROUTES.PUBLIC.PRIVACY}>Privacy Policy</Link>
-              </li>
-              <li>
-                <Link href={ROUTES.PUBLIC.TERMS}>Terms of Service</Link>
+                <Link href={ROUTES.PUBLIC.FAQ}>Help &amp; FAQ</Link>
               </li>
             </ul>
           </FooterColumn>
         </FooterGrid>
 
+        <SeoLinks aria-label="Resume guides by role">
+          <h3>Resume Guides by Role</h3>
+          <ul>
+            {RESUME_GUIDES.map(({ slug, label }) => (
+              <li key={slug}>
+                <Link href={`/resume/${slug}`}>{label} Resume</Link>
+              </li>
+            ))}
+          </ul>
+        </SeoLinks>
+
         <FooterBottom>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <LegalRow>
             <p>© {new Date().getFullYear()} Bulbul Labs LLC. All rights reserved.</p>
-            <SystemStatus><div className="dot" /> All systems operational</SystemStatus>
-          </div>
-          <FooterLinks>
-            <SocialIcon href="#" aria-label="Twitter">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            <Link href={ROUTES.PUBLIC.PRIVACY}>Privacy Policy</Link>
+            <Link href={ROUTES.PUBLIC.TERMS}>Terms of Service</Link>
+          </LegalRow>
+
+          <SocialRow>
+            <SocialIcon
+              href="https://www.instagram.com/rejectly.pro"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Rejectly on Instagram"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
             </SocialIcon>
-            <SocialIcon href="#" aria-label="LinkedIn">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            <SocialIcon
+              href="https://www.tiktok.com/@rejectly.pro"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Rejectly on TikTok"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
             </SocialIcon>
-            <SocialIcon href="#" aria-label="GitHub">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-            </SocialIcon>
-          </FooterLinks>
+          </SocialRow>
         </FooterBottom>
       </FooterContent>
     </FooterWrapper>

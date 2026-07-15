@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "@/lib/config";
+import { ROLE_SLUGS } from "@/lib/resumeRoles";
 
 const BASE_URL = "https://rejectly.pro";
 
@@ -94,11 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Programmatic SEO pages for role-specific resume optimization
-  const rolePages: MetadataRoute.Sitemap = [
-    'software-engineer', 'product-manager', 'data-analyst', 'marketing-manager',
-    'project-manager', 'ux-designer', 'sales-representative', 'nurse',
-    'accountant', 'teacher', 'human-resources', 'business-analyst',
-  ].map((role) => ({
+  const rolePages: MetadataRoute.Sitemap = ROLE_SLUGS.map((role) => ({
     url: `${BASE_URL}/resume/${role}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,

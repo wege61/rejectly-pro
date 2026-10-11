@@ -319,13 +319,13 @@ export function parseCV(text: string): ParsedCV {
   const hasLocation = locationRegex.test(text) || /\b[A-Z][a-z]+,\s*[A-Z][a-z]+\b/.test(text);
   const hasPortfolio = /portfolio|github\.com|gitlab\.com|behance|dribbble/i.test(text);
 
-  // Section detection
-  const hasProfessionalSummary = /professional\s*summary|summary|profile|about\s*me|objective/i.test(text);
-  const hasExperience = /experience|employment|work\s*history|professional\s*experience|academic\s*projects?|personal\s*projects?|extracurriculars?|leadership/i.test(text);
-  const hasEducation = /education|academic|degree|university|college/i.test(text);
-  const hasSkills = /skills|technical\s*skills|core\s*competencies|expertise/i.test(text);
-  const hasCertifications = /certifications?|certificates?|credentials?/i.test(text);
-  const hasLanguages = /languages?/i.test(text);
+  // Section detection (English plus the CV languages the app generates)
+  const hasProfessionalSummary = hasSection(text, SECTION_WORDS.summary);
+  const hasExperience = hasSection(text, SECTION_WORDS.experience);
+  const hasEducation = hasSection(text, SECTION_WORDS.education);
+  const hasSkills = hasSection(text, SECTION_WORDS.skills);
+  const hasCertifications = hasSection(text, SECTION_WORDS.certifications);
+  const hasLanguages = hasSection(text, SECTION_WORDS.languages);
 
   // Format detection
   const hasPipeCharacters = text.includes('|');
@@ -342,11 +342,7 @@ export function parseCV(text: string): ParsedCV {
   // White space detection - check for blank lines OR structured sections
   // PDF extraction might not preserve blank lines, so also check for section structure
   const hasBlankLines = /\n\s*\n/.test(text);
-  const hasSectionStructure = (
-    /professional\s*(summary|experience)/i.test(text) &&
-    /education/i.test(text) &&
-    /skills/i.test(text)
-  );
+  const hasSectionStructure = hasExperience && hasEducation && hasSkills;
   const hasWhiteSpace = hasBlankLines || hasSectionStructure;
 
   // Content analysis
@@ -397,6 +393,46 @@ export function parseCV(text: string): ParsedCV {
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
+
+// Section keywords per language. Non-English CVs (Turkish, German, ...) were
+// reported as having no experience/education/skills sections at all.
+const SECTION_WORDS = {
+  summary: [
+    "professional\\s*summary", "summary", "profile", "about\\s*me", "objective",
+    "özet", "profil", "hakkımda", "zusammenfassung", "résumé", "resumen", "perfil",
+    "riepilogo", "profilo", "resumo", "samenvatting", "profiel",
+  ],
+  experience: [
+    "experience", "employment", "work\\s*history", "academic\\s*projects?", "personal\\s*projects?",
+    "extracurriculars?", "leadership",
+    "deneyim", "tecrübe", "iş geçmişi", "projeler", "berufserfahrung", "erfahrung", "projekte",
+    "expérience", "projets", "experiencia", "proyectos", "esperienza", "progetti", "experiência",
+    "projetos", "werkervaring", "ervaring", "projecten",
+  ],
+  education: [
+    "education", "academic", "degree", "university", "college",
+    "eğitim", "öğrenim", "üniversite", "lisans", "ausbildung", "studium", "universität",
+    "formation", "université", "educación", "formación", "universidad", "formazione", "istruzione",
+    "università", "educação", "formação", "opleiding",
+  ],
+  skills: [
+    "skills", "technical\\s*skills", "core\\s*competencies", "expertise",
+    "yetenekler", "beceriler", "yetkinlikler", "fähigkeiten", "kenntnisse", "kompetenzen",
+    "compétences", "habilidades", "competencias", "competenze", "competências", "vaardigheden",
+  ],
+  certifications: [
+    "certifications?", "certificates?", "credentials?",
+    "sertifika", "zertifikat", "certificat", "certificado", "certificazion", "certificaç", "certificaten",
+  ],
+  languages: ["languages?", "diller", "yabancı dil", "sprachen", "langues", "idiomas", "lingue", "talen"],
+};
+
+function hasSection(text: string, words: string[]): boolean {
+  const pattern = new RegExp(words.join("|"), "i");
+  // JS case-insensitive matching doesn't fold Turkish "İ" to "i" ("DENEYİM"),
+  // so also test a Turkish-lowercased copy.
+  return pattern.test(text) || pattern.test(text.toLocaleLowerCase("tr"));
+}
 
 const HARD_SKILLS = [
   // Programming Languages
@@ -481,21 +517,38 @@ function countSoftSkills(text: string): number {
   return SOFT_SKILLS.filter(skill => lowerText.includes(skill)).length;
 }
 
+// Turkish CV bullets use first-person past tense ("yönettim").
+const TURKISH_ACTION_VERBS = [
+  "yönettim", "geliştirdim", "hazırladım", "planladım", "artırdım", "yükselttim", "çıkardım",
+  "tasarladım", "oluşturdum", "kurdum", "yürüttüm", "sağladım", "düzenledim", "analiz ettim",
+  "koordine ettim", "liderlik ettim", "uyguladım", "azalttım", "başlattım", "iyileştirdim",
+  "optimize ettim", "eğittim", "gerçekleştirdim", "geliştirildi", "mentorluk yaptım",
+];
+
 function countActionVerbs(text: string): number {
   const lowerText = text.toLowerCase();
-  return ACTION_VERBS.filter(verb => {
+  const english = ACTION_VERBS.filter(verb => {
     const regex = new RegExp(`\\b${verb}\\b`, 'i');
     return regex.test(lowerText);
   }).length;
+  // \b is ASCII-only, so match Turkish words with Unicode letter boundaries.
+  const turkishText = text.toLocaleLowerCase("tr");
+  const turkish = TURKISH_ACTION_VERBS.filter(verb =>
+    new RegExp(`(?<!\\p{L})${verb}(?!\\p{L})`, "u").test(turkishText)
+  ).length;
+  return english + turkish;
 }
 
 function countMetrics(text: string): number {
   const patterns = [
     /\d+%/g,
-    /\$[\d,]+/g,
+    /%\d+/g,                       // Turkish percent: %140
+    /[$£€₺][\d,.]+/g,
+    /\d[\d,.]*\s*(?:TL|EUR|USD|GBP)\b/g,
     /\d+\+/g,
     /\d+x/gi,
     /\d{1,3}(?:,\d{3})+/g,
+    /\d{1,3}(?:\.\d{3})+/g,          // European thousands: 400.000
   ];
 
   let count = 0;

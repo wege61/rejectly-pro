@@ -59,7 +59,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const beforeScore = atsResult.overallScore;
+    // Score the original with the same checker used for the optimized CV, so the
+    // before/after comparison is like-for-like (and not taken from the client).
+    const beforeScore = calculateDeterministicScore(cvText).overallScore;
 
     // 3. Check credits (1 credit required)
     const accessStatus = await getUserAccessStatus(user.id);
@@ -224,23 +226,17 @@ export async function POST(request: NextRequest) {
     const parsedOptimizedCV = parseCV(optimizedCVText);
     const parsingChecks = calculateParsingCompatibility(parsedOptimizedCV);
 
-    // Calculate final score
-    let afterScore = deterministicResult.overallScore;
-
-    // If optimization was successful (all critical issues fixed), ensure high score
+    // Report the real score. It used to be bumped to 95-100 whenever no critical
+    // issue remained, which showed users an improvement the checker didn't measure.
+    const afterScore = deterministicResult.overallScore;
     const criticalIssuesRemaining = deterministicResult.topIssues.filter(
       issue => issue.severity === "critical"
     ).length;
 
-    if (criticalIssuesRemaining === 0 && afterScore < 95) {
-      // All critical issues fixed, boost score to reflect true ATS compatibility
-      afterScore = 95 + Math.min(afterScore - 80, 5);
-    }
-
     const optimizedAtsResult = {
       overallScore: afterScore,
       summary: criticalIssuesRemaining === 0
-        ? "Your CV is now fully optimized for ATS systems. All parsing issues have been resolved."
+        ? "No critical ATS issues remain. Review the remaining suggestions to improve further."
         : deterministicResult.summary,
       categories: deterministicResult.categories,
       topIssues: deterministicResult.topIssues,

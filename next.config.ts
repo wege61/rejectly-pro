@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    // Next's own type check runs out of memory on this project, so the build
-    // script runs plain `tsc` first instead (see "typecheck" in package.json).
+    // Next's own type check runs out of memory on this project. Run
+    // `pnpm typecheck` (tsc with a larger heap) before deploying instead.
     ignoreBuildErrors: true,
   },
   images: {

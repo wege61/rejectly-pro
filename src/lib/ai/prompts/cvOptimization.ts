@@ -102,7 +102,7 @@ Never trade a higher priority for a lower one.
 ## 4. Format rules
 - Write every text value in ${outputLanguage}. JSON keys stay in English.
 ${style}
-- Do not translate or transliterate the candidate's name, email, phone, URLs, company names or product names.
+- Do not translate or transliterate the candidate's name, email, phone, URLs, company names, product/tool names, or official certification and course titles ("Meta Certified Media Buying Professional" stays as is). Translate a certification title only if the original CV already wrote it in ${outputLanguage}.
 - Locations: keep the same places as the original, with city/country names written in ${outputLanguage} ("İstanbul, Türkiye" → "Istanbul, Turkey" in English). Never add a location the CV doesn't give: use an empty string.
 - Dates: keep the precision of the original. Month + year → month name in ${outputLanguage} + year ("Mart 2022", "March 2022"). Year only → just the year ("2019"); never invent a month. Ongoing role → the English word "Present" (we localize it). No date, or a vague one ("a while ago", "recently") → empty string. Never output placeholders like "Month YYYY". education[].graduationDate is the single graduation/end date, not a range.
 - Experience in reverse chronological order (current role first).

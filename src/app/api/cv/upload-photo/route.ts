@@ -24,10 +24,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate size (2MB max)
-    if (photo.size > 2 * 1024 * 1024) {
+    // Users can upload up to 2MB, but photos extracted from a CV PDF are
+    // re-encoded as PNG and can be larger, so the server allows 5MB.
+    if (photo.size > 5 * 1024 * 1024) {
       return NextResponse.json(
-        { error: "Photo must be less than 2MB" },
+        { error: "Photo must be less than 5MB" },
         { status: 400 }
       );
     }

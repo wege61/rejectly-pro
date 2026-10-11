@@ -610,6 +610,12 @@ export const CVCustomizationModal: React.FC<CVCustomizationModalProps> = ({
                 )}
 
                 <PhotoOptions>
+                  {documentId && extractionDone && !extractedPhoto && (
+                    <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.6)" }}>
+                      We couldn&apos;t find a photo in your original CV. You can upload one below.
+                    </div>
+                  )}
+
                   {(existingPhotoBase64 || existingPhotoUrl) && (
                     <PhotoOption
                       $isSelected={photoChoice === "existing"}

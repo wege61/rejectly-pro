@@ -1,4 +1,4 @@
-import { openai, AI_MODEL } from "./client";
+import { openai, CV_MODEL } from "./client";
 import type { GeneratedCVData } from "@/lib/ats/utils";
 
 /**
@@ -87,7 +87,7 @@ export async function generateOptimizedCV(params: {
 
   const complete = async () => {
     const completion = await openai.chat.completions.create({
-      model: AI_MODEL,
+      model: CV_MODEL,
       messages,
       temperature: 0.4,
       max_completion_tokens: 8000,

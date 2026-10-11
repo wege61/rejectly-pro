@@ -7287,7 +7287,7 @@ export default function ReportDetailPage() {
       toast.error("Resume generation failed");
     } finally {
       setIsGeneratingCV(false);
-      setPendingCVGeneration(null);
+      setPendingCVGeneration(false);
     }
   };
 
@@ -8842,7 +8842,7 @@ export default function ReportDetailPage() {
         isOpen={isToolSuggestionModalOpen && !isLoadingToolSuggestions}
         onClose={() => {
           setIsToolSuggestionModalOpen(false);
-          setPendingCVGeneration(null);
+          setPendingCVGeneration(false);
         }}
         onConfirm={handleToolSuggestionConfirm}
         onSkip={handleToolSuggestionSkip}
@@ -8854,7 +8854,7 @@ export default function ReportDetailPage() {
         isOpen={isMetricQuestionsModalOpen}
         onClose={() => {
           setIsMetricQuestionsModalOpen(false);
-          setPendingCVGeneration(null);
+          setPendingCVGeneration(false);
         }}
         onConfirm={handleMetricQuestionsConfirm}
         onSkip={handleMetricQuestionsSkip}
@@ -8866,7 +8866,7 @@ export default function ReportDetailPage() {
         isOpen={isCVCustomizationModalOpen}
         onClose={() => {
           setIsCVCustomizationModalOpen(false);
-          setPendingCVGeneration(null);
+          setPendingCVGeneration(false);
         }}
         onConfirm={handleCVCustomizationConfirm}
         onSkip={handleCVCustomizationSkip}

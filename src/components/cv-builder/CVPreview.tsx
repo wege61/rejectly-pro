@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useCVStore } from "./store";
 import { motion } from "framer-motion";
-import type { CVExperience, CVEducation, CVCertification, CVLeadership, CVLanguage } from '@/types/cv';
+import type { CVExperience, CVEducation, CVCertification, CVLeadership, CVLanguage, CVProject } from '@/types/cv';
 import { detectLocale, CV_HEADINGS } from "@/lib/languageUtils";
 
 const Paper = styled.div`

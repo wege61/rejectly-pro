@@ -8,6 +8,7 @@
     "postbuild": "echo '✓ Build completed. Sitemap is generated dynamically at /sitemap.xml'",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit",
     "video:studio": "remotion studio",
     "video:render": "remotion render DemoLandscape out/rejectly-demo-1080p.mp4",
     "video:render:vertical": "remotion render DemoVertical out/rejectly-demo-vertical.mp4",

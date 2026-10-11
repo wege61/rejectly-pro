@@ -1,8 +1,13 @@
 type ClassValue = string | undefined | null | false | ClassValue[];
 
 export function cn(...inputs: ClassValue[]): string {
-  return inputs
-    .flat(Infinity)
-    .filter((x): x is string => typeof x === "string" && x.length > 0)
-    .join(" ");
+  const out: string[] = [];
+  const walk = (values: ClassValue[]) => {
+    for (const value of values) {
+      if (Array.isArray(value)) walk(value);
+      else if (typeof value === "string" && value.length > 0) out.push(value);
+    }
+  };
+  walk(inputs);
+  return out.join(" ");
 }

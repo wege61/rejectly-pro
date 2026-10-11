@@ -3,7 +3,7 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 
 interface MetricQuestion {
@@ -223,7 +223,7 @@ const listVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 10 },
   show: { 
     opacity: 1, 

@@ -35,6 +35,7 @@ interface DrawerTitleProps {
 
 interface DrawerDescriptionProps {
   children: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 // Styled Components
@@ -416,8 +417,8 @@ export function DrawerTitle({ children }: DrawerTitleProps) {
   return <Title>{children}</Title>;
 }
 
-export function DrawerDescription({ children }: DrawerDescriptionProps) {
-  return <Description>{children}</Description>;
+export function DrawerDescription({ children, style }: DrawerDescriptionProps) {
+  return <Description style={style}>{children}</Description>;
 }
 
 export function DrawerBody({ children, style, className, maxWidth }: DrawerBodyProps) {

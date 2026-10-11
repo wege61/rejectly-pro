@@ -14,6 +14,9 @@ export interface CVExperience {
   startDate: string;
   endDate: string;
   bullets: string[];
+  /** CV Builder only */
+  current?: boolean;
+  description?: string;
 }
 
 export interface CVEducation {
@@ -23,6 +26,10 @@ export interface CVEducation {
   location?: string;
   graduationDate?: string | null;
   details?: string | null;
+  /** CV Builder only */
+  startDate?: string;
+  endDate?: string;
+  description?: string;
 }
 
 export interface CVSkills {
@@ -35,6 +42,7 @@ export interface CVCertification {
   issuer?: string;
   date?: string | null;
   credentialId?: string;
+  url?: string;
 }
 
 export interface CVLanguage {
@@ -73,6 +81,7 @@ export interface GeneratedCV {
   isEntryLevel?: boolean;
   photoUrl?: string;
   themeColor?: string;
+  colorTemplate?: string;
   /** Locale the CV is written in (e.g. "en", "tr"). Older CVs don't have it. */
   language?: string;
 }

@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
+    // Next's own type check runs out of memory on this project, so the build
+    // script runs plain `tsc` first instead (see "typecheck" in package.json).
     ignoreBuildErrors: true,
   },
   images: {

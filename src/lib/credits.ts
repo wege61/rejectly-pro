@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export interface UserAccessStatus {
   canAnalyze: boolean;
@@ -114,83 +115,99 @@ export async function getUserAccessStatus(userId: string): Promise<UserAccessSta
 }
 
 /**
+ * Credit balances are only ever written server-side with the service role.
+ * Users must not be able to write their own row (see migration 024), otherwise
+ * anyone could grant themselves credits from the browser.
+ */
+function adminClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
+
+/**
+ * Change a user's balance by `delta` with optimistic concurrency: the update only
+ * applies if the balance is still what we read, so two parallel requests can't
+ * spend the same credit. Retries a few times on contention.
+ */
+async function changeCredits(userId: string, delta: number): Promise<boolean> {
+  const supabase = adminClient();
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { data: current, error: readError } = await supabase
+      .from("user_credits")
+      .select("credits")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (readError) {
+      console.error("Error reading credits:", readError);
+      return false;
+    }
+
+    if (!current) {
+      if (delta < 0) return false;
+      const { error } = await supabase.from("user_credits").insert({ user_id: userId, credits: delta });
+      if (!error) return true;
+      if (error.code !== "23505") {
+        console.error("Error creating credits record:", error);
+        return false;
+      }
+      continue; // Created concurrently; retry as an update.
+    }
+
+    const next = current.credits + delta;
+    if (next < 0) return false;
+
+    const { data: updated, error } = await supabase
+      .from("user_credits")
+      .update({ credits: next })
+      .eq("user_id", userId)
+      .eq("credits", current.credits)
+      .select("credits");
+
+    if (error) {
+      console.error("Error updating credits:", error);
+      return false;
+    }
+    if (updated && updated.length > 0) return true;
+  }
+
+  console.error("Credit update kept conflicting for user", userId);
+  return false;
+}
+
+/**
  * Consume one credit for an analysis
  * Returns true if successful, false if no credits available
  */
 export async function consumeCredit(userId: string): Promise<boolean> {
-  const supabase = await createClient();
+  return changeCredits(userId, -1);
+}
 
-  // First check current credits
-  const { data: currentData } = await supabase
-    .from("user_credits")
-    .select("credits")
-    .eq("user_id", userId)
-    .single();
-
-  if (!currentData || currentData.credits <= 0) {
-    return false;
+/**
+ * Give back a credit that was consumed for work that then failed.
+ */
+export async function refundCredit(userId: string): Promise<void> {
+  if (!(await changeCredits(userId, 1))) {
+    console.error("Failed to refund credit for user", userId);
   }
-
-  // Decrement credit
-  const { error } = await supabase
-    .from("user_credits")
-    .update({ credits: currentData.credits - 1 })
-    .eq("user_id", userId);
-
-  if (error) {
-    console.error("Error consuming credit:", error);
-    return false;
-  }
-
-  return true;
 }
 
 /**
  * Add credits to user account (after purchase)
  */
 export async function addCredits(userId: string, amount: number): Promise<boolean> {
-  const supabase = await createClient();
-
-  // Check if user has credits record
-  const { data: existing } = await supabase
-    .from("user_credits")
-    .select("credits")
-    .eq("user_id", userId)
-    .single();
-
-  if (existing) {
-    // Update existing
-    const { error } = await supabase
-      .from("user_credits")
-      .update({ credits: existing.credits + amount })
-      .eq("user_id", userId);
-
-    if (error) {
-      console.error("Error adding credits:", error);
-      return false;
-    }
-  } else {
-    // Create new record
-    const { error } = await supabase
-      .from("user_credits")
-      .insert({ user_id: userId, credits: amount });
-
-    if (error) {
-      console.error("Error creating credits record:", error);
-      return false;
-    }
-  }
-
-  return true;
+  return changeCredits(userId, amount);
 }
 
 /**
  * Initialize credits for new user (optional: give free credits)
  */
 export async function initializeUserCredits(userId: string, initialCredits: number = 0): Promise<boolean> {
-  const supabase = await createClient();
-
-  const { error } = await supabase
+  const { error } = await adminClient()
     .from("user_credits")
     .insert({ user_id: userId, credits: initialCredits });
 

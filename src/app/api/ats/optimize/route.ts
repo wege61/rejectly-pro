@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateATSOptimizationPrompt } from "@/lib/ai/prompts";
-import { getUserAccessStatus, consumeCredit } from "@/lib/credits";
+import { getUserAccessStatus, consumeCredit, refundCredit } from "@/lib/credits";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { GeneratedCV } from "@/types/cv";
 import { ATSOptimizationResult } from "@/types/atsCheck";
@@ -33,6 +33,8 @@ interface OptimizeRequest {
 
 export async function POST(request: NextRequest) {
   console.log("\n\n✨ ATS OPTIMIZE ENDPOINT CALLED ✨\n\n");
+  // Set once a credit is taken, so any later failure gives it back.
+  let refundUserId: string | null = null;
 
   try {
     // 1. Parse request
@@ -78,6 +80,7 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
+      refundUserId = user.id;
       console.log("💳 Deducted 1 credit for ATS optimization");
     } else {
       console.log("✅ User has subscription, no credit deducted");
@@ -106,7 +109,7 @@ export async function POST(request: NextRequest) {
       model: AI_MODEL,
       messages: [{ role: "user", content: optimizationPrompt }],
       temperature: 0.4,
-      max_completion_tokens: 4000,
+      max_completion_tokens: 8000, // a full CV plus the change list can exceed 4000
       response_format: { type: "json_object" },
     });
 
@@ -195,6 +198,7 @@ export async function POST(request: NextRequest) {
 
     if (uploadError) {
       console.error("PDF upload error:", uploadError);
+      if (refundUserId) await refundCredit(refundUserId);
       return NextResponse.json(
         { error: "Failed to save optimized CV" },
         { status: 500 }
@@ -304,6 +308,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error("ATS optimize error:", error);
+    if (refundUserId) await refundCredit(refundUserId);
     return NextResponse.json(
       {
         success: false,

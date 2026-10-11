@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateProReportPrompt } from "@/lib/ai/prompts";
-import { getUserAccessStatus, consumeCredit } from "@/lib/credits";
+import { getUserAccessStatus, consumeCredit, refundCredit } from "@/lib/credits";
 import { proAnalyzeRequestSchema, validateRequest } from "@/lib/validations";
 
 export async function POST(request: NextRequest) {
+  // Set once a credit is taken, so any later failure gives it back.
+  let refundUserId: string | null = null;
   try {
     // Get authenticated user
     const supabase = await createClient();
@@ -80,6 +82,7 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
+      refundUserId = user.id;
     }
 
     // Fetch job documents
@@ -92,6 +95,7 @@ export async function POST(request: NextRequest) {
       .eq("type", "job");
 
     if (jobError || !jobDocs || jobDocs.length === 0) {
+      if (refundUserId) await refundCredit(refundUserId);
       return NextResponse.json({ error: "Jobs not found" }, { status: 404 });
     }
 
@@ -141,6 +145,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Pro analysis error:", error);
+    if (refundUserId) await refundCredit(refundUserId);
 
     return NextResponse.json(
       { error: "Failed to generate Pro analysis. Please try again." },

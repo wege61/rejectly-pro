@@ -4,8 +4,10 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateOptimizedCVPrompt, generateCareerRecommendationsPrompt, generateInterviewPrepPrompt } from "@/lib/ai/prompts";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
-import { postProcessCVForATS, GeneratedCVData } from "@/lib/ats/utils";
-import { detectLocale, LOCALE_TO_LANGUAGE, EN_MONTHS, PRESENT_MAP } from "@/lib/languageUtils";
+import { postProcessCVForATS } from "@/lib/ats/utils";
+import { generateOptimizedCV } from "@/lib/ai/optimizedCV";
+import { detectLocale, LOCALE_TO_LANGUAGE } from "@/lib/languageUtils";
+import { localizeCVDates } from "@/lib/ats/localizeDates";
 
 export async function POST(request: NextRequest) {
   console.log('\n\n🔴🔴🔴 CV GENERATE ENDPOINT CALLED 🔴🔴🔴\n\n');
@@ -186,26 +188,22 @@ export async function POST(request: NextRequest) {
       academicDetails
     );
 
-    const completion = await openai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert CV writer. You MUST write the entire CV in ${outputLanguage}. Every text value — summary, bullets, skills, dates — must be in ${outputLanguage}. JSON keys stay in English.`
-        },
-        { role: "user", content: prompt }
+    const { cv: rawGeneratedCV, issues, repaired } = await generateOptimizedCV({
+      prompt,
+      outputLanguage,
+      cvText: report.cv.text,
+      otherSources: [
+        ...jobDocs.map((job: { text: string }) => job.text),
+        ...Object.values(enrichedMetrics || {}),
+        ...Object.values(academicDetails || {}).map(String),
+        ...additionalTools,
       ],
-      temperature: 0.85,
-      max_tokens: 8000,
-      response_format: { type: "json_object" },
     });
+    console.log('🔎 Grounding check:', { repaired, ...issues });
 
-    const rawGeneratedCV = JSON.parse(
-      completion.choices[0].message.content || "{}"
-    );
-
-    // Post-process CV for ATS compliance (expand abbreviations, normalize dates, clean special chars)
-    const generatedCV = postProcessCVForATS(rawGeneratedCV as GeneratedCVData);
+    // Post-process CV for ATS compliance (normalize dates, clean special chars)
+    const generatedCV = postProcessCVForATS(rawGeneratedCV);
+    generatedCV.language = detectedLocale;
 
     // Safety net: ensure dates are localized for non-English CVs.
     // For English (detectedLocale === 'en'), this is a no-op (returns immediately).
@@ -285,7 +283,7 @@ export async function POST(request: NextRequest) {
           model: AI_MODEL,
           messages: [{ role: "user", content: careerPrompt }],
           temperature: 0.6,
-          max_tokens: 3000,
+          max_completion_tokens: 3000,
           response_format: { type: "json_object" },
         });
 
@@ -337,7 +335,7 @@ export async function POST(request: NextRequest) {
           model: AI_MODEL,
           messages: [{ role: "user", content: interviewPrompt }],
           temperature: 0.4,
-          max_tokens: 4000,
+          max_completion_tokens: 4000,
           response_format: { type: "json_object" },
         });
 
@@ -476,99 +474,5 @@ export async function POST(request: NextRequest) {
       { error: `Failed to generate CV: ${errorMessage}` },
       { status: 500 }
     );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Locale-aware date post-processor
-// Uses Intl.DateTimeFormat so it works for ANY language, not just Turkish.
-// ---------------------------------------------------------------------------
-
-
-/** Build a map of English month name → localized month name for the given locale. */
-function buildMonthMap(locale: string): Record<string, string> {
-  const map: Record<string, string> = {};
-  for (let m = 0; m < 12; m++) {
-    const date = new Date(2024, m, 1);
-    const localized = new Intl.DateTimeFormat(locale, { month: 'long' }).format(date);
-    // Capitalize first letter
-    const capitalized = localized.charAt(0).toUpperCase() + localized.slice(1);
-    map[EN_MONTHS[m]] = capitalized;
-  }
-  return map;
-}
-
-/** Replace English dates in a single string with localized dates. */
-function localizeDateString(str: string, monthMap: Record<string, string>, presentText: string): string {
-  let result = str;
-  // Only match English month names followed by a space+year (e.g. "May 2025")
-  // This prevents matching "May" inside already-localized "Mayıs"
-  for (const [en, localized] of Object.entries(monthMap)) {
-    result = result.replace(new RegExp(`${en}(\\s+\\d{4})`, 'g'), `${localized}$1`);
-    // Also handle month at end of string (rare, but possible)
-    result = result.replace(new RegExp(`${en}$`, 'g'), localized);
-  }
-  // "Present" → localized (whole word only)
-  result = result.replace(/\bPresent\b/g, presentText);
-  return result;
-}
-
-/** Post-process all date fields in a generated CV to use locale-appropriate month names. */
-function localizeCVDates(cv: GeneratedCVData, locale: string): void {
-  if (locale === 'en') return; // No conversion needed
-
-  const monthMap = buildMonthMap(locale);
-  const presentText = PRESENT_MAP[locale] || 'Present';
-
-  // Localize experience dates
-  if (cv.experience) {
-    for (const exp of cv.experience) {
-      if (exp.startDate) exp.startDate = localizeDateString(exp.startDate, monthMap, presentText);
-      if (exp.endDate) exp.endDate = localizeDateString(exp.endDate, monthMap, presentText);
-    }
-  }
-
-  // Localize education dates
-  if (cv.education) {
-    for (const edu of cv.education) {
-      if (edu.graduationDate) edu.graduationDate = localizeDateString(edu.graduationDate, monthMap, presentText);
-    }
-  }
-
-  // Localize certification dates
-  if (cv.certifications) {
-    for (const cert of cv.certifications) {
-      if (cert.date) cert.date = localizeDateString(cert.date, monthMap, presentText);
-    }
-  }
-
-  // Sort experience in reverse chronological order (most recent first)
-  if (cv.experience && cv.experience.length > 1) {
-    const monthOrder = EN_MONTHS.reduce((acc, m, i) => { acc[m.toLowerCase()] = i; return acc; }, {} as Record<string, number>);
-    // Also add localized month names to the order map
-    for (const [en, loc] of Object.entries(monthMap)) {
-      monthOrder[loc.toLowerCase()] = monthOrder[en.toLowerCase()];
-    }
-
-    const parseDate = (dateStr: string): number => {
-      if (!dateStr) return 0;
-      // "Present" or localized equivalent = far future
-      if (dateStr === 'Present' || dateStr === presentText) return 99999999;
-      // Try to parse "Month YYYY" in any language
-      const parts = dateStr.trim().split(/\s+/);
-      if (parts.length >= 2) {
-        const monthIdx = monthOrder[parts[0].toLowerCase()] ?? -1;
-        const year = parseInt(parts[parts.length - 1], 10) || 0;
-        return year * 100 + monthIdx;
-      }
-      return 0;
-    };
-
-    cv.experience.sort((a, b) => {
-      const endA = parseDate(a.endDate || '');
-      const endB = parseDate(b.endDate || '');
-      if (endA !== endB) return endB - endA; // Most recent end date first
-      return parseDate(b.startDate || '') - parseDate(a.startDate || ''); // Tie-break by start date
-    });
   }
 }

@@ -3,6 +3,16 @@
  * Used for generating optimized CVs and analyzing optimization results
  */
 
+// Language-specific writing conventions for CV text.
+const LANGUAGE_STYLE: Record<string, string> = {
+  English: `- Bullets start with a past-tense action verb ("Led", "Built"); the current role may use present tense.
+- Summary: no pronouns ("Product manager with 6 years...").`,
+  Turkish: `- Bullets use first-person past tense without a pronoun ("Yönettim", "Geliştirdim", "Hazırladım") or a noun phrase ("Kampanya yönetimi ve bütçe planlaması"). Never third person ("yönetti", "geliştirdi").
+- Summary: noun-phrase style with no conjugated third-person verbs ("6 yıllık deneyime sahip dijital pazarlama uzmanı. Aylık 400.000 TL bütçeli kampanya yönetimi ve ROAS optimizasyonu deneyimi."). Never "yönetti", "artırdı".
+- Use Turkish number formatting as in the original (400.000 TL, %140, 3,2).`,
+  German: `- Bullets use noun style or past tense without pronouns ("Leitung eines Teams von 8 Entwicklern", "Entwickelte ...").`,
+};
+
 export function generateOptimizedCVPrompt(
   cvText: string,
   jobTexts: string[],
@@ -21,606 +31,105 @@ export function generateOptimizedCVPrompt(
   userProvidedMetrics?: Record<string, string>,
   academicDetails?: { gpa?: string; coursework?: string; capstone?: string; }
 ): string {
-  const userMetricsWarning = userProvidedMetrics && Object.keys(userProvidedMetrics).length > 0 ? `
-🎯🎯🎯 USER PROVIDED METRICS - MUST INTEGRATE! 🎯🎯🎯
-================================================================================
-The user was asked to provide specific metrics for some of their original bullet points.
-Here are the answers they provided:
-${Object.entries(userProvidedMetrics).map(([id, answer]) => `- For bullet ID ${id}: User answered "${answer}"`).join('\n')}
+  const hasAcademic = !!(academicDetails && (academicDetails.gpa || academicDetails.coursework || academicDetails.capstone));
 
-You MUST use these numbers to enhance the corresponding bullet points in the CV! Do not ignore them.
-================================================================================
-` : '';
+  const extraInputs: string[] = [];
 
-  const academicDetailsWarning = academicDetails && (academicDetails.capstone || academicDetails.coursework || academicDetails.gpa) ? `
-🎓🎓🎓 NEW GRAD / ACADEMIC DETAILS PROVIDED 🎓🎓🎓
-================================================================================
-The candidate has provided the following academic details to strengthen their entry-level profile:
-${academicDetails.gpa ? `- GPA: ${academicDetails.gpa}` : ''}
-${academicDetails.coursework ? `- Relevant Coursework: ${academicDetails.coursework}` : ''}
-${academicDetails.capstone ? `- Capstone/Major Project: ${academicDetails.capstone}` : ''}
+  if (userProvidedMetrics && Object.keys(userProvidedMetrics).length > 0) {
+    extraInputs.push(`USER-PROVIDED METRICS (the candidate answered our questions; these are facts you MUST work into the matching bullets):
+${Object.entries(userProvidedMetrics).map(([id, answer]) => `- ${id}: ${answer}`).join('\n')}`);
+  }
 
-CRITICAL INTEGRATION REQUIREMENTS:
-${academicDetails.capstone ? '- Integrate the Capstone/Major Project as a fully fleshed-out professional project experience in the Experience or Projects section.\n- STRICT CAPSTONE ROLE RULE: For solo/individual academic projects (like a thesis), use a neutral role title like "Individual Academic Project", "Student Researcher", or completely omit the role. DO NOT inflate titles to "Project Manager", "Lead Designer", or "Руководитель проекта" unless the user explicitly stated they led a team.' : ''}
-${(academicDetails.gpa || academicDetails.coursework) ? '- Create a new string key called "details" inside the relevant "education" array object, and put the GPA and Relevant Coursework there.' : '- DO NOT output a "details" field in the education array at all. OMIT it completely.'}
-- Treat these academic details as real, professional-grade qualifications to boost the ATS score.
-================================================================================
-` : `
-🚫 STRICT ACADEMIC DETAILS BAN 🚫
-================================================================================
-The candidate has NOT provided a GPA or specific coursework.
-DO NOT invent a GPA. DO NOT invent coursework. DO NOT use placeholder text (e.g., "[insert GPA here]").
-The "details" field in the Education section MUST BE OMITTED completely for all education entries.
-================================================================================
-`;
+  if (additionalTools.length > 0) {
+    extraInputs.push(`USER-CONFIRMED TOOLS (the candidate confirmed real experience with these):
+${additionalTools.map(tool => `- ${tool}`).join('\n')}
+Add each to skills.technical. Also mention each in ONE bullet whose described work plausibly used it; never invent a new task to host a tool.`);
+  }
 
-  const metricsWarning = extractedMetrics.length > 0 ? `
-🚨🚨🚨 MANDATORY METRICS - THESE MUST ALL APPEAR IN YOUR OUTPUT! 🚨🚨🚨
-================================================================================
-We found these metrics in the original CV. EVERY SINGLE ONE must appear:
-${extractedMetrics.map((m, i) => `${i + 1}. "${m}"`).join('\n')}
+  if (hasAcademic) {
+    extraInputs.push(`ACADEMIC DETAILS PROVIDED BY THE CANDIDATE:
+${academicDetails!.gpa ? `- GPA / grade: ${academicDetails!.gpa}\n` : ''}${academicDetails!.coursework ? `- Relevant coursework: ${academicDetails!.coursework}\n` : ''}${academicDetails!.capstone ? `- Capstone / major project: ${academicDetails!.capstone}\n` : ''}${academicDetails!.gpa || academicDetails!.coursework ? '- Put GPA and coursework in the "details" field of the matching education entry.\n' : ''}${academicDetails!.capstone ? '- Add the capstone as a "projects" entry. For a solo academic project use a neutral role ("Individual Academic Project") or null; never "Project Manager" or "Lead" unless they said they led a team.\n' : ''}- Use only these details; do not embellish them.`);
+  }
 
-If you miss ANY of these, you have FAILED. Double-check before responding!
-================================================================================
-` : '';
+  if (extractedMetrics.length > 0 || achievementsSection) {
+    extraInputs.push(`FACTS WE DETECTED IN THE ORIGINAL (all must survive):
+${extractedMetrics.map(m => `- ${m}`).join('\n')}${achievementsSection ? `\nAchievements section:\n${achievementsSection}\nPlace each achievement as a bullet under the role where it happened (or the most recent role if unclear).` : ''}`);
+  }
 
-  const achievementsWarning = achievementsSection ? `
-🏆🏆🏆 ACHIEVEMENTS SECTION FOUND - MUST BE INTEGRATED! 🏆🏆🏆
-================================================================================
-The original CV has these achievements. EACH ONE must become a bullet point:
+  const style = LANGUAGE_STYLE[outputLanguage] || `- Follow the normal CV conventions of ${outputLanguage}: no first-person pronouns, concise action-oriented bullets.`;
 
-${achievementsSection}
+  return `You are an expert CV writer. Rewrite the candidate's CV so it presents their REAL experience as clearly and persuasively as possible for the target job.
 
-Integrate these into the relevant job experience bullets!
-================================================================================
-` : '';
+Your work is judged on three things, in this order of priority:
+1. TRUTH — nothing in the output that the candidate did not tell us.
+2. COMPLETENESS — nothing the candidate told us is lost.
+3. QUALITY — clear, specific, well-ordered, tailored to the job.
+Never trade a higher priority for a lower one.
 
-  return `You are an ATS bypass specialist and mentor for entry-level candidates. Your goal is to create a CV that hacks ATS filters by translating academic/junior experience into corporate keywords.
+## 1. Truth rules
+- Facts are fixed: employers, job titles, dates, degrees, institutions, certifications and every number stay as the candidate gave them.
+- Never invent numbers, percentages, amounts, team sizes, durations, tools, duties, projects, outcomes or context. If a bullet has no metric, write it without one.
+- Context and scope may only come from the ORIGINAL CV, never from the job posting: the candidate did not work at the hiring company.
+- Never add a skill or keyword because the job asks for it. A requirement the candidate doesn't meet stays unmet.
+- Use the job posting's vocabulary only for things the candidate actually did (CV "state handling" + job "state management" → "state management").
+- Match verbs to the real scope: "helped/assisted" must not become "led/spearheaded"; nobody "architected" or "pioneered" anything the CV doesn't say they led.
+- "X years of experience" claims must be computed from the dates of RELEVANT roles. If unsure, leave the number out. Unrelated jobs (e.g. barista for a data role) don't count.
+- Unrelated jobs stay honest and short: never add target-field words (design, data, marketing) to a cashier or barista role.
 
-================================================================================
-GROUNDING RULES (HIGHEST PRIORITY — override all other instructions)
-================================================================================
-1. FACTS ARE IMMUTABLE. Job titles, employers, dates, degrees, and the nature of each role must be reproduced exactly as provided by the user. Never upgrade a title, never reframe a job as a different profession.
+## 2. Completeness rules
+- Every fact from every original bullet must appear in the output: each number, metric, award, team size, scope, tool and achievement. You may merge two bullets about the same work or reorder them, but you may not drop a fact. If a role has many bullets, keep them all.
+- Copy every monetary amount and metric exactly, including currency symbols and units ($12M, £8,000, 400.000 TL, %140).
+- Keep every certification/course/license/award as its own "certifications" entry (name and issuer separated).
+- Keep every spoken language in "languages". Put the proficiency only if the CV states it; otherwise use an empty string. Spoken languages do not go in skills.
+- Keep leadership, volunteering, societies and extracurricular roles as separate "leadership" entries with their own bullets.
+- Keep personal projects as "projects" entries.
+- Use everything the CV says, wherever it appears: a thesis/dissertation line under education, a one-line project description, a tool listed only in skills.
+- Completeness covers achievements, metrics, scope, tools and responsibilities. Pure filler that carries no information (e.g. "Went to meetings with the team") may be merged into another bullet or dropped.
+- skills.technical: every hard skill and tool from the original CV (plus user-confirmed tools), most job-relevant first. No padding with generic phrases ("Bug Fixing", "Team Meetings", "Code Writing"). skills.soft: at most 4 that the CV supports.
 
-2. NO FABRICATED METRICS. Never invent numbers, percentages, or quantified outcomes. If the user provided no metric for an achievement, write the achievement without one. A resume with zero metrics is acceptable; a resume with invented metrics is a critical failure.
+## 3. Quality rules
+- Summary: 2-4 sentences. Lead with the role and real experience, then 2-3 concrete achievements from the CV, then the skills most relevant to the job. No clichés ("passionate", "hardworking", "eager to", "team player", "results-driven"), no first person.
+- Bullets: one idea each, specific, at most ~150 characters, complete sentences. Lead with what was done and its result. Put the bullets most relevant to the target job first within each role.
+- Rewrite EVERY bullet in professional language. Casual or vague phrasing from the original must not survive: improve the wording, keep the facts.
+  "Fixed bugs when people complained" → "Resolved user-reported bugs"
+  "Helped the boss figure out database stuff" → "Supported the manager with database troubleshooting"
+  "Made the interface look better" → "Improved the app's user interface"
+  "Used XGBoost, pandas" (project) → "Built a UK house-price prediction model with XGBoost, pandas and scikit-learn" (using the project's own description)
+- Describe the candidate as what they are. A graduate is "Economics graduate", not "Data Analyst"; only use the target job's title if they have held that role.
+- Clean up informal wording without changing facts: "Got a degree in IT" → degree "Degree in Information Technology"; a slang job title like "IT Guy" or "Coder" may become the closest neutral standard title ("IT Support", "Software Developer"), never a more senior one. Proper job titles are kept exactly.
+- Do not repeat the same sentence in the summary and in a bullet.
 
-3. NO INVENTED RESPONSIBILITIES. Every bullet point must be traceable to something the user actually stated. You may REWORD and RESTRUCTURE user-provided content (stronger verbs, clearer phrasing, relevance ordering). You may NOT ADD duties, projects, tools, or outcomes the user never mentioned.
+## 4. Format rules
+- Write every text value in ${outputLanguage}. JSON keys stay in English.
+${style}
+- Do not translate or transliterate the candidate's name, email, phone, URLs, company names or product names.
+- Locations: keep the same places as the original, with city/country names written in ${outputLanguage} ("İstanbul, Türkiye" → "Istanbul, Turkey" in English). Never add a location the CV doesn't give: use an empty string.
+- Dates: keep the precision of the original. Month + year → month name in ${outputLanguage} + year ("Mart 2022", "March 2022"). Year only → just the year ("2019"); never invent a month. Ongoing role → the English word "Present" (we localize it). No date, or a vague one ("a while ago", "recently") → empty string. Never output placeholders like "Month YYYY". education[].graduationDate is the single graduation/end date, not a range.
+- Experience in reverse chronological order (current role first).
+- education[].details: only GPA/coursework the candidate gave${hasAcademic ? ' (see ACADEMIC DETAILS)' : ''}; otherwise null. Never invent a GPA or coursework, never use placeholders.
+- isEntryLevel: true if the candidate is a student/recent graduate or has no relevant professional experience; otherwise false.
 
-4. EXPERIENCE CLAIMS MUST MATCH THE TIMELINE. Before writing any "X years of experience in Y" claim, verify it against the work history dates AND role types. Years spent in unrelated jobs do not count toward professional experience in the target field. A recent graduate with no design jobs has 0 years of professional design experience — frame them as a graduate with strong project work, not a seasoned professional.
-
-5. TAILORING = SELECTION + EMPHASIS, NOT INVENTION. To match a job posting, reorder and emphasize the user's real experience and skills. If the user lacks a requirement from the posting, OMIT it — do not manufacture it.
-
-6. EDUCATION PROJECTS ARE LEGITIMATE MATERIAL. Thesis work, coursework, and personal projects provided by the user SHOULD be used prominently for junior candidates — this is the honest way to fill an experience gap.
-
-7. SELF-CHECK BEFORE OUTPUT. Review every sentence and ask: "Did the user tell me this, or did I infer it?" Remove or soften anything inferred. When uncertain, choose the weaker, truthful claim.
-================================================================================
-
-================================================================================
-OUTPUT LANGUAGE: ${outputLanguage.toUpperCase()}
-================================================================================
-You MUST write ALL text values (summary, bullets, skills, dates) in ${outputLanguage}.
-JSON keys remain in English. Everything else MUST be in ${outputLanguage}.
-${outputLanguage !== 'English' ? `Dates: use ${outputLanguage} month names (NOT English month names).
-For current positions: use the equivalent of "Present" in ${outputLanguage}.` : ''}
-
-🚨🚨🚨 STRICT PROPER NOUN RULE (CRITICAL) 🚨🚨🚨
-DO NOT translate or transliterate the candidate's Name, Email, or URLs!
-If the candidate's name is in the Latin alphabet (e.g., "Alp"), DO NOT write it in Cyrillic, Arabic, or any other alphabet. Keep the name EXACTLY as it appears in the original CV.
-The same applies to specific Company Names or product names—leave them in their original alphabet unless universally localized.
-================================================================================
-
-${metricsWarning}
-${achievementsWarning}
-${userMetricsWarning}
-${academicDetailsWarning}
-
-ORIGINAL CV:
+## Original CV
 """
 ${cvText}
 """
 
-TARGET JOB POSTINGS:
-${jobTexts
-  .map(
-    (text, i) => `
-Job ${i + 1}:
-"""
+## Target job posting${jobTexts.length > 1 ? 's' : ''}
+${jobTexts.map((text, i) => `${jobTexts.length > 1 ? `Job ${i + 1}:\n` : ''}"""
 ${text}
-"""
-`
-  )
-  .join("\n")}
-
-ANALYSIS RESULTS:
-- Match Score: ${analysisResults.fitScore}/100
-${analysisResults.rewrittenBullets ? `- Suggested Bullets: ${analysisResults.rewrittenBullets.join(" | ")}` : ""}
-${analysisResults.atsFlags ? `- ATS Tips: ${analysisResults.atsFlags.join(" | ")}` : ""}
-${additionalTools.length > 0 ? `
-=============================================================================
-USER-CONFIRMED ADDITIONAL TOOLS (MANDATORY INTEGRATION)
-=============================================================================
-The candidate has CONFIRMED they have real experience with these tools:
-${additionalTools.map(tool => `- ${tool}`).join("\n")}
-
-🚨 CRITICAL INTEGRATION REQUIREMENTS 🚨
-
-1. SKILLS SECTION (MANDATORY):
-   - Add ALL ${additionalTools.length} tools to the skills.technical array
-   - These are verified skills - prioritize them in the list
-
-2. EXPERIENCE BULLETS (MANDATORY):
-   - For EACH confirmed tool, find the most relevant job experience
-   - Naturally integrate the tool into at least ONE bullet point for that experience
-   - Use action verbs: "Developed with [Tool]", "Implemented using [Tool]", "Built [X] leveraging [Tool]"
-
-   Example transformations:
-   - Original: "Developed web applications"
-   - With React: "Developed responsive web applications using React and modern JavaScript"
-
-   - Original: "Managed database systems"
-   - With PostgreSQL: "Managed and optimized PostgreSQL database systems, improving query performance by 40%"
-
-3. PROFESSIONAL SUMMARY (IF RELEVANT):
-   - If a tool is highly relevant to the target job, mention it in the summary
-   - Example: "Full-stack developer proficient in React, Node.js, and cloud technologies"
-
-The user specifically confirmed these tools - they MUST appear in the optimized CV, not just in skills but woven into the experience narrative.
-` : ""}
-
-═══════════════════════════════════════════════════════
-🛡️ HONEST MODE - AGGRESSIVE OPTIMIZATION WITHOUT NEW SKILLS
-═══════════════════════════════════════════════════════
-The candidate wants AGGRESSIVE CV optimization but WITHOUT adding skills they don't have.
-
-🚨 SKILL RESTRICTIONS (DO NOT VIOLATE):
-❌ DO NOT add ANY new technical skills not in the original CV
-❌ DO NOT invent technologies or tools
-
-🏆 CRITICAL: PRESERVE ALL EXISTING ACHIEVEMENTS & METRICS!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-STEP 1: EXTRACT ALL METRICS FROM ORIGINAL CV
-Before writing anything, create a mental list of EVERY metric in the original:
-- Percentages (satisfaction scores, improvement rates, etc.)
-- Money (revenue, savings, costs, etc.)
-- Counts (users, customers, vehicles, products, etc.)
-- Rankings (regional ranks, performance standings, etc.)
-- Time periods (months, weeks, consecutive periods, etc.)
-- Team/scale sizes (team members, partners, etc.)
-
-STEP 2: COUNT THEM
-Count the total number of unique metrics/achievements. Remember this number.
-
-STEP 3: VERIFY AFTER WRITING
-After creating the optimized CV, count again. The number must be EQUAL or HIGHER.
-If ANY metric is missing → add it back immediately!
-
-⚠️ ZERO TOLERANCE POLICY:
-Every single metric from the original CV MUST appear in the optimized version.
-This includes ALL: percentages, dollar amounts, user counts, rankings, time periods, and volume metrics.
-
-🚨🚨🚨 CRITICAL: NEVER ALTER FINANCIAL FIGURES — THIS IS NON-NEGOTIABLE 🚨🚨🚨
-================================================================================
-Monetary values (revenue, portfolio sizes, savings, allocation amounts, etc.) from the
-original CV MUST be copied EXACTLY as written. Do NOT round, convert, abbreviate, or
-change them in any way.
-
-EXAMPLES OF FORBIDDEN CHANGES:
-❌ Original "$9M+" → Your output "$500K"  ← THIS IS FALSIFICATION
-❌ Original "€2.3M" → Your output "€2 million"  ← NOT ALLOWED
-❌ Original "$50M" → Your output "$50 million"  ← Keep the original format
-
-✅ CORRECT APPROACH:
-✅ Original "$9M+" → Your output MUST say "$9M+" — verbatim, no changes
-✅ Original "$50M capital allocation" → Your output MUST say "$50M capital allocation"
-
-If you change a financial figure, you are FALSIFYING the candidate's record. NEVER do this.
-================================================================================
-
-🚨🚨🚨 CRITICAL: PRESERVE ALL CERTIFICATIONS — ZERO TOLERANCE 🚨🚨🚨
-================================================================================
-If the original CV has a Certifications, Courses, Licenses, or Awards section,
-EVERY SINGLE ENTRY must appear in your output's "certifications" array.
-Do NOT pick only the most impressive ones. Do NOT summarize or merge them.
-Do NOT move them to the education details field and skip the certifications array.
-
-STEP 1: Count how many certifications/courses/licenses/awards are in the original CV.
-STEP 2: Count how many are in your output's "certifications" array.
-STEP 3: The numbers MUST match. If any are missing → add them back immediately.
-
-FORBIDDEN BEHAVIOR:
-❌ Original has 6 certifications → Output has 2 (you dropped 4 — THIS IS FAILURE)
-❌ Moving certs to education.details instead of certifications array — NOT ALLOWED
-❌ Merging multiple certs into one entry — NOT ALLOWED
-
-✅ CORRECT: Every cert/course/license gets its own object in the certifications array.
-================================================================================
-
-🚨🚨🚨 CRITICAL: PRESERVE ALL LANGUAGES — ZERO TOLERANCE 🚨🚨🚨
-================================================================================
-If the original CV lists spoken languages (e.g., Portuguese, English, Spanish, Mandarin),
-ALL of them MUST appear in your output's "languages" array.
-Do NOT drop the languages array because you think it's optional.
-Do NOT omit any language that appears in the original CV.
-
-FORBIDDEN BEHAVIOR:
-❌ Original lists 4 languages → Output has 0 ("languages" array missing — THIS IS FAILURE)
-❌ Listing only the most obvious language (e.g., only English) — NOT ALLOWED
-
-✅ CORRECT: Every language mentioned in the original CV gets its own object with
-   language name and proficiency level (e.g. Fluent, Advanced, Intermediate, Beginner) translated into ${outputLanguage}.
-================================================================================
-
-If the original has an "ACHIEVEMENTS" section:
-1. Each achievement becomes a bullet point in the relevant job experience
-2. Top 2-3 achievements are ALSO mentioned in the summary
-3. NO achievement is left out - they are the candidate's proof of value!
-
-🚀 MANDATORY OPTIMIZATIONS (YOU MUST DO ALL OF THESE):
-✅ COMPLETELY REWRITE the professional summary - make it powerful and compelling
-✅ TRANSFORM every experience bullet - add metrics, results, impact
-✅ PRESERVE ALL original metrics and achievements (integrate them better!)
-✅ REORGANIZE skills by relevance to the target job
-✅ STRICTLY PRESERVE all original technical keywords (if original says "React", do not rephrase to "frontend framework")
-✅ STRICTLY PRESERVE all original Job Titles, Companies, and Dates. DO NOT paraphrase "Customer Service" to "Customer Experience".
-✅ ZERO TOLERANCE FOR DROPPED METRICS: Every single number, percentage, or dollar amount from the original CV MUST appear in the experience bullets.
-✅ ENHANCE wording with stronger action verbs throughout
-✅ IMPROVE ATS compatibility with better formatting
-
-⚠️ IMPORTANT: This is NOT a "keep everything the same" mode!
-You MUST significantly improve the CV's presentation and impact.
-The ONLY restriction is: don't add skills the candidate doesn't have.
-Everything else should be dramatically improved.
-
-MANDATORY TRANSFORMATIONS:
-1. Summary → Rewrite with powerful opening, include TOP achievements (NO clichés!)
-2. Each bullet → Integrate original metrics + emphasize qualitative impact and scope where metrics are absent (NO FAKE METRICS!)
-3. Achievements → Weave into experience bullets where they belong (don't lose them!)
-4. Skills → Reorganize by job relevance, group logically
-5. Action verbs → Replace weak verbs (managed, helped, worked) with strong ones (spearheaded, pioneered, drove, accelerated)
-
-TASK: Create a SIGNIFICANTLY IMPROVED CV that PRESERVES all original achievements while presenting them more powerfully.
-
-IMPORTANT INSTRUCTIONS:
-- Extract and preserve ALL personal information (name, email, phone, location, LinkedIn, portfolio)
-- Rewrite experience bullets to focus on scope and impact (use metrics ONLY if present in original)
-- Ensure proper ATS formatting (no tables, clear sections, standard fonts)
-- Add a compelling professional summary tailored to target jobs
-- Organize skills by relevance to target roles
-- Keep formatting clean and ATS-friendly
-- CRITICAL: Order work experience in REVERSE CHRONOLOGICAL order (most recent job FIRST, oldest job LAST)
-- CRITICAL: PRESERVE EXACT LOCATIONS BUT TRANSLATE THEM. The candidate's contact location, education locations, and job experience locations must remain geographically the same as in the original CV. DO NOT hallucinate or change them to match the target job's location (e.g. if the original CV says Istanbul, do not change it to Italy). HOWEVER, you MUST translate the City and Country names into ${outputLanguage} (e.g. "Istanbul/Türkiye" should become "Istanbul, Turkey" if outputLanguage is English).
-- CRITICAL: NEVER hallucinate missing locations. If the original CV does not mention the city for a university or job, DO NOT add it. Leave the location field empty or omit it.
-- CRITICAL: Preserve the EXACT degree name and field of study from the original CV — never paraphrase or change it. If the CV says "Computer Engineering", output must say "Computer Engineering", NOT "Computer Science". Copy it verbatim.
-- CRITICAL: If the original CV contains a Leadership, Extracurricular, Volunteer, or Activities section, you MUST preserve it as a separate "leadership" array in the JSON. Do NOT collapse these roles into a single vague sentence. Each role (e.g., Treasurer, VP of Finance, Club President, Founder) must be its own entry with title, organization, dates, and bullets. For new graduates especially, this section is a key differentiator and must NEVER be omitted or summarized away.
-- CRITICAL: NEVER use "Month YYYY" as a placeholder anywhere in the CV (not in experience, education, leadership, or certifications). If a date is not available in the original CV, OMIT the date field entirely or use an empty string "". A missing date is far better than a fake placeholder that will embarrass the candidate.
-
-=============================================================================
-REMINDER: Write ALL content in ${outputLanguage}.
-=============================================================================
-
-=============================================================================
-PROFESSIONAL SUMMARY GUIDE (3-4 powerful sentences)
-=============================================================================
-
-🚫 BANNED CLICHÉS - NEVER USE THESE:
-❌ "I am eager to apply..."
-❌ "I am excited about this opportunity..."
-❌ "I believe I would be a great fit..."
-❌ "I have always been passionate about..."
-❌ "Seeking a challenging position..."
-❌ "Looking to leverage my skills..."
-❌ "Dedicated and hardworking professional..."
-❌ Any sentence starting with "I am" or "I have"
-
-✅ CORRECT STRUCTURE:
-1. Lead with [Role] + [Years] + [Primary expertise] (no "I am")
-2. Highlight 2-3 specific achievements with metrics
-3. Mention key technologies/skills matching job requirements
-4. End with value proposition (what you bring, not what you want)
-
-✅ GOOD EXAMPLE STRUCTURE:
-"[Role] with [X] years [expertise]. [Achievement with metric] and [another achievement]. [Key skills/technologies]."
-
-❌ BAD EXAMPLE (what NOT to do):
-"I am a passionate professional who is eager to apply my skills. I believe I would be a great fit for your company."
-
-=============================================================================
-🔥 MANDATORY BULLET TRANSFORMATION (EVERY BULLET MUST BE TRANSFORMED!)
-=============================================================================
-
-⚠️ DO NOT copy bullets from the original CV as-is!
-EVERY bullet must be rewritten to be more impactful.
-
-🚨 CRITICAL: BULLET RULES 🚨
-- MAXIMUM 150 characters per bullet
-- Every bullet MUST be a COMPLETE sentence — never end mid-thought
-- WRONG: "Engineered a React application, enhancing user engagement through a"
-- RIGHT: "Engineered a React/Firebase marketplace, boosting user engagement by 30%"
-- If a bullet is too long → SPLIT into two complete sentences, each ending with a full stop or logical end
-- NEVER truncate. Every bullet must stand alone and make sense.
-- Count characters BEFORE submitting your response!
-
-TRANSFORMATION FORMULA (STRICT STAR METHOD):
-[Strong Action Verb] + [Specific Action (Action)] + [Context/Scope/Job Relevance (Situation/Task)] + [Measurable/Qualitative Impact (Result)]
-
-CRITICAL RULE: You MUST inject context or scope. If the original bullet lacks it, use the TARGET JOB POSTING to infer relevant context (e.g., "for an enterprise SaaS platform", "within a high-volume sales environment"). Do not leave the action bare.
-
-WEAK → STRONG EXAMPLES:
-
-If metrics exist in original CV:
-❌ "Worked on web development projects"
-✅ "Developed 5 web applications using React, serving 10K+ monthly users" (75 chars ✓)
-
-If NO metrics exist in original CV (DO NOT FABRICATE):
-❌ "Responsible for customer support"
-✅ "Proactively managed complex inquiries and optimized resolution workflows" (72 chars ✓)
-
-❌ "Helped with data analysis"
-✅ "Analyzed complex datasets using Python and SQL to drive strategic insights" (76 chars ✓)
-
-❌ "Optimized service processes"
-✅ "Streamlined service workflows, significantly accelerating delivery times" (74 chars ✓)
-
-🎯 NO FAKE METRICS POLICY (CRITICAL):
-If exact numbers aren't in the original CV, DO NOT invent or estimate them (no fake percentages like 98%, no fake amounts like $50K, no fake counts like 50+).
-Instead, focus on "How" and "Scope" using strong action verbs:
-- Show methodology: Use tools, frameworks, and processes (e.g., "leveraging CRM systems").
-- Provide scope context instead of fake numbers: "large-scale", "cross-functional", "end-to-end", "enterprise-grade", "critical".
-
-💪 STRONG ACTION VERBS TO USE:
-Spearheaded, Orchestrated, Transformed, Accelerated, Pioneered, Championed, Architected, Streamlined, Drove, Delivered, Achieved, Generated, Increased, Reduced, Optimized
-
-=============================================================================
-ATS OPTIMIZATION CHECKLIST (2025 INDUSTRY STANDARDS)
-=============================================================================
-Your optimized CV must pass Workday, Greenhouse, Lever, and Taleo parsing:
-
-📋 FORMAT REQUIREMENTS (All ATS):
-□ Single-column layout ONLY (no two-column formats)
-□ NO tables, text boxes, or graphics
-□ Contact info in MAIN BODY (NOT in header/footer - 25% of ATS fail to parse headers!)
-□ Standard bullets only: • or - or * (NO ➤, ◆, ★, ☑)
-□ NO emojis or unicode symbols in output
-□ Keep bullet points concise (max 120 characters, 1-2 lines each)
-
-📋 SECTION HEADERS:
-Note: The JSON keys ("summary", "experience", etc.) stay in English — they are field names.
-But the TEXT CONTENT inside those fields must match the CV's language.
-For English CVs, follow standard ATS header conventions.
-For non-English CVs, write content naturally in that language.
-
-📋 KEYWORD OPTIMIZATION (Greenhouse frequency scoring):
-□ Key skills mentioned 2-3 times across CV (summary + skills + experience)
-□ Keywords appear IN CONTEXT within bullets, not just listed
-□ Job title matches common posting language
-
-📋 ABBREVIATION EXPANSION (CRITICAL for Greenhouse/Lever):
-□ ALL abbreviations MUST be expanded at first mention:
-   → "AWS (Amazon Web Services)" not just "AWS"
-   → "MBA (Master of Business Administration)" not just "MBA"
-   → "PMP (Project Management Professional)" not just "PMP"
-   → "SEO (Search Engine Optimization)" not just "SEO"
-   → "CRM (Customer Relationship Management)" not just "CRM"
-□ Greenhouse and Lever do NOT recognize unexpanded abbreviations!
-
-📋 DATE FORMAT (All ATS):
-□ Use standard date format: "Month YYYY"
-□ For ENGLISH CVs: "January 2020", "March 2024"
-□ For TURKISH CVs: "Ocak 2020", "Mart 2024" (use Turkish month names: Ocak, Şubat, Mart, Nisan, Mayıs, Haziran, Temmuz, Ağustos, Eylül, Ekim, Kasım, Aralık)
-□ Use 4-digit year consistently throughout
-□ Reverse chronological order (most recent job FIRST)
-
-📋 VERB TENSE (Lever-specific):
-□ Current job: Present tense ("Lead", "Manage", "Develop")
-□ Past jobs: Past tense ("Led", "Managed", "Developed")
-
-🚨 CRITICAL: HARD SKILLS VS SOFT SKILLS REQUIREMENT 🚨
-================================================================================
-ATS systems heavily weight hard/technical skills over soft skills!
-
-MANDATORY REQUIREMENTS:
-✅ Technical skills array: MINIMUM 10-12 items (STRICTLY ENFORCED!)
-✅ Soft skills array: MAXIMUM 4-5 items (cut down if more!)
-✅ Hard to soft ratio: 70/30 or better
-
-If the original CV has fewer than 10 hard skills, you MUST add relevant ones based on:
-- Their industry and job role
-- Technologies mentioned in their experience
-- Common tools for their profession
-- Skills implied by their achievements
-
-Examples:
-- Software developer → Add: Git, REST APIs, SQL, Testing frameworks, CI/CD
-- Marketing professional → Add: Google Analytics, SEO, Email Marketing, CRM tools
-- Sales professional → Add: CRM Systems, Pipeline Management, Lead Generation tools
-
-DO NOT just copy the original skills - actively expand hard skills to meet the 10-12 minimum!
-================================================================================
-
-🚨 FINAL REMINDER BEFORE YOU WRITE JSON 🚨
-================================================================================
-RE-CHECK the original CV for ALL metrics and achievements.
-Every number, percentage, ranking, and achievement MUST appear in your output.
-If the original has an ACHIEVEMENTS section, integrate EACH into relevant experience bullets!
-================================================================================
-
-Respond in JSON format:
-{
-  "contact": {
-    "name": "Full Name",
-    "email": "email@example.com",
-    "phone": "+1234567890",
-    "location": "City, Country",
-    "linkedin": "linkedin.com/in/username",
-    "portfolio": "portfolio.com" // optional
-  },
-  "summary": "Compelling 3-4 sentence professional summary tailored to target roles, incorporating key strengths and missing keywords...",
-  "experience": [ // MUST be in REVERSE CHRONOLOGICAL order (most recent job FIRST, oldest job LAST)
-    {
-      "title": "Job Title",
-      "company": "Company Name",
-      "location": "City, Country",
-      "startDate": "Month YYYY", // e.g., "January 2025" or localized equivalent
-      "endDate": "Month YYYY", // or "Present"
-      "bullets": [
-        "Achievement-focused bullet point demonstrating scope and impact...",
-        "Another bullet incorporating keywords and STAR format...",
-        "Third bullet demonstrating impact and skills..."
-      ]
-    }
-    // Continue with older positions in reverse chronological order...
-  ],
-  "projects": [ // optional, REQUIRED if candidate provided Capstone/Major Project details
-    {
-      "name": "Project Name",
-      "role": "Role (e.g. Individual Academic Project, Lead Developer)", // optional
-      "url": "Project URL", // optional
-      "startDate": "Month YYYY", // optional
-      "endDate": "Month YYYY", // optional
-      "bullets": [
-        "Achievement-focused bullet point about the project...",
-        "Another bullet demonstrating skills used..."
-      ]
-    }
-  ],
-  "education": [
-    {
-      "degree": "Degree Name",
-      "institution": "University Name",
-      "location": "City, Country",
-      "graduationDate": "Month YYYY"
-    }
-  ],
-  "skills": {
-    "technical": ["Skill 1", "Skill 2", "Skill 3", "Skill 4", "Skill 5", "Skill 6", "Skill 7", "Skill 8", "Skill 9", "Skill 10", "..."], // MINIMUM 10-12 items!
-    "soft": ["Leadership", "Communication", "Problem Solving", "Team Collaboration"] // MAXIMUM 4-5 items!
-  },
-  "certifications": [ // optional, only if present in original CV
-    {
-      "name": "Certification/Course Name (e.g. Fundamental of Financial Planning)",
-      "issuer": "Issuing Organization (e.g. Goldman Sachs, Coursera, Udemy)"
-      // CRITICAL: You MUST cleanly separate the course/certification name from the issuing organization.
-      // Do NOT combine them into the 'name' field. 
-      // "date" field: ONLY include if a real date exists in the original CV.
-      // If the original has no date for this cert, OMIT the date field entirely.
-      // NEVER write "Month YYYY" as a placeholder — that is worse than omitting it.
-    }
-  ],
-  "languages": [ // optional, only if present in original CV
-    {
-      "language": "Target Language Name",
-      "proficiency": "Proficiency translated into target language"
-    }
-  ],
-  "leadership": [ // REQUIRED if original CV has Leadership/Extracurricular/Activities/Volunteer section
-    {
-      "title": "Role Title (e.g. Treasurer, VP of Finance, Founder)",
-      "organization": "Organization Name",
-      "location": "City, Country", // optional
-      "startDate": "Month YYYY",
-      "endDate": "Month YYYY or Present",
-      "bullets": [
-        "Achievement or responsibility from this role..."
-      ]
-    }
-    // Include ALL leadership/extracurricular roles from the original CV.
-    // Do NOT merge them or summarize them vaguely.
-  ],
-  "isEntryLevel": true // MUST be set to true if the candidate provided academic details (GPA/coursework/capstone) or has zero relevant formal work experience
-}
-
-Guidelines:
-🛡️ SMART HONEST MODE GUIDELINES:
-- Preserve ALL factual information from original CV (companies, titles, dates, degrees)
-- ADD related/transferable skills that connect to existing background
-- INTEGRATE missing keywords strategically where they fit naturally
-- Use honest framing: "Proficient in X" vs "Familiar with Y" vs "Exposure to Z"
-- Enhance existing bullets to include relevant keywords from job posting
-- Focus on making existing capabilities more discoverable while maintaining integrity
-- When adding skills, ensure they're plausible given candidate's background
-- Enhance wording and presentation, not fabricate facts
-- Ensure every experience bullet demonstrates impact
-- Professional summary should be compelling
-- All dates MUST use month names in the CV's language (Turkish: "Ocak 2025", English: "January 2025")
-- For current positions, ALWAYS use the English word "Present" (our system will translate it automatically)
-- Keep professional tone throughout
-- Use standard ASCII characters only (avoid special Unicode symbols, emojis, or fancy characters)
-- Use simple quotes (""), not smart quotes or other variants
-
-=============================================================================
-FINAL QUALITY VERIFICATION
-=============================================================================
-Before responding, verify:
-
-🔒 PRESERVE (must be identical to original):
-□ Contact information (name, email, phone, linkedin)
-□ Job titles, company names, and employment dates
-□ Education details
-
-🏆 ACHIEVEMENTS AND KEYWORDS CHECK (CRITICAL - DO NOT SKIP!):
-□ Count ALL metrics in original CV (percentages, money, counts, rankings, time periods)
-□ Count ALL metrics in your optimized CV
-□ Verify EVERY ORIGINAL METRIC is present!
-□ Verify EVERY ORIGINAL TECHNICAL KEYWORD from the original text is preserved exactly (so the ATS score does not drop!).
-□ Optimized count must be >= original count (ZERO metrics can be lost!)
-□ Verify ALL metric types are preserved: volumes, revenue, rankings, time periods, satisfaction scores
-□ If original had ACHIEVEMENTS section → EACH item must be in a relevant experience bullet
-□ FINANCIAL FIGURES AUDIT: List every dollar/euro/monetary amount in original. Verify EACH appears verbatim in output. ($9M+ must be $9M+. $500K must be $500K. No exceptions.)
-
-🎓 CERTIFICATIONS AUDIT (MANDATORY):
-□ Count certifications/courses/licenses/awards in ORIGINAL CV
-□ Count entries in your output's "certifications" array
-□ The counts MUST match — if any are missing → add them back before responding
-□ Certs must be in the certifications array, NOT only buried in education.details
-
-🌍 LANGUAGES AUDIT (MANDATORY):
-□ Does the original CV list spoken languages?
-□ If YES → "languages" array in JSON MUST be present and populated with ALL of them
-□ If you output 0 languages but original had any → YOU FAILED, add them now
-
-🎓 LEADERSHIP / EXTRACURRICULAR CHECK:
-□ Does the original CV have a Leadership, Activities, Extracurricular, or Volunteer section?
-□ If YES → "leadership" array in JSON MUST be present and populated
-□ Every individual role (Treasurer, VP, President, Founder, etc.) must be its own entry
-□ If you did not include "leadership" in your JSON but the original had it → YOU FAILED, add it now
-
-🔄 MUST BE DIFFERENT FROM ORIGINAL (these should be noticeably improved):
-□ Professional summary → COMPLETELY REWRITTEN (no clichés!) + TOP achievements included
-□ Every experience bullet → TRANSFORMED with metrics and strong verbs
-□ Skills organization → REORGANIZED by job relevance
-□ Work experience order → REVERSE CHRONOLOGICAL (most recent first)
-
-📋 VALIDATION CHECKLIST:
-${additionalTools.length > 0 ? `□ CRITICAL: ALL ${additionalTools.length} user-confirmed tools (${additionalTools.join(', ')}) are in skills.technical array
-□ CRITICAL: Each user-confirmed tool appears in at least ONE experience bullet point` : ''}
-□ Bullets enhanced with quantified metrics
-□ Skills.technical array has 10-12+ items (COUNT THEM!)
-□ Skills.soft array has 4-5 items MAX (COUNT THEM!)
-□ Hard to soft skills ratio is 70/30 or better
-□ Summary does NOT start with "I am" or "I have"
-□ Summary does NOT contain "eager to apply" or similar clichés
-□ ALL original achievements preserved and integrated
-□ JSON is valid and complete
-□ ATS checklist requirements met
-□ LANGUAGE CHECK: Output language matches the original CV language (NOT English unless inputs are English!)
-□ DATE PLACEHOLDER CHECK: Search your entire JSON output for "Month YYYY" — if found even once → YOU FAILED. Remove it. If no real date exists, omit the date field entirely.
-
-⚠️ CRITICAL CHECK: Compare your output to the original CV.
-If the summary and bullets look almost identical → YOU FAILED. Rewrite them!
-If ANY achievement from original is missing → YOU FAILED. Add them back!
-If ANY bullet exceeds 120 characters → YOU FAILED. Split it into 2 bullets!
-The optimized CV should be NOTICEABLY BETTER, not a copy of the original.
-
-🔴 FINAL ANTI-HALLUCINATION VALIDATION PASS (CRITICAL):
-□ Did you strictly follow Rule 3 (No invented responsibilities)?
-□ Did you strictly follow Rule 4 (Experience claims match timeline)? If the user has ZERO jobs in the target field, does your summary say "X years of experience"? If yes → YOU FAILED. Remove the years claim immediately and reframe as a recent graduate/junior.
-□ Did you strictly follow Rule 5 (Selection + Emphasis, not invention)?
-□ Compare generated output against user input. FLAG AND FIX any bullet containing a number, metric, or percentage not present in the source data.
-□ RETAIL/SURVIVAL JOBS CHECK: Did you inject target-field keywords (e.g. "design", "graphic") into unrelated jobs (e.g. Cashier, Barista) where the user never mentioned them? If yes → YOU FAILED. Keep unrelated jobs honest and concise. Do not invent design duties for a cashier.
-□ EDUCATION DETAILS CHECK: Did you output a "details" field in the education array with fake/placeholder GPA or coursework (e.g. "[insert GPA here]")? If the user did not provide a GPA, the "details" field MUST BE COMPLETELY OMITTED. If you invented one or used placeholders → YOU FAILED. Remove the "details" key entirely.
-
-Respond with ONLY the JSON object. No explanations, no markdown.`;
+"""`).join('\n\n')}
+${analysisResults.rewrittenBullets && analysisResults.rewrittenBullets.length > 0 ? `
+## Earlier analysis notes (suggestions only; the truth rules win)
+- Suggested bullet rewrites: ${analysisResults.rewrittenBullets.join(' | ')}` : ''}${analysisResults.atsFlags && analysisResults.atsFlags.length > 0 ? `
+- ATS tips: ${analysisResults.atsFlags.join(' | ')}` : ''}
+${extraInputs.length > 0 ? `
+## Additional inputs
+${extraInputs.join('\n\n')}
+` : ''}
+## Before you answer
+Check: every number in your output appears in the inputs above; every fact from every original bullet is in your output; nothing comes from the job posting that the candidate didn't state; all text is in ${outputLanguage}.
+
+Return only the JSON object.`;
 }
 
 export function generateOptimizedCVAnalysisPrompt(

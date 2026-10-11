@@ -1,3 +1,4 @@
+import { PRESENT_MAP } from "@/lib/languageUtils";
 /**
  * ATS Utility Functions
  * Post-processing utilities to ensure CV content is ATS-compliant
@@ -305,12 +306,24 @@ const MONTH_ABBREVIATIONS: Record<string, string> = {
  * Normalizes date to "Month YYYY" format for ATS compatibility
  * Handles various input formats: "Jan 2020", "01/2020", "2020-01", etc.
  */
-export function normalizeDateFormat(date: string): string {
-  if (!date || date.toLowerCase() === "present") {
-    return "Present";
-  }
+// Words CVs use for an ongoing role, in the languages we support. They are all
+// normalized to "Present" so sorting works; localizeCVDates translates it back.
+const ONGOING_WORDS = new Set([
+  "present", "current", "currently", "now", "ongoing", "today", "to date",
+  ...Object.values(PRESENT_MAP).map((w) => w.toLocaleLowerCase("tr")),
+  "halen", "hâlen", "hala", "hâlâ", "günümüz", "devam ediyor", "devam", "şu an", "aktif",
+  "heute", "aktuell", "actualidad", "presente", "en cours", "huidig", "jelenleg",
+]);
 
+function isOngoingDate(date: string): boolean {
+  return ONGOING_WORDS.has(date.trim().toLocaleLowerCase("tr"));
+}
+
+export function normalizeDateFormat(date: string | null | undefined): string {
+  // A missing date stays missing: showing "Present" would claim a job is ongoing.
+  if (!date || !date.trim()) return "";
   const trimmed = date.trim();
+  if (isOngoingDate(trimmed)) return "Present";
 
   // Already in correct format "Month YYYY"
   const correctFormat = VALID_MONTHS.find((m) => trimmed.startsWith(m));
@@ -345,65 +358,10 @@ export function normalizeDateFormat(date: string): string {
     }
   }
 
-  // Handle just year: "2020" -> "January 2020" (assume January for graduation dates)
-  const yearOnlyMatch = trimmed.match(/^(\d{4})$/);
-  if (yearOnlyMatch) {
-    return `January ${yearOnlyMatch[1]}`;
-  }
+  // A bare year ("2020") stays a bare year; we don't know the month.
 
   // Return as-is if no pattern matches
   return trimmed;
-}
-
-/**
- * Maximum character length for a bullet point (ATS readability standard)
- */
-export const MAX_BULLET_LENGTH = 120;
-
-/**
- * Truncates or splits bullet points to meet ATS length requirements
- * Returns array of bullets (may split long bullets into multiple)
- */
-export function normalizeBulletLength(bullet: string): string[] {
-  const trimmed = bullet.trim();
-
-  // If within limit, return as-is
-  if (trimmed.length <= MAX_BULLET_LENGTH) {
-    return [trimmed];
-  }
-
-  // Try to split at natural breakpoints
-  const splitPoints = [
-    ", resulting in",
-    ", leading to",
-    ", achieving",
-    ", which",
-    ", driving",
-    "; ",
-    ", and ",
-  ];
-
-  for (const splitPoint of splitPoints) {
-    const splitIndex = trimmed.indexOf(splitPoint);
-    if (splitIndex > 30 && splitIndex < trimmed.length - 30) {
-      const firstPart = trimmed.substring(0, splitIndex).trim();
-      const secondPart = trimmed.substring(splitIndex + splitPoint.length).trim();
-
-      // Capitalize second part if it doesn't start with capital
-      const capitalizedSecond =
-        secondPart.charAt(0).toUpperCase() + secondPart.slice(1);
-
-      // Recursively normalize if still too long
-      return [
-        ...normalizeBulletLength(firstPart),
-        ...normalizeBulletLength(capitalizedSecond),
-      ];
-    }
-  }
-
-  // If no natural split point, return the full bullet intact (never hard-truncate)
-  // A truncated bullet is worse than a long one — leave it for PDF to wrap
-  return [trimmed];
 }
 
 /**
@@ -411,8 +369,9 @@ export function normalizeBulletLength(bullet: string): string[] {
  * Replaces problematic characters with ATS-safe alternatives
  * Preserves Turkish characters: ç, ğ, ı, i, ö, ş, ü and their uppercase variants
  */
-export function cleanSpecialCharacters(text: string): string {
-  return text
+export function cleanSpecialCharacters(text: string | null | undefined): string {
+  // The model omits fields it has no data for (e.g. location), so tolerate gaps.
+  return (text ?? "")
     // Replace smart quotes with straight quotes
     .replace(/[\u2018\u2019]/g, "'")
     .replace(/[\u201C\u201D]/g, '"')
@@ -432,7 +391,8 @@ export function cleanSpecialCharacters(text: string): string {
  * Handles formats like "January 2020", "Jan 2020", "Present", etc.
  */
 function parseDateForSorting(dateStr: string): Date {
-  if (!dateStr || dateStr.toLowerCase() === "present") {
+  if (!dateStr) return new Date(0);
+  if (dateStr.toLowerCase() === "present") {
     return new Date(); // Present = current date (most recent)
   }
 
@@ -478,8 +438,8 @@ function sortExperiencesByDate<
   T extends { startDate: string; endDate: string }
 >(experiences: T[]): T[] {
   return [...experiences].sort((a, b) => {
-    const dateA = parseDateForSorting(a.endDate);
-    const dateB = parseDateForSorting(b.endDate);
+    const dateA = parseDateForSorting(a.endDate || a.startDate);
+    const dateB = parseDateForSorting(b.endDate || b.startDate);
     return dateB.getTime() - dateA.getTime(); // Descending order (newest first)
   });
 }
@@ -542,98 +502,96 @@ export interface GeneratedCVData {
     bullets: string[];
   }>;
   isEntryLevel?: boolean;
+  /** Locale the CV is written in (e.g. "en", "tr"); used for PDF headings. */
+  language?: string;
+  colorTemplate?: string;
 }
 
+// Proficiency values the model uses when the CV gave none; better shown as nothing.
+const PROFICIENCY_PLACEHOLDERS = /^(not specified|unspecified|unknown|n\/a|na|none|-|belirtilmemiş|bilinmiyor)$/i;
+
 export function postProcessCVForATS(cv: GeneratedCVData): GeneratedCVData {
+  const languages = (cv.languages || [])
+    .filter((lang) => lang?.language?.trim())
+    .map((lang) => {
+      const proficiency = cleanSpecialCharacters(lang.proficiency).trim();
+      return {
+        language: cleanSpecialCharacters(lang.language).trim(),
+        proficiency: PROFICIENCY_PLACEHOLDERS.test(proficiency) ? "" : proficiency,
+      };
+    });
+  const languageNames = new Set(languages.map((l) => l.language.toLowerCase()));
+
+  // Spoken languages belong in the languages section, not in the skills list.
+  const technical = (cv.skills?.technical || [])
+    .map((skill) => cleanSpecialCharacters(skill).trim())
+    .filter((skill) => skill && !languageNames.has(skill.toLowerCase()));
+
   return {
     ...cv,
-    // Clean contact info
     contact: {
       ...cv.contact,
-      name: cleanSpecialCharacters(cv.contact.name),
-      location: cleanSpecialCharacters(cv.contact.location),
+      name: cleanSpecialCharacters(cv.contact?.name),
+      location: cleanSpecialCharacters(cv.contact?.location),
       // Sanitize LinkedIn URL — fix common AI typo 'inkedin.com' → 'linkedin.com'
-      linkedin: cv.contact.linkedin
+      linkedin: cv.contact?.linkedin
         ? cv.contact.linkedin
             .replace(/^inkedin\.com/i, 'linkedin.com')
             .replace(/^https?:\/\/inkedin\.com/i, 'https://linkedin.com')
-        : cv.contact.linkedin,
+        : cv.contact?.linkedin,
     },
-    // Expand abbreviations and clean summary
-    summary: cleanSpecialCharacters(expandAbbreviations(cv.summary)),
+    // Abbreviations are expanded once, in the skills list only. Expanding them in
+    // every bullet and the summary made the text repetitive and hard to read.
+    summary: cleanSpecialCharacters(cv.summary),
     // Process experience - CRITICAL: Sort in reverse chronological order (newest first)
     experience: sortExperiencesByDate(
-      cv.experience.map((exp) => ({
+      (cv.experience || []).map((exp) => ({
         ...exp,
         title: cleanSpecialCharacters(exp.title),
         company: cleanSpecialCharacters(exp.company),
         location: cleanSpecialCharacters(exp.location),
         startDate: normalizeDateFormat(exp.startDate),
         endDate: normalizeDateFormat(exp.endDate),
-        bullets: exp.bullets.flatMap((bullet) =>
-          normalizeBulletLength(
-            cleanSpecialCharacters(expandAbbreviations(bullet))
-          )
-        ),
+        bullets: (exp.bullets || []).map((bullet) => cleanSpecialCharacters(bullet).trim()).filter(Boolean),
       }))
     ),
-    // Process education - CRITICAL: Don't allow fabricated dates like "Present"
-    education: cv.education.map((edu) => {
-      let graduationDate = edu.graduationDate;
-
-      // "Present" is not a valid graduation date - it's likely fabricated
-      if (graduationDate?.toLowerCase() === "present") {
-        graduationDate = undefined as any;
-      }
-      // null or empty strings should stay null/undefined
-      else if (!graduationDate || graduationDate === "null") {
-        graduationDate = undefined as any;
-      }
-      else {
-        graduationDate = normalizeDateFormat(graduationDate);
-      }
-
+    projects: cv.projects?.map((proj) => ({
+      ...proj,
+      startDate: normalizeDateFormat(proj.startDate),
+      endDate: normalizeDateFormat(proj.endDate),
+      bullets: (proj.bullets || []).map((bullet) => cleanSpecialCharacters(bullet).trim()).filter(Boolean),
+    })),
+    leadership: cv.leadership?.map((role) => ({
+      ...role,
+      startDate: normalizeDateFormat(role.startDate),
+      endDate: normalizeDateFormat(role.endDate),
+      bullets: (role.bullets || []).map((bullet) => cleanSpecialCharacters(bullet).trim()).filter(Boolean),
+    })),
+    // "Present" is not a valid graduation or certification date; drop it.
+    education: (cv.education || []).map((edu) => {
+      const graduationDate = normalizeDateFormat(edu.graduationDate);
       return {
         ...edu,
-        degree: cleanSpecialCharacters(expandAbbreviations(edu.degree || '')),
-        institution: cleanSpecialCharacters(edu.institution || ''),
-        location: cleanSpecialCharacters(edu.location || ''),
-        graduationDate,
-        details: edu.details
-          ? cleanSpecialCharacters(expandAbbreviations(edu.details))
-          : undefined,
+        degree: cleanSpecialCharacters(edu.degree),
+        institution: cleanSpecialCharacters(edu.institution),
+        location: cleanSpecialCharacters(edu.location),
+        graduationDate: graduationDate === "Present" ? "" : graduationDate,
+        details: edu.details ? cleanSpecialCharacters(edu.details) : undefined,
       };
     }),
-    // Expand skill abbreviations
     skills: {
-      technical: expandSkillAbbreviations(cv.skills.technical).map(
-        cleanSpecialCharacters
-      ),
-      soft: cv.skills.soft.map(cleanSpecialCharacters),
+      technical: expandSkillAbbreviations(technical),
+      soft: (cv.skills?.soft || []).map(cleanSpecialCharacters),
     },
-    // Process certifications - handle null/undefined dates
     certifications: cv.certifications?.map((cert) => {
-      let certDate = cert.date;
-
-      // null, empty, or "Present" are not valid certification dates
-      if (!certDate || certDate === "null" || certDate.toLowerCase() === "present") {
-        certDate = undefined as any;
-      } else {
-        certDate = normalizeDateFormat(certDate);
-      }
-
+      const date = normalizeDateFormat(cert.date);
       return {
         ...cert,
-        name: cleanSpecialCharacters(expandAbbreviations(cert.name || '')),
-        issuer: cleanSpecialCharacters(cert.issuer || ''),
-        date: certDate,
+        name: cleanSpecialCharacters(cert.name),
+        issuer: cleanSpecialCharacters(cert.issuer),
+        date: date === "Present" ? "" : date,
       };
     }),
-    // Process languages
-    languages: cv.languages?.map((lang) => ({
-      ...lang,
-      language: cleanSpecialCharacters(lang.language),
-      proficiency: cleanSpecialCharacters(lang.proficiency),
-    })),
+    languages,
   };
 }

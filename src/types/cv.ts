@@ -73,4 +73,6 @@ export interface GeneratedCV {
   isEntryLevel?: boolean;
   photoUrl?: string;
   themeColor?: string;
+  /** Locale the CV is written in (e.g. "en", "tr"). Older CVs don't have it. */
+  language?: string;
 }

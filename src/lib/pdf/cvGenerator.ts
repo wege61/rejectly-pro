@@ -1,8 +1,8 @@
 import { jsPDF } from "jspdf";
-import { GeneratedCV, CVExperience, CVEducation, CVCertification, CVLeadership } from "@/types/cv";
+import { GeneratedCV } from "@/types/cv";
 import { loadFontsToDocument } from "./fontLoader";
 import { COLOR_TEMPLATES } from "./colorTemplates";
-import { detectLocale, CV_HEADINGS } from "@/lib/languageUtils";
+import { detectLocale, CV_HEADINGS, PRESENT_MAP } from "@/lib/languageUtils";
 
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace('#', '');
@@ -15,10 +15,12 @@ export interface CVPDFOptions {
   photoBase64?: string;
 }
 
+const PRESENT_WORDS = ['present', 'devam', 'halen', 'günümüz', ...Object.values(PRESENT_MAP).map(p => p.toLowerCase())];
+
 const parseDateForSort = (dateStr?: string | null) => {
   if (!dateStr || dateStr.trim() === '') return 0;
   const lower = dateStr.toLowerCase();
-  if (lower.includes('present') || lower.includes('devam') || lower.includes('cerrent')) {
+  if (PRESENT_WORDS.some(word => lower.includes(word))) {
     return Infinity;
   }
   const d = new Date(dateStr);
@@ -27,9 +29,17 @@ const parseDateForSort = (dateStr?: string | null) => {
   }
   const match = dateStr.match(/\d{4}/);
   if (match) {
-    return parseInt(match[0]) * 31556952000; 
+    return parseInt(match[0]) * 31556952000;
   }
-  return 0; 
+  return 0;
+};
+
+/** "Start — End", or whichever side exists. A missing end date is shown as missing, never as "Present". */
+const formatDateRange = (start?: string | null, end?: string | null) => {
+  const s = start?.trim();
+  const e = end?.trim();
+  if (s && e) return s === e ? s : `${s} — ${e}`;
+  return s || e || '';
 };
 
 const getColorTemplateHex = (templateName?: string): string | null => {
@@ -52,15 +62,15 @@ export async function generateCVPDF(
 
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  
+
   const themeColorHex = options?.colorTemplate ? getColorTemplateHex(options.colorTemplate) : null;
   const themeColor = themeColorHex || cv.themeColor || '#2563eb';
   const photoBase64 = options?.photoBase64 || cv.photoUrl;
 
   await loadFontsToDocument(doc);
-  
+
   const marginX = 18;
-  const marginY = 18;
+  const marginY = 16;
   const contentWidth = pageWidth - 2 * marginX;
   let yPosition = marginY;
 
@@ -73,6 +83,13 @@ export async function generateCVPDF(
     body: 9.5,
   };
 
+  const SPACING = {
+    line: 4.4,       // between wrapped lines of the same paragraph/bullet
+    bullet: 5.2,     // from one bullet to the next
+    entryGap: 3.5,   // after each job/project/degree
+    row: 4.8,        // after a title row or subtitle row
+  };
+
   const COLORS = {
     theme: themeColor,
     main: '#1a1a1a',
@@ -81,6 +98,15 @@ export async function generateCVPDF(
     bullet: '#333333',
     contact: '#555555'
   };
+
+  const experience = cv.experience || [];
+  const allText = [
+    cv.summary,
+    ...experience.map(e => `${e.title} ${(e.bullets || []).join(" ")}`)
+  ].join(" ");
+  // Older CVs don't record their language, so fall back to detecting it.
+  const lang = cv.language && CV_HEADINGS[cv.language] ? cv.language : detectLocale(allText);
+  const L = { ...CV_HEADINGS['en'], ...(CV_HEADINGS[lang] || {}) };
 
   const checkPageBreak = (requiredMM: number) => {
     if (yPosition + requiredMM > pageHeight - marginY) {
@@ -100,7 +126,7 @@ export async function generateCVPDF(
     const boxX = marginX - padding;
     const boxY = startY - padding;
     const boxH = endY - startY + padding * 2;
-    const accentColor = "#0A84FF"; 
+    const accentColor = "#0A84FF";
 
     doc.saveGraphicsState();
     // @ts-ignore
@@ -118,19 +144,19 @@ export async function generateCVPDF(
   // ==========================================
   const headerStartY = yPosition;
   const hasPhoto = !!photoBase64 && photoBase64.length > 50;
-  
-  const photoW = 22;               
-  const photoH = 27.5;           
-  const textMaxWidth = hasPhoto ? contentWidth - photoW - 6 : contentWidth; 
+
+  const photoW = 22;
+  const photoH = 27.5;
+  const textMaxWidth = hasPhoto ? contentWidth - photoW - 6 : contentWidth;
 
   doc.setFont("Roboto", "bold");
   doc.setFontSize(FONTS.name);
   doc.setTextColor(COLORS.theme);
-  
+
   if (cv.contact.name) {
-    yPosition += 10; // Extra room above name
+    yPosition += 8;
     doc.text(cv.contact.name, marginX, yPosition);
-    yPosition += 10; // Giant cushion below the name
+    yPosition += 7;
   }
 
   doc.setFont("Roboto", "normal");
@@ -138,22 +164,17 @@ export async function generateCVPDF(
   doc.setTextColor(COLORS.contact);
   const contactItems = [
     cv.contact.email,
-    cv.contact.phone && `• ${cv.contact.phone}`,
-    cv.contact.location && `• ${cv.contact.location}`,
-    cv.contact.linkedin && `• ${cv.contact.linkedin.replace('https://', '')}`,
-    cv.contact.portfolio && `• ${cv.contact.portfolio.replace('https://', '')}`
+    cv.contact.phone,
+    cv.contact.location,
+    cv.contact.linkedin?.replace(/^https?:\/\//, ''),
+    cv.contact.portfolio?.replace(/^https?:\/\//, ''),
   ].filter(Boolean) as string[];
 
-  const contactText = contactItems.join(" ");
-  const contactLines = getLines(contactText, textMaxWidth);
-  
-  if (contactLines.length > 0) {
-    yPosition += 1; 
-    contactLines.forEach(line => {
-      doc.text(line, marginX, yPosition);
-      yPosition += 5.5;
-    });
-  }
+  const contactLines = getLines(contactItems.join("  •  "), textMaxWidth);
+  contactLines.forEach(line => {
+    doc.text(line, marginX, yPosition);
+    yPosition += 5;
+  });
 
   if (hasPhoto) {
     try {
@@ -164,7 +185,7 @@ export async function generateCVPDF(
       const format = jpegDataUrl.includes("image/png") ? "PNG" : "JPEG";
       const imgProps = doc.getImageProperties(jpegDataUrl);
       const imgRatio = imgProps.width / imgProps.height;
-      
+
       let targetW = photoW;
       let targetH = photoH;
       let offsetX = 0;
@@ -183,7 +204,7 @@ export async function generateCVPDF(
 
       // Draw the image first (it may overflow its box)
       await doc.addImage(jpegDataUrl, format, photoX - offsetX, photoY - offsetY, targetW, targetH);
-      
+
       // Faux-clip: Draw white rectangles EXACTLY over the overhanging regions to hide them
       doc.setFillColor("#ffffff");
       // Top overhang
@@ -194,7 +215,7 @@ export async function generateCVPDF(
       if (offsetX > 0) doc.rect(photoX - offsetX - 1, photoY - offsetY, offsetX + 1, targetH + 2, "F");
       // Right overhang
       if (offsetX > 0) doc.rect(photoX + photoW, photoY - offsetY, offsetX + 2, targetH + 2, "F");
-      
+
       // Sleek Border drawn exactly on the bounding box
       doc.setDrawColor(220, 220, 220);
       doc.setLineWidth(0.4);
@@ -213,91 +234,136 @@ export async function generateCVPDF(
   if (highlightSection === "contact") drawHighlightBorder(headerStartY, yPosition);
 
   // Header Divider
-  yPosition += 6; // Deep space after photo
+  yPosition += 3;
   doc.setDrawColor(COLORS.theme);
   doc.setLineWidth(0.5);
   doc.line(marginX, yPosition, pageWidth - marginX, yPosition);
-  yPosition += 8; // Deep space before first section
+  yPosition += 4;
 
-  const allText = [
-    cv.summary,
-    ...cv.experience.map(e => `${e.title} ${e.bullets.join(" ")}`)
-  ].join(" ");
-  const lang = detectLocale(allText);
-  const L = CV_HEADINGS[lang] || CV_HEADINGS['en'];
-
-  const drawSectionTitle = (title: string) => {
-    // Require 34mm of space: title (~13.5mm) + first entry row (up to 16mm) + buffer.
-    // This mathematically guarantees that the first entry will NOT trigger a page break
-    // right after the title is drawn, preventing orphan headers.
-    checkPageBreak(34);
+  /**
+   * `firstBlockMM` is the height of whatever must sit directly under the title
+   * (the first entry, or the whole section if it's short), so a title never
+   * ends up alone at the bottom of a page.
+   */
+  const drawSectionTitle = (title: string, firstBlockMM: number) => {
+    checkPageBreak(13 + firstBlockMM);
     doc.setFont("Roboto", "bold");
     doc.setFontSize(FONTS.section);
     doc.setTextColor(COLORS.theme);
-    
-    const letterSpacedTitle = title.split('').join(String.fromCharCode(8202));
-    
+
+    // Visual letter-spacing via the PDF char-space operator. Inserting spacer
+    // characters instead makes ATS parsers read headings as "S U M M A R Y".
     yPosition += 5;
-    doc.text(letterSpacedTitle, marginX, yPosition);
-    yPosition += 3;
-    
+    doc.setCharSpace(0.35);
+    doc.text(title.toLocaleUpperCase(lang), marginX, yPosition);
+    doc.setCharSpace(0);
+    yPosition += 2.5;
+
     const [r, g, b] = hexToRgb(COLORS.theme);
     doc.setDrawColor(
-      Math.round(r * 0.25 + 255 * 0.75), 
-      Math.round(g * 0.25 + 255 * 0.75), 
+      Math.round(r * 0.25 + 255 * 0.75),
+      Math.round(g * 0.25 + 255 * 0.75),
       Math.round(b * 0.25 + 255 * 0.75)
     );
     doc.setLineWidth(0.2);
     doc.line(marginX, yPosition, pageWidth - marginX, yPosition);
-    
-    yPosition += 5.5;
+
+    yPosition += 5;
   };
 
   const drawSplitRow = (left: string, right: string | undefined, isBoldLeft: boolean, colorL: string, colorR: string, sizeL: number, sizeR: number) => {
-    if (isBoldLeft) doc.setFont("Roboto", "bold");
-    else doc.setFont("Roboto", "normal");
-    
+    doc.setFont("Roboto", "normal");
+    doc.setFontSize(sizeR);
+    const rightWidth = right ? doc.getTextWidth(right) : 0;
+
+    doc.setFont("Roboto", isBoldLeft ? "bold" : "normal");
     doc.setFontSize(sizeL);
     doc.setTextColor(colorL);
-    
-    doc.text(left, marginX, yPosition);
-    
+    // Keep long titles clear of the right-aligned date.
+    const leftMax = contentWidth - (rightWidth ? rightWidth + 4 : 0);
+    const leftLines = getLines(left, leftMax);
+    leftLines.forEach((line, i) => {
+      if (i > 0) yPosition += SPACING.line;
+      doc.text(line, marginX, yPosition);
+    });
+
     if (right) {
       doc.setFont("Roboto", "normal");
       doc.setFontSize(sizeR);
       doc.setTextColor(colorR);
-      const rightWidth = doc.getTextWidth(right);
-      doc.text(right, pageWidth - marginX - rightWidth, yPosition);
+      doc.text(right, pageWidth - marginX - rightWidth, yPosition - (leftLines.length - 1) * SPACING.line);
     }
   };
+
+  const bodyLines = (text: string, width: number) => {
+    doc.setFont("Roboto", "normal");
+    doc.setFontSize(FONTS.body);
+    return getLines(text, width);
+  };
+
+  const bulletHeight = (bullet: string) =>
+    (bodyLines(bullet.trim(), contentWidth - 8).length - 1) * SPACING.line + SPACING.bullet;
+
+  const drawBullets = (bullets: string[] | undefined) => {
+    if (!bullets?.length) return;
+    doc.setFont("Roboto", "normal");
+    doc.setFontSize(FONTS.body);
+    doc.setTextColor(COLORS.bullet);
+
+    bullets.forEach((bullet) => {
+      // Keep each bullet on one page.
+      checkPageBreak(bulletHeight(bullet));
+      doc.text("•", marginX + 3, yPosition);
+      getLines(bullet.trim(), contentWidth - 8).forEach((line, lineIndex) => {
+        if (lineIndex > 0) yPosition += SPACING.line;
+        doc.text(line, marginX + 8, yPosition);
+      });
+      yPosition += SPACING.bullet;
+    });
+  };
+
+  /** Title row + subtitle row + first bullet: the minimum to keep together. */
+  const entryHeadHeight = (bullets?: string[]) =>
+    SPACING.row * 2 + (bullets?.length ? bulletHeight(bullets[0]) : 0);
+
+  // A one-line paragraph (skills, languages) never needs more than a few lines.
+  const paragraphHeight = (text: string) => bodyLines(text, contentWidth).length * 5;
 
   // ==========================================
   // 2. SUMMARY
   // ==========================================
   if (cv.summary) {
     const startY = yPosition;
-    drawSectionTitle((L.summary || 'Summary').toUpperCase());
-    
+    // Line breaks depend on the font size, so measure with the body font.
+    doc.setFont("Roboto", "normal");
+    doc.setFontSize(FONTS.body);
+    const summaryLines = getLines(cv.summary, contentWidth);
+    drawSectionTitle(L.summary, Math.min(summaryLines.length, 3) * 5);
+
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
     doc.setTextColor(COLORS.bullet);
-    
-    const summaryLines = getLines(cv.summary, contentWidth);
+
     summaryLines.forEach((line) => {
       checkPageBreak(5);
       doc.text(line, marginX, yPosition);
-      yPosition += 5; 
+      yPosition += 5;
     });
-    
-    yPosition += 4;
+
+    yPosition += 1;
     if (highlightSection === "summary") drawHighlightBorder(startY, yPosition);
   }
 
   // ==========================================
-  // 3. EXPERIENCE
+  // 3. EXPERIENCE & PROJECTS
   // ==========================================
+  const validExperience = experience.filter(e => e.title?.trim() || e.company?.trim());
+  const validProjects = (cv.projects || []).filter(p => p.name?.trim());
+  // Experienced candidates' projects are listed under the experience heading;
+  // for entry-level candidates projects get their own section.
+  const projectsUnderExperience = !cv.isEntryLevel && validExperience.length > 0 && validProjects.length > 0;
+
   const renderExperienceSection = () => {
-    const validExperience = cv.experience.filter(e => e.title?.trim() !== "" || e.company?.trim() !== "");
     const sortedExperience = [...validExperience].sort((a, b) => {
       const dateA = a.endDate ? a.endDate : a.startDate;
       const dateB = b.endDate ? b.endDate : b.startDate;
@@ -307,291 +373,212 @@ export async function generateCVPDF(
     if (sortedExperience.length === 0) return;
 
     const startY = yPosition;
-    const validProjects = (cv.projects || []).filter(p => p.name?.trim() !== "");
-    drawSectionTitle(((cv.isEntryLevel && validProjects.length > 0) ? (L.experience_only || 'Experience') : (L.experience || 'Experience & Projects')).toUpperCase());
+    drawSectionTitle(projectsUnderExperience ? L.experience : L.experience_only, entryHeadHeight(sortedExperience[0].bullets));
 
     sortedExperience.forEach((exp) => {
-      checkPageBreak(16);
-      
-      const dateText = exp.startDate === exp.endDate
-        ? exp.startDate
-        : [exp.startDate, exp.endDate || (exp.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
-      drawSplitRow(exp.title, dateText, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 5;
-      
-      let companyLoc = exp.company || "";
-      if (exp.location) companyLoc += ` • ${exp.location}`;
-      doc.setFont("Roboto", "bold"); 
-      doc.setFontSize(FONTS.subtitle);
-      doc.setTextColor(COLORS.secondary);
-      doc.text(companyLoc, marginX, yPosition);
-      yPosition += 5;
+      checkPageBreak(entryHeadHeight(exp.bullets));
 
-      doc.setFont("Roboto", "normal");
-      doc.setFontSize(FONTS.body);
-      doc.setTextColor(COLORS.bullet);
+      drawSplitRow(exp.title, formatDateRange(exp.startDate, exp.endDate), true, '#000000', COLORS.light, FONTS.title, FONTS.date);
+      yPosition += SPACING.row;
 
-      exp.bullets.forEach((bullet) => {
-        checkPageBreak(6);
-        doc.text("•", marginX + 3, yPosition);
+      const companyLoc = [exp.company, exp.location].filter(Boolean).join(" • ");
+      if (companyLoc) {
+        doc.setFont("Roboto", "bold");
+        doc.setFontSize(FONTS.subtitle);
+        doc.setTextColor(COLORS.secondary);
+        doc.text(companyLoc, marginX, yPosition);
+        yPosition += SPACING.row;
+      }
 
-        const bulletLines = getLines(bullet.trim(), contentWidth - 8);
-        bulletLines.forEach((line, lineIndex) => {
-          if (lineIndex > 0) {
-            checkPageBreak(4.5);
-            yPosition += 4.5;
-          }
-          doc.text(line, marginX + 8, yPosition);
-        });
-        yPosition += 5.5;
-      });
-      
-      yPosition += 5;
+      drawBullets(exp.bullets);
+      yPosition += SPACING.entryGap;
     });
-    
+
     if (highlightSection === "experience") drawHighlightBorder(startY, yPosition);
   };
 
   const renderProjectsSection = () => {
-    const validProjects = (cv.projects || []).filter(p => p.name?.trim() !== "");
     if (validProjects.length === 0) return;
 
     const startY = yPosition;
-    const validExperience = cv.experience.filter(e => e.title?.trim() !== "" || e.company?.trim() !== "");
-    
-    // Only draw title if experience was empty, or if it's entry level (so they are split)
-    if (validExperience.length === 0 || cv.isEntryLevel) {
-      drawSectionTitle((L.projects || 'Projects').toUpperCase());
+    if (!projectsUnderExperience) {
+      drawSectionTitle(L.projects, entryHeadHeight(validProjects[0].bullets));
     }
 
     validProjects.forEach((proj) => {
-      checkPageBreak(16);
-      
-      const dateText = proj.startDate === proj.endDate
-        ? proj.startDate
-        : [proj.startDate, proj.endDate || (proj.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
-      drawSplitRow(proj.name, dateText, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 5;
-      
-      let roleLoc = proj.role || "Project";
-      if (proj.url) roleLoc += ` • ${proj.url}`;
-      doc.setFont("Roboto", "bold"); 
-      doc.setFontSize(FONTS.subtitle);
-      doc.setTextColor(COLORS.secondary);
-      doc.text(roleLoc, marginX, yPosition);
-      yPosition += 5;
+      checkPageBreak(entryHeadHeight(proj.bullets));
 
-      doc.setFont("Roboto", "normal");
-      doc.setFontSize(FONTS.body);
-      doc.setTextColor(COLORS.bullet);
+      drawSplitRow(proj.name, formatDateRange(proj.startDate, proj.endDate), true, '#000000', COLORS.light, FONTS.title, FONTS.date);
+      yPosition += SPACING.row;
 
-      if (proj.bullets) {
-        proj.bullets.forEach((bullet) => {
-          checkPageBreak(6);
-          doc.text("•", marginX + 3, yPosition);
-
-          const bulletLines = getLines(bullet.trim(), contentWidth - 8);
-          bulletLines.forEach((line, lineIndex) => {
-            if (lineIndex > 0) {
-              checkPageBreak(4.5);
-              yPosition += 4.5;
-            }
-            doc.text(line, marginX + 8, yPosition);
-          });
-          yPosition += 5.5;
-        });
+      const roleLoc = [proj.role, proj.url].filter(Boolean).join(" • ");
+      if (roleLoc) {
+        doc.setFont("Roboto", "bold");
+        doc.setFontSize(FONTS.subtitle);
+        doc.setTextColor(COLORS.secondary);
+        doc.text(roleLoc, marginX, yPosition);
+        yPosition += SPACING.row;
       }
-      
-      yPosition += 5;
+
+      drawBullets(proj.bullets);
+      yPosition += SPACING.entryGap;
     });
-    
+
     if (highlightSection === "experience" && validExperience.length === 0) {
       drawHighlightBorder(startY, yPosition);
     }
   };
 
-  // Render based on ordering rules
-  if (cv.isEntryLevel) {
-    renderProjectsSection();
-    renderExperienceSection();
-  } else {
-    renderExperienceSection();
-    renderProjectsSection();
-  }
-
   // ==========================================
   // 4. EDUCATION
   // ==========================================
-  const validEducation = cv.education.filter(e => e.institution?.trim() !== "");
-  const sortedEducation = [...validEducation].sort((a, b) => {
-    return parseDateForSort(b.graduationDate) - parseDateForSort(a.graduationDate);
-  });
+  const renderEducationSection = () => {
+    const validEducation = (cv.education || []).filter(e => e.institution?.trim() || e.degree?.trim());
+    const sortedEducation = [...validEducation].sort((a, b) => {
+      return parseDateForSort(b.graduationDate) - parseDateForSort(a.graduationDate);
+    });
+    if (sortedEducation.length === 0) return;
 
-  if (sortedEducation.length > 0) {
     const startY = yPosition;
-    drawSectionTitle((L.education || 'Education').toUpperCase());
+    drawSectionTitle(L.education, SPACING.row * 2);
 
     sortedEducation.forEach((edu) => {
-      // Require 16mm for degree + institution
-      checkPageBreak(16);
-      let degreeLine = edu.degree || "";
-      if (edu.fieldOfStudy) degreeLine += ` in ${edu.fieldOfStudy}`;
+      checkPageBreak(SPACING.row * 2 + (edu.details ? SPACING.line : 0));
+      const degreeLine = [edu.degree, edu.fieldOfStudy].filter(Boolean).join(", ");
 
       drawSplitRow(degreeLine, edu.graduationDate || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 5;
+      yPosition += SPACING.row;
 
       const institutionLine = [edu.institution, edu.location].filter(Boolean).join(', ');
-      drawSplitRow(institutionLine, undefined, false, COLORS.secondary, COLORS.light, FONTS.subtitle, FONTS.date);
-      yPosition += 5;
+      if (institutionLine) {
+        drawSplitRow(institutionLine, undefined, false, COLORS.secondary, COLORS.light, FONTS.subtitle, FONTS.date);
+        yPosition += SPACING.row;
+      }
 
       if (edu.details) {
         doc.setFont('Roboto', 'normal');
         doc.setFontSize(FONTS.body - 0.5);
         doc.setTextColor(COLORS.secondary);
-        const detailLines = getLines(edu.details, contentWidth);
-        detailLines.forEach(line => {
-          checkPageBreak(4.5);
+        getLines(edu.details, contentWidth).forEach(line => {
+          checkPageBreak(SPACING.line);
           doc.text(line, marginX, yPosition);
-          yPosition += 4.5;
+          yPosition += SPACING.line;
         });
-        yPosition += 2;
       }
+      yPosition += SPACING.entryGap - 1;
     });
-    
+
     if (highlightSection === "education") drawHighlightBorder(startY, yPosition);
-  }
+  };
 
   // ==========================================
   // 5. CERTIFICATIONS
   // ==========================================
-  const validCerts = (cv.certifications || []).filter(c => c.name?.trim() !== "");
-  if (validCerts.length > 0) {
+  const renderCertificationsSection = () => {
+    const validCerts = (cv.certifications || []).filter(c => c.name?.trim());
+    if (validCerts.length === 0) return;
+
     const startY = yPosition;
-    drawSectionTitle((L.certifications || 'Certifications & Courses').toUpperCase());
+    drawSectionTitle(L.certifications, 9);
 
     validCerts.forEach((cert) => {
-      // Require 12mm for title + issuer
-      checkPageBreak(12);
+      checkPageBreak(9);
       drawSplitRow(cert.name, cert.date || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 4; // Tighter gap between title and issuer
-      
+      yPosition += 4;
+
       const issuerLine = [cert.issuer, cert.credentialId ? `ID: ${cert.credentialId}` : ''].filter(Boolean).join(' • ');
       if (issuerLine) {
         doc.setFont("Roboto", "normal");
         doc.setFontSize(FONTS.subtitle);
         doc.setTextColor(COLORS.secondary);
         doc.text(issuerLine, marginX, yPosition);
-        yPosition += 4; // Advance past the text
-      } else {
-        yPosition += 1;
+        yPosition += 4;
       }
-      yPosition += 3; // Gap between different certifications (reduced from 6)
+      yPosition += 2;
     });
-    
+
     if (highlightSection === "certifications") drawHighlightBorder(startY, yPosition);
-  }
+  };
 
   // ==========================================
-  // 5b. LEADERSHIP & ACTIVITIES
+  // 6. LEADERSHIP & ACTIVITIES
   // ==========================================
-  const validLeadership = (cv.leadership || []).filter(l => l.title?.trim() !== '' || l.organization?.trim() !== '');
-  const sortedLeadership = [...validLeadership].sort((a, b) => {
-    const dateA = a.endDate ? a.endDate : a.startDate;
-    const dateB = b.endDate ? b.endDate : b.startDate;
-    return parseDateForSort(dateB) - parseDateForSort(dateA);
-  });
+  const renderLeadershipSection = () => {
+    const validLeadership = (cv.leadership || []).filter(l => l.title?.trim() || l.organization?.trim());
+    const sortedLeadership = [...validLeadership].sort((a, b) => {
+      const dateA = a.endDate ? a.endDate : a.startDate;
+      const dateB = b.endDate ? b.endDate : b.startDate;
+      return parseDateForSort(dateB) - parseDateForSort(dateA);
+    });
+    if (sortedLeadership.length === 0) return;
 
-  if (sortedLeadership.length > 0) {
     const startY = yPosition;
-    drawSectionTitle((L.leadership || 'Leadership & Activities').toUpperCase());
+    drawSectionTitle(L.leadership, entryHeadHeight(sortedLeadership[0].bullets));
 
     sortedLeadership.forEach((role) => {
-      // Require 16mm for title + organization + at least one bullet
-      checkPageBreak(16);
+      checkPageBreak(entryHeadHeight(role.bullets));
 
-      const dateText = role.startDate === role.endDate
-        ? role.startDate
-        : [role.startDate, role.endDate || (role.startDate ? 'Present' : '')].filter(Boolean).join(' — ');
-      drawSplitRow(role.title, dateText, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
-      yPosition += 5;
+      drawSplitRow(role.title, formatDateRange(role.startDate, role.endDate), true, '#000000', COLORS.light, FONTS.title, FONTS.date);
+      yPosition += SPACING.row;
 
-      let orgLoc = role.organization || '';
-      if (role.location) orgLoc += ` • ${role.location}`;
-      doc.setFont('Roboto', 'bold');
-      doc.setFontSize(FONTS.subtitle);
-      doc.setTextColor(COLORS.secondary);
-      doc.text(orgLoc, marginX, yPosition);
-      yPosition += 5;
-
-      if (role.bullets && role.bullets.length > 0) {
-        doc.setFont('Roboto', 'normal');
-        doc.setFontSize(FONTS.body);
-        doc.setTextColor(COLORS.bullet);
-
-        role.bullets.forEach((bullet) => {
-          checkPageBreak(6);
-          doc.text('•', marginX + 3, yPosition);
-          const bulletLines = getLines(bullet.trim(), contentWidth - 8);
-          bulletLines.forEach((line, lineIndex) => {
-            if (lineIndex > 0) { checkPageBreak(4.5); yPosition += 4.5; }
-            doc.text(line, marginX + 8, yPosition);
-          });
-          yPosition += 5.5;
-        });
+      const orgLoc = [role.organization, role.location].filter(Boolean).join(' • ');
+      if (orgLoc) {
+        doc.setFont('Roboto', 'bold');
+        doc.setFontSize(FONTS.subtitle);
+        doc.setTextColor(COLORS.secondary);
+        doc.text(orgLoc, marginX, yPosition);
+        yPosition += SPACING.row;
       }
 
-      yPosition += 5;
+      drawBullets(role.bullets);
+      yPosition += SPACING.entryGap;
     });
 
     if (highlightSection === 'leadership') drawHighlightBorder(startY, yPosition);
-  }
+  };
 
   // ==========================================
-  // 6. SKILLS
+  // 7. SKILLS & LANGUAGES
   // ==========================================
-  if (cv.skills.technical.length > 0) {
-    const startY = yPosition;
-    drawSectionTitle((L.skills || 'Skills').toUpperCase());
-
+  const drawParagraph = (text: string) => {
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
     doc.setTextColor(COLORS.bullet);
-
-    const skillsText = cv.skills.technical.join(' • ');
-    const skillsLines = getLines(skillsText, contentWidth);
-    skillsLines.forEach((line) => {
-      checkPageBreak(5.5);
+    getLines(text, contentWidth).forEach((line) => {
+      checkPageBreak(5);
       doc.text(line, marginX, yPosition);
-      yPosition += 5.5;
+      yPosition += 5;
     });
-    
-    if (highlightSection === "skills") drawHighlightBorder(startY, yPosition);
-  }
+  };
 
-  // ==========================================
-  // 7. LANGUAGES
-  // ==========================================
-  const validLanguages = (cv.languages || []).filter(l => l.language?.trim() !== '');
-  if (validLanguages.length > 0) {
+  const renderSkillsSection = () => {
+    const skills = cv.skills?.technical || [];
+    if (skills.length === 0) return;
     const startY = yPosition;
-    drawSectionTitle((L.languages || 'Languages').toUpperCase());
+    const skillsText = skills.join('  •  ');
+    drawSectionTitle(L.skills, paragraphHeight(skillsText));
+    drawParagraph(skillsText);
+    if (highlightSection === "skills") drawHighlightBorder(startY, yPosition);
+  };
 
-    doc.setFont('Roboto', 'normal');
-    doc.setFontSize(FONTS.body);
-    doc.setTextColor(COLORS.bullet);
-
+  const renderLanguagesSection = () => {
+    const validLanguages = (cv.languages || []).filter(l => l.language?.trim());
+    if (validLanguages.length === 0) return;
+    const startY = yPosition;
     const langText = validLanguages
       .map(l => l.proficiency ? `${l.language} (${l.proficiency})` : l.language)
-      .join(' • ');
-    const langLines = getLines(langText, contentWidth);
-    langLines.forEach((line) => {
-      checkPageBreak(5.5);
-      doc.text(line, marginX, yPosition);
-      yPosition += 5.5;
-    });
-
+      .join('  •  ');
+    drawSectionTitle(L.languages, paragraphHeight(langText));
+    drawParagraph(langText);
     if (highlightSection === 'languages') drawHighlightBorder(startY, yPosition);
-  }
+  };
+
+  // Entry-level candidates lead with education and projects; experienced
+  // candidates lead with their work history.
+  const sections = cv.isEntryLevel
+    ? [renderEducationSection, renderProjectsSection, renderExperienceSection, renderLeadershipSection, renderCertificationsSection, renderSkillsSection, renderLanguagesSection]
+    : [renderExperienceSection, renderProjectsSection, renderEducationSection, renderCertificationsSection, renderLeadershipSection, renderSkillsSection, renderLanguagesSection];
+  sections.forEach(render => render());
 
   return doc;
 }

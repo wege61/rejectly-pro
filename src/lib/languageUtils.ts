@@ -66,7 +66,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Zertifizierungen & Kurse",
     leadership: "Führung & Aktivitäten",
     skills: "Fähigkeiten",
-    languages: "Sprachen"
+    languages: "Sprachen",
+    projects: "Projekte",
+    experience_only: "Berufserfahrung"
   },
   fr: {
     summary: "Résumé",
@@ -75,7 +77,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Certifications & Cours",
     leadership: "Leadership & Activités",
     skills: "Compétences",
-    languages: "Langues"
+    languages: "Langues",
+    projects: "Projets",
+    experience_only: "Expérience"
   },
   es: {
     summary: "Resumen",
@@ -84,7 +88,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Certificaciones y Cursos",
     leadership: "Liderazgo y Actividades",
     skills: "Habilidades",
-    languages: "Idiomas"
+    languages: "Idiomas",
+    projects: "Proyectos",
+    experience_only: "Experiencia"
   },
   it: {
     summary: "Riepilogo",
@@ -93,7 +99,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Certificazioni e Corsi",
     leadership: "Leadership e Attività",
     skills: "Competenze",
-    languages: "Lingue"
+    languages: "Lingue",
+    projects: "Progetti",
+    experience_only: "Esperienza"
   },
   pt: {
     summary: "Resumo",
@@ -102,7 +110,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Certificações e Cursos",
     leadership: "Liderança e Atividades",
     skills: "Habilidades",
-    languages: "Idiomas"
+    languages: "Idiomas",
+    projects: "Projetos",
+    experience_only: "Experiência"
   },
   nl: {
     summary: "Profiel",
@@ -111,7 +121,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Certificaten & Cursussen",
     leadership: "Leiderschap & Activiteiten",
     skills: "Vaardigheden",
-    languages: "Talen"
+    languages: "Talen",
+    projects: "Projecten",
+    experience_only: "Werkervaring"
   },
 
   hu: {
@@ -121,7 +133,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Tanúsítványok és Kurzusok",
     leadership: "Vezetés és Tevékenységek",
     skills: "Készségek",
-    languages: "Nyelvek"
+    languages: "Nyelvek",
+    projects: "Projektek",
+    experience_only: "Tapasztalat"
   },
   sr: {
     summary: "Rezime",
@@ -130,7 +144,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Sertifikati i Kursevi",
     leadership: "Liderstvo i Aktivnosti",
     skills: "Veštine",
-    languages: "Jezici"
+    languages: "Jezici",
+    projects: "Projekti",
+    experience_only: "Iskustvo"
   },
   ro: {
     summary: "Rezumat",
@@ -139,7 +155,9 @@ export const CV_HEADINGS: Record<string, Record<string, string>> = {
     certifications: "Certificări și Cursuri",
     leadership: "Leadership și Activități",
     skills: "Abilități",
-    languages: "Limbi"
+    languages: "Limbi",
+    projects: "Proiecte",
+    experience_only: "Experiență"
   }
 };
 

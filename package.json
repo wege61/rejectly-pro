@@ -71,6 +71,9 @@
     "typescript": "^5"
   },
   "pnpm": {
-    "onlyBuiltDependencies": []
+    "onlyBuiltDependencies": [],
+    "overrides": {
+      "styled-components>postcss": "8.5.28"
+    }
   }
 }

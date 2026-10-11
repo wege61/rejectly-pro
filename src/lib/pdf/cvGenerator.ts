@@ -53,6 +53,25 @@ export async function generateCVPDF(
   highlightSection?: string,
   options?: CVPDFOptions
 ): Promise<jsPDF> {
+  const normal = await renderCVPDF(cv, highlightSection, options, 1);
+  // A few lines spilling onto page 2 looks broken; tighten the spacing and
+  // keep the compact version if everything then fits on one page.
+  const pages = normal.doc.getNumberOfPages();
+  const pageHeight = normal.doc.internal.pageSize.getHeight();
+  if (pages === 2 && normal.endY < pageHeight * 0.35) {
+    const compact = await renderCVPDF(cv, highlightSection, options, 0.78);
+    if (compact.doc.getNumberOfPages() === 1) return compact.doc;
+  }
+  return normal.doc;
+}
+
+/** `density` scales vertical spacing (1 = normal, < 1 = tighter). */
+async function renderCVPDF(
+  cv: GeneratedCV,
+  highlightSection: string | undefined,
+  options: CVPDFOptions | undefined,
+  density: number
+): Promise<{ doc: jsPDF; endY: number }> {
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -83,11 +102,14 @@ export async function generateCVPDF(
     body: 9.5,
   };
 
+  // Line heights shrink less than gaps so text never overlaps.
+  const lineDensity = Math.max(density, 0.92);
   const SPACING = {
-    line: 4.4,       // between wrapped lines of the same paragraph/bullet
-    bullet: 5.2,     // from one bullet to the next
-    entryGap: 3.5,   // after each job/project/degree
-    row: 4.8,        // after a title row or subtitle row
+    line: 4.4 * lineDensity,    // between wrapped lines of the same paragraph/bullet
+    bullet: 5.2 * lineDensity,  // from one bullet to the next
+    entryGap: 3.5 * density,    // after each job/project/degree
+    row: 4.8 * lineDensity,     // after a title row or subtitle row
+    paragraph: 5 * lineDensity, // summary/skills/languages lines
   };
 
   const COLORS = {
@@ -154,9 +176,9 @@ export async function generateCVPDF(
   doc.setTextColor(COLORS.theme);
 
   if (cv.contact.name) {
-    yPosition += 8;
+    yPosition += 8 * density;
     doc.text(cv.contact.name, marginX, yPosition);
-    yPosition += 7;
+    yPosition += 7 * density;
   }
 
   doc.setFont("Roboto", "normal");
@@ -234,11 +256,11 @@ export async function generateCVPDF(
   if (highlightSection === "contact") drawHighlightBorder(headerStartY, yPosition);
 
   // Header Divider
-  yPosition += 3;
+  yPosition += 3 * density;
   doc.setDrawColor(COLORS.theme);
   doc.setLineWidth(0.5);
   doc.line(marginX, yPosition, pageWidth - marginX, yPosition);
-  yPosition += 4;
+  yPosition += 4 * density;
 
   /**
    * `firstBlockMM` is the height of whatever must sit directly under the title
@@ -253,11 +275,11 @@ export async function generateCVPDF(
 
     // Visual letter-spacing via the PDF char-space operator. Inserting spacer
     // characters instead makes ATS parsers read headings as "S U M M A R Y".
-    yPosition += 5;
+    yPosition += 5 * density;
     doc.setCharSpace(0.35);
     doc.text(title.toLocaleUpperCase(lang), marginX, yPosition);
     doc.setCharSpace(0);
-    yPosition += 2.5;
+    yPosition += 2.5 * density;
 
     const [r, g, b] = hexToRgb(COLORS.theme);
     doc.setDrawColor(
@@ -268,7 +290,7 @@ export async function generateCVPDF(
     doc.setLineWidth(0.2);
     doc.line(marginX, yPosition, pageWidth - marginX, yPosition);
 
-    yPosition += 5;
+    yPosition += 5 * density;
   };
 
   const drawSplitRow = (left: string, right: string | undefined, isBoldLeft: boolean, colorL: string, colorR: string, sizeL: number, sizeR: number) => {
@@ -327,7 +349,7 @@ export async function generateCVPDF(
     SPACING.row * 2 + (bullets?.length ? bulletHeight(bullets[0]) : 0);
 
   // A one-line paragraph (skills, languages) never needs more than a few lines.
-  const paragraphHeight = (text: string) => bodyLines(text, contentWidth).length * 5;
+  const paragraphHeight = (text: string) => bodyLines(text, contentWidth).length * SPACING.paragraph;
 
   // ==========================================
   // 2. SUMMARY
@@ -338,16 +360,16 @@ export async function generateCVPDF(
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
     const summaryLines = getLines(cv.summary, contentWidth);
-    drawSectionTitle(L.summary, Math.min(summaryLines.length, 3) * 5);
+    drawSectionTitle(L.summary, Math.min(summaryLines.length, 3) * SPACING.paragraph);
 
     doc.setFont("Roboto", "normal");
     doc.setFontSize(FONTS.body);
     doc.setTextColor(COLORS.bullet);
 
     summaryLines.forEach((line) => {
-      checkPageBreak(5);
+      checkPageBreak(SPACING.paragraph);
       doc.text(line, marginX, yPosition);
-      yPosition += 5;
+      yPosition += SPACING.paragraph;
     });
 
     yPosition += 1;
@@ -446,7 +468,7 @@ export async function generateCVPDF(
       checkPageBreak(SPACING.row * 2 + (edu.details ? SPACING.line : 0));
       const degreeLine = [edu.degree, edu.fieldOfStudy].filter(Boolean).join(", ");
 
-      drawSplitRow(degreeLine, edu.graduationDate || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
+      drawSplitRow(degreeLine, formatDateRange(edu.startDate, edu.graduationDate) || undefined, true, '#000000', COLORS.light, FONTS.title, FONTS.date);
       yPosition += SPACING.row;
 
       const institutionLine = [edu.institution, edu.location].filter(Boolean).join(', ');
@@ -545,9 +567,9 @@ export async function generateCVPDF(
     doc.setFontSize(FONTS.body);
     doc.setTextColor(COLORS.bullet);
     getLines(text, contentWidth).forEach((line) => {
-      checkPageBreak(5);
+      checkPageBreak(SPACING.paragraph);
       doc.text(line, marginX, yPosition);
-      yPosition += 5;
+      yPosition += SPACING.paragraph;
     });
   };
 
@@ -580,7 +602,7 @@ export async function generateCVPDF(
     : [renderExperienceSection, renderProjectsSection, renderEducationSection, renderCertificationsSection, renderLeadershipSection, renderSkillsSection, renderLanguagesSection];
   sections.forEach(render => render());
 
-  return doc;
+  return { doc, endY: yPosition };
 }
 
 async function convertToJPEG(dataUrl: string): Promise<string> {

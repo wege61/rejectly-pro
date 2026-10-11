@@ -192,8 +192,9 @@ export async function POST(request: NextRequest) {
       prompt,
       outputLanguage,
       cvText: report.cv.text,
+      // Only what the candidate told us. The job posting is not evidence of
+      // their experience, so it must not make a tool or number "sourced".
       otherSources: [
-        ...jobDocs.map((job: { text: string }) => job.text),
         ...Object.values(enrichedMetrics || {}),
         ...Object.values(academicDetails || {}).map(String),
         ...additionalTools,
@@ -204,6 +205,8 @@ export async function POST(request: NextRequest) {
     // Post-process CV for ATS compliance (normalize dates, clean special chars)
     const generatedCV = postProcessCVForATS(rawGeneratedCV);
     generatedCV.language = detectedLocale;
+    // Keep what the user confirmed, so a tool or metric in the CV can be traced later.
+    generatedCV.confirmedTools = additionalTools;
 
     // Safety net: ensure dates are localized for non-English CVs.
     // For English (detectedLocale === 'en'), this is a no-op (returns immediately).
@@ -228,9 +231,12 @@ export async function POST(request: NextRequest) {
     })), null, 2));
 
     // Save generated CV to database (always succeeds)
-    const updateData: { generated_cv: any } = {
+    const updateData: { generated_cv: any; user_provided_metrics?: Record<string, string> } = {
       generated_cv: generatedCV,
     };
+    if (userProvidedMetrics && Object.keys(userProvidedMetrics).length > 0) {
+      updateData.user_provided_metrics = userProvidedMetrics;
+    }
 
     console.log('💾 Saving to database:', {
       reportId,

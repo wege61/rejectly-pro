@@ -54,6 +54,7 @@ export function localizeCVDates(cv: GeneratedCVData, locale: string): void {
   if (cv.education) {
     for (const edu of cv.education) {
       if (edu.graduationDate) edu.graduationDate = localizeDateString(edu.graduationDate, monthMap, presentText);
+      if (edu.startDate) edu.startDate = localizeDateString(edu.startDate, monthMap, presentText);
     }
   }
 

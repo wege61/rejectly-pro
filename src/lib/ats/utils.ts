@@ -235,27 +235,9 @@ export function expandSkillAbbreviations(skills: string[]): string[] {
       expanded = true;
     }
 
-    // Method 2: Skill starts with abbreviation (e.g., "REST APIs" -> "Representational State Transfer (REST) APIs")
-    if (!expanded) {
-      for (const abbr of Object.keys(ABBREVIATION_EXPANSIONS)) {
-        if (skill.startsWith(abbr + " ") && !alreadyExpanded.has(abbr)) {
-          const remainder = skill.substring(abbr.length);
-          expandedSkills.push(ABBREVIATION_EXPANSIONS[abbr] + remainder);
-          alreadyExpanded.add(abbr);
-          expanded = true;
-          break;
-        }
-      }
-    }
-
-    // Method 3: Skill contains abbreviation anywhere - use expandAbbreviations
-    if (!expanded) {
-      const expandedText = expandAbbreviations(skill);
-      if (expandedText !== skill) {
-        expandedSkills.push(expandedText);
-        expanded = true;
-      }
-    }
+    // Only a skill that IS an abbreviation is expanded ("SQL"). Expanding inside
+    // longer names produced wrong product names ("Power Business Intelligence
+    // (BI)") and unreadable ones ("Strengths, Weaknesses, ... (SWOT) analizi").
 
     // No expansion needed
     if (!expanded) {
@@ -471,6 +453,7 @@ export interface GeneratedCVData {
     institution: string;
     location: string;
     graduationDate: string;
+    startDate?: string;
     details?: string;
   }>;
   skills: {
@@ -505,6 +488,8 @@ export interface GeneratedCVData {
   /** Locale the CV is written in (e.g. "en", "tr"); used for PDF headings. */
   language?: string;
   colorTemplate?: string;
+  /** Tools the user confirmed having (tool suggestion step). */
+  confirmedTools?: string[];
 }
 
 // Proficiency values the model uses when the CV gave none; better shown as nothing.
@@ -575,6 +560,7 @@ export function postProcessCVForATS(cv: GeneratedCVData): GeneratedCVData {
         degree: cleanSpecialCharacters(edu.degree),
         institution: cleanSpecialCharacters(edu.institution),
         location: cleanSpecialCharacters(edu.location),
+        startDate: normalizeDateFormat(edu.startDate),
         graduationDate: graduationDate === "Present" ? "" : graduationDate,
         details: edu.details ? cleanSpecialCharacters(edu.details) : undefined,
       };

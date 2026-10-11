@@ -23,7 +23,7 @@ const CV_SCHEMA = obj({
   summary: str,
   experience: { type: "array", items: obj({ title: str, company: str, location: str, startDate: str, endDate: str, bullets }) },
   projects: nullableList(obj({ name: str, role: nullableStr, url: nullableStr, startDate: str, endDate: str, bullets })),
-  education: { type: "array", items: obj({ degree: str, institution: str, location: str, graduationDate: str, details: nullableStr }) },
+  education: { type: "array", items: obj({ degree: str, institution: str, location: str, startDate: str, graduationDate: str, details: nullableStr }) },
   skills: obj({ technical: { type: "array", items: str }, soft: { type: "array", items: str } }),
   certifications: nullableList(obj({ name: str, issuer: str, date: str })),
   languages: nullableList(obj({ language: str, proficiency: str })),
@@ -48,11 +48,35 @@ function cvBodyText(cv: GeneratedCVData): string {
   return JSON.stringify({ ...cv, contact: undefined });
 }
 
+// Named tools and products. A model asked to tailor a CV is tempted to add the
+// ones the job posting asks for (e.g. "Power BI"), so any of these in the output
+// must also appear in the CV, the user's answers or their confirmed tools.
+// Only concrete product names: generic concepts ("testing") are too ambiguous.
+const KNOWN_TOOLS = [
+  "power bi", "tableau", "spss", "sas", "stata", "minitab", "looker", "qlik", "matlab", "alteryx",
+  "sap", "oracle", "salesforce", "hubspot", "zendesk", "workday", "quickbooks", "netsuite",
+  "jira", "confluence", "asana", "trello", "notion", "figma", "sketch", "photoshop", "illustrator",
+  "indesign", "autocad", "solidworks", "catia", "revit", "primavera",
+  "react", "angular", "vue", "next.js", "node.js", "django", "flask", "spring boot", "laravel",
+  "docker", "kubernetes", "terraform", "jenkins", "aws", "azure", "google cloud", "gcp",
+  "postgresql", "mysql", "mongodb", "redis", "snowflake", "databricks", "bigquery", "airflow",
+  "spark", "hadoop", "tensorflow", "pytorch", "scikit-learn", "pandas", "numpy",
+  "typescript", "javascript", "python", "java", "c#", "golang", "rust", "kotlin", "swift", "php",
+  "google analytics", "ga4", "google ads", "meta ads", "semrush", "ahrefs",
+];
+
+function mentions(text: string, tool: string): boolean {
+  const escaped = tool.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(?<![\\p{L}\\p{N}])${escaped}(?![\\p{L}\\p{N}])`, "iu").test(text);
+}
+
 export interface GroundingIssues {
   /** Numbers in the original CV that the output lost. */
   missing: string[];
   /** Numbers in the output that no source mentions. */
   invented: string[];
+  /** Named tools in the output that no source mentions. */
+  inventedTools: string[];
 }
 
 export function findGroundingIssues(cvText: string, otherSources: string[], cv: GeneratedCVData): GroundingIssues {
@@ -64,7 +88,11 @@ export function findGroundingIssues(cvText: string, otherSources: string[], cv: 
   const original = [...new Set(numbersIn(cvText))].filter((n) => isComparable(n) && !contactNumbers.has(n));
   const missing = original.filter((n) => !outputNumbers.has(n));
   const invented = [...outputNumbers].filter((n) => isComparable(n) && !sourceNumbers.has(n));
-  return { missing, invented };
+
+  const body = cvBodyText(cv);
+  const sources = [cvText, ...otherSources].join("\n");
+  const inventedTools = KNOWN_TOOLS.filter((tool) => mentions(body, tool) && !mentions(sources, tool));
+  return { missing, invented, inventedTools };
 }
 
 // Strict mode returns null for absent optional fields; the rest of the app expects them absent.
@@ -99,7 +127,8 @@ export async function generateOptimizedCV(params: {
 
   const first = await complete();
   const issues = findGroundingIssues(params.cvText, params.otherSources, first.cv);
-  if (issues.missing.length === 0 && issues.invented.length === 0) {
+  const count = (i: GroundingIssues) => i.missing.length + i.invented.length + i.inventedTools.length;
+  if (count(issues) === 0) {
     return { cv: first.cv, issues, repaired: false };
   }
 
@@ -109,6 +138,8 @@ export async function generateOptimizedCV(params: {
       `These numbers from the original CV are missing from your CV: ${issues.missing.join(", ")}. Find the original bullets that contain them and restore those facts (keep their exact wording of the numbers and units).`,
     issues.invented.length > 0 &&
       `These numbers appear in your CV but in none of the inputs: ${issues.invented.join(", ")}. Remove them (rewrite the sentence without the number) unless they are a direct, exact restatement of an input fact.`,
+    issues.inventedTools.length > 0 &&
+      `These tools appear in your CV but the candidate never mentioned them: ${issues.inventedTools.join(", ")}. Remove them from the skills list and every sentence (the job posting asking for a tool is not evidence the candidate used it).`,
   ].filter(Boolean).join("\n");
 
   messages.push(
@@ -120,8 +151,7 @@ export async function generateOptimizedCV(params: {
     const second = await complete();
     const remaining = findGroundingIssues(params.cvText, params.otherSources, second.cv);
     // Keep whichever version has fewer problems.
-    const score = (i: GroundingIssues) => i.missing.length + i.invented.length;
-    if (score(remaining) <= score(issues)) {
+    if (count(remaining) <= count(issues)) {
       return { cv: second.cv, issues: remaining, repaired: true };
     }
   } catch (err) {

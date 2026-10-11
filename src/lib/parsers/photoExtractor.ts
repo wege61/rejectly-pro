@@ -108,8 +108,15 @@ function dictNumber(dict: string, key: string): number | undefined {
   return m ? Number(m[1]) : undefined;
 }
 
-function decodePdfImage(dict: string, data: Buffer): Candidate | null {
+function decodePdfImage(dict: string, encoded: Buffer): Candidate | null {
   const filters = [...(dict.match(/\/Filter\s*(\[[^\]]*\]|\/\w+)/)?.[1] ?? "").matchAll(/\/(\w+)/g)].map((m) => m[1]);
+
+  // Text encodings that wrap the real image filter, e.g. ReportLab writes
+  // [ /ASCII85Decode /FlateDecode ].
+  let data = encoded;
+  while (filters[0] === "ASCII85Decode" || filters[0] === "ASCIIHexDecode") {
+    data = filters.shift() === "ASCII85Decode" ? decodeAscii85(data) : decodeAsciiHex(data);
+  }
 
   if (filters.length === 1 && filters[0] === "DCTDecode") {
     const { width, height } = jpegDimensions(data);
@@ -117,7 +124,8 @@ function decodePdfImage(dict: string, data: Buffer): Candidate | null {
     return { dataUrl: `data:image/jpeg;base64,${data.toString("base64")}`, width, height, area: width * height };
   }
 
-  if (filters.length !== 1 || filters[0] !== "FlateDecode") return null; // JPX, CCITT, etc.
+  // Flate-compressed or uncompressed pixels; JPX, CCITT, etc. aren't supported.
+  if (filters.length > 1 || (filters.length === 1 && filters[0] !== "FlateDecode")) return null;
   if (/\/ColorSpace\s*\[\s*\/Indexed/.test(dict)) return null;
 
   const width = dictNumber(dict, "Width");
@@ -126,7 +134,7 @@ function decodePdfImage(dict: string, data: Buffer): Candidate | null {
   // Bail out before inflating anything we'd reject anyway.
   if (Math.min(width, height) < MIN_SIDE || width * height > MAX_AREA) return null;
 
-  const raw = zlib.inflateSync(data);
+  const raw = filters.length === 1 ? zlib.inflateSync(data) : data;
   const predictor = dictNumber(dict, "Predictor") ?? 1;
   let channels: number;
   let rows: Buffer;
@@ -151,6 +159,39 @@ function decodePdfImage(dict: string, data: Buffer): Candidate | null {
 
   const png = encodePng(width, height, channels === 3 ? 2 : 0, rows);
   return { dataUrl: `data:image/png;base64,${png.toString("base64")}`, width, height, area: width * height };
+}
+
+function decodeAscii85(input: Buffer): Buffer {
+  const text = input.toString("latin1").replace(/\s/g, "").replace(/^<~/, "");
+  const end = text.indexOf("~>");
+  const body = end >= 0 ? text.slice(0, end) : text;
+  const out: number[] = [];
+  let group: number[] = [];
+  const flush = (count: number) => {
+    let value = 0;
+    for (let i = 0; i < 5; i++) value = value * 85 + (group[i] ?? 84);
+    const bytes = [(value >>> 24) & 255, (value >>> 16) & 255, (value >>> 8) & 255, value & 255];
+    out.push(...bytes.slice(0, count));
+  };
+  for (const ch of body) {
+    if (ch === "z" && group.length === 0) {
+      out.push(0, 0, 0, 0);
+      continue;
+    }
+    group.push(ch.charCodeAt(0) - 33);
+    if (group.length === 5) {
+      flush(4);
+      group = [];
+    }
+  }
+  if (group.length > 0) flush(group.length - 1);
+  return Buffer.from(out);
+}
+
+function decodeAsciiHex(input: Buffer): Buffer {
+  let hex = input.toString("latin1").split(">")[0].replace(/\s/g, "");
+  if (hex.length % 2) hex += "0";
+  return Buffer.from(hex, "hex");
 }
 
 function addNoneFilter(raw: Buffer, stride: number, height: number): Buffer {

@@ -6,10 +6,10 @@
 // Language-specific writing conventions for CV text.
 const LANGUAGE_STYLE: Record<string, string> = {
   English: `- Bullets start with a past-tense action verb ("Led", "Built"); the current role may use present tense.
-- Summary: no pronouns ("Product manager with 6 years...").`,
+- Summary: implied subject, no pronouns, but real sentences with verbs that flow into each other ("Product manager with 6 years in payments. Led the checkout redesign that added $12M in annual revenue, and now looks to bring that experience to a larger platform.").`,
   Turkish: `- Bullets use first-person past tense without a pronoun ("Yönettim", "Geliştirdim", "Hazırladım") or a noun phrase ("Kampanya yönetimi ve bütçe planlaması"). Never third person ("yönetti", "geliştirdi").
-- Summary: noun-phrase style with no conjugated third-person verbs ("6 yıllık deneyime sahip dijital pazarlama uzmanı. Aylık 400.000 TL bütçeli kampanya yönetimi ve ROAS optimizasyonu deneyimi."). Never "yönetti", "artırdı".
-- Use Turkish number formatting as in the original (400.000 TL, %140, 3,2).`,
+- Summary: first person singular without the pronoun, in natural flowing sentences, the way a person introduces themselves ("Endüstri mühendisliği son sınıf öğrencisiyim. LC Waikiki'deki stajımda üretim hattında süreç haritalama ve zaman etüdü yaparak yalın üretim çalışmalarına katkı sağladım. Veriyi Excel ve SAP ile raporlamaya dönüştürme deneyimimi strateji ve kalite alanında geliştirmek istiyorum."). Never third person ("yönetti", "artırdı") and never a chain of noun phrases ("... deneyimi. ... kullanımı; ... çalışmaları.").
+- Use Turkish number formatting (400.000 TL, %140, 3,2), also for numbers from the user's answers ("5% - 10%" → "%5 - %10").`,
   German: `- Bullets use noun style or past tense without pronouns ("Leitung eines Teams von 8 Entwicklern", "Entwickelte ...").`,
 };
 
@@ -73,7 +73,7 @@ Never trade a higher priority for a lower one.
 - Never add a skill or keyword because the job asks for it. A requirement the candidate doesn't meet stays unmet.
 - Use the job posting's vocabulary only for things the candidate actually did (CV "state handling" + job "state management" → "state management").
 - Match verbs to the real scope: "helped/assisted" must not become "led/spearheaded"; nobody "architected" or "pioneered" anything the CV doesn't say they led.
-- "X years of experience" claims must be computed from the dates of RELEVANT roles. If unsure, leave the number out. Unrelated jobs (e.g. barista for a data role) don't count.
+- "X years of experience" claims must be computed from the dates of RELEVANT roles, counting "Present" as today (${new Date().toISOString().slice(0, 7)}). If unsure, leave the number out. Unrelated jobs (e.g. barista for a data role) don't count.
 - Unrelated jobs stay honest and short: never add target-field words (design, data, marketing) to a cashier or barista role.
 
 ## 2. Completeness rules
@@ -88,7 +88,7 @@ Never trade a higher priority for a lower one.
 - skills.technical: every hard skill and tool from the original CV (plus user-confirmed tools), most job-relevant first. No padding with generic phrases ("Bug Fixing", "Team Meetings", "Code Writing"). skills.soft: at most 4 that the CV supports.
 
 ## 3. Quality rules
-- Summary: 2-4 sentences. Lead with the role and real experience, then 2-3 concrete achievements from the CV, then the skills most relevant to the job. No clichés ("passionate", "hardworking", "eager to", "team player", "results-driven"), no first person.
+- Summary: 2-4 sentences that read like a person wrote them, not a keyword list: who they are (with years of relevant experience when the dates show it), what they have concretely done, and what they bring to this kind of role. Name the 1-2 strongest results from the CV with their numbers exactly as written ($12M, 40,000+ merchants, %140, 400.000 TL); if the CV has no numbers, name the specific work instead. Abstract filler is as bad as a keyword list ("turned decisions into measurable results", "bringing technical depth", "ölçülebilir sonuçlara bağladım", "değer katmayı hedefliyorum"). Use verbs and connect the ideas; never string noun phrases or semicolon lists together, and don't cram every skill in (skills have their own section). No clichés ("passionate", "hardworking", "eager to", "team player", "results-driven"). Grammatical person follows the language conventions below.
 - Bullets: one idea each, specific, at most ~150 characters, complete sentences. Lead with what was done and its result. Put the bullets most relevant to the target job first within each role.
 - Rewrite EVERY bullet in professional language. Casual or vague phrasing from the original must not survive: improve the wording, keep the facts.
   "Fixed bugs when people complained" → "Resolved user-reported bugs"

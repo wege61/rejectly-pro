@@ -536,7 +536,7 @@ export function generateATSOptimizationPrompt(
     ...atsResult.categories.readability.issues.map(i => ({ ...i, category: 'readability' })),
   ];
 
-  return `You are an ATS bypass specialist. Your ONLY goal is to transform this junior CV to achieve a PERFECT 95-100% ATS compatibility score by leveraging every possible academic/project experience.
+  return `You are an expert CV writer. Your goal is to fix every ATS issue found in this CV and present the candidate's real experience as clearly as possible, without adding anything they did not state.
 
 ================================================================================
 GROUNDING RULES (HIGHEST PRIORITY — override all other instructions)
@@ -618,7 +618,7 @@ ${atsResult.quickWins.map((win, i) => `✓ ${i + 1}. ${win}`).join('\n')}
 
 FORMAT (Target: 25/25 points):
 ✅ Single-column layout ONLY
-✅ Standard ASCII characters (no emojis, special chars)
+✅ No emojis or decorative symbols (keep accented letters and currency symbols like £, €, ₺)
 ✅ Standard bullet points (• or -) ONLY
 ✅ Consistent spacing and indentation
 ✅ No tables, columns, or graphics
@@ -677,10 +677,9 @@ RULE: In skills section, list BOTH forms: "AWS (Amazon Web Services)"
 RULE: In experience bullets, expand on FIRST use, then use short form
 
 🚨 CRITICAL: HARD SKILLS MUST DOMINATE!
-- Minimum 10-15 hard/technical skills
+- List EVERY hard/technical skill and tool the CV mentions (including ones only mentioned in bullets)
 - Maximum 4-5 soft skills
-- Hard to soft ratio: 70/30 or better
-- If original CV has < 10 hard skills, ADD relevant ones for their industry
+- NEVER add a skill the CV doesn't mention
 
 READABILITY (Target: 20/20 points):
 ✅ 400-650 words total (OPTIMAL for 1 page)
@@ -688,8 +687,7 @@ READABILITY (Target: 20/20 points):
 🚨 BULLET LENGTH RULE (STRICTLY ENFORCED):
 - Maximum 120 characters per bullet (count them!)
 - Maximum 2 lines when rendered
-- ONE metric per bullet (don't cram multiple achievements)
-- If a bullet is > 120 chars, SPLIT IT into 2 bullets!
+- If a bullet is > 120 chars, SPLIT IT into 2 complete bullets!
 
 ✅ Each bullet is ONE concise sentence - no run-on sentences!
 ✅ Clear white space between sections
@@ -703,22 +701,19 @@ FORMULA: [Power Verb] + [Specific Action] + [Metric/Result OR Qualitative Scope]
 TRANSFORM EXAMPLES (Keep bullets concise - max 120 characters!):
 If metrics exist in original CV:
 ❌ "Worked on sales"
-✅ "Generated $250K+ revenue by closing 30+ enterprise deals"
+✅ "Generated $250K+ revenue by closing 30+ enterprise deals" (only because the CV states $250K and 30 deals)
 
 If NO metrics exist in original CV (DO NOT FABRICATE):
 ❌ "Responsible for customer service"
-✅ "Proactively managed complex inquiries and optimized resolution workflows"
+✅ "Resolved customer inquiries by phone and email"
 
-❌ "Managed team"
-✅ "Led cross-functional team, delivering multiple strategic projects on-time"
+❌ "Managed team" (original says 4 people)
+✅ "Managed a team of 4"
 
 ❌ "Did marketing"
-✅ "Executed multi-channel campaigns, significantly expanding audience reach"
+✅ "Ran the company's social media and email campaigns" (only channels the CV names)
 
-❌ "Helped with projects"
-✅ "Spearheaded key initiatives, resulting in major efficiency gains"
-
-CRITICAL: Keep bullets SHORT and PUNCHY. One metric (if known) per bullet is enough! If NO metrics exist, focus on "How" and "Scope" (enterprise-grade, cross-functional) rather than hallucinating numbers!
+CRITICAL: Keep bullets SHORT and SPECIFIC. If NO metrics exist, describe what was done and for whom, using only details from the CV. Never add vague intensifiers ("significantly", "major", "enterprise-grade") or outcomes the CV doesn't state.
 
 POWER VERBS TO USE (START EVERY BULLET WITH ONE OF THESE):
 Spearheaded, Orchestrated, Pioneered, Accelerated, Transformed, Championed,
@@ -740,10 +735,9 @@ DETECTION SIGNALS:
 
 VERB RULES BY SENIORITY:
 
-📌 SENIOR/LEAD ROLES → ONLY POWER VERBS:
-✅ Use: Led, Spearheaded, Orchestrated, Architected, Directed, Transformed, Pioneered
-✅ Use: Established, Cultivated, Championed, Maximized, Revolutionized
-🚫 NEVER use: Assisted, Participated, Helped, Supported, Collaborated with seniors
+📌 SENIOR/LEAD ROLES → STRONG VERBS THAT MATCH WHAT THE CV SAYS:
+✅ Use: Led, Directed, Owned, Built, Launched (only for work the CV says they led or owned)
+⚠️ If the CV says they assisted or supported, keep that meaning
 
 📌 MID-LEVEL ROLES → MOSTLY POWER VERBS:
 ✅ Use: Developed, Implemented, Managed, Executed, Delivered, Created, Built
@@ -754,24 +748,20 @@ VERB RULES BY SENIORITY:
 ✅ Use: Contributed to, Collaborated on, Developed, Built, Implemented
 ✅ Use: Supported (senior team members in...), Assisted (in delivering...)
 ✅ Use: Gained expertise in, Acquired proficiency in
-✅ Show learning: "Contributed to 5+ projects under senior guidance, reducing bug rate by 20%"
 ⚠️ Transform "Helped" to "Collaborated with senior engineers to..."
 ⚠️ Transform "Participated" to "Contributed to team initiative that..."
 
 EXAMPLES BY SENIORITY:
 
-SENIOR (5+ yrs, Lead title):
-❌ "Assisted the team with architecture decisions"
-✅ "Architected microservices platform handling 10M+ daily requests"
+(Numbers below are examples only; use numbers from the CV or none at all.)
+SENIOR (CV: "led architecture of the payments platform, 10M daily requests"):
+✅ "Led architecture of the payments platform handling 10M daily requests"
 
-MID-LEVEL (2-5 yrs):
-❌ "Helped build features"
-✅ "Developed 15+ features, increasing user engagement by 40%"
+MID-LEVEL (CV: "helped build features for the mobile app"):
+✅ "Developed features for the company's mobile app"
 
-JUNIOR (0-2 yrs):
-❌ "Helped with code" (too vague)
-✅ "Collaborated with senior engineers to deliver 8 features, reducing deployment time by 25%"
-✅ "Contributed to team codebase with 50+ pull requests, maintaining 95% approval rate"
+JUNIOR (CV: "helped with code"):
+✅ "Contributed code to the team's web application"
 
 🚫 UNIVERSAL BANNED VERBS (ALL SENIORITY LEVELS):
 - "Was responsible for" → Use "Managed" or "Owned"
@@ -787,25 +777,15 @@ These are OK for Junior/Mid but NOT for Senior:
 - "Participated" → Junior OK: "Participated in agile ceremonies, contributing..."
 - "Collaborated" → All levels OK (even seniors collaborate!)
 
-⚠️ IMPORTANT: Even for juniors, ALWAYS add metrics and outcomes!
-❌ "Assisted with testing"
-✅ "Assisted QA team in testing 3 major releases, identifying 25+ bugs pre-launch"
+⚠️ IMPORTANT: Add metrics and outcomes ONLY when the CV or the user's answers provide them. Never estimate or invent a number.
 
 =============================================================================
 🎯 SKILLS SECTION REQUIREMENTS (STRICTLY ENFORCED)
 =============================================================================
 
-MINIMUM REQUIREMENTS:
-- 10-15 Technical/Hard Skills (MINIMUM!)
+REQUIREMENTS:
+- Every hard skill/tool the CV mentions (no additions)
 - 4-5 Soft Skills (MAXIMUM!)
-- If original CV lacks skills, ADD relevant ones for their industry
-
-HARD SKILLS EXAMPLES BY ROLE:
-- Software: Python, JavaScript, React, Node.js, AWS, Docker, MongoDB, PostgreSQL, Git, CI/CD, Kubernetes, REST APIs
-- Marketing: Google Analytics, SEO, SEM, Facebook Ads, HubSpot, Salesforce, Content Marketing, Email Marketing, A/B Testing
-- Sales: Salesforce, CRM Systems, Lead Generation, Pipeline Management, Contract Negotiation, Account Management
-- Customer Service: Zendesk, Intercom, CRM Tools, Ticketing Systems, Live Chat, Help Desk Software
-- Finance: Excel, QuickBooks, Financial Modeling, Budgeting, Forecasting, SAP, Bloomberg Terminal
 
 SOFT SKILLS (Keep to 4-5 ONLY):
 Leadership, Communication, Problem Solving, Team Collaboration, Adaptability
@@ -944,7 +924,7 @@ Include 10-15 changes minimum!
 □ 3-5 bullets per job
 □ 10-15 HARD/Technical skills listed (MINIMUM 10!)
 □ 4-5 SOFT skills ONLY (MAXIMUM 5!)
-□ Skills properly split: technical array has 10+ items, soft array has 4-5 items
+□ Skills properly split: technical array has every hard skill from the CV (none added), soft array has 4-5 items
 □ Total word count: 400-650
 □ NO pipe (|) characters ANYWHERE in the CV
 □ ALL identified issues are fixed
@@ -960,7 +940,7 @@ Include 10-15 changes minimum!
 5. NEVER use all-caps for section headers - ATS systems penalize this!
 6. Bullets must be SHORT and PUNCHY (max 120 chars) - if longer, SPLIT into 2 bullets!
 7. Every bullet needs ONE clear metric (not 3 metrics in one bullet!)
-8. MINIMUM 10 hard skills - if original CV lacks them, ADD relevant ones!
+8. Include every hard skill the CV mentions - NEVER add skills it doesn't mention
 9. MAXIMUM 5 soft skills - cut them down if too many!
 10. The optimized CV should score 90-95%. Aim for excellence, not perfection!
 

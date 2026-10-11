@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       model: AI_MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.8,
-      max_tokens: 3000, // Increased for structured response
+      max_completion_tokens: 3000, // Increased for structured response
       response_format: { type: "json_object" },
     });
 

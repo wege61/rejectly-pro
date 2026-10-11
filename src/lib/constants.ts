@@ -95,7 +95,7 @@ export const ANALYSIS_LIMITS = {
 
 // AI Model Configuration
 export const AI_CONFIG = {
-  model: "gpt-4o-mini",
+  model: process.env.OPENAI_MODEL || "gpt-5.4-mini",
   temperature: 0.7,
   maxTokens: 2000,
   freeSummaryMaxLength: 450,

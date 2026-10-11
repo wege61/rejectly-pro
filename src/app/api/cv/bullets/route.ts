@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { openai, AI_MODEL } from '@/lib/ai/client';
 
 export async function POST(req: Request) {
   try {
@@ -36,31 +37,16 @@ Return your response ONLY as a JSON object in this exact exact format:
 }
 `;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [{ role: 'system', content: systemPrompt }],
+    const data = await openai.chat.completions.create({
+        model: AI_MODEL,
+        messages: [{ role: 'system' as const, content: systemPrompt }],
         temperature: 0.7,
         response_format: { type: "json_object" }
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error("OpenAI API Error:", errorData);
-      return NextResponse.json({ error: "OpenAI API Error" }, { status: 500 });
-    }
-
-    const data = await response.json();
+      });
     let bullets: string[] = [];
     
     try {
-      const parsed = JSON.parse(data.choices[0].message.content);
+      const parsed = JSON.parse(data.choices[0].message.content || "{}");
       bullets = parsed.bullets || [];
     } catch (e) {
       console.error("Parse Error:", e);

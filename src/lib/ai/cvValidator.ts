@@ -21,7 +21,7 @@ export async function validateCVContent(
     const response = await openai.chat.completions.create({
       model: AI_MODEL,
       temperature: 0,
-      max_tokens: 200,
+      max_completion_tokens: 200,
       messages: [
         {
           role: "system",

@@ -1,4 +1,4 @@
-import { openai } from "./client";
+import { openai, AI_MODEL } from "./client";
 
 export async function isValidJobDescription(text: string): Promise<boolean> {
   try {
@@ -14,10 +14,10 @@ ${text.substring(0, 1000)} // Only check the first 1000 chars to save tokens
     // We use mini here because it's an extremely simple binary classification task
     // and we want it to be as fast and cheap as possible.
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: AI_MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0,
-      max_tokens: 2,
+      max_completion_tokens: 5,
     });
 
     const answer = response.choices[0]?.message?.content?.trim().toUpperCase();

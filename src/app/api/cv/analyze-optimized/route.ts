@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
       model: AI_MODEL,
       messages: [{ role: "user", content: scoreBreakdownPrompt }],
       temperature: 0.2, // Very low for consistent, deterministic scoring
-      max_tokens: 4000,
+      max_completion_tokens: 4000,
       response_format: { type: "json_object" },
     });
 
@@ -272,7 +272,7 @@ export async function POST(request: NextRequest) {
         model: AI_MODEL,
         messages: [{ role: "user", content: breakdownPrompt }],
         temperature: 0.4,
-        max_tokens: 2500,
+        max_completion_tokens: 2500,
         response_format: { type: "json_object" },
       });
 

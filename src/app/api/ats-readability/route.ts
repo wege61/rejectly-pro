@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       model: AI_MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3,
-      max_tokens: 1200,
+      max_completion_tokens: 1200,
       response_format: { type: "json_object" },
     });
 

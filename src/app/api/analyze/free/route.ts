@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       model: AI_MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.2, // Very low temperature for deterministic, consistent scoring
-      max_tokens: 4000, // Enough room for detailed breakdown without truncation
+      max_completion_tokens: 4000, // Enough room for detailed breakdown without truncation
       response_format: { type: "json_object" },
     });
 

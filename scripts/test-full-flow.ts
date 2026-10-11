@@ -69,10 +69,10 @@ async function testFullFlow() {
   const prompt = generateATSOptimizationPrompt(testCV, fakeAtsResult);
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: process.env.OPENAI_MODEL || "gpt-5.4-mini",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.4,
-    max_tokens: 4000,
+    max_completion_tokens: 4000,
     response_format: { type: "json_object" },
   });
 

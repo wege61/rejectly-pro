@@ -486,7 +486,7 @@ async function handleAIBasedATSCheck(cvText: string): Promise<NextResponse> {
       model: AI_MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3, // Low temperature for consistent scoring
-      max_tokens: 3000,
+      max_completion_tokens: 3000,
       response_format: { type: "json_object" },
     });
 

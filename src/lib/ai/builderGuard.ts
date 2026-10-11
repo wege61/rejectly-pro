@@ -7,15 +7,15 @@ import { createClient } from "@/lib/supabase/server";
  * download needs an account), so without limits anyone could use them as a
  * free proxy to our OpenAI key. Cap request size and requests per hour.
  *
- * The limiter is in-memory, so it is per server instance: it stops casual
- * abuse, not a determined distributed attacker.
+ * Counts are shared across instances via the database (see lib/rate-limit),
+ * falling back to per-instance memory if it is unavailable.
  */
 
 const MAX_BODY_CHARS = 20_000;
 const LIMIT_PER_HOUR_SIGNED_OUT = 30;
 const LIMIT_PER_HOUR_SIGNED_IN = 150;
 
-const limiter = rateLimit({ interval: 60 * 60 * 1000, uniqueTokenPerInterval: 2000 });
+const limiter = rateLimit({ name: "builder-ai", interval: 60 * 60 * 1000, uniqueTokenPerInterval: 2000 });
 
 export async function guardBuilderAIRequest<T = Record<string, unknown>>(
   req: Request

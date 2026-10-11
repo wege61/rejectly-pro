@@ -3,6 +3,7 @@ import rateLimit from "@/lib/rate-limit";
 import { isValidJobDescription } from "@/lib/ai/validator";
 
 const limiter = rateLimit({
+  name: "demo-analyze",
   interval: 60 * 60 * 1000, // 1 hour
   uniqueTokenPerInterval: 500,
 });

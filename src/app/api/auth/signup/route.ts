@@ -6,6 +6,7 @@ import { verifyTurnstileToken } from "@/lib/validations";
 import rateLimit from "@/lib/rate-limit";
 
 const limiter = rateLimit({
+  name: "signup",
   interval: 15 * 60 * 1000, // 15 minutes
 });
 

@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { openai, AI_MODEL } from '@/lib/ai/client';
+import { guardBuilderAIRequest } from '@/lib/ai/builderGuard';
 
 export async function POST(req: Request) {
   try {
-    const { experience = [], education = [], certifications = [] } = await req.json();
+    const guard = await guardBuilderAIRequest(req);
+    if ("response" in guard) return guard.response;
+    const { experience = [], education = [], certifications = [] } = guard.body as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
@@ -27,7 +30,7 @@ export async function POST(req: Request) {
 Based on the following user background:
 ${finalBackgroundText}
 
-Generate highly relevant skills for this person grouped by where they most likely developed them (Experience, Education, Certifications).
+Suggest skills this person can credibly list, grouped by where they developed them (Experience, Education, Certifications). Only suggest skills that the background states or that the described work clearly required (e.g. "built React dashboards" → React, JavaScript). Never suggest a tool the background gives no evidence for.
 CRITICAL RULES:
 1. DO NOT use generic fluff like "Hardworker" or "Team Player". 
 2. Use professional, ATS-optimized resume keywords.
@@ -37,7 +40,7 @@ CRITICAL RULES:
   "educationSkills": ["Skill 3", "Skill 4"],
   "certificationSkills": ["Skill 5", "Skill 6"]
 }
-If the user did not provide Experience, Education, or Certifications, leave that specific array empty. Total skills across all categories should be around 12-15.
+If the user did not provide Experience, Education, or Certifications, leave that specific array empty. Return at most 15 skills in total; fewer is fine when the background is short.
 4. Do not include markdown, explanations, or lists outside the JSON.`;
 
     const data = await openai.chat.completions.create({

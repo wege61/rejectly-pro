@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { openai, AI_MODEL } from '@/lib/ai/client';
+import { guardBuilderAIRequest } from '@/lib/ai/builderGuard';
 
 export async function POST(req: Request) {
   try {
-    const { text, role, company } = await req.json();
+    const guard = await guardBuilderAIRequest(req);
+    if ("response" in guard) return guard.response;
+    const { text, role, company } = guard.body as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     if (!text) {
       return NextResponse.json({ error: "Text is required" }, { status: 400 });
@@ -21,7 +24,7 @@ The user has written a rough draft of a resume bullet point ${context}.
 Your job is to rewrite this rough draft into a SINGLE highly professional, ATS-optimized bullet point using strong action verbs.
 
 CRITICAL RULES:
-1. **NEW GRAD PIVOT**: The user is likely a student or new grad trying to bypass ATS filters. If their draft sounds like a student (e.g., "I made a website for a class", "We used React in our group project"), completely strip away the student terminology. Reframe it as professional project experience (e.g., "Engineered a full-stack React application..."). Hide all junior-level tells.
+1. **STUDENT WORK**: If the draft describes class or group work (e.g., "I made a website for a class", "We used React in our group project"), rewrite it as clear project experience ("Built a React web application in a 4-person team") without classroom wording. Keep the real scope: don't upgrade "helped" to "led" or a class project to "enterprise".
 2. Do not invent fake metrics or data that the user didn't provide. Use only the facts provided.
 3. If no metrics are provided, just rewrite the sentence professionally without any placeholders or brackets.
 4. Return ONLY a JSON object in this exact format: { "bullet": "The polished bullet point string" }

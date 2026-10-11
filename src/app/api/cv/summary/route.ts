@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { openai, AI_MODEL } from '@/lib/ai/client';
+import { guardBuilderAIRequest } from '@/lib/ai/builderGuard';
 
 export async function POST(req: Request) {
   try {
-    const { experience = [], education = [], certifications = [], skills = [], focus = 'experience' } = await req.json();
+    const guard = await guardBuilderAIRequest(req);
+    if ("response" in guard) return guard.response;
+    const { experience = [], education = [], certifications = [], skills = [], focus = 'experience' } = guard.body as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
@@ -39,14 +42,14 @@ ${focusInstruction}
 
 Write 3 distinct, highly professional, and ATS-optimized "Professional Summaries" (to go at the very top of their CV).
 Each summary MUST be between 3 to 5 sentences long.
-Highlight their distinct value proposition, drawing upon any notable companies, high-level skills, or years of experience evident in the data.
+Highlight their distinct value proposition, drawing upon any notable companies, high-level skills, or years of experience evident in the data. Use only facts from the profile: never invent metrics, years of experience, leadership, or achievements. Match the tone to their real seniority (a recent graduate is not an executive).
 
 Provide 3 variations:
-1. "Executive": Focus on leadership, big-picture impact, and strategic value.
+1. "Impact": Focus on the biggest results and responsibilities in the profile (leadership only if the profile shows it).
 2. "Technical/Action": Focus on hard skills, methodologies, execution and delivering direct results.
 3. "Dynamic/Story": A slightly more modern, compelling narrative about their passion and drive, without being cheesy.
 
-DO NOT use "I", "Me", "My" or "We" (third-person implied is best, e.g., "Results-driven Software Engineer with 5+ years of experience...").
+DO NOT use "I", "Me", "My" or "We" (implied subject is best, e.g., "Software engineer with 5+ years of experience..."). Avoid clichés like "results-driven", "passionate", "hardworking".
 
 Return your response ONLY as a JSON object in this exact format:
 {

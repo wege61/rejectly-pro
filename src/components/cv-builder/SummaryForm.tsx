@@ -233,7 +233,7 @@ export function SummaryForm() {
           >
             <HeaderBox>
                <div>
-                 <h3 style={{ fontSize: '16px', margin: '0 0 4px', color: '#fff', fontWeight: 600 }}>Tailored Executive Summaries</h3>
+                 <h3 style={{ fontSize: '16px', margin: '0 0 4px', color: '#fff', fontWeight: 600 }}>Tailored Summaries</h3>
                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>Based on your entire provided background profile.</div>
                </div>
             </HeaderBox>

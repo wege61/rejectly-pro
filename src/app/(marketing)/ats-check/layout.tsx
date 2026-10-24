@@ -82,13 +82,6 @@ const jsonLd = {
     priceCurrency: "USD",
     availability: "https://schema.org/InStock",
   },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.8",
-    reviewCount: "127",
-    bestRating: "5",
-    worstRating: "1",
-  },
   description:
     "Free ATS resume checker that scans and analyzes your resume against 40+ criteria used by major Applicant Tracking Systems including Workday, Greenhouse, Taleo, and Lever. Get your ATS score instantly.",
   featureList: [

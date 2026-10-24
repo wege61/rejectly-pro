@@ -7887,14 +7887,6 @@ export default function ReportDetailPage() {
           {/* Liquid Glass Upgrade Section */}
           <LiquidGlassUpgrade>
             <UpgradeGlassTitle>Unlock Full Optimization</UpgradeGlassTitle>
-            <SocialProofRow>
-              <GlassBadge><strong>487</strong> upgraded this week</GlassBadge>
-              <GlassBadge><strong>12,483+</strong> professionals</GlassBadge>
-            </SocialProofRow>
-            <GlassTestimonial>
-              &quot;I had no internships. Rejectly rewrote my capstone project bullet points and I landed 3 interviews in a week.&quot;
-              <TestimonialAttribution>— Sofia M., Junior Frontend Dev, 22</TestimonialAttribution>
-            </GlassTestimonial>
             <UpgradeCTAButton
               onClick={userCredits.canAnalyze ? () => setIsUpgradeConfirmModalOpen(true) : () => setIsBuyCreditsModalOpen(true)}
               disabled={isUpgrading}

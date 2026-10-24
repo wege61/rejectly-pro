@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import StyledComponentsRegistry from "@/lib/registry";
 import Providers from "@/components/Providers";
-import { OrganizationSchema, WebSiteSchema, ProductSchema, ReviewSchema } from "@/components/seo/StructuredData";
+import { OrganizationSchema, WebSiteSchema, ProductSchema } from "@/components/seo/StructuredData";
 import { WebVitals } from "@/components/analytics/WebVitals";
 
 declare global {
@@ -203,7 +203,6 @@ export default function RootLayout({
         <OrganizationSchema />
         <WebSiteSchema />
         <ProductSchema />
-        <ReviewSchema />
 
         {/* Web Vitals Tracking */}
         <WebVitals />

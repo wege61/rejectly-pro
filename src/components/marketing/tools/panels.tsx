@@ -201,7 +201,7 @@ const Swap = styled.div<{ $after: boolean }>`
   > span:last-child { opacity: ${({ $after }) => ($after ? 1 : 0)}; }
 `;
 
-const RAW = "I made the weekly sales report in Tableau for the 8-person team.";
+const RAW = "I helped make the weekly sales report in Tableau for the 8-person team.";
 
 export function BuilderPanel({ playKey, reduce }: PanelProps) {
   const step = useStep([300, 900, 2400, 3000, 3600], playKey, reduce);
@@ -228,7 +228,7 @@ export function BuilderPanel({ playKey, reduce }: PanelProps) {
             <div><b>Data Analyst Intern</b>, Halden Analytics</div>
             <Swap $after={step >= 4}>
               <span>• {RAW}</span>
-              <span>• Built the weekly sales report in <Mark $on={step >= 5}>Tableau</Mark> for an 8-person team</span>
+              <span>• Helped build the weekly sales report in <Mark $on={step >= 5}>Tableau</Mark> for an 8-person team</span>
             </Swap>
             <div className="hd">Education</div>
             <div><b>B.S. Economics</b>, Lakeside University · 2026</div>
@@ -375,9 +375,9 @@ const JOBS = [
     role: "Junior Data Analyst",
     company: "Northfield",
     score: 88,
-    chips: [["Tableau", true], ["data cleaning", true], ["reporting", true]] as [string, boolean][],
+    chips: [["Tableau", true], ["reporting", true], ["CRM data", true]] as [string, boolean][],
     line: (
-      <>Built the weekly sales <Mark $on>reporting</Mark> in <Mark $on>Tableau</Mark> for an 8-person team, from 12,000 CRM records after <Mark $on>data cleaning</Mark>.</>
+      <>Helped build the weekly sales <Mark $on>reporting</Mark> in <Mark $on>Tableau</Mark> for an 8-person team; handled data entry for 12,000 <Mark $on>CRM data</Mark> records.</>
     ),
   },
   {
@@ -386,7 +386,7 @@ const JOBS = [
     score: 71,
     chips: [["performance reporting", true], ["CRM data", true], ["GA4", false]] as [string, boolean][],
     line: (
-      <>Owned the weekly sales <Mark $on>performance reporting</Mark> for an 8-person team, built in Tableau from 12,000 cleaned <Mark $on>CRM data</Mark> records.</>
+      <>Helped run the weekly sales <Mark $on>performance reporting</Mark> for an 8-person team in Tableau; entered 12,000 <Mark $on>CRM data</Mark> records.</>
     ),
   },
 ];
@@ -476,7 +476,7 @@ const Letter = styled(Show)`
   p { margin: 0 0 8px; }
 `;
 
-const LETTER = "I'm applying for the Junior Data Analyst role. At Halden Analytics I built the weekly sales report in Tableau for an 8-person team, and in a class project I built a Python model to flag customers likely to churn. I'd like to bring that work to your growth team.";
+const LETTER = "I'm applying for the Junior Data Analyst role. At Halden Analytics I helped build the weekly sales report in Tableau for an 8-person team, and in a class project I built a Python model to flag customers likely to churn. I'd like to bring that work to your growth team.";
 
 export function LetterPanel({ playKey, reduce }: PanelProps) {
   const step = useStep([300, 800], playKey, reduce);
@@ -513,8 +513,8 @@ const Outline = styled.div`
 
 const STAR: [string, string][] = [
   ["Situation", "The 8-person sales team needed numbers every week."],
-  ["Task", "You owned the weekly report."],
-  ["Action", "You built it in Tableau."],
+  ["Task", "You helped produce the weekly report."],
+  ["Action", "Say what you did in Tableau, in your own words."],
   ["Result", "Add what changed: time saved, a decision it informed."],
 ];
 

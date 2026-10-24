@@ -302,7 +302,7 @@ export function Hero() {
         <ParserLens />
 
         <Proof>
-          <em>Scored against the systems employers use</em>
+          <em>Checks the format rules of</em>
           <span>Workday</span>
           <span>Greenhouse</span>
           <span>Lever</span>

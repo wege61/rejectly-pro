@@ -13,6 +13,7 @@ import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
 import { WhyItHappens } from "@/components/marketing/why/WhyItHappens";
 import { TryIt } from "@/components/marketing/try/TryIt";
 import { ToolsTour } from "@/components/marketing/tools/ToolsTour";
+import { Proof } from "@/components/marketing/proof/Proof";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -2581,7 +2582,9 @@ export default function Page() {
       {/* SIX TOOLS */}
       <ToolsTour />
 
-      <Divider />
+      {/* PROOF */}
+      <Proof />
+
 
       {/* PRICING - SIMPLIFIED */}
       <Section id="pricing">

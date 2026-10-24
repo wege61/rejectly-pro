@@ -247,7 +247,7 @@ export function ImpactTile() {
           <small>records, from your answer</small>
         </div>
         <p>
-          Cleaned <Mark $lit={step >= 5}>{ANSWER}</Mark> CRM records during data entry
+          Handled data entry for <Mark $lit={step >= 5}>{ANSWER}</Mark> CRM records
         </p>
       </Result>
     </Tile>

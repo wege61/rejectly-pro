@@ -2694,13 +2694,6 @@ export default function Page() {
                 },
               ],
             },
-            aggregateRating: {
-              '@type': 'AggregateRating',
-              ratingValue: '4.8',
-              reviewCount: '127',
-              bestRating: '5',
-              worstRating: '1',
-            },
             description: 'AI-powered resume optimization tool that analyzes your resume against job postings, identifies ATS compatibility issues, and provides actionable improvements to increase interview rates.',
             featureList: [
               'AI Resume Analysis',
@@ -2714,76 +2707,6 @@ export default function Page() {
           })
         }}
       />
-      <script
-        id="review-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Product',
-            name: 'Rejectly.pro AI Resume Optimizer',
-            description: 'Free ATS resume checker and AI-powered resume optimization tool',
-            brand: {
-              '@type': 'Organization',
-              name: 'Rejectly.pro',
-            },
-            aggregateRating: {
-              '@type': 'AggregateRating',
-              ratingValue: '4.8',
-              reviewCount: '127',
-              bestRating: '5',
-              worstRating: '1',
-            },
-            review: [
-              {
-                '@type': 'Review',
-                author: {
-                  '@type': 'Person',
-                  name: 'Sarah Chen',
-                },
-                reviewRating: {
-                  '@type': 'Rating',
-                  ratingValue: '5',
-                  bestRating: '5',
-                },
-                datePublished: '2024-11-15',
-                reviewBody:
-                  'I went from 2 responses out of 50 applications to 8 interviews in 2 weeks. The ATS optimization alone was worth 10x the price. My resume now actually gets read by humans, not just rejected by bots.',
-              },
-              {
-                '@type': 'Review',
-                author: {
-                  '@type': 'Person',
-                  name: 'Marcus Williams',
-                },
-                reviewRating: {
-                  '@type': 'Rating',
-                  ratingValue: '5',
-                  bestRating: '5',
-                },
-                datePublished: '2024-11-10',
-                reviewBody:
-                  'Best investment in my job search. The AI caught keyword gaps I never would have noticed. Within 3 days of using my optimized resume, I had interview requests from 3 companies I thought were out of reach.',
-              },
-              {
-                '@type': 'Review',
-                author: {
-                  '@type': 'Person',
-                  name: 'Priya Patel',
-                },
-                reviewRating: {
-                  '@type': 'Rating',
-                  ratingValue: '5',
-                  bestRating: '5',
-                },
-                datePublished: '2024-11-05',
-                reviewBody:
-                  'The cover letter generator saved me hours. I was spending 45 minutes per application writing custom letters. Now I get personalized, compelling cover letters in under a minute. Already landed 2 final round interviews.',
-              },
-            ],
-          })
-        }}
-      />
       <Container>
       {/* HERO SECTION */}
       <Hero />
@@ -2793,101 +2716,6 @@ export default function Page() {
 
       {/* TRY IT */}
       <TryIt />
-
-      <Divider />
-
-      {/* TESTIMONIALS - WHAT OUR USERS SAY */}
-      <Section id="testimonials">
-        <SectionHeader>
-          <SectionTitle>What results look like</SectionTitle>
-          <SectionSubtitle>
-            Here&apos;s what users can expect from Rejectly.pro
-          </SectionSubtitle>
-        </SectionHeader>
-
-        <TestimonialGrid>
-          <TestimonialCard>
-            <TestimonialHeader>
-              <TestimonialAvatar>
-                <Image src="https://i.pravatar.cc/150?img=12" alt="Job seeker testimonial about getting more interviews with Rejectly resume optimization" fill sizes="56px" style={{ objectFit: "cover" }} />
-              </TestimonialAvatar>
-              <TestimonialAuthor>
-                <div className="name">Sarah Chen</div>
-                <div className="role">Junior Frontend Developer</div>
-              </TestimonialAuthor>
-              <TestimonialRating>
-                <StarIcon />
-                <StarIcon />
-                <StarIcon />
-                <StarIcon />
-                <StarIcon />
-              </TestimonialRating>
-            </TestimonialHeader>
-            <TestimonialText>
-              I applied to 50+ junior roles and got zero callbacks. Rejectly translated my boot camp projects into corporate ATS keywords. 5 interviews in 2 weeks. The difference isn&apos;t my skills &mdash; it&apos;s how I bypass the filter for each specific role.
-            </TestimonialText>
-            <TestimonialHighlight>
-              <CheckIcon />5 interviews in 2 weeks
-            </TestimonialHighlight>
-          </TestimonialCard>
-
-          <TestimonialCard>
-            <TestimonialHeader>
-              <TestimonialAvatar>
-                <Image src="https://i.pravatar.cc/150?img=33" alt="Product manager testimonial about ATS optimization results with Rejectly" fill sizes="56px" style={{ objectFit: "cover" }} />
-              </TestimonialAvatar>
-              <TestimonialAuthor>
-                <div className="name">Marcus Johnson</div>
-                <div className="role">New Grad (Business)</div>
-              </TestimonialAuthor>
-              <TestimonialRating>
-                <StarIcon />
-                <StarIcon />
-                <StarIcon />
-                <StarIcon />
-                <StarIcon />
-              </TestimonialRating>
-            </TestimonialHeader>
-            <TestimonialText>
-              I used to think my student resume was fine &mdash; until Rejectly showed me I was missing 40% of the
-              keywords for every entry-level job. It translated my university club leadership into professional experience.
-              The ATS Optimizer boosted my score from 45% to 89%.
-            </TestimonialText>
-            <TestimonialHighlight>
-              <CheckIcon />
-               ATS score: 45% → 89% with one click
-            </TestimonialHighlight>
-          </TestimonialCard>
-
-          <TestimonialCard>
-            <TestimonialHeader>
-              <TestimonialAvatar>
-                <Image src="https://i.pravatar.cc/150?img=47" alt="Career changer testimonial about using Rejectly AI resume analysis" fill sizes="56px" style={{ objectFit: "cover" }} />
-              </TestimonialAvatar>
-              <TestimonialAuthor>
-                <div className="name">Emily Rodriguez</div>
-                <div className="role">Junior Data Analyst</div>
-              </TestimonialAuthor>
-              <TestimonialRating>
-                <StarIcon />
-                <StarIcon />
-                <StarIcon />
-                <StarIcon />
-                <StarIcon />
-              </TestimonialRating>
-            </TestimonialHeader>
-            <TestimonialText>
-              I spent weeks perfecting one &quot;perfect&quot; resume. Rejectly taught me that doesn&apos;t exist.
-              Now I customize for every junior role and easily bypass the &quot;3-years experience&quot; filter by
-              translating my academic datasets into corporate language. Landed my dream role in a month.
-            </TestimonialText>
-            <TestimonialHighlight>
-              <CheckIcon />
-              Dream job in 1 month
-            </TestimonialHighlight>
-          </TestimonialCard>
-        </TestimonialGrid>
-      </Section>
 
       <Divider />
 
@@ -3033,7 +2861,7 @@ export default function Page() {
               <PricingFeatureRow><PricingATSIcon />1 ATS optimization OR</PricingFeatureRow>
               <PricingFeatureRow><PricingLetterIcon />1 cover letter</PricingFeatureRow>
               <PricingFeatureRow><PricingSparklesIcon />Full Pro features included</PricingFeatureRow>
-              <PricingFeatureRowMuted><PricingClockIcon />Valid for 30 days</PricingFeatureRowMuted>
+              <PricingFeatureRowMuted><PricingClockIcon />Credits never expire</PricingFeatureRowMuted>
               <PricingFeatureRowMuted><PricingShieldIcon />No subscription, no commitment</PricingFeatureRowMuted>
             </PricingFeatureList>
           </PricingCard>
@@ -3056,7 +2884,7 @@ export default function Page() {
               <PricingFeatureRow><PricingLetterIcon />Cover letters</PricingFeatureRow>
               <PricingFeatureRow><PricingMixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</PricingFeatureRow>
               <PricingFeatureRowHighlight><PricingSaveIcon />Save 65% ($0.70 per credit)</PricingFeatureRowHighlight>
-              <PricingFeatureRowMuted><PricingClockIcon />Credits valid for 90 days</PricingFeatureRowMuted>
+              <PricingFeatureRowMuted><PricingClockIcon />Credits never expire</PricingFeatureRowMuted>
               <PricingFeatureRowMuted><PricingTargetIcon />Best for 5-10 target positions</PricingFeatureRowMuted>
             </PricingFeatureList>
           </PricingCard>

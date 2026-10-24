@@ -1,7 +1,6 @@
 'use client';
 
 import styled from 'styled-components';
-import Image from 'next/image';
 import { useRef } from 'react';
 
 const PanelWrapper = styled.div`
@@ -66,54 +65,6 @@ const Description = styled.p`
   line-height: 1.5;
   max-width: 40ch;
   margin-bottom: 16px;
-`;
-
-const SocialProof = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const AvatarStack = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const Avatar = styled.div<{ $offset?: boolean }>`
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  overflow: hidden;
-  position: relative;
-  margin-left: ${({ $offset }) => ($offset ? '-8px' : '0')};
-  border: 2px solid rgba(0, 0, 0, 0.3);
-  flex-shrink: 0;
-`;
-
-const Rating = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
-`;
-
-const StarIcon = styled.svg`
-  width: 14px;
-  height: 14px;
-  color: #f59e0b;
-  fill: #f59e0b;
-`;
-
-const RatingText = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  strong {
-    color: white;
-    font-weight: 600;
-  }
 `;
 
 const CarouselSection = styled.div`
@@ -257,8 +208,8 @@ const carouselData = [
     src: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&q=80',
   },
   {
-    category: 'Success Stories',
-    title: '10,000+ dream jobs landed',
+    category: 'Built for New Grads',
+    title: 'Turn projects into experience',
     src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80',
   },
 ];
@@ -287,64 +238,6 @@ export default function AuthSidePanel() {
             <Description>
               AI-powered resume analysis that helps you beat ATS systems and stand out to recruiters.
             </Description>
-            <SocialProof>
-              <AvatarStack>
-                <Avatar>
-                  <Image
-                    src="https://i.pravatar.cc/150?img=1"
-                    alt="User"
-                    fill
-                    sizes="28px"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </Avatar>
-                <Avatar $offset>
-                  <Image
-                    src="https://i.pravatar.cc/150?img=2"
-                    alt="User"
-                    fill
-                    sizes="28px"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </Avatar>
-                <Avatar $offset>
-                  <Image
-                    src="https://i.pravatar.cc/150?img=3"
-                    alt="User"
-                    fill
-                    sizes="28px"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </Avatar>
-                <Avatar $offset>
-                  <Image
-                    src="https://i.pravatar.cc/150?img=4"
-                    alt="User"
-                    fill
-                    sizes="28px"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </Avatar>
-                <Avatar $offset>
-                  <Image
-                    src="https://i.pravatar.cc/150?img=5"
-                    alt="User"
-                    fill
-                    sizes="28px"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </Avatar>
-              </AvatarStack>
-              <Rating>
-                <StarIcon viewBox="0 0 24 24">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </StarIcon>
-                <RatingText>
-                  <strong>4.8/5</strong>
-                  <span>(127 reviews)</span>
-                </RatingText>
-              </Rating>
-            </SocialProof>
           </TopSection>
 
           <CarouselSection>

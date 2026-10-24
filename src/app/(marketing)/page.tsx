@@ -3707,7 +3707,7 @@ export default function Page() {
               <PricingFeatureRow><PricingATSIcon />1 ATS optimization OR</PricingFeatureRow>
               <PricingFeatureRow><PricingLetterIcon />1 cover letter</PricingFeatureRow>
               <PricingFeatureRow><PricingSparklesIcon />Full Pro features included</PricingFeatureRow>
-              <PricingFeatureRowMuted><PricingClockIcon />Valid for 30 days</PricingFeatureRowMuted>
+              <PricingFeatureRowMuted><PricingClockIcon />Credits never expire</PricingFeatureRowMuted>
               <PricingFeatureRowMuted><PricingShieldIcon />No subscription, no commitment</PricingFeatureRowMuted>
             </PricingFeatureList>
           </PricingCard>
@@ -3730,7 +3730,7 @@ export default function Page() {
               <PricingFeatureRow><PricingLetterIcon />Cover letters</PricingFeatureRow>
               <PricingFeatureRow><PricingMixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</PricingFeatureRow>
               <PricingFeatureRowHighlight><PricingSaveIcon />Save 65% ($0.70 per credit)</PricingFeatureRowHighlight>
-              <PricingFeatureRowMuted><PricingClockIcon />Credits valid for 90 days</PricingFeatureRowMuted>
+              <PricingFeatureRowMuted><PricingClockIcon />Credits never expire</PricingFeatureRowMuted>
               <PricingFeatureRowMuted><PricingTargetIcon />Best for 5-10 target positions</PricingFeatureRowMuted>
             </PricingFeatureList>
           </PricingCard>

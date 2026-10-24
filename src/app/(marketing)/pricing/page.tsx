@@ -765,7 +765,7 @@ export default function PricingPage() {
                 <FeatureRow><ATSIcon />1 ATS optimization OR</FeatureRow>
                 <FeatureRow><LetterIcon />1 cover letter</FeatureRow>
                 <FeatureRow><SparklesIcon />Full Pro features included</FeatureRow>
-                <FeatureRowMuted><ClockIcon />Valid for 30 days</FeatureRowMuted>
+                <FeatureRowMuted><ClockIcon />Credits never expire</FeatureRowMuted>
                 <FeatureRowMuted><ShieldIcon />No subscription, no commitment</FeatureRowMuted>
               </FeatureList>
             </PricingCard>
@@ -790,7 +790,7 @@ export default function PricingPage() {
                 <FeatureRow><LetterIcon />Cover letters</FeatureRow>
                 <FeatureRow><MixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</FeatureRow>
                 <FeatureRowHighlight><SaveIcon />Save 65% ($0.70 per credit)</FeatureRowHighlight>
-                <FeatureRowMuted><ClockIcon />Credits valid for 90 days</FeatureRowMuted>
+                <FeatureRowMuted><ClockIcon />Credits never expire</FeatureRowMuted>
                 <FeatureRowMuted><TargetIcon />Perfect for graduation job search</FeatureRowMuted>
               </FeatureList>
             </PricingCard>

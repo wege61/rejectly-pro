@@ -342,7 +342,7 @@ export function SharedPricingCards({ onCheckout, isLoading, isModal }: SharedPri
           <PricingFeatureRow $compressed={isModal}><PricingATSIcon />1 ATS optimization OR</PricingFeatureRow>
           <PricingFeatureRow $compressed={isModal}><PricingLetterIcon />1 cover letter</PricingFeatureRow>
           <PricingFeatureRow $compressed={isModal}><PricingSparklesIcon />Full Pro features included</PricingFeatureRow>
-          <PricingFeatureRowMuted $compressed={isModal}><PricingClockIcon />Valid for 30 days</PricingFeatureRowMuted>
+          <PricingFeatureRowMuted $compressed={isModal}><PricingClockIcon />Credits never expire</PricingFeatureRowMuted>
           <PricingFeatureRowMuted $compressed={isModal}><PricingShieldIcon />No subscription, no commitment</PricingFeatureRowMuted>
         </PricingFeatureList>
       </PricingCard>
@@ -372,7 +372,7 @@ export function SharedPricingCards({ onCheckout, isLoading, isModal }: SharedPri
           <PricingFeatureRow $compressed={isModal}><PricingLetterIcon />Cover letters</PricingFeatureRow>
           <PricingFeatureRow $compressed={isModal}><PricingMixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</PricingFeatureRow>
           <PricingFeatureRowHighlight $compressed={isModal}><PricingSaveIcon />Save 65% ($0.70 per credit)</PricingFeatureRowHighlight>
-          <PricingFeatureRowMuted $compressed={isModal}><PricingClockIcon />Credits valid for 90 days</PricingFeatureRowMuted>
+          <PricingFeatureRowMuted $compressed={isModal}><PricingClockIcon />Credits never expire</PricingFeatureRowMuted>
           <PricingFeatureRowMuted $compressed={isModal}><PricingTargetIcon />Best for 5-10 target positions</PricingFeatureRowMuted>
         </PricingFeatureList>
       </PricingCard>

@@ -52,10 +52,16 @@ Provide a comprehensive analysis:
 
 1. **Match Score** (0-100): Current compatibility score - be realistic and critical
 2. **Summary** (2-3 sentences): Brief explanation of the match
-3. **Missing Keywords** (5-8 items): Key skills/requirements from job that are missing in CV
+3. **Missing Keywords** (2-8 items): Requirements from the job description that the CV does not state in the job's words. Each item is a short skill or requirement name of 1-4 words, using the job description's own wording (e.g. "A/B testing", "data visualization"). Only list real requirements from the job description; never generic items like "real-world experience" or "more details".
 4. **Improvement Tips** (8-10 items): Specific, actionable advice to improve the match score. Each tip should be 1-2 sentences.
 5. **Potential Score** (0-100): Estimated score if all improvements are made
-6. **Quick Wins** (3 items): The top 3 easiest improvements that would have biggest impact
+6. **Quick Wins** (3 items): The top 3 easiest improvements that would have biggest impact. Never tell the candidate to add a skill, tool or experience the CV doesn't show; for those, say "if you have done X, add it".
+7. **Job Title** (string): The role title from the job description, as written (e.g. "Junior Data Analyst")
+8. **Matched Keywords** (1-8 items): Requirements from the job description that the CV already states, as short names of 1-4 words in the job's wording. A requirement is either matched or missing, never both.
+9. **Missing Details**: For each item in Missing Keywords, decide whether the CV already describes the same thing in different words.
+   - Look for the same activity described in student or everyday language (e.g. "made charts" describes data visualization, "predicting churn" describes predictive modeling).
+   - If it does, set "foundAs" to a short phrase (max 8 words) copied EXACTLY, character for character, from the CV.
+   - If it does not, set "foundAs" to null. Never imply the candidate has a skill the CV doesn't show.
 
 Respond in JSON format:
 {
@@ -64,7 +70,10 @@ Respond in JSON format:
   "missingKeywords": ["<string>", ...],
   "improvementTips": ["<string>", ...],
   "potentialScore": <number>,
-  "quickWins": ["<string>", "<string>", "<string>"]
+  "quickWins": ["<string>", "<string>", "<string>"],
+  "jobTitle": "<string>",
+  "matchedKeywords": ["<string>", ...],
+  "missingDetails": [{ "keyword": "<string>", "foundAs": "<exact phrase from the CV>" | null }, ...]
 }
 
 Be realistic with scores. Most CVs should score 40-70. Only give 80+ if truly excellent match.`;
@@ -77,15 +86,43 @@ Be realistic with scores. Most CVs should score 40-70. Only give 80+ if truly ex
     });
 
     const result = JSON.parse(completion.choices[0].message.content || "{}");
+    const missingKeywords: string[] = Array.isArray(result.missingKeywords) ? result.missingKeywords : [];
+
+    // "foundAs" claims the candidate already did this. Only keep it when the quote really
+    // appears in the CV, so the UI never tells someone they have experience they don't.
+    const normalize = (t: string) => t.toLowerCase().replace(/\s+/g, " ").trim();
+    const cvNormalized = normalize(String(cvText));
+    const details: { keyword?: unknown; foundAs?: unknown }[] = Array.isArray(result.missingDetails) ? result.missingDetails : [];
+    const missingDetails = missingKeywords.map((keyword) => {
+      const match = details.find((d) => typeof d?.keyword === "string" && normalize(d.keyword) === normalize(keyword));
+      const quote = typeof match?.foundAs === "string" ? match.foundAs.trim() : "";
+      return { keyword, foundAs: quote && cvNormalized.includes(normalize(quote)) ? quote : null };
+    });
+
+    // A matched requirement must use the job post's own words and can't also be missing.
+    // The model sometimes lists the CV's phrasing ("predicting churn") as a match, which
+    // would contradict the missing item it describes.
+    const jobNormalized = normalize(String(jobText));
+    const missingSet = new Set(missingKeywords.map(normalize));
+    const quoteSet = new Set(missingDetails.flatMap((d) => (d.foundAs ? [normalize(d.foundAs)] : [])));
+    const matchedKeywords = (Array.isArray(result.matchedKeywords) ? result.matchedKeywords : [])
+      .filter((k: unknown): k is string => typeof k === "string" && k.trim().length > 0)
+      .filter((k: string) => {
+        const n = normalize(k);
+        return jobNormalized.includes(n) && !missingSet.has(n) && !quoteSet.has(n);
+      });
 
     return Response.json({
       success: true,
       fitScore: result.fitScore || 50,
       summary: result.summary || "Analysis completed.",
-      missingKeywords: result.missingKeywords || [],
+      missingKeywords,
       improvementTips: result.improvementTips || [],
       potentialScore: result.potentialScore || 70,
       quickWins: result.quickWins || [],
+      jobTitle: typeof result.jobTitle === "string" ? result.jobTitle : "",
+      matchedKeywords,
+      missingDetails,
     });
   } catch (error) {
     console.error("Analysis error:", error);

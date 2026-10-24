@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Geist, Geist_Mono } from "next/font/google";
 import StyledComponentsRegistry from "@/lib/registry";
 import Providers from "@/components/Providers";
 import { OrganizationSchema, WebSiteSchema, ProductSchema, ReviewSchema } from "@/components/seo/StructuredData";
@@ -11,6 +12,9 @@ declare global {
     dataLayer: any[];
   }
 }
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://rejectly.pro'),
@@ -102,11 +106,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
+        {/* Runs before paint so the saved theme never flashes. Light is the default. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `document.documentElement.setAttribute('data-theme', 'dark');`,
+            __html: `try{var t=localStorage.getItem('rj-theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}catch(e){document.documentElement.setAttribute('data-theme','light')}`,
           }}
         />
         <style
@@ -158,6 +163,70 @@ export default function RootLayout({
                 --primary-color: var(--primary-500);
                 --text-secondary: var(--dark-subtext);
                 --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+              }
+
+              /* Lets the hero's Parser Lens animate its split position in pure CSS. */
+              @property --rj-lens-pos {
+                syntax: '<percentage>';
+                inherits: true;
+                initial-value: 62%;
+              }
+
+              /* Redesign tokens (rj-*). Paper and ink, with one job per color:
+                 hl = brand + keyword match, pen = rejection only, pass = system success only.
+                 Legacy variables above stay untouched until each screen is migrated. */
+              :root {
+                --rj-font: var(--font-geist), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                --rj-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, monospace;
+                --rj-paper: #F3F4F1;
+                --rj-surface: #FFFFFF;
+                --rj-ink: #0D0E10;
+                --rj-ink-2: #4A4D55;
+                --rj-ink-3: #767A83;
+                --rj-line: rgba(13, 14, 16, 0.10);
+                --rj-hl: #FFE14D;
+                --rj-hl-ink: #0D0E10;
+                --rj-pen: #E0352B;
+                --rj-pass: #138A52;
+                --rj-btn: #0D0E10;
+                --rj-btn-ink: #FFFFFF;
+                --rj-nav: rgba(243, 244, 241, 0.8);
+                --rj-doc: #FBFBF9;
+                --rj-doc-ink: #1B1C20;
+                --rj-doc-side: #26344D;
+                --rj-term: #1A1B1F;
+                --rj-term-ink: #D9DBD4;
+                --rj-term-dim: #81858E;
+                --rj-term-pass: #5CD69A;
+                --rj-term-fail: #FF7468;
+                --rj-shadow: 0 30px 60px -36px rgba(0, 0, 0, 0.35);
+                --rj-sheet: #FFFFFF;
+                --rj-tile: #F4F4F1;
+                --rj-bridge: #0D0E10;
+                --rj-bridge-ink: #F2F2EF;
+                --rj-bridge-ink-2: #A6A9B0;
+                --rj-bridge-card: #1A1B1F;
+                --rj-bridge-line: rgba(255, 255, 255, 0.08);
+              }
+              [data-theme="dark"] {
+                --rj-paper: #0C0D0F;
+                --rj-surface: #16171A;
+                --rj-ink: #F2F2EF;
+                --rj-ink-2: #A6A9B0;
+                --rj-ink-3: #7C808A;
+                --rj-line: rgba(255, 255, 255, 0.09);
+                --rj-pen: #FF5A4E;
+                --rj-pass: #4BD08B;
+                --rj-btn: #F2F2EF;
+                --rj-btn-ink: #0D0E10;
+                --rj-nav: rgba(12, 13, 15, 0.75);
+                --rj-term: #101114;
+                --rj-shadow: 0 30px 60px -36px rgba(0, 0, 0, 0.8);
+                --rj-sheet: #0F1012;
+                --rj-tile: #18191C;
+                --rj-bridge: #1F2024;
+                --rj-bridge-card: #2A2B30;
+                --rj-bridge-line: rgba(255, 255, 255, 0.08);
               }
 
               html {

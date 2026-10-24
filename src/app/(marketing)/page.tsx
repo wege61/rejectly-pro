@@ -12,7 +12,7 @@ import { Hero } from "@/components/marketing/hero/Hero";
 import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
 import { WhyItHappens } from "@/components/marketing/why/WhyItHappens";
 import { TryIt } from "@/components/marketing/try/TryIt";
-import { Carousel, AppleCard, Card, ScreenshotStack, CardLead, CardText, CardKicker, FeatureList } from "@/components/ui/AppleCarousel";
+import { ToolsTour } from "@/components/marketing/tools/ToolsTour";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -2489,145 +2489,6 @@ export default function Page() {
     },
   ];
 
-  const featureCards: Card[] = [
-    {
-      src: "/reports-list.png",
-      title: "See exactly where you stand.",
-      category: "Match Intelligence",
-      content: (
-        <>
-          <ScreenshotStack
-            base="/reports-list.png"
-            detail="/reports-detail.png"
-            baseAlt="Job Match Analysis Dashboard"
-            detailAlt="Detailed Match Report"
-          />
-          <CardLead>Upload your resume. Paste the job description.</CardLead>
-          <CardText>Get a new resume rewritten specifically for that role — with the right keywords, structure, and emphasis to pass the filter and impress the human behind it.</CardText>
-          <FeatureList
-            items={[
-              <><strong>Precise match score</strong> against the job description</>,
-              <><strong>Missing skills</strong> and keywords, ranked by impact</>,
-              <>A fully rewritten, optimized resume <strong>tailored to this specific role</strong></>,
-              <>Cover letter, interview prep, and career roadmap included</>,
-            ]}
-          />
-          <CardKicker>Every application gets its own resume. That&apos;s the unfair advantage.</CardKicker>
-        </>
-      ),
-    },
-    {
-      src: "/ats-screenshot-1.png",
-      title: "Past the filter. Into the room.",
-      category: "ATS Optimization",
-      content: (
-        <>
-          <ScreenshotStack
-            base="/ats-screenshot-1.png"
-            detail="/ats-screenshot-2.png"
-            baseAlt="ATS Optimization Dashboard"
-            detailAlt="ATS Optimization Detail"
-          />
-          <CardLead>Don&apos;t have a specific job in mind yet? No problem.</CardLead>
-          <CardText>Upload your CV — no job description needed. Our AI scores it against Workday, Greenhouse, Taleo, and Lever ATS systems, then rewrites it to pass them all.</CardText>
-          <FeatureList
-            items={[
-              <>No job description required — works with just your CV</>,
-              <>Compatibility tested against <strong>4 major ATS platforms</strong></>,
-              <>Instant before &amp; after score — see the real difference</>,
-              <>Export-ready in PDF, exactly as needed</>,
-            ]}
-          />
-          <CardKicker>The safety net before you start applying.</CardKicker>
-        </>
-      ),
-    },
-    {
-      src: "/cover-letters-list.png",
-      title: "Words that open doors.",
-      category: "Cover Letters",
-      content: (
-        <>
-          <ScreenshotStack
-            base="/cover-letters-list.png"
-            detail="/cover-letters-detail.png"
-            baseAlt="Cover Letters Dashboard"
-            detailAlt="Generated Cover Letter"
-          />
-          <CardLead>Generic cover letters get deleted. Personalized ones get replies.</CardLead>
-          <CardText>Choose your tone, length, and template. We handle the rest — in seconds.</CardText>
-          <FeatureList
-            items={[
-              <>Written specifically for this role and this company</>,
-              <>Tone options: professional, confident, conversational</>,
-              <>Highlights your most relevant achievements naturally</>,
-              <>Reads like you spent hours on it. <strong>Takes seconds.</strong></>,
-            ]}
-          />
-        </>
-      ),
-    },
-    {
-      src: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop",
-      title: "The interview before the interview.",
-      category: "Interview Prep",
-      content: (
-        <>
-          <CardLead>Real interviewers don&apos;t go easy on you. Neither do we.</CardLead>
-          <CardText>Practice with an AI that asks the exact questions your interviewer will — and tells you, honestly, how you did.</CardText>
-          <FeatureList
-            items={[
-              <>Questions generated from the actual job description</>,
-              <>Behavioral, Technical, Weak Spots, and &quot;Ask Them&quot; modes</>,
-              <>Feedback on tone, structure, and filler words</>,
-              <>Sharper every round</>,
-            ]}
-          />
-          <CardKicker>Walk in knowing you&apos;ve already passed the hardest one.</CardKicker>
-        </>
-      ),
-    },
-    {
-      src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=800&auto=format&fit=crop",
-      title: "Your story, perfectly told.",
-      category: "Resume Builder",
-      content: (
-        <>
-          <CardLead>No resume? No problem.</CardLead>
-          <CardText>We guide you through every section — from contact info to your biggest achievements — and build a clean, ATS-friendly resume around your answers.</CardText>
-          <FeatureList
-            items={[
-              <>Step-by-step guided builder, no guesswork</>,
-              <>ATS-optimized formatting built in from the start</>,
-              <>Professional templates that impress both software and humans</>,
-              <>Completely free — no credits needed</>,
-            ]}
-          />
-          <CardKicker>From blank page to first application.</CardKicker>
-        </>
-      ),
-    },
-    {
-      src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800&auto=format&fit=crop",
-      title: "The clearest path forward.",
-      category: "Career Intelligence",
-      content: (
-        <>
-          <CardLead>Getting the job is step one. Getting ahead is everything after.</CardLead>
-          <CardText>Based on your resume and target role, we map the certifications, courses, and projects that will move your career forward — ranked by real impact.</CardText>
-          <FeatureList
-            items={[
-              <>Personalized to your field and current level</>,
-              <>Ranked by impact and time investment</>,
-              <>Specific enough to act on today</>,
-              <>Updated as your profile evolves</>,
-            ]}
-          />
-          <CardKicker>Your next level is closer than you think.</CardKicker>
-        </>
-      ),
-    },
-  ];
 
   return (
     <>
@@ -2717,70 +2578,8 @@ export default function Page() {
       {/* TRY IT */}
       <TryIt />
 
-      <Divider />
-
-      {/* FEATURES */}
-      <section id="features" style={{ width: "100vw", position: "relative", left: "50%", right: "50%", marginLeft: "-50vw", marginRight: "-50vw", padding: "100px 0", overflow: "hidden" }}>
-        {/* Animated Background Orbs for Liquid Glass Effect */}
-        <div style={{
-          position: "absolute",
-          top: "-10%",
-          left: "-10%",
-          width: "50vw",
-          height: "50vw",
-          background: "radial-gradient(circle, rgba(94, 187, 240, 0.4) 0%, rgba(94, 187, 240, 0) 70%)",
-          filter: "blur(80px)",
-          zIndex: -1,
-          animation: "float 15s ease-in-out infinite alternate"
-        }} />
-        <div style={{
-           position: "absolute",
-           bottom: "-20%",
-           right: "-10%",
-           width: "60vw",
-           height: "60vw",
-           background: "radial-gradient(circle, rgba(238, 90, 90, 0.3) 0%, rgba(238, 90, 90, 0) 70%)",
-           filter: "blur(100px)",
-           zIndex: -1,
-           animation: "float 20s ease-in-out infinite alternate-reverse"
-        }} />
-        <div style={{
-           position: "absolute",
-           top: "30%",
-           left: "30%",
-           width: "40vw",
-           height: "40vw",
-           background: "radial-gradient(circle, rgba(147, 112, 219, 0.25) 0%, rgba(147, 112, 219, 0) 70%)",
-           filter: "blur(90px)",
-           zIndex: -1,
-           animation: "pulse 12s ease-in-out infinite alternate"
-        }} />
-
-        <style dangerouslySetInnerHTML={{__html: `
-          @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(5%, 5%) scale(1.1); }
-            100% { transform: translate(-5%, -5%) scale(0.9); }
-          }
-          @keyframes pulse {
-            0% { opacity: 0.6; transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1.05); }
-          }
-        `}} />
-
-        <SectionHeader style={{ maxWidth: "1200px", margin: "0 auto 64px auto", padding: "0 24px", position: "relative", zIndex: 2 }}>
-          <SectionTitle>Bypassing the HR filter.</SectionTitle>
-          <SectionSubtitle>
-            Everything works together to land your first job.
-          </SectionSubtitle>
-        </SectionHeader>
-
-        <Carousel
-          items={featureCards.map((card, index) => (
-            <AppleCard key={card.title} card={card} index={index} layout />
-          ))}
-        />
-      </section>
+      {/* SIX TOOLS */}
+      <ToolsTour />
 
       <Divider />
 

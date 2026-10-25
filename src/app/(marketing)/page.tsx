@@ -15,6 +15,7 @@ import { TryIt } from "@/components/marketing/try/TryIt";
 import { ToolsTour } from "@/components/marketing/tools/ToolsTour";
 import { Proof } from "@/components/marketing/proof/Proof";
 import { Pricing } from "@/components/marketing/pricing/Pricing";
+import { FAQ } from "@/components/marketing/faq/FAQ";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -2456,40 +2457,7 @@ function Timeline({ data }: { data: TimelineEntryData[] }) {
 
 // ==================== MAIN COMPONENT ====================
 export default function Page() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const faqs = [
-    {
-      question: "I have no professional experience. Will this work for me?",
-      answer:
-        "Yes! Our AI is specifically trained to translate academic projects, hackathons, and extracurriculars into the corporate keywords ATS systems are looking for. You don't need 3 years of experience if you have the right keywords.",
-    },
-    {
-      question: "Does this actually bypass ATS systems?",
-      answer:
-        "Yes. By identifying the exact keywords in the job description and weaving them into your generated resume, we drastically increase your match score and help you bypass automatic rejection filters.",
-    },
-    {
-      question: "What's included in every analysis?",
-      answer:
-        "Every analysis gives you the exact ATS match score, reveals the missing keywords, and provides a completely AI-optimized resume tailored specifically for that single job description.",
-    },
-    {
-      question: "How does pricing work?",
-      answer:
-        "We offer flexible options: Single ($2) for 1 analysis, Starter ($7) for 10 analyses at best value, or Pro ($12/month) for unlimited access to the ATS bypass tools. Credits never expire!",
-    },
-    {
-      question: "What file formats do you support?",
-      answer:
-        "We support PDF and DOCX formats. You can also paste text directly for analysis. Maximum file size is 5MB.",
-    },
-    {
-      question: "Is my data secure?",
-      answer:
-        "Absolutely! All your data is encrypted and stored securely. We never share your information with third parties or employers.",
-    },
-  ];
 
 
   return (
@@ -2589,43 +2557,8 @@ export default function Page() {
       {/* PRICING */}
       <Pricing />
 
-      <Divider />
-
       {/* FAQ */}
-      <Section id="faq">
-        <FAQSectionWrapper>
-          <SectionHeader>
-            <SectionTitle>Frequently asked questions</SectionTitle>
-            <SectionSubtitle>Everything you need to know</SectionSubtitle>
-          </SectionHeader>
-
-          <FAQList>
-          {faqs.map((faq, index) => (
-            <FAQItem key={index} $isOpen={openFaq === index}>
-              <FAQQuestion
-                $isOpen={openFaq === index}
-                onClick={() => setOpenFaq(openFaq === index ? null : index)}
-              >
-                <FAQQuestionText>{faq.question}</FAQQuestionText>
-                <FAQQuestionIcon $isOpen={openFaq === index}>
-                  {openFaq === index ? "−" : "+"}
-                </FAQQuestionIcon>
-              </FAQQuestion>
-              <FAQAnswer $isOpen={openFaq === index}>
-                <FAQAnswerText>{faq.answer}</FAQAnswerText>
-              </FAQAnswer>
-            </FAQItem>
-          ))}
-        </FAQList>
-
-        <FAQButtonContainer>
-          <FAQButton href={ROUTES.PUBLIC.FAQ}>
-            View All FAQs
-            <ArrowRightIcon />
-          </FAQButton>
-        </FAQButtonContainer>
-        </FAQSectionWrapper>
-      </Section>
+      <FAQ />
 
       <Divider />
 

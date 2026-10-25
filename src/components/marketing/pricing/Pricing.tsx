@@ -603,6 +603,7 @@ export function Pricing() {
         <Trust>
           <li><Check />Secure checkout by Stripe</li>
           <li><Check />Credits never expire</li>
+          <li><Check />Unused credits refunded within 14 days</li>
           <li><Check />Cancel Pro anytime from your billing page</li>
         </Trust>
       </Inner>

@@ -288,7 +288,7 @@ export default function TermsPage() {
           <Subtitle>
             Please read these terms carefully before using our services.
           </Subtitle>
-          <LastUpdated>Last updated: January 9, 2025</LastUpdated>
+          <LastUpdated>Last updated: October 25, 2026</LastUpdated>
         </Header>
 
         <Section>
@@ -380,8 +380,10 @@ export default function TermsPage() {
               billing period
             </ListItem>
             <ListItem>
-              <strong>No Refunds:</strong> We do not provide refunds for partial
-              months or unused services
+              <strong>Refunds:</strong> Credit packs you haven&apos;t used any
+              credits from are refunded in full if you ask within 14 days of
+              purchase. Used credits and partial subscription months are not
+              refunded
             </ListItem>
             <ListItem>
               <strong>Price Changes:</strong> We reserve the right to modify

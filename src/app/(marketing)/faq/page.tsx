@@ -267,7 +267,7 @@ export default function FAQPage() {
         {
           question: "My university projects aren't real jobs. How do I write about them?",
           answer:
-            "That's the biggest mistake new grads make — and exactly what Rejectly fixes. A final-year capstone project, a hackathon win, or leading your university club <strong>are professional experiences</strong>. Our AI rewrites them in the exact format companies expect: action verb, scope, tool, outcome. For example: <em>\"Developed a full-stack inventory system for 200+ users using React and PostgreSQL, reducing manual tracking time by 40%.\"</em> — not just \"worked on a school project.\" We turn your academic background into bullet points that pass the ATS filter and impress human recruiters.",
+            "That's the biggest mistake new grads make — and exactly what Rejectly fixes. A final-year capstone project, a hackathon win, or leading your university club <strong>are professional experiences</strong>. Our AI rewrites them in the format recruiters expect: action verb, scope, tool, outcome. For example, <em>\"worked on a school project\"</em> becomes <em>\"Built an inventory tracker for a 4-person class project using React and PostgreSQL.\"</em> It keeps the real size of the work and only uses numbers you gave it; it never invents a result.",
         },
         {
           question: "What file formats do you support?",
@@ -297,12 +297,12 @@ export default function FAQPage() {
         {
           question: "Can I cancel anytime?",
           answer:
-            "Yes! No commitment required. You can cancel anytime from your account settings. After canceling, you'll continue to have Pro features until the end of your billing period. No questions asked.",
+            "Yes! No commitment required. Cancel from your billing page with the \"Manage subscription\" button. You keep Pro until the end of the period you paid for, and it doesn't renew. No questions asked.",
         },
         {
           question: "Do you offer refunds?",
           answer:
-            "We don't provide refunds for partial months or unused services. However, you can cancel anytime to stop future charges. We recommend trying our free plan first to ensure it meets your needs.",
+            "Yes, for credits you haven't used: <strong>a full refund within 14 days of purchase</strong>. Email us from the address on your account. Pro subscriptions aren't refunded for partial months, but you can cancel anytime and keep Pro until the period ends. The ATS scan is free, so you can try Rejectly before paying anything.",
         },
       ],
     },
@@ -312,12 +312,12 @@ export default function FAQPage() {
         {
           question: "Is my data secure?",
           answer:
-            "Absolutely! All your data is <strong>encrypted in transit (TLS) and at rest</strong>. We never share your information with third parties. We're fully GDPR compliant and take data security seriously. Your resumes are stored securely in encrypted cloud storage.",
+            "Your data is <strong>encrypted in transit (TLS)</strong> and stored with our database provider, Supabase, which encrypts it at rest. We don't sell it or share it with employers or advertisers. To run the analysis, your resume text is sent to OpenAI's API (see the next question).",
         },
         {
           question: "How is my resume data used?",
           answer:
-            "Your resume data is processed by our AI (OpenAI GPT-4) solely to provide analysis services. According to OpenAI's API data usage policy, data submitted via API is <strong>not used to train their models</strong>. You can delete your data at any time from your account settings.",
+            "Your resume is sent to OpenAI's API solely to run the analysis you asked for. According to OpenAI's API data usage policy, data submitted via API is <strong>not used to train their models</strong>. You can delete your account at any time from Settings.",
         },
         {
           question: "Who can see my resume?",
@@ -327,7 +327,7 @@ export default function FAQPage() {
         {
           question: "Can I delete my account and data?",
           answer:
-            "Yes! You can delete your account and all associated data at any time through your account settings. This action is permanent and will remove all your resumes, analyses, and personal information from our systems.",
+            "Yes. Delete your account from Settings at any time; it's permanent and removes your profile, analyses and reports. To make sure uploaded resume files are erased too, email us and we'll confirm it.",
         },
       ],
     },
@@ -342,12 +342,12 @@ export default function FAQPage() {
         {
           question: "What is ATS optimization?",
           answer:
-            "ATS (Applicant Tracking System) is software companies use to automatically filter resumes before a human recruiter ever sees them. The problem for new grads is that entry-level job postings still require specific technical keywords — and a generic student resume rarely matches them. Our tool scans your resume against the specific job description to find exactly which keywords you're missing, and helps you rephrase student jargon into the professional terms that pass the automated screening.",
+            "ATS (Applicant Tracking System) is software companies use to automatically filter resumes before a human recruiter ever sees them. The problem for new grads is that entry-level job postings still require specific technical keywords — and a generic student resume rarely matches them. Our tool scans your resume against the specific job description to find which keywords you're missing, and helps you rephrase student jargon into the professional terms the screening looks for. If you don't actually have a skill, we tell you it's missing instead of writing it in.",
         },
         {
           question: "How accurate is the AI analysis?",
           answer:
-            "Our AI is powered by OpenAI's GPT-4, one of the most advanced language models available. While highly accurate, <strong>AI analysis should be used as guidance, not absolute truth</strong>. We recommend combining AI insights with your own judgment and career expertise.",
+            "The analysis runs on OpenAI's models, and the score comes from a fixed checklist of 80 checks, so every resume is judged the same way. Even so, <strong>AI analysis should be used as guidance, not absolute truth</strong>. We recommend combining AI insights with your own judgment and career expertise.",
         },
         {
           question: "Do you provide cover letter generation?",

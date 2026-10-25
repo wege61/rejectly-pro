@@ -154,6 +154,24 @@ const PricingGrid = styled.div`
   }
 `;
 
+const ManageCard = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.lg};
+  border-radius: ${({ theme }) => theme.radius.lg};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.surface};
+
+  p {
+    margin: 0;
+    color: ${({ theme }) => theme.colors.textSecondary};
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  }
+`;
+
 const CreditsCardWrapper = styled.div`
   flex-shrink: 0;
 
@@ -277,7 +295,8 @@ const ModalMessage = styled.p`
 `;
 
 export default function BillingPage() {
-  const { refreshCredits } = useCredits();
+  const { refreshCredits, credits } = useCredits();
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'cancelled' | 'error' | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -338,7 +357,11 @@ export default function BillingPage() {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || 'Network response was not ok');
+        let message = errorText;
+        try {
+          message = JSON.parse(errorText).error || errorText;
+        } catch {}
+        throw new Error(message || 'Network response was not ok');
       }
 
       const { url } = await response.json();
@@ -354,6 +377,23 @@ export default function BillingPage() {
       setPaymentStatus('error');
     } finally {
       setIsLoading(null);
+    }
+  };
+
+  const openPortal = async () => {
+    setIsOpeningPortal(true);
+    setErrorMessage('');
+    try {
+      const response = await fetch('/api/stripe/portal', { method: 'POST' });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.url) {
+        throw new Error(data.error || 'Could not open subscription settings.');
+      }
+      window.location.href = data.url;
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Could not open subscription settings.');
+      setPaymentStatus('error');
+      setIsOpeningPortal(false);
     }
   };
 
@@ -425,6 +465,17 @@ export default function BillingPage() {
           <CreditsCard />
         </CreditsCardWrapper>
       </Header>
+      {credits.hasSubscription && (
+        <Section>
+          <SectionTitle>Your Pro subscription</SectionTitle>
+          <ManageCard>
+            <p>Cancel, update your card or download invoices. Opens Stripe&apos;s secure billing page.</p>
+            <Button variant="secondary" onClick={openPortal} isLoading={isOpeningPortal}>
+              Manage subscription
+            </Button>
+          </ManageCard>
+        </Section>
+      )}
       <Section>
         <SectionTitle>Buy Credits</SectionTitle>
         <SharedPricingCards 

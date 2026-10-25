@@ -3,6 +3,8 @@ import { stripe } from '@/lib/stripe';
 import { PRICING } from '@/lib/constants';
 import { createClient } from '@/lib/supabase/server';
 import { checkoutRequestSchema, validateRequest } from '@/lib/validations';
+import { hasActiveSubscription } from '@/lib/credits';
+import { findStripeCustomerId } from '@/lib/subscriptions';
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,6 +37,17 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Invalid Price ID', { status: 400 });
     }
 
+    // A second Pro checkout would bill the user twice for the same access.
+    if (mode === 'subscription' && (await hasActiveSubscription(user.id))) {
+      return NextResponse.json(
+        { error: 'You already have an active Pro subscription. Manage it from the billing page.' },
+        { status: 409 }
+      );
+    }
+
+    // Reuse the user's Stripe customer so every purchase shows up in one billing portal.
+    const customerId = await findStripeCustomerId(user.id);
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -47,7 +60,8 @@ export async function POST(req: NextRequest) {
       allow_promotion_codes: true,
       success_url: successUrl,
       cancel_url: cancelUrl,
-      customer_email: user.email,
+      ...(customerId ? { customer: customerId } : { customer_email: user.email }),
+      ...(mode === 'subscription' && { subscription_data: { metadata: { userId: user.id } } }),
       metadata: {
         userId: user.id,
         credits: plan.credits.toString(),

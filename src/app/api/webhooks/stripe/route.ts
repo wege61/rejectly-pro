@@ -4,6 +4,7 @@ import { stripe } from '@/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { sendCreditsPurchasedEmail, sendSubscriptionPurchasedEmail } from '@/lib/email';
+import { syncSubscription } from '@/lib/subscriptions';
 
 export const dynamic = 'force-dynamic'; // Prevent Next.js from caching the raw body
 
@@ -72,70 +73,26 @@ export async function POST(req: Request) {
       
       try {
         if (planType === 'subscription') {
-          // Handle Pro Subscription
-          // 1. Check if a subscription record already exists
-          const { data: existingSub, error: subFetchError } = await supabase
-            .from('subscriptions')
-            .select('id')
-            .eq('user_id', userId)
-            .single();
+          const subscriptionId =
+            typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;
 
-          if (subFetchError && subFetchError.code !== 'PGRST116') { // PGRST116 is not found
-            console.error('Error fetching subscription:', subFetchError);
-            return new NextResponse('Error fetching subscription', { status: 500 });
+          if (!subscriptionId) {
+            console.error(`Checkout ${session.id} is a subscription but has no subscription id`);
+            return new NextResponse('Missing subscription', { status: 500 });
           }
 
-          // We'll give them 1 month of access from now for simplify, 
-          // Stripe handles recurrent webhook but this is just checkout.session.completed
-          // For real, we should read period_end from Stripe or handle 'customer.subscription.created'
-          // We will use 1 month as fallback if Stripe's period isn't immediately available here 
-          // but better is reading from the session or stripe customer
-          
-          const currentPeriodStart = new Date();
-          const currentPeriodEnd = new Date();
-          currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
-
-          if (existingSub) {
-            // Update existing subscription
-            const { error: updateError } = await supabase
-              .from('subscriptions')
-              .update({
-                status: 'active',
-                plan: 'pro',
-                current_period_start: currentPeriodStart.toISOString(),
-                current_period_end: currentPeriodEnd.toISOString(),
-              })
-              .eq('user_id', userId);
-
-            if (updateError) {
-              console.error('Error updating subscription:', JSON.stringify(updateError, null, 2));
-              return new NextResponse('Error updating subscription', { status: 500 });
-            }
-          } else {
-            // Create new subscription
-            const { error: insertError } = await supabase
-              .from('subscriptions')
-              .insert({
-                user_id: userId,
-                status: 'active',
-                plan: 'pro',
-                current_period_start: currentPeriodStart.toISOString(),
-                current_period_end: currentPeriodEnd.toISOString(),
-              });
-
-            if (insertError) {
-              console.error('Error creating subscription:', JSON.stringify(insertError, null, 2));
-              return new NextResponse('Error creating subscription', { status: 500 });
-            }
+          const result = await syncSubscription(subscriptionId, userId);
+          if (!result.ok) {
+            return new NextResponse('Error saving subscription', { status: 500 });
           }
           console.log(`Successfully activated subscription for user ${userId}`);
 
           // Send subscription confirmation email
           try {
             const { data: userData } = await supabase.auth.admin.getUserById(userId);
-            if (userData?.user?.email) {
+            if (userData?.user?.email && result.periodEnd) {
               const userName = userData.user.user_metadata?.name || 'there';
-              await sendSubscriptionPurchasedEmail(userData.user.email, userName, currentPeriodEnd);
+              await sendSubscriptionPurchasedEmail(userData.user.email, userName, result.periodEnd);
             }
           } catch (emailErr) {
             console.error('Failed to send subscription email (non-blocking):', emailErr);
@@ -220,5 +177,35 @@ export async function POST(req: Request) {
     }
   }
 
+  // Renewals, cancellations and failed payments. Each one re-reads the subscription
+  // from Stripe, so the order these arrive in doesn't matter.
+  if (
+    event.type === 'invoice.paid' ||
+    event.type === 'customer.subscription.updated' ||
+    event.type === 'customer.subscription.deleted'
+  ) {
+    const subscriptionId =
+      event.type === 'invoice.paid'
+        ? subscriptionIdOf(event.data.object.parent?.subscription_details?.subscription)
+        : event.data.object.id;
+
+    if (subscriptionId) {
+      try {
+        const result = await syncSubscription(subscriptionId);
+        // An unknown user means checkout.session.completed hasn't landed yet; it will sync then.
+        if (!result.ok && result.reason === 'db-error') {
+          return new NextResponse('Error saving subscription', { status: 500 });
+        }
+      } catch (err) {
+        console.error(`Failed to sync subscription ${subscriptionId}:`, err);
+        return new NextResponse('Internal Server Error', { status: 500 });
+      }
+    }
+  }
+
   return new NextResponse(null, { status: 200 });
+}
+
+function subscriptionIdOf(value: string | Stripe.Subscription | null | undefined) {
+  return typeof value === 'string' ? value : value?.id ?? null;
 }

@@ -303,11 +303,6 @@ const PricingStarIcon = () => (
   </svg>
 );
 
-const PricingRefreshIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-  </svg>
-);
 
 
 interface SharedPricingCardsProps {
@@ -338,9 +333,8 @@ export function SharedPricingCards({ onCheckout, isLoading, isModal }: SharedPri
         
         <PricingFeatureList $compressed={isModal}>
           <PricingFeatureRow $compressed={isModal}><PricingCreditIcon />1 credit — Perfect for testing</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingAnalysisIcon />1 job match analysis OR</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />1 ATS optimization OR</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingLetterIcon />1 cover letter</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingAnalysisIcon />1 Job Match, cover letter included</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />Or 1 full ATS report</PricingFeatureRow>
           <PricingFeatureRow $compressed={isModal}><PricingSparklesIcon />Full Pro features included</PricingFeatureRow>
           <PricingFeatureRowMuted $compressed={isModal}><PricingClockIcon />Credits never expire</PricingFeatureRowMuted>
           <PricingFeatureRowMuted $compressed={isModal}><PricingShieldIcon />No subscription, no commitment</PricingFeatureRowMuted>
@@ -349,7 +343,7 @@ export function SharedPricingCards({ onCheckout, isLoading, isModal }: SharedPri
 
       {/* Starter Plan */}
       <PricingCard $featured $compressed={isModal}>
-        <PricingBadge $compressed={isModal}>Most popular</PricingBadge>
+        <PricingBadge $compressed={isModal}>Best value</PricingBadge>
         <PricingPlanName $compressed={isModal}>{PRICING.STARTER.name}</PricingPlanName>
         <PricingPrice $compressed={isModal}>${PRICING.STARTER.price}</PricingPrice>
         <PricingPriceSubtext $compressed={isModal}>one-time payment</PricingPriceSubtext>
@@ -367,10 +361,9 @@ export function SharedPricingCards({ onCheckout, isLoading, isModal }: SharedPri
         
         <PricingFeatureList $compressed={isModal}>
           <PricingFeatureRow $compressed={isModal}><PricingCreditIcon />10 credits — Use however you need</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingAnalysisIcon />Job match analyses</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />ATS optimizations</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingLetterIcon />Cover letters</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingMixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingAnalysisIcon />Job Matches, cover letter included</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />Full ATS reports</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingMixIcon />Mix & match: 7 Job Matches + 3 ATS reports</PricingFeatureRow>
           <PricingFeatureRowHighlight $compressed={isModal}><PricingSaveIcon />Save 65% ($0.70 per credit)</PricingFeatureRowHighlight>
           <PricingFeatureRowMuted $compressed={isModal}><PricingClockIcon />Credits never expire</PricingFeatureRowMuted>
           <PricingFeatureRowMuted $compressed={isModal}><PricingTargetIcon />Best for 5-10 target positions</PricingFeatureRowMuted>
@@ -396,12 +389,11 @@ export function SharedPricingCards({ onCheckout, isLoading, isModal }: SharedPri
         <PricingFeatureList $compressed={isModal}>
           <PricingFeatureRow $compressed={isModal}><PricingInfinityIcon />Unlimited — No limits, no counting</PricingFeatureRow>
           <PricingFeatureRow $compressed={isModal}><PricingAnalysisIcon />Unlimited job match analyses</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />Unlimited ATS optimizations</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingLetterIcon />Unlimited cover letters</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />Unlimited full ATS reports</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingLetterIcon />Cover letter with every Job Match</PricingFeatureRow>
           <PricingFeatureRow $compressed={isModal}><PricingRocketIcon />Perfect for career transitions</PricingFeatureRow>
-          <PricingFeatureRowHighlight $compressed={isModal}><PricingStarIcon />Best value for 20+ analyses/month</PricingFeatureRowHighlight>
-          <PricingFeatureRowMuted $compressed={isModal}><PricingRefreshIcon />Credits never expire while subscribed</PricingFeatureRowMuted>
-          <PricingFeatureRowMuted $compressed={isModal}><PricingShieldIcon />Cancel anytime, no questions asked</PricingFeatureRowMuted>
+          <PricingFeatureRowHighlight $compressed={isModal}><PricingStarIcon />Cheapest from 13 applications a month</PricingFeatureRowHighlight>
+          <PricingFeatureRowMuted $compressed={isModal}><PricingShieldIcon />Cancel anytime from your billing page</PricingFeatureRowMuted>
         </PricingFeatureList>
       </PricingCard>
     </PricingGrid>

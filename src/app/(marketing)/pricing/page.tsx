@@ -617,11 +617,6 @@ const StarIcon = () => (
   </svg>
 );
 
-const RefreshIcon = () => (
-  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-  </svg>
-);
 
 
 
@@ -761,9 +756,8 @@ export default function PricingPage() {
               </CTAButton>
               <FeatureList>
                 <FeatureRow><CreditIcon />1 credit — good for your first application</FeatureRow>
-                <FeatureRow><AnalysisIcon />1 job match analysis OR</FeatureRow>
-                <FeatureRow><ATSIcon />1 ATS optimization OR</FeatureRow>
-                <FeatureRow><LetterIcon />1 cover letter</FeatureRow>
+                <FeatureRow><AnalysisIcon />1 Job Match, cover letter included</FeatureRow>
+                <FeatureRow><ATSIcon />Or 1 full ATS report</FeatureRow>
                 <FeatureRow><SparklesIcon />Full Pro features included</FeatureRow>
                 <FeatureRowMuted><ClockIcon />Credits never expire</FeatureRowMuted>
                 <FeatureRowMuted><ShieldIcon />No subscription, no commitment</FeatureRowMuted>
@@ -772,7 +766,7 @@ export default function PricingPage() {
 
             {/* Starter Plan - Featured */}
             <PricingCard $featured>
-              <Badge>Most popular</Badge>
+              <Badge>Best value</Badge>
               <PlanName>Starter</PlanName>
               <PlanPrice>
                 <Price>$7</Price>
@@ -785,10 +779,9 @@ export default function PricingPage() {
               </CTAButton>
               <FeatureList>
                 <FeatureRow><CreditIcon />10 credits — Use however you need</FeatureRow>
-                <FeatureRow><AnalysisIcon />Job match analyses</FeatureRow>
-                <FeatureRow><ATSIcon />ATS optimizations</FeatureRow>
-                <FeatureRow><LetterIcon />Cover letters</FeatureRow>
-                <FeatureRow><MixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</FeatureRow>
+                <FeatureRow><AnalysisIcon />Job Matches, cover letter included</FeatureRow>
+                <FeatureRow><ATSIcon />Full ATS reports</FeatureRow>
+                <FeatureRow><MixIcon />Mix & match: 7 Job Matches + 3 ATS reports</FeatureRow>
                 <FeatureRowHighlight><SaveIcon />Save 65% ($0.70 per credit)</FeatureRowHighlight>
                 <FeatureRowMuted><ClockIcon />Credits never expire</FeatureRowMuted>
                 <FeatureRowMuted><TargetIcon />Perfect for graduation job search</FeatureRowMuted>
@@ -810,12 +803,11 @@ export default function PricingPage() {
               <FeatureList>
                 <FeatureRow><InfinityIcon />Unlimited — No limits, no counting</FeatureRow>
                 <FeatureRow><AnalysisIcon />Unlimited job match analyses</FeatureRow>
-                <FeatureRow><ATSIcon />Unlimited ATS optimizations</FeatureRow>
-                <FeatureRow><LetterIcon />Unlimited cover letters</FeatureRow>
+                <FeatureRow><ATSIcon />Unlimited full ATS reports</FeatureRow>
+                <FeatureRow><LetterIcon />Cover letter with every Job Match</FeatureRow>
                 <FeatureRow><RocketIcon />Graduation season mode — apply to everything</FeatureRow>
-                <FeatureRowHighlight><StarIcon />Best value for 20+ analyses/month</FeatureRowHighlight>
-                <FeatureRowMuted><RefreshIcon />Credits never expire while subscribed</FeatureRowMuted>
-                <FeatureRowMuted><ShieldIcon />Cancel anytime, no questions asked</FeatureRowMuted>
+                <FeatureRowHighlight><StarIcon />Cheapest from 13 applications a month</FeatureRowHighlight>
+                <FeatureRowMuted><ShieldIcon />Cancel anytime from your billing page</FeatureRowMuted>
               </FeatureList>
             </PricingCard>
           </PricingGrid>

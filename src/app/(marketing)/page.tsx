@@ -14,6 +14,7 @@ import { WhyItHappens } from "@/components/marketing/why/WhyItHappens";
 import { TryIt } from "@/components/marketing/try/TryIt";
 import { ToolsTour } from "@/components/marketing/tools/ToolsTour";
 import { Proof } from "@/components/marketing/proof/Proof";
+import { Pricing } from "@/components/marketing/pricing/Pricing";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -2585,135 +2586,8 @@ export default function Page() {
       {/* PROOF */}
       <Proof />
 
-
-      {/* PRICING - SIMPLIFIED */}
-      <Section id="pricing">
-       
-
-        {/* THE TRUE COST (PROVOCATIVE SALES SECTION) */}
-        <ProvocationSection>
-          <ProvocationHeader>
-            <span className="eyebrow">The True Cost</span>
-            <h3>Don't lose a $100k+ job over a $2 mistake.</h3>
-            <p>75% of resumes are discarded by ATS robots before a human ever sees them. Relying on generic templates or guessing keywords is killing your career trajectory.</p>
-          </ProvocationHeader>
-
-          <ContrastGrid>
-            {/* The Old Way */}
-            <OldWayColumn>
-              <div className="title">The Old Way</div>
-              <div className="price">$250+<span>/avg</span></div>
-              <ul>
-                <li>
-                  <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                  Hire a "career coach" who uses same AI tools
-                </li>
-                <li>
-                  <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                  Wait 7 days for a generic, manual rewrite
-                </li>
-                <li>
-                  <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                  Still fail the specific ATS keyword scan
-                </li>
-              </ul>
-            </OldWayColumn>
-
-            {/* The Rejectly Way */}
-            <RejectlyColumn>
-              <div className="glow" />
-              <div className="title">With Rejectly.pro</div>
-              <div className="price">$2<span>/pro analysis</span></div>
-              <ul>
-                <li>
-                  <CheckIcon />
-                  A new, optimized resume created for each specific job you apply to
-                </li>
-                <li>
-                  <CheckIcon />
-                  Complete application package in under a minute: CV, cover letter, interview prep
-                </li>
-                <li>
-                  <CheckIcon />
-                  Free CV builder &amp; ATS checker included — no credit card needed to start
-                </li>
-              </ul>
-            </RejectlyColumn>
-          </ContrastGrid>
-
-          <ProvocativeCTA>
-            <p>Stop bringing a knife to a robot fight.</p>
-          </ProvocativeCTA>
-        </ProvocationSection>
-
-        <PricingGrid>
-          {/* Single Plan */}
-          <PricingCard>
-            <PricingPlanName>Single</PricingPlanName>
-            <PricingPrice>$2</PricingPrice>
-            <PricingPriceSubtext>one-time payment</PricingPriceSubtext>
-            <PricingPlanDescription>Try it with a single analysis</PricingPlanDescription>
-            <PricingPlanTagline>Perfect for quick tests</PricingPlanTagline>
-            <PricingCTAButton href={ROUTES.AUTH.SIGNUP}>
-              Get started <PricingArrowIcon />
-            </PricingCTAButton>
-            <PricingFeatureList>
-              <PricingFeatureRow><PricingCreditIcon />1 credit — Perfect for testing</PricingFeatureRow>
-              <PricingFeatureRow><PricingAnalysisIcon />1 job match analysis OR</PricingFeatureRow>
-              <PricingFeatureRow><PricingATSIcon />1 ATS optimization OR</PricingFeatureRow>
-              <PricingFeatureRow><PricingLetterIcon />1 cover letter</PricingFeatureRow>
-              <PricingFeatureRow><PricingSparklesIcon />Full Pro features included</PricingFeatureRow>
-              <PricingFeatureRowMuted><PricingClockIcon />Credits never expire</PricingFeatureRowMuted>
-              <PricingFeatureRowMuted><PricingShieldIcon />No subscription, no commitment</PricingFeatureRowMuted>
-            </PricingFeatureList>
-          </PricingCard>
-
-          {/* Starter Plan - Featured */}
-          <PricingCard $featured>
-            <PricingBadge>Most popular</PricingBadge>
-            <PricingPlanName>Starter</PricingPlanName>
-            <PricingPrice>$7</PricingPrice>
-            <PricingPriceSubtext>one-time payment</PricingPriceSubtext>
-            <PricingPlanDescription>$0.70 per analysis — save 65%</PricingPlanDescription>
-            <PricingPlanTagline>Best for active job seekers</PricingPlanTagline>
-            <PricingCTAButton $primary href={ROUTES.AUTH.SIGNUP}>
-              Get started <PricingArrowIcon />
-            </PricingCTAButton>
-            <PricingFeatureList>
-              <PricingFeatureRow><PricingCreditIcon />10 credits — Use however you need</PricingFeatureRow>
-              <PricingFeatureRow><PricingAnalysisIcon />Job match analyses</PricingFeatureRow>
-              <PricingFeatureRow><PricingATSIcon />ATS optimizations</PricingFeatureRow>
-              <PricingFeatureRow><PricingLetterIcon />Cover letters</PricingFeatureRow>
-              <PricingFeatureRow><PricingMixIcon />Mix & match: 5 jobs + 3 ATS + 2 letters</PricingFeatureRow>
-              <PricingFeatureRowHighlight><PricingSaveIcon />Save 65% ($0.70 per credit)</PricingFeatureRowHighlight>
-              <PricingFeatureRowMuted><PricingClockIcon />Credits never expire</PricingFeatureRowMuted>
-              <PricingFeatureRowMuted><PricingTargetIcon />Best for 5-10 target positions</PricingFeatureRowMuted>
-            </PricingFeatureList>
-          </PricingCard>
-
-          {/* Pro Plan */}
-          <PricingCard>
-            <PricingPlanName>Pro</PricingPlanName>
-            <PricingPrice>$12</PricingPrice>
-            <PricingPriceSubtext>per month</PricingPriceSubtext>
-            <PricingPlanDescription>Unlimited for power users</PricingPlanDescription>
-            <PricingPlanTagline>Apply without limits</PricingPlanTagline>
-            <PricingCTAButton href={ROUTES.AUTH.SIGNUP}>
-              Get started <PricingArrowIcon />
-            </PricingCTAButton>
-            <PricingFeatureList>
-              <PricingFeatureRow><PricingInfinityIcon />Unlimited — No limits, no counting</PricingFeatureRow>
-              <PricingFeatureRow><PricingAnalysisIcon />Unlimited job match analyses</PricingFeatureRow>
-              <PricingFeatureRow><PricingATSIcon />Unlimited ATS optimizations</PricingFeatureRow>
-              <PricingFeatureRow><PricingLetterIcon />Unlimited cover letters</PricingFeatureRow>
-              <PricingFeatureRow><PricingRocketIcon />Perfect for career transitions</PricingFeatureRow>
-              <PricingFeatureRowHighlight><PricingStarIcon />Best value for 20+ analyses/month</PricingFeatureRowHighlight>
-              <PricingFeatureRowMuted><PricingRefreshIcon />Credits never expire while subscribed</PricingFeatureRowMuted>
-              <PricingFeatureRowMuted><PricingShieldIcon />Cancel anytime, no questions asked</PricingFeatureRowMuted>
-            </PricingFeatureList>
-          </PricingCard>
-        </PricingGrid>
-      </Section>
+      {/* PRICING */}
+      <Pricing />
 
       <Divider />
 

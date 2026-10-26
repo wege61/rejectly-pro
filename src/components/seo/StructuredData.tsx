@@ -1,3 +1,5 @@
+import { PRICING } from '@/lib/constants';
+
 export function OrganizationSchema() {
   const schema = {
     '@context': 'https://schema.org',
@@ -5,11 +7,12 @@ export function OrganizationSchema() {
     name: 'Rejectly.pro',
     url: 'https://rejectly.pro',
     logo: 'https://rejectly.pro/logo.png',
-    description: 'Free ATS resume checker and AI-powered resume optimization platform. Check your resume ATS compatibility score and get optimized resumes that pass Applicant Tracking Systems.',
+    description: 'ATS resume checker for students and new grads: see how applicant tracking software reads your resume, then fix it.',
     foundingDate: '2024',
+    // The accounts the footer links to.
     sameAs: [
-      'https://twitter.com/rejectlypro',
-      'https://linkedin.com/company/rejectlypro',
+      'https://www.instagram.com/rejectly.pro',
+      'https://www.tiktok.com/@rejectly.pro',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
@@ -55,42 +58,26 @@ export function ProductSchema() {
     applicationCategory: 'BusinessApplication',
     offers: {
       '@type': 'AggregateOffer',
-      lowPrice: '2.00',
-      highPrice: '12.00',
+      lowPrice: PRICING.SINGLE.price.toFixed(2),
+      highPrice: PRICING.PRO.price.toFixed(2),
       priceCurrency: 'USD',
-      priceSpecification: [
-        {
-          '@type': 'PriceSpecification',
-          price: '2.00',
-          priceCurrency: 'USD',
-          name: 'Single Analysis',
-        },
-        {
-          '@type': 'PriceSpecification',
-          price: '7.00',
-          priceCurrency: 'USD',
-          name: 'Starter Pack',
-        },
-        {
-          '@type': 'PriceSpecification',
-          price: '12.00',
-          priceCurrency: 'USD',
-          name: 'Pro Monthly',
-        },
-      ],
+      priceSpecification: [PRICING.SINGLE, PRICING.STARTER, PRICING.PRO].map((plan) => ({
+        '@type': 'PriceSpecification',
+        price: plan.price.toFixed(2),
+        priceCurrency: 'USD',
+        name: plan.name,
+      })),
     },
-    description: 'Free ATS resume checker that analyzes your resume against Applicant Tracking Systems, identifies ATS compatibility issues, missing keywords, and provides actionable improvements to increase your ATS pass rate and interview callbacks.',
+    description: 'Free ATS resume checker: see how applicant tracking software reads your resume, which keywords a job asks for, and what to fix. A job match rewrites your resume for one posting without inventing experience, with a cover letter and interview prep.',
     featureList: [
-      'Free ATS Resume Checker',
-      'ATS Compatibility Score',
-      'AI Resume Analysis',
-      'ATS Optimization',
-      'Job Matching Algorithm',
-      'Cover Letter Generator',
-      'Keyword Targeting',
-      'Resume Rewriting',
+      'Free ATS resume scan',
+      'ATS compatibility score',
+      'Job match against a posting',
+      'Rule-based resume rewrite',
+      'Cover letter',
+      'Interview prep',
+      'CV Builder',
     ],
-    screenshot: 'https://rejectly.pro/screenshot.png',
   }
 
   return (

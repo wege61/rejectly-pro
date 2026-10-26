@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Navbar } from "@/components/ui/Navbar";
 import { Spinner } from "@/components/ui/Spinner";
-import { getLatestBlogPostsStatic } from "@/lib/blog";
+import { getGuideShelfStatic } from "@/lib/blog";
 import { BlogDataProvider } from "@/components/blog/BlogDataContext";
 
 export const metadata: Metadata = {
@@ -16,13 +16,12 @@ export default async function MarketingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Fetch the latest 10 blog posts for the homepage FeaturedGuides carousel
-  // Using the static fetcher ensures we don't opt into dynamic rendering
-  // and keeps the homepage and all marketing pages incredibly fast.
-  const posts = await getLatestBlogPostsStatic(10);
+  // The homepage guide shelf. The static fetcher doesn't read cookies, so
+  // marketing pages stay statically rendered.
+  const shelf = await getGuideShelfStatic();
 
   return (
-    <BlogDataProvider posts={posts}>
+    <BlogDataProvider shelf={shelf}>
       <Navbar />
       <main>
         <Suspense

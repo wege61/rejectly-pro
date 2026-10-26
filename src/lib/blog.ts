@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createClient as createDirectClient } from '@supabase/supabase-js';
 import { config } from '@/lib/config';
 import type { BlogPost, BlogPostWithRelations, BlogCategory, BlogTag, BlogFilters } from '@/types/blog';
+import { GUIDE_SHELF, type GuideCard, type GuideShelfData, type GuideStage } from '@/components/marketing/guides/shelf';
 
 const DEFAULT_PAGE_SIZE = 12;
 
@@ -116,6 +117,59 @@ export async function getLatestBlogPostsStatic(limit = 10): Promise<BlogPostWith
     category: post.category || null,
     tags: post.tags?.map((t: any) => t.tag) || [],
   }));
+}
+
+type ShelfRow = {
+  slug: string;
+  title: string;
+  featured_image: string | null;
+  featured_image_alt: string | null;
+  category: { name: string } | null;
+};
+
+/**
+ * The homepage guide shelf, in the order GUIDE_SHELF lists it, plus the number
+ * of published guides. Selects only card fields, without cookies, so marketing
+ * pages stay static.
+ */
+export async function getGuideShelfStatic(): Promise<GuideShelfData> {
+  const supabase = createDirectClient(config.supabase.url, config.supabase.anonKey);
+  const fields = 'slug, title, featured_image, featured_image_alt, category:blog_categories(name)';
+
+  const [picked, latest, count] = await Promise.all([
+    supabase.from('blog_posts').select(fields).eq('is_published', true).in('slug', GUIDE_SHELF.map((g) => g.slug)),
+    supabase.from('blog_posts').select(fields).eq('is_published', true).order('published_at', { ascending: false }).limit(GUIDE_SHELF.length),
+    supabase.from('blog_posts').select('id', { count: 'exact', head: true }).eq('is_published', true),
+  ]);
+
+  if (picked.error || latest.error) {
+    console.error('Error fetching guide shelf:', picked.error || latest.error);
+    return { guides: [], total: 0 };
+  }
+
+  const toCard = (row: ShelfRow, stage: GuideStage): GuideCard => ({
+    slug: row.slug,
+    title: row.title,
+    image: row.featured_image,
+    imageAlt: row.featured_image_alt,
+    category: row.category?.name ?? null,
+    stage,
+  });
+
+  const bySlug = new Map((picked.data as unknown as ShelfRow[]).map((row) => [row.slug, row]));
+  const guides = GUIDE_SHELF.flatMap((g) => {
+    const row = bySlug.get(g.slug);
+    return row ? [toCard(row, g.stage)] : [];
+  });
+
+  // Fill gaps (an unpublished pick) with the newest guides, as "while you apply".
+  for (const row of latest.data as unknown as ShelfRow[]) {
+    if (guides.length >= GUIDE_SHELF.length) break;
+    if (!guides.some((g) => g.slug === row.slug)) guides.push(toCard(row, 1));
+  }
+  guides.sort((a, b) => a.stage - b.stage);
+
+  return { guides, total: count.count ?? guides.length };
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPostWithRelations | null> {

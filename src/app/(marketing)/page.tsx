@@ -6,8 +6,6 @@ import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ROUTES } from "@/lib/constants";
 import { Footer } from "@/components/ui/Footer";
-import { SecondaryCTA } from "@/components/marketing/SecondaryCTA";
-import { FeaturedGuides } from "@/components/marketing/FeaturedGuides";
 import { Hero } from "@/components/marketing/hero/Hero";
 import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
 import { WhyItHappens } from "@/components/marketing/why/WhyItHappens";
@@ -16,6 +14,8 @@ import { ToolsTour } from "@/components/marketing/tools/ToolsTour";
 import { Proof } from "@/components/marketing/proof/Proof";
 import { Pricing } from "@/components/marketing/pricing/Pricing";
 import { FAQ } from "@/components/marketing/faq/FAQ";
+import { GuidesShelf } from "@/components/marketing/guides/GuidesShelf";
+import { FinalCTA } from "@/components/marketing/final/FinalCTA";
 
 // ==================== ANIMATIONS ====================
 const fadeIn = keyframes`
@@ -2560,12 +2560,11 @@ export default function Page() {
       {/* FAQ */}
       <FAQ />
 
-      <Divider />
+      {/* GUIDES */}
+      <GuidesShelf />
 
-      {/* SECONDARY CTA SECTION */}
-      <FeaturedGuides />
-
-      <SecondaryCTA />
+      {/* FINAL CTA */}
+      <FinalCTA />
 
       <Footer />
     </Container>

@@ -1,26 +1,21 @@
 "use client";
 
 import React, { createContext, useContext } from "react";
-import type { BlogPostWithRelations } from "@/types/blog";
+import type { GuideShelfData } from "@/components/marketing/guides/shelf";
 
-// Create a context to hold the latest blog posts fetched from the server
-const BlogDataContext = createContext<BlogPostWithRelations[]>([]);
+// The homepage guide shelf, fetched once by the marketing layout on the server.
+const BlogDataContext = createContext<GuideShelfData>({ guides: [], total: 0 });
 
-export function BlogDataProvider({ 
-  posts, 
-  children 
-}: { 
-  posts: BlogPostWithRelations[];
+export function BlogDataProvider({
+  shelf,
+  children,
+}: {
+  shelf: GuideShelfData;
   children: React.ReactNode;
 }) {
-  return (
-    <BlogDataContext.Provider value={posts}>
-      {children}
-    </BlogDataContext.Provider>
-  );
+  return <BlogDataContext.Provider value={shelf}>{children}</BlogDataContext.Provider>;
 }
 
-// Hook for Client Components to easily access the latest posts
-export function useLatestPosts() {
+export function useGuideShelf() {
   return useContext(BlogDataContext);
 }

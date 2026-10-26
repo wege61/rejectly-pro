@@ -320,8 +320,9 @@ const Arrow = () => (
 );
 
 function errorText(status: number, fallback?: string) {
-  if (status === 429) return "You've used the free checks for this hour. Try again later, or sign up for unlimited checks with Pro.";
-  if (status === 400 && fallback) return fallback;
+  // 400, 413 (too long) and 429 (hourly or daily limit) carry a message written for the visitor.
+  if ((status === 400 || status === 413 || status === 429) && fallback) return fallback;
+  if (status === 429) return "You've used the free checks for now. Try again later, or create a free account to keep going.";
   return "Something went wrong on our side. Please try again in a moment.";
 }
 

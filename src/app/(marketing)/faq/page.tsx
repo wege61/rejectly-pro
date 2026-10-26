@@ -327,7 +327,7 @@ export default function FAQPage() {
         {
           question: "Can I delete my account and data?",
           answer:
-            "Yes. Delete your account from Settings at any time; it's permanent and removes your profile, analyses and reports. To make sure uploaded resume files are erased too, email us and we'll confirm it.",
+            "Yes. Delete your account from Settings at any time. It's permanent: your profile, analyses, reports and every file you uploaded or generated (resumes, photos, PDFs) are removed.",
         },
       ],
     },

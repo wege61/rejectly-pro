@@ -7,14 +7,37 @@ const limiter = rateLimit({
   interval: 60 * 60 * 1000, // 1 hour
   uniqueTokenPerInterval: 500,
 });
+
+/*
+ * The demo is free and needs no account, so it gets two cost guards on top of
+ * the per-IP limit: a size cap (a normal resume is 3-5k characters; without a
+ * cap one request could cost ~60x a normal one) and a site-wide daily budget,
+ * so a bot rotating IPs can't run up the OpenAI bill. A demo costs about half
+ * a cent, so the default cap is roughly $10 a day.
+ */
+const MAX_CHARS = 12_000;
+const DAILY_LIMIT = Number(process.env.DEMO_DAILY_LIMIT) || 2000;
+const dailyBudget = rateLimit({
+  name: "demo-analyze-daily",
+  interval: 24 * 60 * 60 * 1000,
+  uniqueTokenPerInterval: 1,
+});
+
 export async function POST(request: Request) {
   try {
     const { cvText, jobText } = await request.json();
 
-    if (!cvText || !jobText) {
+    if (typeof cvText !== "string" || typeof jobText !== "string" || !cvText.trim() || !jobText.trim()) {
       return Response.json(
         { error: "CV and job description required" },
         { status: 400 }
+      );
+    }
+
+    if (cvText.length > MAX_CHARS || jobText.length > MAX_CHARS) {
+      return Response.json(
+        { error: "That's longer than the free demo can check. Please shorten the resume or job post to about 12,000 characters." },
+        { status: 413 }
       );
     }
 
@@ -25,6 +48,16 @@ export async function POST(request: Request) {
     } catch {
       return Response.json(
         { error: "Rate limit exceeded. Please try again later or sign up for unlimited analysis." },
+        { status: 429 }
+      );
+    }
+
+    try {
+      await dailyBudget.check(DAILY_LIMIT, "all");
+    } catch {
+      console.warn("[demo-analyze] Daily budget reached");
+      return Response.json(
+        { error: "The free demo is very busy today. Create a free account to keep going." },
         { status: 429 }
       );
     }

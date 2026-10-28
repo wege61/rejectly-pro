@@ -347,7 +347,7 @@ export default function FAQPage() {
         {
           question: "How accurate is the AI analysis?",
           answer:
-            "The analysis runs on OpenAI's models, and the score comes from a fixed checklist of 80 checks, so every resume is judged the same way. Even so, <strong>AI analysis should be used as guidance, not absolute truth</strong>. We recommend combining AI insights with your own judgment and career expertise.",
+            "The ATS score isn't AI: it comes from 19 fixed checks run by code, so the same resume always gets the same score. The job match and rewrites use OpenAI's models. Treat those as <strong>guidance, not absolute truth</strong>, and check every line before you send your resume.",
         },
         {
           question: "Do you provide cover letter generation?",

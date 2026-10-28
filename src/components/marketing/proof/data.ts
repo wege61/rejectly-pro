@@ -3,9 +3,9 @@
  * - RULES restate rules from lib/ai/prompts/cvOptimization (never inflate scope,
  *   never invent numbers, never add unmet skills, never use a title the candidate
  *   hasn't held). The "tempting" lines are what an unconstrained AI would write.
- * - CATEGORIES are the scoring categories and checks from lib/ai/prompts/atsCheck,
- *   in plain English. Points per category match the prompt (25 + 25 + 30 + 20).
- *   Length & readability also scores the word count, so it is listed as a check.
+ * - CATEGORIES are the checks the ATS score actually runs (lib/ats/deterministicScoring,
+ *   FORMAT/STRUCTURE/KEYWORDS/READABILITY_CRITERIA), in plain English, with the
+ *   points each one is worth. If a check or its points change there, change it here.
  */
 
 export interface Rule {
@@ -45,59 +45,61 @@ export const RULES: Rule[] = [
   },
 ];
 
+export interface Check {
+  label: string;
+  points: number;
+}
+
 export interface Category {
   name: string;
   points: number;
-  checks: string[];
+  checks: Check[];
 }
+
+const c = (label: string, points: number): Check => ({ label, points });
 
 export const CATEGORIES: Category[] = [
   {
     name: "Format & parsing",
-    points: 25,
+    points: 35,
     checks: [
-      "Two-column layouts", "Leftover table structures", "Contact details in the header or footer", "Photos and logos",
-      "Text boxes and sidebars", "Decorative or script fonts", "Decorative dividers (═══, ★★★)", "Unusual bullet symbols (➤, ◆)",
-      "Emoji and special symbols", "ALL CAPS section headings", "Inconsistent spacing", "Margins outside 0.5–1 inch",
-      "Scanned PDFs that aren't real text", "Smart quotes instead of straight quotes", "En dashes in dates",
-      "Unusual characters in names and titles", "Extra blank lines between sections", "A clean single-column flow",
-      "Standard bullets (• or -)", "Consistent indentation", "Clear paragraph breaks", "Standard fonts throughout",
-      "Contact details in the main body",
+      c("A single-column layout", 10),
+      c("No table-like rows (| repeated down the page)", 8),
+      c("Contact details the ATS can read, not only in a header or footer", 7),
+      c("Standard bullets (• or -)", 4),
+      c("Clean characters, no emoji or odd symbols", 3),
+      c("Simple section dividers, no ═══ or ★★★", 3),
     ],
   },
   {
     name: "Structure & sections",
-    points: 25,
+    points: 35,
     checks: [
-      "“Summary”, not “About me”", "“Work Experience”, not “Career journey”", "“Education”, not “Academic background”",
-      "“Skills”, not “Toolbox”", "“Certifications”, not “Credentials”", "A contact section at the top", "An experience section",
-      "An education section", "A skills section", "A summary right after your contact details", "A clear title for each role",
-      "A company name for each role", "A location for each role", "Most recent role first", "One date format throughout",
-      "Job title before company", "Dates tied to each role", "No bullets without a parent role", "The same structure for every role",
-      "Your name at the very top", "A valid email address", "A phone number", "A LinkedIn URL", "Your city and country",
-      "No full home address", "A portfolio or GitHub link (tech roles)",
+      c("An experience section", 10),
+      c("An education section", 8),
+      c("A skills section", 8),
+      c("An email address", 3),
+      c("A phone number", 3),
+      c("A LinkedIn URL", 2),
+      c("A summary", 1),
     ],
   },
   {
-    name: "Keywords & content",
-    points: 30,
-    checks: [
-      "How often each key skill appears", "Key skills used 2–3 times in context", "Skills mentioned only once",
-      "Skills repeated 5+ times", "Abbreviations spelled out at least once", "A job title in the posting's language",
-      "Certification names in full", "Key words in the top third", "A skills list, not a comma dump",
-      "Keywords inside your bullets, not just listed", "Key words across several sections", "Present tense for your current role",
-      "Past tense for past roles", "Tense variations (only Lever reads them)", "Bullets that start with an action verb",
-      "Impact, with numbers where you have them", "Results-focused language", "Industry terms used naturally", "Keyword stuffing",
-      "Skills with no context", "Generic phrases (“hard worker”)", "Empty buzzwords (“synergy”)", "Abbreviations with no full form",
-    ],
-  },
-  {
-    name: "Length & readability",
+    name: "Content",
     points: 20,
     checks: [
-      "Word count (400–650 is ideal)", "Bullets, not a wall of text", "One or two lines per bullet", "White space between sections",
-      "No paragraph over three lines", "Name, title and top skills findable in 6 seconds", "Key achievements visible at a glance",
-      "Structure obvious at a glance",
+      c("Numbers in your achievements", 10),
+      c("One date format throughout", 6),
+      c("Skills the ATS can pick out", 4),
+    ],
+  },
+  {
+    name: "Readability",
+    points: 10,
+    checks: [
+      c("A reasonable length", 4),
+      c("Clear breaks between sections", 3),
+      c("Bullets, not paragraphs", 3),
     ],
   },
 ];

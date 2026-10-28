@@ -4,6 +4,8 @@
  * Every claim is checked against the product: see the notes beside each entry.
  */
 
+import { TOTAL_CHECKS } from "../proof/data";
+
 export interface Faq {
   question: string;
   short: string;
@@ -17,13 +19,13 @@ export const FAQS: Faq[] = [
     short: "No",
     answer:
       "No one honestly can. Every company sets up its ATS differently. What we do: show you what the parser reads, fix the format and wording it trips on, and score you against the job. The rest is your experience.",
-    link: { label: "See the 80 checks", href: "#proof" },
+    link: { label: `See the ${TOTAL_CHECKS} checks`, href: "#proof" },
   },
   {
     question: "Why not just paste it into ChatGPT?",
     short: "You can",
     answer:
-      "You can. But a chatbot doesn't read your file the way an ATS parser does, doesn't score it against 80 checks, and will happily invent a number if you let it. Rejectly does the parsing, the scoring and a rule-bound rewrite in one place.",
+      `You can. But a chatbot doesn't read your file the way an ATS parser does, doesn't score it against the same ${TOTAL_CHECKS} checks every time, and will happily invent a number if you let it. Rejectly does the parsing, the scoring and a rule-bound rewrite in one place.`,
   },
   {
     // The rewrite rules live in src/lib/ai/prompts/cvOptimization.ts.

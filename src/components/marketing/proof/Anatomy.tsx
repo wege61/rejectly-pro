@@ -18,22 +18,22 @@ const ZONES: Zone[] = [
   { cat: 0, tone: "y", style: { left: "6%", width: "5%", top: "41%", height: "20%" }, delay: 0.3 },
   { cat: 1, tone: "y", style: { left: "6%", width: "52%", top: "8%", height: "10%" }, delay: 0.05 },
   ...[21, 34, 66, 80].map((top, i) => ({ cat: 1, tone: "y" as const, style: { left: "6%", width: "32%", top: `${top - 1.2}%`, height: "4.5%" }, delay: 0.15 + i * 0.08 })),
-  { cat: 2, tone: "y", style: { left: "3%", right: "3%", top: 0, height: "33%" }, delay: 0.05 },
+  { cat: 2, tone: "y", style: { left: "44%", width: "16%", top: "32%", height: "5%" }, delay: 0.05 },
   { cat: 2, tone: "y", style: { left: "6%", width: "58%", top: "39%", height: "23%" }, delay: 0.2 },
   { cat: 2, tone: "y", style: { left: "6%", width: "58%", top: "83.5%", height: "6%" }, delay: 0.35 },
   { cat: 3, tone: "r", style: { left: "2%", right: "2%", top: "2%", bottom: "2%" }, delay: 0.05 },
 ];
 
 const LEGEND: { cat: number; tone: "y" | "r"; text: string }[] = [
-  { cat: 0, tone: "r", text: "Page header and footer" },
-  { cat: 0, tone: "r", text: "A second column" },
-  { cat: 0, tone: "y", text: "Bullet symbols and fonts" },
-  { cat: 1, tone: "y", text: "Section headings and their order" },
-  { cat: 1, tone: "y", text: "Name and contact at the top" },
-  { cat: 2, tone: "y", text: "The top third (weighted 2×)" },
-  { cat: 2, tone: "y", text: "Keywords inside your bullets" },
+  { cat: 0, tone: "r", text: "A second column or table rows" },
+  { cat: 0, tone: "r", text: "Contact details in a header or footer" },
+  { cat: 0, tone: "y", text: "Bullet symbols and dividers" },
+  { cat: 1, tone: "y", text: "Experience, education and skills headings" },
+  { cat: 1, tone: "y", text: "Email, phone and LinkedIn at the top" },
+  { cat: 2, tone: "y", text: "Dates next to each role" },
+  { cat: 2, tone: "y", text: "Numbers inside your bullets" },
   { cat: 2, tone: "y", text: "Your skills list" },
-  { cat: 3, tone: "r", text: "The whole page: words, bullets, white space" },
+  { cat: 3, tone: "r", text: "The whole page: length, section breaks, bullets" },
 ];
 
 /* page "text": [top %, width %, left %, colour] */
@@ -42,6 +42,8 @@ const LINES: [number, number, number, string][] = [
   [25, 52, 9, "#DADBD6"], [28.5, 46, 9, "#DADBD6"],
   ...[39, 43, 47, 51, 55, 59].map((t, k): [number, number, number, string] => [t, k % 2 ? 48 : 42, 13, "#DADBD6"]),
   [70, 40, 9, "#DADBD6"], [73.5, 30, 9, "#DADBD6"], [85, 50, 9, "#DADBD6"],
+  // dates beside the first role heading
+  [34, 12, 46, "#C9CBC5"],
   ...[12, 18, 24, 30, 46, 52, 58, 72].map((t): [number, number, number, string] => [t, 18, 72, "#E7E8E4"]),
   [2.5, 40, 30, "#E7E8E4"],
 ];

@@ -16,7 +16,6 @@ import { CATEGORIES, RULES, TOTAL_CHECKS, TOTAL_POINTS } from "./data";
  * category list on the left and the open checklist on the right.
  */
 
-const PREVIEW = 8;
 const RULE_GAP = 1300;
 const MAX_POINTS = Math.max(...CATEGORIES.map((c) => c.points));
 
@@ -219,7 +218,7 @@ const Sheet = styled.div`
 
   > ul > li {
     display: grid;
-    grid-template-columns: 16px 1fr;
+    grid-template-columns: 16px 1fr auto;
     gap: 10px;
     align-items: start;
     font-size: 14px;
@@ -235,16 +234,12 @@ const Sheet = styled.div`
     box-shadow: inset 0 0 0 1.5px rgba(13, 14, 16, 0.35);
   }
 
-  .all {
-    margin-top: 14px;
-    padding: 0;
-    font: 500 13.5px/1 var(--rj-font);
-    color: var(--rj-doc-ink);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  > ul > li .p {
+    font: 600 11.5px/1.6 var(--rj-mono);
+    color: #80848d;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
-
-  .all:focus-visible { outline: 2px solid #0d0e10; outline-offset: 3px; }
 `;
 
 const DeskAnatomy = styled.div`
@@ -294,7 +289,6 @@ export function Proof() {
   const reduce = !!useReducedMotion();
   const desktop = useIsDesktop();
   const [open, setOpen] = useState<number | null>(0);
-  const [showAll, setShowAll] = useState<Record<number, boolean>>({});
   const [armed, setArmed] = useState(false);
   const [ruleStart, setRuleStart] = useState<(number | null)[]>(RULES.map(() => null));
   const [barsIn, setBarsIn] = useState(true);
@@ -364,7 +358,6 @@ export function Proof() {
           <Score ref={scoreRef}>
             {CATEGORIES.map((c, i) => {
               const expanded = open === i;
-              const all = !!showAll[i];
               return (
                 <Row key={c.name}>
                   <Cat
@@ -388,13 +381,13 @@ export function Proof() {
                       </div>
                       <div className="sh"><b>{c.name}</b><span>{c.points} points · {c.checks.length} checks</span></div>
                       <ul>
-                        {(all ? c.checks : c.checks.slice(0, PREVIEW)).map((check) => <li key={check}>{check}</li>)}
+                        {c.checks.map((check) => (
+                          <li key={check.label}>
+                            <span>{check.label}</span>
+                            <span className="p">{check.points} pts</span>
+                          </li>
+                        ))}
                       </ul>
-                      {c.checks.length > PREVIEW && (
-                        <button type="button" className="all" aria-expanded={all} onClick={() => setShowAll((s) => ({ ...s, [i]: !all }))}>
-                          {all ? "Show fewer" : `Show all ${c.checks.length} checks`}
-                        </button>
-                      )}
                     </Sheet>
                   </Panel>
                 </Row>

@@ -5,6 +5,7 @@ import styled, { css } from "styled-components";
 import { useReducedMotion } from "framer-motion";
 import { ROUTES } from "@/lib/constants";
 import { useSeenOnce } from "../why/shared";
+import { TOTAL_CHECKS } from "../proof/data";
 
 /*
  * Homepage section 9: the closing panel. The hero's headline returns, and the
@@ -430,7 +431,7 @@ export function FinalCTA() {
           <Micro>
             <li><Check />No account</li>
             <li><Check />No card</li>
-            <li><Check />80 checks</li>
+            <li><Check />{TOTAL_CHECKS} checks</li>
           </Micro>
         </Copy>
 

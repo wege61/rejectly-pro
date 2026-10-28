@@ -302,7 +302,7 @@ export default function FAQPage() {
         {
           question: "Do you offer refunds?",
           answer:
-            "Yes, for credits you haven't used: <strong>a full refund within 14 days of purchase</strong>. Email us from the address on your account. Pro subscriptions aren't refunded for partial months, but you can cancel anytime and keep Pro until the period ends. The ATS scan is free, so you can try Rejectly before paying anything.",
+            "Yes, for a credit pack you haven't used any credits from: <strong>a full refund within 14 days of purchase</strong>. Email us from the address on your account. Pro subscriptions aren't refunded for partial months, but you can cancel anytime and keep Pro until the period ends. The ATS scan is free, so you can try Rejectly before paying anything.",
         },
       ],
     },

@@ -19,12 +19,13 @@ import { Receipt } from "./Receipt";
 const MAX = 30;
 const CHIPS = [1, 5, 10, 20];
 
-const Section = styled.section`
+const Section = styled.section<{ $page?: boolean }>`
   background: var(--rj-paper);
   color: var(--rj-ink);
   font-family: var(--rj-font);
   -webkit-font-smoothing: antialiased;
-  border-top: 1px solid var(--rj-line);
+  border-top: ${({ $page }) => ($page ? "0" : "1px solid var(--rj-line)")};
+  ${({ $page }) => $page && "padding-top: calc(60px + env(safe-area-inset-top, 0px));"}
 `;
 
 const Inner = styled.div`
@@ -47,7 +48,7 @@ const Head = styled.header<{ $seen: boolean }>`
     color: var(--rj-ink-2);
   }
 
-  h2 {
+  h1, h2 {
     margin: 12px 0 0;
     max-width: 12em;
     font-size: clamp(32px, 8.6vw, 56px);
@@ -61,7 +62,7 @@ const Head = styled.header<{ $seen: boolean }>`
     @media (min-width: 1000px) { max-width: none; font-size: clamp(40px, 3.9vw, 56px); }
   }
 
-  h2 mark {
+  h1 mark, h2 mark {
     padding: 0 0.06em;
     margin: 0 -0.03em;
     border-radius: 0.08em;
@@ -136,6 +137,8 @@ const Ticket = styled.div`
     gap: 10px 18px;
     padding: 14px 16px 14px 22px;
   }
+
+  .links { display: flex; flex-wrap: wrap; gap: 8px 18px; }
 
   p {
     margin: 0;
@@ -470,8 +473,13 @@ function describe(n: number) {
   };
 }
 
-export function Pricing() {
+/**
+ * The pricing section. On the homepage it's one section (h2); /pricing uses it
+ * as its hero (`page`), so the page title is an h1 and it clears the navbar.
+ */
+export function Pricing({ page = false }: { page?: boolean }) {
   const reduce = useReducedMotion();
+  const Title = page ? "h1" : "h2";
   const [n, setN] = useState(8);
   const [armed, setArmed] = useState(false);
   const [seen, setSeen] = useState(false);
@@ -508,21 +516,24 @@ export function Pricing() {
   );
 
   return (
-    <Section id="pricing" aria-labelledby="pricing-title">
+    <Section id="pricing" aria-labelledby="pricing-title" $page={page}>
       <Inner>
         <Head ref={headRef} $seen={seen}>
           <p className="eyebrow">Pricing</p>
-          <h2 id="pricing-title">
+          <Title id="pricing-title">
             Pay for the jobs you <mark>apply to.</mark>
-          </h2>
+          </Title>
           <p>Scan free. Spend a credit when a job is worth it. Credits never expire.</p>
         </Head>
 
         <Ticket>
           <div className="stub">Free<br />always</div>
           <div className="body">
-            <p><b>ATS score, category breakdown and one quick fix.</b> No card needed.</p>
-            <TextLink href={ROUTES.PUBLIC.ATS_CHECK}>Scan free <Arrow /></TextLink>
+            <p><b>The ATS scan with all 19 checks, and the job match demo.</b> No account, no card.</p>
+            <span className="links">
+              <TextLink href={ROUTES.PUBLIC.ATS_CHECK}>Scan free <Arrow /></TextLink>
+              <TextLink href="/#demo">Try the demo <Arrow /></TextLink>
+            </span>
           </div>
         </Ticket>
 
@@ -590,7 +601,7 @@ export function Pricing() {
               <Card $rec={d.plan === "pro"}>
                 <h3>Pro {badge("pro")}</h3>
                 <div className="amt"><b>{money(PRICES.pro)}</b><span>per month</span></div>
-                <p className="what"><b>Unlimited</b> Job Matches and full ATS reports.</p>
+                <p className="what"><b>Unlimited</b> Job Matches and ATS Optimizer runs.</p>
                 <span className="tag">Cancel anytime</span>
                 <a href={ROUTES.AUTH.SIGNUP}>Go Pro</a>
               </Card>
@@ -603,7 +614,7 @@ export function Pricing() {
         <Trust>
           <li><Check />Secure checkout by Stripe</li>
           <li><Check />Credits never expire</li>
-          <li><Check />Unused credits refunded within 14 days</li>
+          <li><Check />Untouched credit packs refunded within 14 days</li>
           <li><Check />Cancel Pro anytime from your billing page</li>
         </Trust>
       </Inner>

@@ -166,7 +166,7 @@ export function Receipt({ armed, printed, ref }: { armed: boolean; printed: bool
             ))}
           </ul>
           <div className="tot"><span>TOTAL</span><b>1 credit</b></div>
-          <p className="or">Or spend it on one full ATS report: every issue, every fix.</p>
+          <p className="or">Or spend it on one ATS Optimizer run: your resume rebuilt and scored again.</p>
           <div className="bc" aria-hidden="true" />
           <div className="thx" aria-hidden="true">NO EXPIRY · NO SUBSCRIPTION</div>
         </Paper>

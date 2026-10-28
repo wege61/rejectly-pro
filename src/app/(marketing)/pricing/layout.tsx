@@ -1,45 +1,46 @@
 import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { PRICING_FAQS } from "@/components/marketing/pricing/faq";
+import { PRICING } from "@/lib/constants";
+
+const TITLE = "Pricing: Free ATS Scan, Credits from $2 | Rejectly.pro";
+const DESCRIPTION = `The ATS scan and job match demo are free. A Job Match or ATS Optimizer run is 1 credit ($${PRICING.SINGLE.price}), ${PRICING.STARTER.credits} credits are $${PRICING.STARTER.price}, or Pro is $${PRICING.PRO.price}/month for unlimited. Credits never expire.`;
 
 export const metadata: Metadata = {
-  title: { absolute: "Pricing - Affordable AI Resume Optimization | Rejectly.pro" },
-  description: "Simple, transparent pricing for AI resume optimization. Start at $2 for single analysis or get unlimited access for $12/month. No hidden fees, cancel anytime.",
+  title: { absolute: TITLE },
+  description: DESCRIPTION,
   keywords: [
-    "AI resume optimizer pricing",
-    "ATS checker cost",
+    "ats resume checker pricing",
+    "resume optimizer pricing",
+    "ats checker cost",
     "resume analysis pricing",
-    "affordable resume optimization",
-    "resume checker plans",
-    "AI resume subscription",
     "pay per resume analysis",
-    "resume optimization cost",
-    "ATS optimization pricing",
-    "professional resume pricing",
+    "resume checker plans",
+    "free ats scan",
   ],
   openGraph: {
-    title: "Pricing - Affordable AI Resume Optimization | Rejectly.pro",
-    description: "Simple, transparent pricing for AI resume optimization. Start at $2 for single analysis or get unlimited access for $12/month. No hidden fees.",
+    title: TITLE,
+    description: DESCRIPTION,
     url: "https://rejectly.pro/pricing",
     type: "website",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Rejectly.pro Pricing Plans",
-      },
-    ],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Rejectly.pro pricing" }],
   },
   alternates: {
     canonical: "https://rejectly.pro/pricing",
   },
 };
 
-export default function PricingLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: PRICING_FAQS.map((f) => ({
+    "@type": "Question",
+    name: f.question,
+    acceptedAnswer: { "@type": "Answer", text: f.answer },
+  })),
+};
+
+export default function PricingLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <BreadcrumbSchema
@@ -48,6 +49,7 @@ export default function PricingLayout({
           { name: "Pricing", url: "https://rejectly.pro/pricing" },
         ]}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       {children}
     </>
   );

@@ -869,7 +869,7 @@ export function AtsCheck() {
                   <Primary type="button" $light $wide onClick={() => handOff(OPTIMIZER_HANDOFF)}>
                     Fix it for me · 1 credit (${PRICING.SINGLE.price}) <Arrow />
                   </Primary>
-                  <small>Credits never expire. Unused credits refunded within 14 days.</small>
+                  <small>Credits never expire. Untouched packs refunded within 14 days.</small>
                 </Offer>
               )}
             </Split>

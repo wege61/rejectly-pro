@@ -59,7 +59,7 @@ export const FAQS: Faq[] = [
     question: "Do credits expire?",
     short: "No",
     answer:
-      "Never. One credit buys one Job Match, with the rewritten resume, cover letter and interview prep included, or one full ATS report. Haven't used them? Full refund within 14 days.",
+      "Never. One credit buys one Job Match, with the rewritten resume, cover letter and interview prep included, or one ATS Optimizer run. Haven't used a pack yet? Full refund within 14 days of buying it.",
   },
   {
     // Stripe Customer Portal, cancel at period end.

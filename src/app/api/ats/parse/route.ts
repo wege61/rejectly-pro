@@ -23,8 +23,12 @@ function sanitizeText(text: string): string {
     // Normalize Unicode
     cleaned = cleaned.normalize('NFC');
 
-    // Clean whitespace
-    cleaned = cleaned.replace(/\s+/g, ' ');
+    // Clean whitespace, but keep the layout: the ATS score reads the resume line by line
+    // (bullets, headings, dividers) and spots columns by wide gaps inside a line, so
+    // flattening it to one line misscores it. Only line edges and blank runs are trimmed.
+    cleaned = cleaned.replace(/\r\n?/g, '\n');
+    cleaned = cleaned.replace(/[ \t]*\n[ \t]*/g, '\n');
+    cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
     cleaned = cleaned.replace(/\\[^\\]/g, '');
 
     return cleaned.trim();

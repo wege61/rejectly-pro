@@ -18,6 +18,7 @@ import {
 import { ATSFullResult } from "@/components/ats";
 import { useCreditConfirm } from "@/hooks/useCreditConfirm";
 import { useAuth } from "@/hooks/useAuth";
+import { loadScan, clearScan } from "@/lib/ats/savedScan";
 import { LoadingModal } from "@/components/ui/LoadingModal";
 import { Drawer, DrawerHeader, DrawerTitle, DrawerBody } from "@/components/ui/Drawer";
 import { FileUpload } from "@/components/ui/FileUpload";
@@ -2671,6 +2672,19 @@ export default function DashboardATSOptimizerPage() {
   // Fetch optimized CV history on mount
   useEffect(() => {
     fetchOptimizedHistory();
+  }, []);
+
+  // Coming from the free scan on /ats-check ("Fix it for me"): pick up that scan
+  // so the visitor goes straight to optimizing instead of uploading again.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("from") !== "scan") return;
+    const saved = loadScan();
+    window.history.replaceState(null, "", window.location.pathname);
+    if (!saved) return;
+    clearScan();
+    setCvText(saved.text);
+    setAtsResult(saved.result as unknown as ATSResult);
+    setStep("result");
   }, []);
 
   // Fetch existing CVs when showing the list (in modal)

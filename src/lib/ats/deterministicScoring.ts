@@ -769,6 +769,18 @@ export interface DeterministicATSResult {
   summary: string;
 }
 
+/** One of the 19 checks, with its result, so a UI can list every check honestly. */
+export interface CheckResult {
+  id: string;
+  name: string;
+  points: number;
+  passed: boolean;
+  /** passMessage or failMessage */
+  message: string;
+  /** What to do when it fails. */
+  suggestion: string;
+}
+
 interface CategoryResult {
   name: string;
   maxPoints: number;
@@ -776,6 +788,7 @@ interface CategoryResult {
   percentage: number;
   issues: ATSIssue[];
   passes: string[];
+  checks: CheckResult[];
 }
 
 export function calculateDeterministicScore(cvText: string): DeterministicATSResult {
@@ -852,9 +865,18 @@ function calculateCategoryScore(
   let earnedPoints = 0;
   const issues: ATSIssue[] = [];
   const passes: string[] = [];
+  const checks: CheckResult[] = [];
 
   for (const criterion of criteria) {
     const passed = criterion.check(cv);
+    checks.push({
+      id: criterion.id,
+      name: criterion.name,
+      points: criterion.points,
+      passed,
+      message: passed ? criterion.passMessage : criterion.failMessage,
+      suggestion: criterion.suggestion,
+    });
 
     if (passed) {
       earnedPoints += criterion.points;
@@ -881,6 +903,7 @@ function calculateCategoryScore(
     percentage: Math.round((earnedPoints / maxPoints) * 100),
     issues,
     passes,
+    checks,
   };
 }
 

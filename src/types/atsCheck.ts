@@ -57,6 +57,15 @@ export interface ATSCategoryScore {
   percentage: number;
   issues: ATSIssue[];
   passes: string[]; // What the CV does well
+  /** Every check in the category with its result (public scan only). */
+  checks?: {
+    id: string;
+    name: string;
+    points: number;
+    passed: boolean;
+    message: string;
+    suggestion: string;
+  }[];
 }
 
 // Complete ATS Check Result

@@ -1,5 +1,6 @@
 "use client";
 
+import { safeRedirect } from "@/lib/safeRedirect";
 import { useState, Suspense, useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import Link from "next/link";
@@ -179,7 +180,7 @@ function LoginForm() {
   const turnstileRef = useRef<TurnstileRef>(null);
   const toast = useToast();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || ROUTES.APP.DASHBOARD;
+  const redirectTo = safeRedirect(searchParams.get("redirect"), ROUTES.APP.DASHBOARD);
 
   const handleTurnstileVerify = (token: string) => {
     setTurnstileToken(token);
@@ -331,7 +332,7 @@ function LoginForm() {
 
       <Footer>
         Don&apos;t have an account?{" "}
-        <Link href={ROUTES.AUTH.SIGNUP}>Create one</Link>
+        <Link href={redirectTo === ROUTES.APP.DASHBOARD ? ROUTES.AUTH.SIGNUP : `${ROUTES.AUTH.SIGNUP}?redirect=${encodeURIComponent(redirectTo)}`}>Create one</Link>
       </Footer>
     </Form>
   );

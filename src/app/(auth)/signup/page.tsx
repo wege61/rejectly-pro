@@ -1,5 +1,6 @@
 'use client';
 
+import { safeRedirect } from '@/lib/safeRedirect';
 import { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
@@ -179,6 +180,11 @@ const DividerText = styled.span`
   letter-spacing: 0.05em;
 `;
 
+/** Where to go after signing up: a same-site ?redirect= (e.g. back to a saved scan) or the dashboard. */
+function redirectAfterSignup() {
+  return safeRedirect(new URLSearchParams(window.location.search).get('redirect'), ROUTES.APP.DASHBOARD);
+}
+
 export default function SignupPage() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -232,7 +238,7 @@ export default function SignupPage() {
       const fullName = `${firstName} ${lastName}`.trim();
       await signUp(email, password, fullName, turnstileToken);
       toast.success('Account created successfully! Redirecting...');
-      router.push(ROUTES.APP.DASHBOARD);
+      router.push(redirectAfterSignup());
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Sign up failed. Please try again.';
       toast.error(errorMessage);
@@ -248,7 +254,7 @@ export default function SignupPage() {
     setIsGoogleLoading(true);
     try {
       // Will redirect to Google OAuth flow
-      signInWithGoogle(ROUTES.APP.DASHBOARD);
+      signInWithGoogle(redirectAfterSignup());
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Google sign in failed. Please try again.';
       toast.error(errorMessage);
@@ -427,7 +433,7 @@ export default function SignupPage() {
 
       <Footer>
         Already have an account?{' '}
-        <Link href={ROUTES.AUTH.LOGIN}>Sign in</Link>
+        <Link href={ROUTES.AUTH.LOGIN} onClick={(e) => { const r = new URLSearchParams(window.location.search).get('redirect'); if (r) { e.preventDefault(); router.push(`${ROUTES.AUTH.LOGIN}?redirect=${encodeURIComponent(safeRedirect(r, ROUTES.APP.DASHBOARD))}`); } }}>Sign in</Link>
       </Footer>
     </Form>
   );

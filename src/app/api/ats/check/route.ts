@@ -406,6 +406,7 @@ async function handlePublicATSCheck(cvText: string, useAI: boolean = false): Pro
           percentage: deterministicResult.categories.format.percentage,
           issues: deterministicResult.categories.format.issues,
           passes: deterministicResult.categories.format.passes,
+          checks: deterministicResult.categories.format.checks,
         },
         structure: {
           name: deterministicResult.categories.structure.name,
@@ -414,6 +415,7 @@ async function handlePublicATSCheck(cvText: string, useAI: boolean = false): Pro
           percentage: deterministicResult.categories.structure.percentage,
           issues: deterministicResult.categories.structure.issues,
           passes: deterministicResult.categories.structure.passes,
+          checks: deterministicResult.categories.structure.checks,
         },
         keywords: {
           name: deterministicResult.categories.keywords.name,
@@ -422,6 +424,7 @@ async function handlePublicATSCheck(cvText: string, useAI: boolean = false): Pro
           percentage: deterministicResult.categories.keywords.percentage,
           issues: deterministicResult.categories.keywords.issues,
           passes: deterministicResult.categories.keywords.passes,
+          checks: deterministicResult.categories.keywords.checks,
         },
         readability: {
           name: deterministicResult.categories.readability.name,
@@ -430,6 +433,7 @@ async function handlePublicATSCheck(cvText: string, useAI: boolean = false): Pro
           percentage: deterministicResult.categories.readability.percentage,
           issues: deterministicResult.categories.readability.issues,
           passes: deterministicResult.categories.readability.passes,
+          checks: deterministicResult.categories.readability.checks,
         },
       },
       topIssues: deterministicResult.topIssues,

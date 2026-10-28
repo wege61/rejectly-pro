@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { openai, AI_MODEL } from '@/lib/ai/client';
-import { guardBuilderAIRequest } from '@/lib/ai/builderGuard';
+import { guardBuilderAIRequest, BUILDER_OUTPUT_TOKENS } from '@/lib/ai/builderGuard';
 
 export async function POST(req: Request) {
   try {
@@ -65,7 +65,8 @@ Do not include markdown or explanations outside the JSON.`;
         model: AI_MODEL,
         messages: [{ role: 'system' as const, content: systemPrompt }],
         temperature: 0.7,
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" },
+        max_completion_tokens: BUILDER_OUTPUT_TOKENS.summary
       });
     let suggestions: string[] = [];
     

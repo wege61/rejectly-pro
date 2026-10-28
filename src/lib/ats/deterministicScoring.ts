@@ -98,18 +98,21 @@ const FORMAT_CRITERIA: ScoringCriterion[] = [
     points: 8,
     check: (cv) => !cv.hasPipeCharacters,
     passMessage: "No column-indicating characters",
-    failMessage: "Pipe characters (|) detected - indicates columns",
-    suggestion: "Replace | separators with commas or line breaks. Pipes confuse ATS parsers.",
+    failMessage: "Pipe characters (|) repeat down the page, a sign of a table or columns",
+    suggestion: "Rewrite table-like lines as plain lines or bullets. A single | in your contact line is fine.",
     severity: "critical",
   },
   {
     id: "contact_in_body",
     name: "Contact in main body",
     points: 7,
-    check: (cv) => cv.hasEmail && cv.hasPhone,
+    // Passes when the parsed text has any contact detail. A missing phone or email
+    // is scored by its own check below; failing here too used to tell people their
+    // contact info was in a header when it simply wasn't on the resume.
+    check: (cv) => cv.hasEmail || cv.hasPhone,
     passMessage: "Contact info in parseable area",
-    failMessage: "Contact info may be in header/footer (not parsed by many ATS)",
-    suggestion: "Place contact info in main document body, not in header/footer areas.",
+    failMessage: "No contact details found in the text an ATS reads",
+    suggestion: "Put your email and phone in the main body of the resume. Many ATS skip headers and footers.",
     severity: "critical",
   },
   {
@@ -235,7 +238,7 @@ const KEYWORDS_CRITERIA: ScoringCriterion[] = [
     check: (cv) => cv.metricsCount >= 1,
     passMessage: "Good use of metrics and numbers",
     failMessage: "No quantified achievements found",
-    suggestion: "Add numbers to your academic projects or internships: e.g., 'Collaborated in a team of 4' or 'Improved performance by 20%'.",
+    suggestion: "Add numbers you can back up to your projects or internships, like team size, users or records handled: e.g., 'Built in a team of 4' or 'Cleaned 12,000 CRM records'. Never estimate a result you didn't measure.",
     severity: "major",
   },
   {
@@ -328,7 +331,11 @@ export function parseCV(text: string): ParsedCV {
   const hasLanguages = hasSection(text, SECTION_WORDS.languages);
 
   // Format detection
-  const hasPipeCharacters = text.includes('|');
+  // A pipe in the contact line ("email | phone | LinkedIn") is normal and parses
+  // fine. Pipes only suggest a table or columns when they repeat down the body,
+  // so ignore the first few lines and require several lines that use them.
+  const bodyPipeLines = text.split('\n').slice(6).filter((line) => line.includes('|')).length;
+  const hasPipeCharacters = bodyPipeLines >= 3;
   const hasCreativeDividers = /[═━─▬★●◆■▪►▸⚡🔥✨]/u.test(text);
   const hasEmojis = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u.test(text);
   // Only flag truly problematic bullet characters - not standard ones like •

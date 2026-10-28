@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: { absolute: "Blog - Resume Tips, Career Advice & ATS Optimization | Rejectly.pro" },
+  title: { absolute: "Guides: Resumes, ATS and the Job Search | Rejectly.pro" },
   description:
-    "Expert insights on resume optimization, ATS systems, career advice, and job search strategies. Learn how to land more interviews with our AI-powered tips.",
+    "Guides on how applicant tracking systems read a resume, how to format and word yours, and how to get from application to interview. Written for students and new grads.",
   keywords: [
     "resume tips",
     "career advice",
@@ -18,9 +18,9 @@ export const metadata: Metadata = {
     "CV improvement",
   ],
   openGraph: {
-    title: "Blog - Resume Tips & Career Advice | Rejectly.pro",
+    title: "Guides: Resumes, ATS and the Job Search | Rejectly.pro",
     description:
-      "Expert insights on resume optimization, ATS systems, and career advice to help you land more interviews.",
+      "How applicant tracking systems read a resume, and what to do about it. Written for students and new grads.",
     url: "https://rejectly.pro/blog",
     type: "website",
     images: [
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Rejectly.pro Blog - Resume Tips & Career Advice",
+        alt: "Rejectly.pro guides",
       },
     ],
   },
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@rejectlypro",
     creator: "@rejectlypro",
-    title: "Blog - Resume Tips & Career Advice | Rejectly.pro",
+    title: "Guides: Resumes, ATS and the Job Search | Rejectly.pro",
     description:
-      "Expert insights on resume optimization, ATS systems, and career advice to help you land more interviews.",
+      "How applicant tracking systems read a resume, and what to do about it. Written for students and new grads.",
     images: ["/og-image.png"],
   },
   robots: {

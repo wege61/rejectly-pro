@@ -125,20 +125,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: index < 5 ? 0.9 : index < 15 ? 0.8 : 0.7,
       }));
 
-      // Add pagination pages to sitemap
-      const POSTS_PER_PAGE = 6; // Matching POSTS_PER_PAGE from BlogBentoGrid
-      const totalBlogPages = Math.ceil(posts.length / POSTS_PER_PAGE);
-      
-      if (totalBlogPages > 1) {
-        for (let i = 2; i <= totalBlogPages; i++) {
-          blogPages.push({
-            url: `${BASE_URL}/blog?page=${i}`,
-            lastModified: new Date(posts[0]?.updated_at || posts[0]?.published_at || new Date()),
-            changeFrequency: "weekly" as const,
-            priority: 0.6,
-          });
-        }
-      }
+      // /blog renders every guide on one page (extras hidden behind "Show more"),
+      // so there are no ?page= URLs to list.
     }
 
     // Note: Category and tag filter pages (/blog?category=X, /blog?tag=Y) are

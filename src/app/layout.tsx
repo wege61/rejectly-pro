@@ -19,11 +19,11 @@ const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono"
 export const metadata: Metadata = {
   metadataBase: new URL('https://rejectly.pro'),
   title: {
-    default: "Rejectly.pro - Bypass ATS Bots For Your First Job",
+    default: "Rejectly.pro: ATS Resume Checker for Students & New Grads",
     template: "%s | Rejectly.pro"
   },
   description:
-    "Hack the ATS and land your first job. Our AI translates your university projects and internships into corporate keywords to bypass HR bots.",
+    "Before a recruiter sees your resume, an applicant tracking system reads it. Rejectly shows you what it sees, then rewrites your projects and internships in the job's words, without inventing anything.",
   keywords: [
     "ATS resume checker",
     "ATS resume checker free",
@@ -35,7 +35,6 @@ export const metadata: Metadata = {
     "resume scanner",
     "new grad resume",
     "entry level ATS",
-    "bypass ATS",
     "first job resume",
     "resume for students",
     "job matching AI",
@@ -54,14 +53,14 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://rejectly.pro",
     siteName: "Rejectly.pro",
-    title: "Rejectly.pro - Bypass ATS Bots For Your First Job",
-    description: "Hack the ATS and land your first job. Our AI translates your university projects and internships into corporate keywords to bypass HR bots.",
+    title: "Rejectly.pro: ATS Resume Checker for Students & New Grads",
+    description: "Before a recruiter sees your resume, an applicant tracking system reads it. Rejectly shows you what it sees, then rewrites your projects and internships in the job's words, without inventing anything.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Rejectly.pro - Bypass ATS Bots",
+        alt: "Rejectly.pro ATS resume checker",
       },
     ],
   },
@@ -69,8 +68,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@rejectlypro",
     creator: "@rejectlypro",
-    title: "Rejectly.pro - AI Resume Optimizer | A New Resume for Every Job",
-    description: "Transform your resume with AI. Get a unique, ATS-optimized CV for every job you apply to.",
+    title: "Rejectly.pro: ATS Resume Checker for Students & New Grads",
+    description: "Before a recruiter sees your resume, an applicant tracking system reads it. Rejectly shows you what it sees, then rewrites your projects and internships in the job's words, without inventing anything.",
     images: ["/og-image.png"],
   },
   robots: {

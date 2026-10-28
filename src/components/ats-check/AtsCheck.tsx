@@ -681,7 +681,7 @@ export function AtsCheck() {
         </Head>
 
         {stage === "upload" && (
-          <Card>
+          <Card data-nav-cta-hide>
             <Drop
               $over={over}
               onDragOver={(e) => {

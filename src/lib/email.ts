@@ -134,12 +134,12 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
       You're in, ${firstName}. Let's get you hired. 🎯
     </h1>
     <p style="margin: 0 0 32px 0; font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.6; text-align: center;">
-      Most resumes get auto-rejected before a human ever sees them. We're going to change that — starting with yours.
+      Before a recruiter sees your resume, an applicant tracking system reads it. We'll show you what it sees, starting with yours.
     </p>
 
     <!-- Features -->
     ${featureRow('📊', 'Job Match Score', 'Paste any job posting and see exactly how well your student resume matches — before you apply.')}
-    ${featureRow('⚡', 'ATS Bypass', 'Translate your university projects and internships into the exact keywords ATS bots are scanning for.')}
+    ${featureRow('⚡', 'ATS Optimizer', 'See what an applicant tracking system reads in your resume, then rebuild it as one clean column it can parse.')}
     ${featureRow('📄', 'CV Builder', 'No resume yet? Build one from scratch — we guide every section, no blank page panic.')}
     ${featureRow('✉️', 'Cover Letters', 'Generate a tailored cover letter in seconds — even with zero formal work experience.')}
 

@@ -182,7 +182,8 @@ const HumanLayer = styled(Layer)<{ $before: boolean }>`
   font-size: clamp(8.6px, 2.1cqw, 14.5px);
   background: ${({ $before }) =>
     $before
-      ? "linear-gradient(90deg, var(--rj-doc) 0 68%, var(--rj-doc-side) 68%)"
+      ? /* Canva-style template: peach header band, teal sidebar. */
+        "linear-gradient(180deg, #F6DCCB 0 calc(var(--pad-top) + var(--rh) * 4.15), transparent 0), linear-gradient(90deg, var(--rj-doc) 0 68%, #2F5D62 68%)"
       : "var(--rj-doc)"};
 
   .r {
@@ -204,6 +205,8 @@ const HumanLayer = styled(Layer)<{ $before: boolean }>`
   .r.two > span:last-child .h { color: #FFFFFF; }
 
   .name { font-size: 2.05em; font-weight: 700; letter-spacing: -0.035em; }
+  .spaced { font-size: 1.15em; font-weight: 700; letter-spacing: 0.32em; white-space: nowrap; color: #7A3E2A; }
+  .dots { margin-left: 0.4em; letter-spacing: 0.1em; color: #F3C969; }
   .h { font-size: 0.8em; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
   .muted { color: #6A6E76; }
   .weak {
@@ -219,7 +222,8 @@ const HumanLayer = styled(Layer)<{ $before: boolean }>`
 
   @media ${PHONE_QUERY} {
     font-size: 13.5px;
-    background: var(--rj-doc);
+    background: ${({ $before }) =>
+      $before ? "linear-gradient(180deg, #F6DCCB 0 calc(var(--pad-top) + var(--rh) * 1.7), var(--rj-doc) 0)" : "var(--rj-doc)"};
 
     .r { -webkit-mask-image: none; mask-image: none; }
   }
@@ -776,7 +780,7 @@ export function ParserLens() {
           ) : (
             <span>
               <b>{ISSUE_COUNT} issues.</b>{" "}
-              <span className="full">Likely auto-rejected</span>
+              <span className="full">Hard for an ATS to read</span>
               <span className="compact">Top {COMPACT_ISSUE_COUNT} shown</span>
             </span>
           )}

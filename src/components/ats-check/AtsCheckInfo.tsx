@@ -44,6 +44,9 @@ const In = styled.div<{ $faq?: boolean }>`
   @media (min-width: 1000px) {
     padding: 104px 40px;
     ${({ $faq }) => $faq && "grid-template-columns: 340px minmax(0, 1fr); gap: 64px; align-items: start;"}
+
+    /* Like the homepage FAQ: the heading stays in view while the answers scroll past. */
+    .head { position: sticky; top: 100px; }
   }
 
   .eyebrow { margin: 0; font: 500 11.5px/1.3 var(--rj-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--rj-ink-2); }
@@ -214,7 +217,7 @@ export function AtsCheckInfo() {
 
       <Section aria-labelledby="ac-faq" id="faq">
         <In $faq>
-          <div>
+          <div className="head">
             <p className="eyebrow">ATS resume checker FAQ</p>
             <h2 id="ac-faq">Straight answers.</h2>
           </div>

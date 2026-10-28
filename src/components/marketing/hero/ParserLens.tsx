@@ -182,8 +182,8 @@ const HumanLayer = styled(Layer)<{ $before: boolean }>`
   font-size: clamp(8.6px, 2.1cqw, 14.5px);
   background: ${({ $before }) =>
     $before
-      ? /* Canva-style template: peach header band, teal sidebar. */
-        "linear-gradient(180deg, #F6DCCB 0 calc(var(--pad-top) + var(--rh) * 4.15), transparent 0), linear-gradient(90deg, var(--rj-doc) 0 68%, #2F5D62 68%)"
+      ? /* Canva student template: teal sidebar on the left, the name in a peach band. */
+        "linear-gradient(90deg, #6F9C99 0 32%, transparent 32%), linear-gradient(180deg, #EDCDBE 0 calc(var(--pad-top) + var(--rh) * 2.75), var(--rj-doc) 0)"
       : "var(--rj-doc)"};
 
   .r {
@@ -195,18 +195,42 @@ const HumanLayer = styled(Layer)<{ $before: boolean }>`
 
   .r.two {
     display: grid;
-    grid-template-columns: 68% 1fr;
+    grid-template-columns: 32% 1fr;
     padding: 0;
+    font-family: Georgia, "Times New Roman", serif;
   }
 
+  /* The sidebar cell comes second in the data and is drawn first, on the left. */
   .r.two > span { overflow: hidden; text-overflow: ellipsis; }
-  .r.two > span:first-child { padding: 0 4% 0 6%; }
-  .r.two > span:last-child { padding: 0 6% 0 7%; color: #DCE2EC; font-size: 0.9em; }
+  .r.two > span:first-child { padding: 0 6% 0 5%; }
+  .r.two > span:last-child { order: -1; padding: 0 5% 0 9%; color: #F4F7F6; font-size: 0.86em; }
   .r.two > span:last-child .h { color: #FFFFFF; }
+  .r.two .h { font-family: var(--rj-font); }
+  .chev { color: #6F9C99; margin-right: 0.3em; }
+  .canva-name { font-family: var(--rj-font); font-size: 1.7em; font-weight: 700; letter-spacing: 0.06em; color: #262629; }
+
+  /* The template's round photo, top of the sidebar. */
+  ${({ $before }) =>
+    $before &&
+    css`
+      &::before {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        top: calc(var(--pad-top) - 0.6em);
+        left: calc(16% - 2.1em);
+        width: 4.2em;
+        height: 4.2em;
+        border-radius: 50%;
+        border: 0.2em solid #FFFFFF;
+        background: radial-gradient(circle at 50% 40%, #8A5A44 0 19%, transparent 20%),
+          radial-gradient(ellipse at 50% 108%, #F4EFEA 0 44%, transparent 45%),
+          linear-gradient(#B7A9A0, #9C8E86);
+      }
+    `}
 
   .name { font-size: 2.05em; font-weight: 700; letter-spacing: -0.035em; }
-  .spaced { font-size: 1.15em; font-weight: 700; letter-spacing: 0.32em; white-space: nowrap; color: #7A3E2A; }
-  .dots { margin-left: 0.4em; letter-spacing: 0.1em; color: #F3C969; }
+
   .h { font-size: 0.8em; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
   .muted { color: #6A6E76; }
   .weak {
@@ -223,7 +247,9 @@ const HumanLayer = styled(Layer)<{ $before: boolean }>`
   @media ${PHONE_QUERY} {
     font-size: 13.5px;
     background: ${({ $before }) =>
-      $before ? "linear-gradient(180deg, #F6DCCB 0 calc(var(--pad-top) + var(--rh) * 1.7), var(--rj-doc) 0)" : "var(--rj-doc)"};
+      $before ? "linear-gradient(180deg, #EDCDBE 0 calc(var(--pad-top) + var(--rh) * 1.7), var(--rj-doc) 0)" : "var(--rj-doc)"};
+
+    &::before { display: none; }
 
     .r { -webkit-mask-image: none; mask-image: none; }
   }

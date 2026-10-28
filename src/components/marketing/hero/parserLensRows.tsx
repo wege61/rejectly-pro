@@ -5,9 +5,9 @@ import type { ReactNode } from "react";
  * Each row is one line of the résumé: what a person sees (`human`) and what the
  * ATS extracts from that same line (`ats`). Both layers render the rows at the
  * same height, so the lens always shows one line's two faces side by side.
- * Two-cell rows (`[main, sidebar]`) model the two-column "before" résumé: a Canva-style
- * template with a letter-spaced name, contact icons in the page header, creative
- * headings, ➤ bullets, skill-dot bars and emoji.
+ * Two-cell rows (`[main, sidebar]`) model the two-column "before" résumé: a common Canva
+ * student template (photo, profile and contact in a sidebar, the name in a band, plain
+ * lines under each heading). The sidebar is drawn on the left.
  *
  * SCORE and ISSUE_COUNT are what lib/ats/deterministicScoring returns for the text a
  * parser pulls out of each version (BEFORE_TEXT / AFTER_TEXT below). Re-run it if
@@ -40,27 +40,27 @@ const Muted = ({ children }: { children: ReactNode }) => <span className="muted"
 const Q = ({ children }: { children: ReactNode }) => <span className="q">{children}</span>;
 const Dim = ({ children }: { children: ReactNode }) => <span className="dim">{children}</span>;
 const Name = () => <span className="name">Maya Chen</span>;
-const Spaced = ({ children }: { children: ReactNode }) => <span className="spaced">{children}</span>;
-const Dots = ({ children }: { children: ReactNode }) => <span className="dots">{children}</span>;
+const Canva = () => <span className="canva-name">MAYA CHEN</span>;
+const Chev = ({ children }: { children: ReactNode }) => <span className="h"><span className="chev" aria-hidden="true">❯</span> {children}</span>;
 
 /* Full résumé: desktop and tablet. */
 export const FULL_ROWS: Record<LensState, LensRow[]> = {
   before: [
-    { human: [<Spaced key="n">✦ M A Y A{"\u00a0\u00a0\u00a0"}C H E N ✦</Spaced>, ""], ats: <><X />name read as <Q>&quot;M A Y A C H E N&quot;</Q></>, tall: true, fail: true },
-    { human: [<Spaced key="s">S T U D E N T</Spaced>, ""], ats: <><X />contact: none found <Dim>(page header)</Dim></>, fail: true },
-    { human: [<Muted key="c">📧 maya.chen@mail.com 📞 (555) 014-2290</Muted>, ""], ats: <><X />email, phone skipped</>, fail: true },
-    { human: [<H key="a">★ My journey ★</H>, <H key="b">★ About me ★</H>], ats: <><X /><Q>&quot;MY JOURNEY ABOUT ME&quot;</Q> <Dim>merged</Dim></>, fail: true },
-    { human: [<span key="a"><b>Halden Analytics</b> · Intern</span>, "Curious, hard-working"], ats: <><X />&quot;My journey&quot; is not a section name</>, fail: true },
-    { human: [<span key="a">➤ <Weak>Helped the team</Weak> with weekly reports</span>, "student who loves data"], ats: <><X />&quot;➤&quot; is not a bullet</>, fail: true },
-    { human: [<span key="a">➤ <Weak>Responsible for</Weak> data entry tasks</span>, "and people! ✨"], ats: <><X />no numbers anywhere</>, fail: true },
-    { human: ["➤ Attended client meetings", ""], ats: <><X />columns run together</>, fail: true },
-    { human: [<H key="a">★ Cool projects ★</H>, <H key="b">★ Toolkit ★</H>], ats: <><X />&quot;Toolkit&quot; is not a skills section</>, fail: true },
-    { human: [<span key="a">➤ <Weak>Worked on</Weak> a group project predicting churn</span>, <span key="b">SQL <Dots>●●●●○</Dots></span>], ats: <><X /><Q>&quot;●●●●○&quot;</Q> read as symbols</>, fail: true },
-    { human: ["➤ Used Python and made charts for class", <span key="b">Python <Dots>●●●○○</Dots></span>], ats: <><X />skill level unreadable</>, fail: true },
-    { human: ["➤ Did social media for Marketing Society", <H key="b">★ Superpowers ★</H>], ats: <><X />━━ ★ ✦ decorative symbols</>, fail: true },
-    { human: [<H key="a">★ Learning ★</H>, "Hard-working 🔥"], ats: <><X />emoji 🔥 ✨ 📧</>, fail: true },
-    { human: ["Economics, Lakeside University", "Teamwork 🤝"], ats: <><X />no LinkedIn · too short</>, fail: true },
-    { human: ["", ""], ats: <><Dim>keywords</Dim> 3/6 · <span className="bad">predictive · dataviz · A/B</span></>, fail: true },
+    { human: [<Canva key="n" />, ""], ats: <><OK />name: Maya Chen</>, tall: true },
+    { human: [<i key="s">Student</i>, ""], ats: <Dim>headline: &quot;Student&quot;</Dim> },
+    { human: [<Chev key="a">Experience</Chev>, <H key="b">Profile</H>], ats: <><X /><Q>&quot;PROFILE EXPERIENCE&quot;</Q> <Dim>merged</Dim></>, fail: true },
+    { human: [<span key="a"><b>Halden Analytics</b>, Intern</span>, "Economics student who"], ats: <><X />two columns read side by side</>, fail: true },
+    { human: [<span key="a"><Weak>Helped the team</Weak> with weekly reports in Tableau</span>, "loves working with data."], ats: <><X />no bullet points</>, fail: true },
+    { human: [<span key="a"><Weak>Responsible for</Weak> data entry tasks</span>, ""], ats: <><X />no numbers anywhere</>, fail: true },
+    { human: ["Attended client meetings", <H key="b">Contact me</H>], ats: <><OK />email, phone <Dim>found mid-page</Dim></> },
+    { human: [<Chev key="a">Projects</Chev>, "(555) 014-2290"], ats: <><X /><Q>&quot;PROJECTS (555) 014…&quot;</Q> <Dim>merged</Dim></>, fail: true },
+    { human: [<span key="a"><Weak>Worked on</Weak> a group project predicting churn</span>, "maya.chen@mail.com"], ats: <Dim>&quot;predicting churn&quot; ≠ &quot;predictive modeling&quot;</Dim> },
+    { human: ["Used Python and made charts for class", "Lakeside, CA"], ats: <Dim>&quot;made charts&quot; ≠ &quot;data visualization&quot;</Dim> },
+    { human: [<Chev key="a">Computer skills</Chev>, ""], ats: <><OK />section: skills</> },
+    { human: ["SQL, Excel, Python, Tableau", ""], ats: <><X />only 4 skills it can read</>, fail: true },
+    { human: [<Chev key="a">Education</Chev>, ""], ats: <><OK />section: education</> },
+    { human: ["Economics, Lakeside University", ""], ats: <><X />no LinkedIn · too short</>, fail: true },
+    { human: ["", ""], ats: <><Dim>keywords</Dim> 3/6 · <span className="bad">predictive · dataviz · A/B</span></> },
   ],
   after: [
     { human: <Name />, ats: <><OK />name: Maya Chen</>, tall: true },
@@ -84,12 +84,12 @@ export const FULL_ROWS: Record<LensState, LensRow[]> = {
 /* Curated subset for phones: one column, readable size. */
 export const COMPACT_ROWS: Record<LensState, LensRow[]> = {
   before: [
-    { human: <Spaced>✦ M A Y A{"\u00a0\u00a0\u00a0"}C H E N ✦</Spaced>, ats: <><X />name split into letters</>, tall: true, fail: true },
-    { human: <Muted>📧 maya.chen@mail.com 📞 (555)…</Muted>, ats: <><X />contact: none found</>, fail: true },
-    { human: <H>★ My journey ★</H>, ats: <><X />not a section name</>, fail: true },
-    { human: <>➤ <Weak>Helped the team</Weak> with weekly reports</>, ats: <><X />&quot;➤&quot; is not a bullet</>, fail: true },
-    { human: <>Python <Dots>●●●○○</Dots></>, ats: <><X />read as symbols</>, fail: true },
-    { human: <>Hard-working 🔥 Teamwork 🤝</>, ats: <><X />emoji, not skills</>, fail: true },
+    { human: <Canva />, ats: <><OK />name: Maya Chen</>, tall: true },
+    { human: <Chev>Experience</Chev>, ats: <><X />merged with &quot;Profile&quot;</>, fail: true },
+    { human: <><Weak>Helped the team</Weak> with weekly reports</>, ats: <><X />no bullet points</>, fail: true },
+    { human: <><Weak>Responsible for</Weak> data entry tasks</>, ats: <><X />no numbers anywhere</>, fail: true },
+    { human: <>SQL, Excel, Python, Tableau</>, ats: <><X />only 4 skills read</>, fail: true },
+    { human: <>Economics, Lakeside University</>, ats: <><X />no LinkedIn · too short</>, fail: true },
   ],
   after: [
     { human: <Name />, ats: <><OK />name: Maya Chen</>, tall: true },
@@ -102,24 +102,26 @@ export const COMPACT_ROWS: Record<LensState, LensRow[]> = {
   ],
 };
 
-/* What a parser extracts from each version, for checking SCORE against the real scorer. */
-export const BEFORE_TEXT = `✦ M A Y A   C H E N ✦
-S T U D E N T
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-★ ABOUT ME ★              ★ MY JOURNEY ★
-Curious, hard-working     Halden Analytics
-student who loves data    Intern
-and people!               ➤ Helped the team with weekly reports in Tableau
-                          ➤ Responsible for data entry tasks
-★ TOOLKIT ★               ➤ Attended client meetings
-SQL        ●●●●○
-Excel      ●●●●●          ★ COOL PROJECTS ★
-Python     ●●●○○          ➤ Worked on a group project predicting churn
-Tableau    ●●●○○          ➤ Used Python and made charts for class
-                          ➤ Did social media for Marketing Society
-★ SUPERPOWERS ★
-Teamwork ✨               ★ LEARNING ★
-Hard-working 🔥           Economics, Lakeside University`;
+/* What a parser extracts from each version, for checking SCORE against the real scorer.
+   The photo and icons are images, so they don't come through; many parsers read the
+   two columns line by line, side by side. */
+export const BEFORE_TEXT = `                           MAYA CHEN
+                           Student
+PROFILE                    EXPERIENCE
+Economics student who      Halden Analytics, Intern
+loves working with data.   Helped the team with weekly reports in Tableau
+                           Responsible for data entry tasks
+CONTACT ME                 Attended client meetings
+(555) 014-2290
+maya.chen@mail.com         PROJECTS
+Lakeside, CA               Worked on a group project predicting churn
+                           Used Python and made charts for class
+                           Did social media for Marketing Society
+                           COMPUTER SKILLS
+                           SQL, Excel, Python, Tableau
+                           EDUCATION
+                           Lakeside University
+                           Economics, in progress`;
 
 export const AFTER_TEXT = `MAYA CHEN
 Economics graduate | Data Analyst Intern
@@ -140,8 +142,8 @@ B.S. Economics, Lakeside University, 2026
 SKILLS
 SQL, Python, Tableau, Excel`;
 
-/* calculateDeterministicScore(BEFORE_TEXT) → 27 with 14 issues; (AFTER_TEXT) → 87. */
-export const SCORE: Record<LensState, number> = { before: 27, after: 87 };
-export const ISSUE_COUNT = 14;
+/* calculateDeterministicScore(BEFORE_TEXT) → 63 with 7 issues; (AFTER_TEXT) → 87. */
+export const SCORE: Record<LensState, number> = { before: 63, after: 87 };
+export const ISSUE_COUNT = 7;
 export const COMPACT_ISSUE_COUNT = COMPACT_ROWS.before.filter((r) => r.fail).length;
 export const KEYWORDS_AFTER = "5/6";

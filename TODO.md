@@ -33,6 +33,10 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [ ] Upsell numbers on `reports/[id]` can't be verified: replace or remove.
 - [ ] Main `.env.local` uses live Stripe keys: switch local development to test keys.
 - [ ] Roll the Stripe test key that was shared in chat.
+- [ ] Contact form says "We couldn't send that": `/api/contact` answers 502 when the
+      email can't go out. Locally `RESEND_API_KEY` is missing from `.env.local`; on a
+      deployed preview check the env var and that Resend accepts `hello@rejectly.pro` as
+      the sender. Send one test message after the fix.
 
 ## 3. Content rewrite (last)
 

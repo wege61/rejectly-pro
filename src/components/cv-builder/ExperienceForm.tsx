@@ -16,8 +16,8 @@ const FormContainer = styled(motion.div)`
 `;
 
 const ExpCard = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--rj-ink) 2%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 8%, transparent);
   border-radius: 16px;
   padding: 24px;
   display: flex;
@@ -30,8 +30,8 @@ const DeleteButton = styled.button`
   position: absolute;
   top: 16px;
   right: 16px;
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: color-mix(in srgb, var(--rj-pen) 10%, transparent);
+  color: var(--rj-pen);
   border: none;
   border-radius: 50%;
   width: 32px;
@@ -43,7 +43,7 @@ const DeleteButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: rgba(239, 68, 68, 0.2);
+    background: color-mix(in srgb, var(--rj-pen) 20%, transparent);
     transform: scale(1.05);
   }
 `;
@@ -57,28 +57,28 @@ const InputGroup = styled.div`
 const Label = styled.label`
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, var(--rj-ink) 80%, transparent);
 `;
 
 const Input = styled.input`
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   padding: 14px 16px;
-  color: #fff;
+  color: var(--rj-ink);
   font-size: 16px;
   transition: all 0.2s ease;
   outline: none;
 
   &:focus {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+    background: color-mix(in srgb, var(--rj-ink) 6%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 30%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--rj-ink) 5%, transparent);
   }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
+    color: color-mix(in srgb, var(--rj-ink) 20%, transparent);
   }
 `;
 
@@ -95,14 +95,14 @@ const SuggestionsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  border-top: 1px dashed color-mix(in srgb, var(--rj-ink) 10%, transparent);
   padding-top: 24px;
 `;
 
 const SuggestionLabel = styled.div`
   font-size: 13px;
   font-weight: 500;
-  color: #3b82f6;
+  color: var(--rj-ink);
   margin-bottom: 4px;
   display: flex;
   align-items: center;
@@ -112,7 +112,7 @@ const SuggestionLabel = styled.div`
     content: '';
     width: 6px;
     height: 6px;
-    background: #3b82f6;
+    background: var(--rj-ink);
     border-radius: 50%;
     animation: pulse 2s infinite;
   }
@@ -126,11 +126,11 @@ const SuggestionLabel = styled.div`
 
 const SuggestionCard = styled.button`
   text-align: left;
-  background: rgba(59, 130, 246, 0.05);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: color-mix(in srgb, var(--rj-ink) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 20%, transparent);
   border-radius: 12px;
   padding: 16px;
-  color: rgba(255, 255, 255, 0.85);
+  color: color-mix(in srgb, var(--rj-ink) 85%, transparent);
   font-size: 14px;
   line-height: 1.5;
   cursor: pointer;
@@ -140,8 +140,8 @@ const SuggestionCard = styled.button`
   align-items: flex-start;
 
   &:hover {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.4);
+    background: color-mix(in srgb, var(--rj-ink) 10%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 40%, transparent);
     transform: translateY(-1px);
   }
 
@@ -150,26 +150,26 @@ const SuggestionCard = styled.button`
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: rgba(59, 130, 246, 0.2);
+    background: color-mix(in srgb, var(--rj-ink) 20%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: var(--rj-ink);
     font-size: 16px;
     font-weight: 300;
   }
 
   &:hover .icon {
-    background: #3b82f6;
+    background: var(--rj-ink);
   }
 `;
 
 const ActiveBulletCard = styled.div`
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 8%, transparent);
   border-radius: 12px;
   padding: 16px;
-  color: rgba(255, 255, 255, 0.9);
+  color: color-mix(in srgb, var(--rj-ink) 90%, transparent);
   font-size: 14px;
   line-height: 1.5;
   display: flex;
@@ -184,7 +184,7 @@ const ActiveBulletCard = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #10b981; /* Green check */
+    color: var(--rj-pass); /* Green check */
   }
   
   .content {
@@ -195,23 +195,23 @@ const ActiveBulletCard = styled.div`
   .delete {
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.3);
+    color: color-mix(in srgb, var(--rj-ink) 30%, transparent);
     cursor: pointer;
     padding: 4px;
     display: flex;
     
     &:hover {
-      color: #ef4444;
+      color: var(--rj-pen);
     }
   }
 `;
 
 const AddButton = styled.button`
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--rj-ink) 5%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--rj-ink) 20%, transparent);
   border-radius: 16px;
   padding: 20px;
-  color: rgba(255, 255, 255, 0.7);
+  color: color-mix(in srgb, var(--rj-ink) 70%, transparent);
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
@@ -222,9 +222,9 @@ const AddButton = styled.button`
   gap: 8px;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.4);
-    color: #fff;
+    background: color-mix(in srgb, var(--rj-ink) 10%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 40%, transparent);
+    color: var(--rj-ink);
   }
 `;
 
@@ -232,7 +232,7 @@ const BulletTextarea = styled.textarea`
   flex: 1;
   background: transparent;
   border: 1px solid transparent;
-  color: rgba(255, 255, 255, 0.9);
+  color: color-mix(in srgb, var(--rj-ink) 90%, transparent);
   font-size: 14px;
   line-height: 1.5;
   resize: none;
@@ -244,17 +244,17 @@ const BulletTextarea = styled.textarea`
 
   /* Highlight bracketed text like [X] softly */
   &::placeholder {
-    color: rgba(255, 255, 255, 0.3);
+    color: color-mix(in srgb, var(--rj-ink) 30%, transparent);
   }
 
   &:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: color-mix(in srgb, var(--rj-ink) 20%, transparent);
+    background: color-mix(in srgb, var(--rj-ink) 5%, transparent);
   }
   
   &:hover:not(:focus) {
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: color-mix(in srgb, var(--rj-ink) 10%, transparent);
   }
 `;
 
@@ -396,9 +396,9 @@ export function ExperienceForm() {
               <button 
                 onClick={(e) => { e.preventDefault(); setActiveModalIndex(index); }}
                 style={{
-                  background: 'rgba(59, 130, 246, 0.05)',
-                  color: '#3b82f6',
-                  border: '1px dashed rgba(59, 130, 246, 0.3)',
+                  background: 'color-mix(in srgb, var(--rj-ink) 5%, transparent)',
+                  color: 'var(--rj-ink)',
+                  border: '1px dashed color-mix(in srgb, var(--rj-ink) 30%, transparent)',
                   borderRadius: '12px',
                   padding: '16px',
                   fontSize: '14px',
@@ -426,11 +426,11 @@ export function ExperienceForm() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             style={{
-              background: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.2)',
+              background: 'color-mix(in srgb, var(--rj-pass) 10%, transparent)',
+              border: '1px solid color-mix(in srgb, var(--rj-pass) 20%, transparent)',
               borderRadius: '12px',
               padding: '16px',
-              color: 'rgba(255, 255, 255, 0.9)',
+              color: 'color-mix(in srgb, var(--rj-ink) 90%, transparent)',
               fontSize: '14px',
               lineHeight: 1.5,
               marginBottom: '16px'

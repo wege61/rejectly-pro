@@ -11,11 +11,11 @@ const Container = styled.div`
 
 const InputDisplay = styled.div<{ $isOpen: boolean; $hasValue: boolean }>`
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid ${props => props.$isOpen ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)'};
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid ${props => props.$isOpen ? 'var(--rj-ink)' : 'color-mix(in srgb, var(--rj-ink) 10%, transparent)'};
   border-radius: 12px;
   padding: 16px;
-  color: ${props => props.$hasValue ? '#fff' : 'rgba(255, 255, 255, 0.4)'};
+  color: ${props => props.$hasValue ? 'var(--rj-ink)' : 'color-mix(in srgb, var(--rj-ink) 40%, transparent)'};
   font-size: 15px;
   cursor: pointer;
   transition: all 0.2s;
@@ -24,14 +24,14 @@ const InputDisplay = styled.div<{ $isOpen: boolean; $hasValue: boolean }>`
   align-items: center;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: ${props => props.$isOpen ? '#3b82f6' : 'rgba(255, 255, 255, 0.2)'};
+    background: color-mix(in srgb, var(--rj-ink) 5%, transparent);
+    border-color: ${props => props.$isOpen ? 'var(--rj-ink)' : 'color-mix(in srgb, var(--rj-ink) 20%, transparent)'};
   }
 
   svg {
     transition: transform 0.2s;
     transform: ${props => props.$isOpen ? 'rotate(180deg)' : 'rotate(0)'};
-    color: rgba(255, 255, 255, 0.5);
+    color: color-mix(in srgb, var(--rj-ink) 50%, transparent);
   }
 `;
 
@@ -41,9 +41,9 @@ const Dropdown = styled(motion.div)`
   left: 0;
   width: 100%;
   min-width: 250px;
-  background: rgba(20, 20, 22, 0.95);
+  background: var(--rj-surface);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   z-index: 50;
@@ -57,9 +57,9 @@ const Header = styled.div`
   margin-bottom: 16px;
 
   button {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: color-mix(in srgb, var(--rj-ink) 5%, transparent);
+    border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
+    color: var(--rj-ink);
     border-radius: 6px;
     width: 32px;
     height: 32px;
@@ -70,13 +70,13 @@ const Header = styled.div`
     transition: all 0.2s;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
+      background: color-mix(in srgb, var(--rj-ink) 10%, transparent);
+      border-color: color-mix(in srgb, var(--rj-ink) 20%, transparent);
     }
   }
 
   span {
-    color: #fff;
+    color: var(--rj-ink);
     font-weight: 600;
     font-size: 16px;
   }
@@ -89,9 +89,9 @@ const MonthsGrid = styled.div`
 `;
 
 const MonthBtn = styled.button<{ $selected: boolean; $isCurrent: boolean }>`
-  background: ${props => props.$selected ? '#3b82f6' : props.$isCurrent ? 'rgba(59, 130, 246, 0.1)' : 'transparent'};
-  color: ${props => props.$selected ? '#fff' : props.$isCurrent ? '#60a5fa' : 'rgba(255, 255, 255, 0.7)'};
-  border: 1px solid ${props => props.$selected ? '#3b82f6' : props.$isCurrent ? 'rgba(59, 130, 246, 0.3)' : 'transparent'};
+  background: ${props => props.$selected ? 'var(--rj-ink)' : props.$isCurrent ? 'color-mix(in srgb, var(--rj-ink) 10%, transparent)' : 'transparent'};
+  color: ${props => props.$selected ? 'var(--rj-paper)' : props.$isCurrent ? 'var(--rj-ink)' : 'color-mix(in srgb, var(--rj-ink) 70%, transparent)'};
+  border: 1px solid ${props => props.$selected ? 'var(--rj-ink)' : props.$isCurrent ? 'color-mix(in srgb, var(--rj-ink) 30%, transparent)' : 'transparent'};
   border-radius: 8px;
   padding: 10px 4px;
   font-size: 14px;
@@ -100,16 +100,16 @@ const MonthBtn = styled.button<{ $selected: boolean; $isCurrent: boolean }>`
   transition: all 0.2s;
 
   &:hover {
-    background: ${props => props.$selected ? '#2563eb' : 'rgba(255, 255, 255, 0.05)'};
+    background: ${props => props.$selected ? 'var(--rj-ink)' : 'color-mix(in srgb, var(--rj-ink) 5%, transparent)'};
   }
 `;
 
 const PresentBtn = styled.button`
   width: 100%;
   margin-top: 16px;
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  border: 1px dashed rgba(16, 185, 129, 0.3);
+  background: color-mix(in srgb, var(--rj-pass) 10%, transparent);
+  color: var(--rj-pass);
+  border: 1px dashed color-mix(in srgb, var(--rj-pass) 30%, transparent);
   border-radius: 8px;
   padding: 12px;
   font-size: 14px;
@@ -118,8 +118,8 @@ const PresentBtn = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: rgba(16, 185, 129, 0.15);
-    border-color: rgba(16, 185, 129, 0.5);
+    background: color-mix(in srgb, var(--rj-pass) 15%, transparent);
+    border-color: color-mix(in srgb, var(--rj-pass) 50%, transparent);
   }
 `;
 

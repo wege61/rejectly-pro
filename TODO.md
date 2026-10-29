@@ -15,7 +15,7 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [x] `/blog/[slug]` article page (reading bar with the yellow scan line, liquid-glass contents)
 - [x] `/faq`
 - [x] `/how-it-works`
-- [ ] `/cv-builder` landing
+- [x] `/cv-builder`: paper redesign, live ATS score (same 19 checks, run on the PDF text), start empty, signup → auto-download
 - [ ] `/about`, `/contact`
 - [ ] `/resume/[role]` pages
 - [ ] `/privacy`, `/terms` (light restyle only, no wording changes without review)

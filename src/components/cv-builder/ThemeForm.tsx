@@ -8,21 +8,6 @@ const FormContainer = styled(motion.div)`
   gap: 24px;
 `;
 
-const Title = styled.h2`
-  font-size: 24px;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-  letter-spacing: -0.02em;
-`;
-
-const Subtitle = styled.p`
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0 0 16px 0;
-  line-height: 1.5;
-`;
-
 const ThemesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -34,8 +19,8 @@ const ThemesGrid = styled.div`
 `;
 
 const ThemeButton = styled.button<{ $color: string; $active: boolean }>`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid ${props => props.$active ? props.$color : 'rgba(255, 255, 255, 0.08)'};
+  background: color-mix(in srgb, var(--rj-ink) 2%, transparent);
+  border: 1px solid ${props => props.$active ? props.$color : 'color-mix(in srgb, var(--rj-ink) 8%, transparent)'};
   border-radius: 12px;
   padding: 20px;
   display: flex;
@@ -48,12 +33,12 @@ const ThemeButton = styled.button<{ $color: string; $active: boolean }>`
   overflow: hidden;
 
   ${props => props.$active && `
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    background: linear-gradient(145deg, color-mix(in srgb, var(--rj-ink) 5%, transparent) 0%, color-mix(in srgb, var(--rj-ink) 1%, transparent) 100%);
     box-shadow: 0 4px 16px ${props.$color}30;
   `}
 
   &:hover {
-    border-color: ${props => props.$active ? props.$color : 'rgba(255, 255, 255, 0.2)'};
+    border-color: ${props => props.$active ? props.$color : 'color-mix(in srgb, var(--rj-ink) 20%, transparent)'};
     transform: translateY(-2px);
   }
 `;
@@ -63,19 +48,19 @@ const ColorSwatch = styled.div<{ $color: string }>`
   height: 40px;
   border-radius: 50%;
   background-color: ${props => props.$color};
-  box-shadow: 0 4px 12px ${props => props.$color}40, inset 0 2px 4px rgba(255,255,255,0.2);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px ${props => props.$color}40, inset 0 2px 4px color-mix(in srgb, var(--rj-ink) 20%, transparent);
+  border: 2px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
 `;
 
 const ThemeName = styled.span<{ $active: boolean; $color: string }>`
   font-size: 14px;
   font-weight: ${props => props.$active ? '600' : '500'};
-  color: ${props => props.$active ? props.$color : 'rgba(255, 255, 255, 0.7)'};
+  color: ${props => props.$active ? props.$color : 'color-mix(in srgb, var(--rj-ink) 70%, transparent)'};
 `;
 
 const THEMES = [
   { id: '#000000', name: 'Onyx Black' },
-  { id: '#2563eb', name: 'Professional Blue' },
+  { id: 'var(--rj-ink)', name: 'Professional Blue' },
   { id: '#0f172a', name: 'Executive Navy' },
   { id: '#059669', name: 'Emerald' },
   { id: '#9f1239', name: 'Burgundy' },
@@ -92,11 +77,6 @@ export function ThemeForm() {
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
     >
-      <div>
-        <Title>Accent Color</Title>
-        <Subtitle>Give your CV a final touch of personality. This will subtly color the headers and section dividers.</Subtitle>
-      </div>
-
       <ThemesGrid>
         {THEMES.map((theme) => {
           const isActive = cv.themeColor === theme.id;

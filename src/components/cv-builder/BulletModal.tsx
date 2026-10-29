@@ -20,8 +20,8 @@ const Overlay = styled(motion.div)`
 `;
 
 const ModalContent = styled(motion.div)`
-  background: rgba(20, 20, 22, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--rj-surface);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 20px;
   width: 100%;
   max-width: 600px;
@@ -35,21 +35,21 @@ const ModalContent = styled(motion.div)`
     width: 6px;
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: color-mix(in srgb, var(--rj-ink) 10%, transparent);
     border-radius: 4px;
   }
 `;
 
 const Header = styled.div`
   padding: 20px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid color-mix(in srgb, var(--rj-ink) 5%, transparent);
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   h3 {
     margin: 0;
-    color: #fff;
+    color: var(--rj-ink);
     font-size: 18px;
     font-weight: 500;
   }
@@ -57,14 +57,14 @@ const Header = styled.div`
   button {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.4);
+    color: color-mix(in srgb, var(--rj-ink) 40%, transparent);
     cursor: pointer;
     padding: 4px;
     display: flex;
     transition: color 0.2s;
 
     &:hover {
-      color: #fff;
+      color: var(--rj-ink);
     }
   }
 `;
@@ -72,14 +72,14 @@ const Header = styled.div`
 const Tabs = styled.div`
   display: flex;
   padding: 0 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid color-mix(in srgb, var(--rj-ink) 5%, transparent);
 `;
 
 const Tab = styled.button<{ $active: boolean }>`
   background: none;
   border: none;
   padding: 16px 20px;
-  color: ${props => props.$active ? '#fff' : 'rgba(255, 255, 255, 0.5)'};
+  color: ${props => props.$active ? 'var(--rj-paper)' : 'color-mix(in srgb, var(--rj-ink) 50%, transparent)'};
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -93,13 +93,13 @@ const Tab = styled.button<{ $active: boolean }>`
     left: 0;
     right: 0;
     height: 2px;
-    background: ${props => props.$active ? '#3b82f6' : 'transparent'};
+    background: ${props => props.$active ? 'var(--rj-ink)' : 'transparent'};
     border-radius: 2px 2px 0 0;
     transition: background 0.2s;
   }
 
   &:hover {
-    color: #fff;
+    color: var(--rj-ink);
   }
 `;
 
@@ -113,11 +113,11 @@ const Body = styled.div`
 
 const SuggestionCard = styled.button`
   text-align: left;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   padding: 16px;
-  color: rgba(255, 255, 255, 0.9);
+  color: color-mix(in srgb, var(--rj-ink) 90%, transparent);
   font-size: 14px;
   line-height: 1.5;
   cursor: pointer;
@@ -127,25 +127,25 @@ const SuggestionCard = styled.button`
   align-items: flex-start;
 
   &:hover {
-    background: rgba(59, 130, 246, 0.05);
-    border-color: rgba(59, 130, 246, 0.3);
+    background: color-mix(in srgb, var(--rj-ink) 5%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 30%, transparent);
     transform: translateY(-1px);
   }
 
   .icon {
     flex-shrink: 0;
-    color: #3b82f6;
+    color: var(--rj-ink);
     margin-top: 2px;
   }
 `;
 
 const Textarea = styled.textarea`
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   padding: 16px;
-  color: #fff;
+  color: var(--rj-ink);
   font-size: 15px;
   line-height: 1.5;
   resize: vertical;
@@ -154,30 +154,30 @@ const Textarea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: rgba(59, 130, 246, 0.5);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: color-mix(in srgb, var(--rj-ink) 50%, transparent);
+    background: color-mix(in srgb, var(--rj-ink) 5%, transparent);
   }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.3);
+    color: color-mix(in srgb, var(--rj-ink) 30%, transparent);
   }
 `;
 
 const MadLibsText = styled.div`
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   padding: 20px;
-  color: rgba(255, 255, 255, 0.9);
+  color: color-mix(in srgb, var(--rj-ink) 90%, transparent);
   font-size: 15px;
   line-height: 2;
 `;
 
 const InlineInput = styled.input`
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px dashed rgba(59, 130, 246, 0.5);
+  background: color-mix(in srgb, var(--rj-ink) 10%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--rj-ink) 50%, transparent);
   border-radius: 6px;
-  color: #60a5fa;
+  color: var(--rj-ink);
   font-size: inherit;
   font-family: inherit;
   padding: 2px 8px;
@@ -187,14 +187,14 @@ const InlineInput = styled.input`
   transition: all 0.2s;
 
   &::placeholder {
-    color: rgba(59, 130, 246, 0.5);
+    color: color-mix(in srgb, var(--rj-ink) 50%, transparent);
     transition: color 0.2s;
   }
 
   &:focus {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: #3b82f6;
-    color: #fff;
+    background: color-mix(in srgb, var(--rj-ink) 20%, transparent);
+    border-color: var(--rj-ink);
+    color: var(--rj-ink);
   }
 
   &:focus::placeholder {
@@ -203,8 +203,8 @@ const InlineInput = styled.input`
 `;
 
 const PrimaryButton = styled.button`
-  background: #fff;
-  color: #000;
+  background: var(--rj-btn);
+  color: var(--rj-btn-ink);
   border: none;
   border-radius: 12px;
   padding: 14px 24px;
@@ -232,7 +232,7 @@ const LoadingText = styled.div`
   align-items: center;
   justify-content: center;
   padding: 40px;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--rj-ink) 50%, transparent);
   font-size: 14px;
   gap: 12px;
 
@@ -240,8 +240,8 @@ const LoadingText = styled.div`
     content: '';
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-top-color: #fff;
+    border: 2px solid color-mix(in srgb, var(--rj-ink) 20%, transparent);
+    border-top-color: var(--rj-ink);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -254,7 +254,7 @@ const LoadingText = styled.div`
 const EmptyState = styled.div`
   text-align: center;
   padding: 40px 20px;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--rj-ink) 50%, transparent);
   font-size: 14px;
 `;
 
@@ -391,12 +391,12 @@ export function BulletModal({ isOpen, onClose, onAdd, jobTitle, company }: Bulle
                   {selectedSuggestion !== null ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <p style={{ margin: 0, color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>
+                        <p style={{ margin: 0, color: 'color-mix(in srgb, var(--rj-ink) 70%, transparent)', fontSize: '14px' }}>
                           Fill in the brackets with your real numbers:
                         </p>
                         <button 
                           onClick={() => setSelectedSuggestion(null)}
-                          style={{ background: 'transparent', border: 'none', color: '#3b82f6', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                          style={{ background: 'transparent', border: 'none', color: 'var(--rj-ink)', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
                           Back to list
@@ -433,7 +433,7 @@ export function BulletModal({ isOpen, onClose, onAdd, jobTitle, company }: Bulle
                             setInputValues({});
                           }, 300);
                         }}
-                        style={{ alignSelf: 'flex-end', background: '#fff', color: '#000' }}
+                        style={{ alignSelf: 'flex-end', background: 'var(--rj-btn)', color: 'var(--rj-btn-ink)' }}
                       >
                         Add to CV
                       </PrimaryButton>
@@ -442,8 +442,8 @@ export function BulletModal({ isOpen, onClose, onAdd, jobTitle, company }: Bulle
                     <LoadingText>Brainstorming for {jobTitle || "your role"}</LoadingText>
                   ) : suggestions.length > 0 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <p style={{ margin: '0 0 8px', color: 'rgba(255,255,255,0.5)', fontSize: '13px' }}>
-                        Click a template to fill in your real metrics.
+                      <p style={{ margin: '0 0 8px', color: 'color-mix(in srgb, var(--rj-ink) 50%, transparent)', fontSize: '13px' }}>
+                        AI suggestions. Pick one, then fill in your real numbers. Keep only what&apos;s true.
                       </p>
                       {suggestions.map((s, i) => (
                         <SuggestionCard 
@@ -461,10 +461,10 @@ export function BulletModal({ isOpen, onClose, onAdd, jobTitle, company }: Bulle
                                 return <span 
                                   key={pIndex}
                                   style={{
-                                    background: 'rgba(59, 130, 246, 0.15)',
-                                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                                    background: 'color-mix(in srgb, var(--rj-ink) 15%, transparent)',
+                                    border: '1px solid color-mix(in srgb, var(--rj-ink) 30%, transparent)',
                                     backdropFilter: 'blur(4px)',
-                                    color: '#60a5fa',
+                                    color: 'var(--rj-ink)',
                                     padding: '2px 6px',
                                     borderRadius: '6px',
                                     fontSize: '0.9em',
@@ -501,7 +501,7 @@ export function BulletModal({ isOpen, onClose, onAdd, jobTitle, company }: Bulle
                 <>
                   {!polishedResult ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                      <p style={{ margin: 0, color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>
+                      <p style={{ margin: 0, color: 'color-mix(in srgb, var(--rj-ink) 70%, transparent)', fontSize: '14px' }}>
                         Write a rough draft of what you did in this role or school project. We'll translate it into a professional, ATS-friendly achievement.
                       </p>
                       <Textarea 
@@ -513,14 +513,14 @@ export function BulletModal({ isOpen, onClose, onAdd, jobTitle, company }: Bulle
                       <PrimaryButton 
                         onClick={handlePolish} 
                         disabled={!draft.trim() || loadingPolish}
-                        style={{ alignSelf: 'flex-end', background: '#3b82f6', color: '#fff' }}
+                        style={{ alignSelf: 'flex-end', background: 'var(--rj-ink)', color: 'var(--rj-ink)' }}
                       >
                         {loadingPolish ? "Polishing..." : "Professional Polish"}
                       </PrimaryButton>
                     </div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                      <p style={{ margin: 0, color: '#10b981', fontSize: '14px', fontWeight: 500 }}>
+                      <p style={{ margin: 0, color: 'var(--rj-pass)', fontSize: '14px', fontWeight: 500 }}>
                         Here is your polished version:
                       </p>
                       <Textarea 
@@ -530,7 +530,7 @@ export function BulletModal({ isOpen, onClose, onAdd, jobTitle, company }: Bulle
                       <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                         <button 
                           onClick={() => setPolishedResult("")}
-                          style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontSize: '14px' }}
+                          style={{ background: 'transparent', border: 'none', color: 'color-mix(in srgb, var(--rj-ink) 50%, transparent)', cursor: 'pointer', fontSize: '14px' }}
                         >
                           Try Again
                         </button>

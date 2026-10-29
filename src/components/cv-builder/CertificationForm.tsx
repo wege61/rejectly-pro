@@ -14,8 +14,8 @@ const FormContainer = styled(motion.div)`
 `;
 
 const CertCard = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--rj-ink) 2%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 8%, transparent);
   border-radius: 16px;
   padding: 24px;
   display: flex;
@@ -28,8 +28,8 @@ const DeleteButton = styled.button`
   position: absolute;
   top: 16px;
   right: 16px;
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: color-mix(in srgb, var(--rj-pen) 10%, transparent);
+  color: var(--rj-pen);
   border: none;
   border-radius: 50%;
   width: 32px;
@@ -41,7 +41,7 @@ const DeleteButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: rgba(239, 68, 68, 0.2);
+    background: color-mix(in srgb, var(--rj-pen) 20%, transparent);
     transform: scale(1.05);
   }
 `;
@@ -55,28 +55,28 @@ const InputGroup = styled.div`
 const Label = styled.label`
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, var(--rj-ink) 80%, transparent);
 `;
 
 const Input = styled.input`
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   padding: 14px 16px;
-  color: #fff;
+  color: var(--rj-ink);
   font-size: 16px;
   transition: all 0.2s ease;
   outline: none;
 
   &:focus {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+    background: color-mix(in srgb, var(--rj-ink) 6%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 30%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--rj-ink) 5%, transparent);
   }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
+    color: color-mix(in srgb, var(--rj-ink) 20%, transparent);
   }
 `;
 
@@ -89,11 +89,11 @@ const Row = styled.div`
 `;
 
 const AddButton = styled.button`
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--rj-ink) 5%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--rj-ink) 20%, transparent);
   border-radius: 16px;
   padding: 20px;
-  color: rgba(255, 255, 255, 0.7);
+  color: color-mix(in srgb, var(--rj-ink) 70%, transparent);
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
@@ -104,9 +104,9 @@ const AddButton = styled.button`
   gap: 8px;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.4);
-    color: #fff;
+    background: color-mix(in srgb, var(--rj-ink) 10%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 40%, transparent);
+    color: var(--rj-ink);
   }
 `;
 

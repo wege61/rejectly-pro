@@ -1,7 +1,8 @@
 "use client";
 
-import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import styled, { keyframes, css } from "styled-components";
 import { useCVStore } from "@/components/cv-builder/store";
 import { BasicsForm } from "@/components/cv-builder/BasicsForm";
 import { EducationForm } from "@/components/cv-builder/EducationForm";
@@ -11,648 +12,454 @@ import { CertificationForm } from "@/components/cv-builder/CertificationForm";
 import { SummaryForm } from "@/components/cv-builder/SummaryForm";
 import { ThemeForm } from "@/components/cv-builder/ThemeForm";
 import { CVPreview } from "@/components/cv-builder/CVPreview";
-import { motion, AnimatePresence } from "framer-motion";
+import { AtsMeter } from "@/components/cv-builder/AtsMeter";
 import { generatePDF } from "@/utils/exportPDF";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants";
-import { Modal } from "@/components/ui/Modal";
-import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerBody } from "@/components/ui/Drawer";
-import { Button } from "@/components/ui/Button";
+import { Footer } from "@/components/ui/Footer";
 
-const Container = styled.div`
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  background: var(--bg-primary, #09090b);
-  overflow: hidden;
+/*
+ * The resume builder. New visitors see Gordon's example (store.ts) and can
+ * start empty in one click; progress saves in the browser. Six steps on the
+ * left; on the right the paper preview with a live ATS score above it (the
+ * same 19 checks as the free scan, run on the PDF's text). Downloading needs a
+ * free account: signup brings the visitor back here and the download starts.
+ */
 
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    height: 100dvh;
+/* The store keeps seven steps; certifications now live in the education step. */
+const STEPS: { store: number; label: string; title: string; text: string }[] = [
+  { store: 1, label: "Basics", title: "Start with the basics", text: "Contact details go in the body of your resume, where an ATS can read them." },
+  { store: 2, label: "Education", title: "Where did you study?", text: "Degree, school, dates. Add courses or certifications if they fit the job." },
+  { store: 3, label: "Experience", title: "Experience and projects", text: "Internships, part-time jobs, class projects and clubs all count. Start each line with what you did." },
+  { store: 5, label: "Skills", title: "What are your skills?", text: "List them one by one, the way job posts word them." },
+  { store: 6, label: "Summary", title: "A short summary", text: "Two or three sentences: who you are and what you're looking for." },
+  { store: 7, label: "Finish", title: "Finish", text: "Pick an accent color. The layout stays one column, whatever you choose." },
+];
+const DOWNLOAD_FLAG = "download";
+const scanSweep = keyframes`0% { top: 0; opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; }`;
+
+const Root = styled.div`
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--rj-paper);
+  color: var(--rj-ink);
+  font-family: var(--rj-font);
+  -webkit-font-smoothing: antialiased;
+  padding-top: calc(60px + env(safe-area-inset-top, 0px));
+`;
+
+const In = styled.div`
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 max(20px, env(safe-area-inset-right, 0px)) 0 max(20px, env(safe-area-inset-left, 0px));
+
+  @media (min-width: 640px) { padding: 0 40px; }
+`;
+
+const Head = styled.header`
+  padding-top: 32px;
+
+  @media (min-width: 640px) { padding-top: 48px; }
+
+  .eyebrow { margin: 0; font: 500 11.5px/1.3 var(--rj-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--rj-ink-2); }
+  h1 { margin: 10px 0 0; font-size: clamp(32px, 8vw, 52px); font-weight: 700; line-height: 1.04; letter-spacing: -0.04em; color: var(--rj-ink); text-wrap: balance; }
+  @media (min-width: 640px) { h1 { font-size: clamp(40px, 5vw, 52px); } }
+  h1 mark { padding: 0 0.06em; margin: 0 -0.03em; border-radius: 0.08em; color: var(--rj-hl-ink); background: linear-gradient(transparent 14%, var(--rj-hl) 14%, var(--rj-hl) 90%, transparent 90%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .sub { margin: 10px 0 0; max-width: 34em; font-size: 16px; line-height: 1.5; color: var(--rj-ink-2); }
+  .ex { min-height: 40px; margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; color: var(--rj-ink-3); }
+  .ex b { padding: 4px 7px; border-radius: 6px; font: 700 10px/1 var(--rj-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--rj-ink-2); box-shadow: inset 0 0 0 1.5px var(--rj-line); }
+`;
+
+const Ghost = styled.button`
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  font: 600 14px var(--rj-font);
+  color: var(--rj-ink);
+  background: color-mix(in srgb, var(--rj-ink) 6%, transparent);
+  cursor: pointer;
+
+  &:focus-visible { outline: 2px solid var(--rj-ink); outline-offset: 2px; }
+`;
+
+const App = styled.div`
+  margin: 24px 0 64px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+
+  @media (min-width: 1000px) { grid-template-columns: minmax(0, 1fr) minmax(0, 500px); gap: 24px; align-items: start; }
+`;
+
+const Form = styled.section`
+  min-width: 0;
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--rj-surface);
+  box-shadow: 0 0 0 1px var(--rj-line);
+
+  @media (min-width: 640px) { padding: 24px 28px; }
+
+  .k { margin: 0; font: 600 11px/1 var(--rj-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--rj-ink-3); }
+  > h2 { margin: 8px 0 0; font-size: 26px; letter-spacing: -0.03em; color: var(--rj-ink); }
+  > .d { margin: 6px 0 18px; font-size: 15px; line-height: 1.5; color: var(--rj-ink-2); }
+`;
+
+const Steps = styled.ol`
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+
+  button {
+    position: relative;
+    width: 100%;
+    padding: 9px 0 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    font: 600 10px/1.2 var(--rj-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--rj-ink-3);
+    cursor: pointer;
+
+    &::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; border-radius: 2px; background: var(--rj-line); }
+    &[data-done="true"]::before, &[aria-current="step"]::before { background: var(--rj-ink); }
+    &[aria-current="step"] { color: var(--rj-ink); }
+    &:focus-visible { outline: 2px solid var(--rj-ink); outline-offset: 2px; border-radius: 3px; }
+
+    @media (max-width: 639px) { font-size: 0; padding-top: 6px; }
   }
 `;
 
-const LeftPanel = styled.div`
-  flex: 1;
-  max-width: 550px;
-  height: 100%;
+const Nav = styled.div`
+  margin-top: 28px;
   display: flex;
-  flex-direction: column;
-  background: rgba(20, 20, 22, 0.4);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-  z-index: 10;
+  align-items: center;
+  gap: 12px;
+
+  button { height: 46px; padding: 0 22px; border: 0; border-radius: 999px; font: 600 15px var(--rj-font); cursor: pointer; }
+  button:focus-visible { outline: 2px solid var(--rj-ink); outline-offset: 2px; }
+  .back { color: var(--rj-ink-2); background: none; }
+  .skip { color: var(--rj-ink-3); background: none; text-decoration: underline; text-underline-offset: 3px; }
+  .go { margin-left: auto; color: var(--rj-btn-ink); background: var(--rj-btn); }
+`;
+
+const Finish = styled.div`
+  margin-top: 18px;
+  display: grid;
+  gap: 18px;
+
+  .dl { display: grid; gap: 8px; }
+  .dl button { height: 52px; border: 0; border-radius: 999px; font: 600 16px var(--rj-font); color: var(--rj-btn-ink); background: var(--rj-btn); cursor: pointer; }
+  .dl button:disabled { opacity: 0.6; cursor: progress; }
+  .dl button:focus-visible { outline: 2px solid var(--rj-ink); outline-offset: 3px; }
+  .dl small { font-size: 12.5px; line-height: 1.45; text-align: center; color: var(--rj-ink-3); }
+  .next { display: grid; gap: 10px; }
+  .next a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; padding: 14px 16px; border-radius: 16px; color: var(--rj-ink); background: var(--rj-paper); box-shadow: inset 0 0 0 1px var(--rj-line); text-decoration: none; }
+  .next a:hover { color: var(--rj-ink); box-shadow: inset 0 0 0 1px var(--rj-ink-3); }
+  .next a:focus-visible { outline: 2px solid var(--rj-ink); outline-offset: 2px; }
+  .next b { font-size: 15px; }
+  .next span { grid-column: 1; font-size: 13px; color: var(--rj-ink-2); }
+  .next em { grid-row: 1 / 3; grid-column: 2; padding: 4px 7px; border-radius: 6px; font: 700 10px/1 var(--rj-mono); font-style: normal; letter-spacing: 0.07em; text-transform: uppercase; color: var(--rj-ink-2); box-shadow: inset 0 0 0 1.5px var(--rj-line); }
+  .next em.free { color: #0d0e10; background: var(--rj-hl); box-shadow: none; }
+`;
+
+const Side = styled.aside`
+  display: none;
+
+  @media (min-width: 1000px) { display: grid; gap: 12px; position: sticky; top: 76px; }
+`;
+
+/* The paper is drawn at 780px and scaled to fit its column. */
+const PaperFrame = styled.div<{ $sweep: boolean }>`
   position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px var(--rj-line), 0 30px 60px -36px rgba(0, 0, 0, 0.4);
 
-  @media (max-width: 1024px) {
-    max-width: 100%;
-    height: 50vh;
-    border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  }
-`;
+  .scale { width: 780px; transform-origin: 0 0; }
+  .scale > div { box-shadow: none; border-radius: 0; }
 
-const RightPanel = styled.div`
-  flex: 1.5;
-  height: 100%;
-  display: flex;
-  align-items: flex-start; /* Fixed: allows top of tall elements to be scrollable */
-  justify-content: center;
-  background: #000; /* Deep black for absolute contrast */
-  padding: 100px 40px 40px;
-  overflow-y: auto;
-
-  /* Subtle ambient glow behind the CV */
-  &::before {
-    content: '';
+  &::after {
+    content: "";
     position: absolute;
-    width: 60%;
-    height: 60%;
-    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 2;
+    height: 2px;
     pointer-events: none;
+    opacity: 0;
+    background: #ffe14d;
+    box-shadow: 0 0 14px 3px rgba(255, 225, 77, 0.6);
+    ${({ $sweep }) => $sweep && css`animation: ${scanSweep} 1.1s cubic-bezier(0.45, 0, 0.55, 1);`}
   }
+  @media (prefers-reduced-motion: reduce) { &::after { animation: none; } }
 `;
 
-const PreviewFAB = styled.button`
+const Fab = styled.button`
   position: fixed;
-  bottom: 32px;
-  right: 32px;
-  height: 56px;
-  padding: 0 28px;
-  border-radius: 9999px;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
   z-index: 90;
-  background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
-  color: white;
-  border: none;
-  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
-  font-size: 15px;
-  font-weight: 600;
-  display: flex;
+  height: 46px;
+  padding: 0 18px 0 8px;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
+  border: 0;
+  border-radius: 999px;
+  font: 600 14.5px var(--rj-font);
+  white-space: nowrap;
+  color: var(--rj-btn-ink);
+  background: var(--rj-btn);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.45);
+  transform: translateX(-50%);
   cursor: pointer;
-  transition: all 0.2s ease;
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(37, 99, 235, 0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+  @media (min-width: 1000px) { display: none; }
+  i { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; font: 700 12.5px var(--rj-font); font-style: normal; color: #0d0e10; background: var(--rj-hl); }
+  &:focus-visible { outline: 2px solid var(--rj-ink); outline-offset: 3px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+`;
+
+const Sheet = styled.div<{ $open: boolean }>`
+  position: fixed;
+  inset: 0;
+  z-index: 1002;
+  display: ${({ $open }) => ($open ? "block" : "none")};
+
+  @media (min-width: 1000px) { display: none; }
+
+  .scrim { position: absolute; inset: 0; background: rgba(13, 14, 16, 0.4); }
+  .panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 88vh;
+    overflow: auto;
+    overscroll-behavior: contain;
+    display: grid;
+    gap: 12px;
+    padding: 10px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+    border-radius: 24px 24px 0 0;
+    background: var(--rj-paper);
+    box-shadow: 0 -20px 50px -20px rgba(0, 0, 0, 0.4);
   }
+  .grab { justify-self: center; width: 36px; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--rj-ink) 18%, transparent); }
+  .bar { display: flex; justify-content: space-between; align-items: center; }
+  .bar b { font-size: 16px; color: var(--rj-ink); }
+  .bar button { height: 34px; padding: 0 14px; border: 0; border-radius: 999px; font: 600 13.5px var(--rj-font); color: var(--rj-ink); background: color-mix(in srgb, var(--rj-ink) 6%, transparent); cursor: pointer; }
 `;
 
-const EditorBody = styled.div`
-  flex: 1;
-  padding: 100px 48px 60px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+function useFit(width = 780) {
+  const frame = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [height, setHeight] = useState<number | undefined>(undefined);
+  useEffect(() => {
+    const el = frame.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      const s = el.clientWidth / width;
+      setScale(s);
+      const inner = el.firstElementChild as HTMLElement | null;
+      if (inner) setHeight(inner.offsetHeight * s);
+    });
+    ro.observe(el);
+    const inner = el.firstElementChild;
+    if (inner) ro.observe(inner);
+    return () => ro.disconnect();
+  }, [width]);
+  return { frame, scale, height };
+}
 
-  /* Minimalist Scrollbar */
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-  }
-
-  @media (max-width: 1024px) {
-    padding: 80px 24px 120px;
-  }
-`;
-
-// Apple-like Stepper (Very subtle)
-const StepIndicator = styled.div`
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 24px;
-`;
-
-const StepTitle = styled.h1`
-  font-size: 32px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.95);
-  letter-spacing: -0.03em;
-  margin: 0 0 12px 0;
-  line-height: 1.1;
-`;
-
-const StepDescription = styled.p`
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0 0 40px 0;
-  line-height: 1.5;
-  letter-spacing: -0.01em;
-`;
-
-// Form Inputs (Refined & Minimal)
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 24px;
-`;
-
-const Label = styled.label`
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-`;
-
-const Input = styled.input`
-  width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 14px 16px;
-  color: #fff;
-  font-size: 16px;
-  transition: all 0.2s ease;
-  outline: none;
-
-  &:focus {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
-  }
-
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
-  }
-`;
-
-// Smart Suggestions Area (Invisible AI replacing empty textareas)
-const SuggestionsWrapper = styled.div`
-  margin-top: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const SuggestionLabel = styled.div`
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  /* Subtle pulsing dot indicating background intelligence */
-  &::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: #fff;
-    border-radius: 50%;
-    opacity: 0.5;
-  }
-`;
-
-const SuggestionCard = styled.button`
-  text-align: left;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 16px;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 14px;
-  line-height: 1.5;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-1px);
-  }
-
-  /* Plus icon */
-  .icon {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 16px;
-    font-weight: 300;
-    transition: all 0.2s ease;
-  }
-
-  &:hover .icon {
-    background: #fff;
-    color: #000;
-  }
-`;
-
-const CustomEntryButton = styled.button`
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 14px;
-  cursor: pointer;
-  padding: 12px 0;
-  text-align: left;
-  transition: color 0.2s ease;
-
-  &:hover {
-  }
-`;
-
-const steps = ["Basics", "Education", "Experience", "Certifications", "Skills", "Summary", "Design"];
+function Paper({ sweep }: { sweep: boolean }) {
+  const { frame, scale, height } = useFit();
+  return (
+    <PaperFrame ref={frame} $sweep={sweep} style={{ height }}>
+      <div className="scale" style={{ transform: `scale(${scale})` }}>
+        <CVPreview />
+      </div>
+    </PaperFrame>
+  );
+}
 
 export default function CVBuilderPage() {
-  const { cv, currentStep, nextStep, prevStep } = useCVStore();
-  const { user } = useAuth();
-  const router = useRouter();
-  
+  const { cv, currentStep, setStep, startEmpty } = useCVStore();
+  const { user, loading } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [role, setRole] = useState("");
-  const [company, setCompany] = useState("");
-  
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sweep, setSweep] = useState(false);
+  const [score, setScore] = useState<number | null>(null);
+  const [isExample, setIsExample] = useState(false);
+  const autoDownload = useRef(false);
+
+  const idx = Math.max(0, STEPS.findIndex((s) => s.store === currentStep));
+  const step = STEPS[idx];
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 1024);
-    checkMobile(); // Check on mount
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    setMounted(true);
+    // The example is Gordon until the visitor changes his name.
+    setIsExample(useCVStore.getState().cv.contact.name === "Gordon Freeman, Ph.D.");
+    // Old seven-step positions: certifications moved into education.
+    if (useCVStore.getState().currentStep === 4) setStep(2);
+  }, [setStep]);
+
+  useEffect(() => {
+    setIsExample(cv.contact.name === "Gordon Freeman, Ph.D.");
+  }, [cv.contact.name]);
+
+  const lastScore = useRef<number | null>(null);
+  const onScore = useCallback((next: number | null) => {
+    setScore(next);
+    if (lastScore.current !== null && next !== null && next !== lastScore.current) {
+      setSweep(false);
+      requestAnimationFrame(() => setSweep(true));
+    }
+    lastScore.current = next;
   }, []);
 
-  const handleDownload = async () => {
+  const download = useCallback(async () => {
     if (!user) {
-      setShowAuthModal(true);
+      window.location.href = `${ROUTES.AUTH.SIGNUP}?redirect=${encodeURIComponent(`${ROUTES.PUBLIC.CV_BUILDER}?${DOWNLOAD_FLAG}=1`)}`;
       return;
     }
-
     setDownloading(true);
-    const filename = cv.contact.name ? `${cv.contact.name.replace(/\s+/g, '_')}_CV` : 'Rejectly_Pro_CV';
-    
-    // Auto-save built CV to dashboard
+    const state = useCVStore.getState().cv;
+    const filename = state.contact.name ? `${state.contact.name.replace(/\s+/g, "_")}_CV` : "Resume";
     try {
-      await fetch('/api/cv-builder/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cvData: cv, filename }),
+      await fetch("/api/cv-builder/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cvData: state, filename }),
       });
     } catch (e) {
       console.error("Failed to save CV to dashboard", e);
     }
-    
-    await generatePDF('cv-preview-paper', filename, cv);
+    await generatePDF("cv-preview-paper", filename, state);
     setDownloading(false);
-  };
+  }, [user]);
 
-  // Fix hydration mismatch for Zustand persist
+  // Back from signup: finish the download they asked for.
   useEffect(() => {
-    setMounted(true);
-    // Show welcome modal only once per session
-    if (!sessionStorage.getItem('cv-builder-welcomed')) {
-      setShowWelcome(true);
-    }
-  }, []);
+    if (!mounted || loading || !user || autoDownload.current) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get(DOWNLOAD_FLAG) !== "1") return;
+    autoDownload.current = true;
+    window.history.replaceState(null, "", window.location.pathname);
+    setStep(7);
+    download();
+  }, [mounted, loading, user, download, setStep]);
 
-  const dismissWelcome = () => {
-    setShowWelcome(false);
-    sessionStorage.setItem('cv-builder-welcomed', 'true');
+  useEffect(() => {
+    if (!sheetOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSheetOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+  }, [sheetOpen]);
+
+  if (!mounted) return <Root />; // the store lives in localStorage
+
+  const go = (i: number) => {
+    setStep(STEPS[Math.max(0, Math.min(STEPS.length - 1, i))].store);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (!mounted) return null; // Prevent server-client mismatch rendering
-
-  // In a real app, these would be fetched intelligently based on 'role' and 'company'
-  const mockSuggestions = [
-    "Architected and developed scalable frontend applications using React and Next.js, improving page load speed by 40%.",
-    "Collaborated with cross-functional teams to deliver 15+ features in a fast-paced Agile environment.",
-    "Mentored junior developers and established code review guidelines, increasing overall code quality."
-  ];
+  const meter = <AtsMeter cv={cv} onScore={onScore} />;
 
   return (
-    <>
-      {/* Welcome Modal */}
-      {showWelcome && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 9999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'rgba(0, 0, 0, 0.75)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          padding: '24px',
-          animation: 'fadeInOverlay 0.4s ease',
-        }}>
-          <style>{`
-            @keyframes fadeInOverlay {
-              from { opacity: 0; }
-              to { opacity: 1; }
-            }
-            @keyframes slideUp {
-              from { opacity: 0; transform: translateY(30px) scale(0.96); }
-              to { opacity: 1; transform: translateY(0) scale(1); }
-            }
-          `}</style>
-          <div style={{
-            maxWidth: '480px',
-            width: '100%',
-            background: 'rgba(20, 20, 25, 0.85)',
-            backdropFilter: 'blur(40px) saturate(200%)',
-            WebkitBackdropFilter: 'blur(40px) saturate(200%)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '24px',
-            padding: '48px 36px',
-            textAlign: 'center',
-            animation: 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-            boxShadow: '0 24px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
-          }}>
-            {/* Icon */}
-            <div style={{
-              width: '72px',
-              height: '72px',
-              borderRadius: '20px',
-              background: 'linear-gradient(135deg, rgba(53, 162, 159, 0.2) 0%, rgba(11, 102, 106, 0.2) 100%)',
-              border: '1px solid rgba(53, 162, 159, 0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 24px',
-            }}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#35A29F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>
-                <path d="M14 2v6h6"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <line x1="10" y1="9" x2="8" y2="9"/>
-              </svg>
-            </div>
-
-            {/* Title */}
-            <h2 style={{
-              fontSize: '28px',
-              fontWeight: 700,
-              color: '#fff',
-              marginBottom: '12px',
-              letterSpacing: '-0.02em',
-              lineHeight: 1.2,
-            }}>
-              Build Your Professional CV
-            </h2>
-            <p style={{
-              fontSize: '16px',
-              color: 'rgba(255, 255, 255, 0.55)',
-              lineHeight: 1.6,
-              marginBottom: '32px',
-            }}>
-              Create a resume designed to beat entry-level ATS bots.
-            </p>
-
-            {/* Features */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '36px', textAlign: 'left' }}>
-              {[
-                { icon: '✦', text: 'Step-by-step guided builder — no design skills needed' },
-                { icon: '◎', text: 'ATS-optimized formatting that passes hiring systems' },
-                { icon: '↓', text: 'Download as a high-quality PDF instantly' },
-              ].map((item, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '10px',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '16px',
-                    flexShrink: 0,
-                    color: '#35A29F',
-                  }}>
-                    {item.icon}
-                  </div>
-                  <span style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.4 }}>
-                    {item.text}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* CTA */}
-            <button
-              onClick={dismissWelcome}
-              style={{
-                width: '100%',
-                padding: '16px 32px',
-                fontSize: '16px',
-                fontWeight: 600,
-                color: '#fff',
-                background: 'linear-gradient(135deg, rgba(53, 162, 159, 0.9) 0%, rgba(11, 102, 106, 0.9) 100%)',
-                border: '1px solid rgba(53, 162, 159, 0.5)',
-                borderRadius: '14px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: '0 8px 32px rgba(53, 162, 159, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-              }}
-            >
-              Start Building →
-            </button>
-
-            <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.3)', marginTop: '16px' }}>
-              Free to use · No credit card required
-            </p>
+    <Root>
+      <In>
+        <Head>
+          <div>
+            <p className="eyebrow">Resume Builder · Free</p>
+            <h1>Build a resume an ATS can <mark>read</mark>.</h1>
+            <p className="sub">One clean column, standard headings, and a live ATS score as you write. No account until you download.</p>
           </div>
-        </div>
-      )}
-
-    <Container>
-      <LeftPanel>
-        <EditorBody>
-          <StepIndicator>Step {currentStep} of 7 · {steps[currentStep - 1]}</StepIndicator>
-          
-          <StepTitle>
-            {currentStep === 1 && "Start with the basics"}
-            {currentStep === 2 && "Where did you study?"}
-            {currentStep === 3 && "Add your recent role"}
-            {currentStep === 4 && "Any Certifications or Courses?"}
-            {currentStep === 5 && "What are your skills?"}
-            {currentStep === 6 && "Professional Summary"}
-            {currentStep === 7 && "Choose your Theme"}
-          </StepTitle>
-          <StepDescription>
-            {currentStep === 1 && "We'll build your profile step by step."}
-            {currentStep === 2 && "Add your degrees and educational background."}
-            {currentStep === 3 && "Let's focus on what you achieved. We'll handle the formatting."}
-            {currentStep === 4 && "Add relevant certifications, licenses or courses."}
-            {currentStep === 5 && "Add technical and soft skills (press Enter to add)."}
-            {currentStep === 6 && "Add a tailored introduction for your profile."}
-            {currentStep === 7 && "Select an accent color before downloading."}
-          </StepDescription>
-
-          <AnimatePresence mode="wait">
-            {currentStep === 1 && <BasicsForm key="step1" />}
-            {currentStep === 2 && <EducationForm key="step2" />}
-            {currentStep === 3 && <ExperienceForm key="step3" />}
-            {currentStep === 4 && <CertificationForm key="step4" />}
-            {currentStep === 5 && <SkillsForm key="step5" />}
-            {currentStep === 6 && <SummaryForm key="step6" />}
-            {currentStep === 7 && <ThemeForm key="step7" />}
-          </AnimatePresence>
-
-          <div style={{ display: 'flex', gap: '12px', marginTop: '48px', alignItems: 'center' }}>
-            {currentStep > 1 && (
-              <Button 
-                variant="secondary"
-                onClick={prevStep} 
-              >
-                Back
-              </Button>
+          <div className="ex">
+            {isExample ? (
+              <>
+                <b>Example</b>Gordon&apos;s here to show you around.
+                <Ghost type="button" onClick={() => { startEmpty(); setIsExample(false); }}>Start empty</Ghost>
+              </>
+            ) : (
+              <span>Your progress saves in this browser.</span>
             )}
-            
-            <div style={{ marginLeft: 'auto', display: 'flex', gap: '16px', alignItems: 'center' }}>
-              {(currentStep === 2 || currentStep === 4) && (
-                <Button 
-                  variant="ghost"
-                  onClick={nextStep}
-                  style={{ textDecoration: 'underline' }}
-                >
-                  Skip this step
-                </Button>
-              )}
-              {currentStep < 7 ? (
-                <Button variant="primary" onClick={nextStep}>
-                  Continue
-                </Button>
-              ) : (
-                <Button 
-                  variant="glass-primary"
-                  onClick={handleDownload} 
-                  isLoading={downloading}
-                >
-                  Download PDF
-                </Button>
-              )}
-            </div>
           </div>
-        </EditorBody>
-      </LeftPanel>
-      
-      {!isMobile && (
-        <RightPanel>
-          <CVPreview />
-        </RightPanel>
-      )}
+        </Head>
 
-      {isMobile && (
-        <>
-          <div style={{ position: 'fixed', bottom: '32px', right: '32px', zIndex: 90 }}>
-            <Button 
-              variant="glass-secondary" 
-              onClick={() => setPreviewOpen(true)}
-              style={{ 
-                height: '56px', 
-                borderRadius: '9999px', 
-                padding: '0 28px',
-                background: 'rgba(20, 20, 25, 0.4)',
-                backdropFilter: 'blur(30px) saturate(200%)',
-                WebkitBackdropFilter: 'blur(30px) saturate(200%)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-              }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-              Preview CV
-            </Button>
-          </div>
+        <App>
+          <Form aria-labelledby="builder-step">
+            <Steps aria-label="Steps">
+              {STEPS.map((s, i) => (
+                <li key={s.label}>
+                  <button type="button" data-done={i < idx} aria-current={i === idx ? "step" : undefined} onClick={() => go(i)}>
+                    {s.label}
+                  </button>
+                </li>
+              ))}
+            </Steps>
+            <p className="k">Step {idx + 1} of {STEPS.length}</p>
+            <h2 id="builder-step">{step.title}</h2>
+            <p className="d">{step.text}</p>
 
-          <Drawer isOpen={previewOpen} onClose={() => setPreviewOpen(false)} shouldScaleBackground={true}>
-            <DrawerHeader>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                <div>
-                  <DrawerTitle>Live Preview</DrawerTitle>
-                  <DrawerDescription>Review your layout before downloading.</DrawerDescription>
-                </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <Button 
-                    variant="glass-primary"
-                    onClick={handleDownload} 
-                    isLoading={downloading}
-                  >
-                    Save PDF
-                  </Button>
-                </div>
-              </div>
-            </DrawerHeader>
-            <DrawerBody style={{ padding: 0 }}>
-               <div style={{ 
-                 width: '100%', 
-                 height: '75vh',
-                 overflow: 'auto', 
-                 WebkitOverflowScrolling: 'touch',
-                 padding: '24px 16px 60px',
-               }}>
-                 <div style={{
-                   width: '780px',
-                   minWidth: '780px',
-                   margin: '0 auto',
-                   touchAction: 'pan-x pan-y',
-                   background: '#fff',
-                   borderRadius: '4px'
-                 }}>
-                   {previewOpen && <CVPreview />}
-                 </div>
-               </div>
-            </DrawerBody>
-          </Drawer>
-        </>
-      )}
+            {step.store === 1 && <BasicsForm />}
+            {step.store === 2 && (<><EducationForm /><CertificationForm /></>)}
+            {step.store === 3 && <ExperienceForm />}
+            {step.store === 5 && <SkillsForm />}
+            {step.store === 6 && <SummaryForm />}
+            {step.store === 7 && (
+              <>
+                <ThemeForm />
+                <Finish>
+                  <div className="dl">
+                    <button type="button" onClick={download} disabled={downloading}>{downloading ? "Preparing your PDF…" : "Download PDF"}</button>
+                    <small>{user ? "Free. It's also saved to your dashboard." : "Free. You'll create a free account so your resume is saved, then the download starts."}</small>
+                  </div>
+                  <div className="next">
+                    <Link href={ROUTES.PUBLIC.ATS_CHECK}><b>Scan it</b><span>See the text an ATS pulls out of your PDF, with the fix for each check.</span><em className="free">Free</em></Link>
+                    <Link href={ROUTES.APP.REPORTS}><b>Match it to a job</b><span>Rewrite it in a job post&apos;s words, with a cover letter.</span><em>1 credit</em></Link>
+                  </div>
+                </Finish>
+              </>
+            )}
 
-      <Modal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)}>
-        <div style={{ textAlign: 'center', padding: '16px' }}>
-          <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#60a5fa' }}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            </div>
-          </div>
-          <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>Your ATS-Bypassing CV is Ready</h2>
-          <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '15px', lineHeight: 1.6, marginBottom: '32px' }}>
-            Create a free account to download your beautifully formatted CV and unlock our AI-powered ATS optimizer suite.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-            <Button 
-              variant="ghost"
-              onClick={() => router.push(ROUTES.AUTH.LOGIN)}
-              style={{ flex: 1 }}
-            >
-              Sign In
-            </Button>
-            <Button 
-              variant="primary"
-              onClick={() => router.push(ROUTES.AUTH.SIGNUP)}
-              style={{ flex: 1 }}
-            >
-              Create Free Account
-            </Button>
-          </div>
+            <Nav>
+              {idx > 0 && <button className="back" type="button" onClick={() => go(idx - 1)}>Back</button>}
+              {step.store === 2 && <button className="skip" type="button" onClick={() => go(idx + 1)}>Skip this step</button>}
+              {idx < STEPS.length - 1 && <button className="go" type="button" onClick={() => go(idx + 1)}>Continue</button>}
+            </Nav>
+          </Form>
+
+          <Side aria-label="Preview">
+            {meter}
+            <Paper sweep={sweep} />
+          </Side>
+        </App>
+      </In>
+
+      <Fab type="button" onClick={() => setSheetOpen(true)} aria-haspopup="dialog">
+        <i aria-hidden="true">{score ?? "—"}</i>{score !== null && <span className="sr">ATS score {score}, </span>}Preview
+      </Fab>
+      <Sheet $open={sheetOpen} role="dialog" aria-modal="true" aria-label="Preview">
+        <div className="scrim" onClick={() => setSheetOpen(false)} />
+        <div className="panel">
+          <span className="grab" aria-hidden="true" />
+          <div className="bar"><b>Preview</b><button type="button" onClick={() => setSheetOpen(false)}>Done</button></div>
+          {sheetOpen && meter}
+          {sheetOpen && <Paper sweep={false} />}
         </div>
-      </Modal>
-
-    </Container>
-    </>
+      </Sheet>
+      <Footer />
+    </Root>
   );
 }
-

@@ -11,23 +11,23 @@ const Wrapper = styled.div`
 
 const StyledInput = styled.input`
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   padding: 14px 16px;
-  color: #fff;
+  color: var(--rj-ink);
   font-size: 16px;
   transition: all 0.2s ease;
   outline: none;
 
   &:focus {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+    background: color-mix(in srgb, var(--rj-ink) 6%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 30%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--rj-ink) 5%, transparent);
   }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
+    color: color-mix(in srgb, var(--rj-ink) 20%, transparent);
   }
 `;
 
@@ -36,9 +36,9 @@ const Dropdown = styled(motion.ul)`
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: rgba(20, 20, 22, 0.95);
+  background: var(--rj-surface);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   max-height: 240px;
   overflow-y: auto;
@@ -52,7 +52,7 @@ const Dropdown = styled(motion.ul)`
     width: 4px;
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: color-mix(in srgb, var(--rj-ink) 10%, transparent);
     border-radius: 4px;
   }
 `;
@@ -60,7 +60,7 @@ const Dropdown = styled(motion.ul)`
 const DropdownItem = styled.li`
   padding: 12px 16px;
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.9);
+  color: color-mix(in srgb, var(--rj-ink) 90%, transparent);
   font-size: 14px;
   cursor: pointer;
   display: flex;
@@ -69,7 +69,7 @@ const DropdownItem = styled.li`
   transition: background 0.2s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: color-mix(in srgb, var(--rj-ink) 6%, transparent);
   }
   
   img {
@@ -83,7 +83,7 @@ const DropdownItem = styled.li`
 
 const LoadingText = styled.div`
   padding: 12px 16px;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--rj-ink) 50%, transparent);
   font-size: 13px;
   display: flex;
   align-items: center;
@@ -93,8 +93,8 @@ const LoadingText = styled.div`
     content: '';
     width: 12px;
     height: 12px;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-top-color: #fff;
+    border: 2px solid color-mix(in srgb, var(--rj-ink) 20%, transparent);
+    border-top-color: var(--rj-ink);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }

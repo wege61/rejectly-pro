@@ -630,3 +630,121 @@ async function convertToJPEG(dataUrl: string): Promise<string> {
   }
   return dataUrl;
 }
+
+/**
+ * The text a parser reads from the PDF above, in the same order with the same
+ * headings and dates, shaped the way pdf-parse extracts it: lines wrap at about
+ * the PDF's width, a bullet sits flush against its text ("•Led"), and a row's
+ * date runs straight on from its title. The builder scores this live with the
+ * ATS checks, so it must follow renderCVPDF: change one, change the other.
+ * (Checked against /api/ats/parse on a generated PDF: same score.)
+ */
+export function cvPlainText(cv: GeneratedCV): string {
+  const experience = cv.experience || [];
+  const allText = [cv.summary, ...experience.map((e) => `${e.title} ${(e.bullets || []).join(" ")}`)].join(" ");
+  const lang = cv.language && CV_HEADINGS[cv.language] ? cv.language : detectLocale(allText);
+  const L = { ...CV_HEADINGS["en"], ...(CV_HEADINGS[lang] || {}) };
+  const out: string[] = [];
+  // Greedy word wrap at roughly the PDF's line width, in characters.
+  const wrap = (text: string, width: number) => {
+    const lines: string[] = [];
+    let line = "";
+    for (const word of text.trim().split(/\s+/)) {
+      if (line && line.length + 1 + word.length > width) { lines.push(line); line = word; }
+      else line = line ? `${line} ${word}` : word;
+    }
+    if (line) lines.push(line);
+    return lines;
+  };
+  const para = (t: string) => out.push(...wrap(t, 110));
+  const heading = (t: string) => out.push(t.toLocaleUpperCase(lang));
+  const row = (left: string, right?: string) => out.push(right ? `${left}${right}` : left);
+  const bullets = (b?: string[]) =>
+    (b || []).forEach((x) => {
+      if (!x.trim()) return;
+      const [first, ...rest] = wrap(x, 104);
+      out.push(`•${first}`, ...rest);
+    });
+  const byEnd = <T extends { startDate?: string | null; endDate?: string | null }>(a: T, b: T) =>
+    parseDateForSort(b.endDate || b.startDate) - parseDateForSort(a.endDate || a.startDate);
+
+  if (cv.contact?.name) out.push(cv.contact.name);
+  const contact = [cv.contact?.email, cv.contact?.phone, cv.contact?.location, cv.contact?.linkedin?.replace(/^https?:\/\//, ""), cv.contact?.portfolio?.replace(/^https?:\/\//, "")].filter(Boolean);
+  if (contact.length) para(contact.join("  •  "));
+  if (cv.summary) { heading(L.summary); para(cv.summary); }
+
+  const validExperience = experience.filter((e) => e.title?.trim() || e.company?.trim());
+  const validProjects = (cv.projects || []).filter((p) => p.name?.trim());
+  const projectsUnderExperience = !cv.isEntryLevel && validExperience.length > 0 && validProjects.length > 0;
+
+  const exp = () => {
+    if (!validExperience.length) return;
+    heading(projectsUnderExperience ? L.experience : L.experience_only);
+    [...validExperience].sort(byEnd).forEach((e) => {
+      row(e.title, formatDateRange(e.startDate, e.endDate));
+      const sub = [e.company, e.location].filter(Boolean).join(" • ");
+      if (sub) out.push(sub);
+      bullets(e.bullets);
+    });
+  };
+  const projects = () => {
+    if (!validProjects.length) return;
+    if (!projectsUnderExperience) heading(L.projects);
+    validProjects.forEach((p) => {
+      row(p.name, formatDateRange(p.startDate, p.endDate));
+      const sub = [p.role, p.url].filter(Boolean).join(" • ");
+      if (sub) out.push(sub);
+      bullets(p.bullets);
+    });
+  };
+  const education = () => {
+    const valid = (cv.education || []).filter((e) => e.institution?.trim() || e.degree?.trim());
+    if (!valid.length) return;
+    heading(L.education);
+    [...valid].sort((a, b) => parseDateForSort(b.graduationDate) - parseDateForSort(a.graduationDate)).forEach((e) => {
+      row([e.degree, e.fieldOfStudy].filter(Boolean).join(", "), formatDateRange(e.startDate, e.graduationDate) || undefined);
+      const inst = [e.institution, e.location].filter(Boolean).join(", ");
+      if (inst) out.push(inst);
+      if (e.details) para(e.details);
+    });
+  };
+  const certifications = () => {
+    const valid = (cv.certifications || []).filter((c) => c.name?.trim());
+    if (!valid.length) return;
+    heading(L.certifications);
+    valid.forEach((c) => {
+      row(c.name, c.date || undefined);
+      const issuer = [c.issuer, c.credentialId ? `ID: ${c.credentialId}` : ""].filter(Boolean).join(" • ");
+      if (issuer) out.push(issuer);
+    });
+  };
+  const leadership = () => {
+    const valid = (cv.leadership || []).filter((l) => l.title?.trim() || l.organization?.trim());
+    if (!valid.length) return;
+    heading(L.leadership);
+    [...valid].sort(byEnd).forEach((l) => {
+      row(l.title, formatDateRange(l.startDate, l.endDate));
+      const sub = [l.organization, l.location].filter(Boolean).join(" • ");
+      if (sub) out.push(sub);
+      bullets(l.bullets);
+    });
+  };
+  const skills = () => {
+    const s = cv.skills?.technical || [];
+    if (!s.length) return;
+    heading(L.skills);
+    para(s.join("  •  "));
+  };
+  const languages = () => {
+    const valid = (cv.languages || []).filter((l) => l.language?.trim());
+    if (!valid.length) return;
+    heading(L.languages);
+    para(valid.map((l) => (l.proficiency ? `${l.language} (${l.proficiency})` : l.language)).join("  •  "));
+  };
+
+  const order = cv.isEntryLevel
+    ? [education, projects, exp, leadership, certifications, skills, languages]
+    : [exp, projects, education, certifications, leadership, skills, languages];
+  order.forEach((f) => f());
+  return out.join("\n").trim();
+}

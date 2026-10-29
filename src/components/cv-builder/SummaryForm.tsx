@@ -15,10 +15,10 @@ const FormContainer = styled(motion.div)`
 const TabsContainer = styled.div`
   display: flex;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.03);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
   padding: 6px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 5%, transparent);
   margin-bottom: 8px;
 `;
 
@@ -26,9 +26,9 @@ const Tab = styled.button<{ $active: boolean }>`
   flex: 1;
   padding: 10px 16px;
   border-radius: 8px;
-  background: ${props => props.$active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
-  color: ${props => props.$active ? '#fff' : 'rgba(255, 255, 255, 0.5)'};
-  border: 1px solid ${props => props.$active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
+  background: ${props => props.$active ? 'color-mix(in srgb, var(--rj-ink) 10%, transparent)' : 'transparent'};
+  color: ${props => props.$active ? 'var(--rj-paper)' : 'color-mix(in srgb, var(--rj-ink) 50%, transparent)'};
+  border: 1px solid ${props => props.$active ? 'color-mix(in srgb, var(--rj-ink) 10%, transparent)' : 'transparent'};
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -36,17 +36,17 @@ const Tab = styled.button<{ $active: boolean }>`
   box-shadow: ${props => props.$active ? '0 2px 8px rgba(0,0,0,0.2)' : 'none'};
 
   &:hover {
-    color: #fff;
+    color: var(--rj-ink);
   }
 `;
 
 const Textarea = styled.textarea`
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   padding: 16px;
-  color: #fff;
+  color: var(--rj-ink);
   font-size: 15px;
   line-height: 1.6;
   min-height: 200px;
@@ -55,30 +55,30 @@ const Textarea = styled.textarea`
   font-family: inherit;
 
   &:focus {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(59, 130, 246, 0.5);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    background: color-mix(in srgb, var(--rj-ink) 6%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 50%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--rj-ink) 10%, transparent);
   }
 `;
 
 const SuggestionCard = styled(motion.button)`
   width: 100%;
   text-align: left;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--rj-ink) 2%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 8%, transparent);
   border-radius: 12px;
   padding: 20px;
-  color: rgba(255, 255, 255, 0.85);
+  color: color-mix(in srgb, var(--rj-ink) 85%, transparent);
   font-size: 14px;
   line-height: 1.6;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    background: rgba(59, 130, 246, 0.06);
-    border-color: rgba(59, 130, 246, 0.3);
+    background: color-mix(in srgb, var(--rj-ink) 6%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 30%, transparent);
     transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--rj-ink) 15%, transparent);
   }
 `;
 
@@ -92,10 +92,10 @@ const HeaderBox = styled.div`
 
 const FocusToggleContainer = styled.div`
   display: flex;
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in srgb, var(--rj-ink) 2%, transparent);
   padding: 4px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 5%, transparent);
   margin-bottom: 16px;
 `;
 
@@ -103,16 +103,16 @@ const FocusButton = styled.button<{ $active: boolean }>`
   flex: 1;
   padding: 10px 12px;
   border-radius: 8px;
-  background: ${props => props.$active ? 'rgba(59, 130, 246, 0.15)' : 'transparent'};
-  color: ${props => props.$active ? '#60a5fa' : 'rgba(255, 255, 255, 0.5)'};
-  border: 1px solid ${props => props.$active ? 'rgba(59, 130, 246, 0.3)' : 'transparent'};
+  background: ${props => props.$active ? 'color-mix(in srgb, var(--rj-ink) 15%, transparent)' : 'transparent'};
+  color: ${props => props.$active ? 'var(--rj-ink)' : 'color-mix(in srgb, var(--rj-ink) 50%, transparent)'};
+  border: 1px solid ${props => props.$active ? 'color-mix(in srgb, var(--rj-ink) 30%, transparent)' : 'transparent'};
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    color: ${props => props.$active ? '#60a5fa' : '#fff'};
+    color: ${props => props.$active ? 'var(--rj-ink)' : '#fff'};
   }
 `;
 
@@ -233,8 +233,8 @@ export function SummaryForm() {
           >
             <HeaderBox>
                <div>
-                 <h3 style={{ fontSize: '16px', margin: '0 0 4px', color: '#fff', fontWeight: 600 }}>Tailored Summaries</h3>
-                 <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>Based on your entire provided background profile.</div>
+                 <h3 style={{ fontSize: '16px', margin: '0 0 4px', color: 'var(--rj-ink)', fontWeight: 600 }}>Tailored Summaries</h3>
+                 <div style={{ fontSize: '13px', color: 'color-mix(in srgb, var(--rj-ink) 50%, transparent)' }}>AI suggestions from what you&apos;ve entered. Keep only what&apos;s true.</div>
                </div>
             </HeaderBox>
 
@@ -248,16 +248,16 @@ export function SummaryForm() {
             </FocusToggleContainer>
 
             {loading ? (
-               <div style={{ padding: '60px 40px', textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: '14px', lineHeight: 1.6 }}>
+               <div style={{ padding: '60px 40px', textAlign: 'center', color: 'color-mix(in srgb, var(--rj-ink) 50%, transparent)', fontSize: '14px', lineHeight: 1.6 }}>
                  <motion.div 
                    animate={{ rotate: 360 }}
                    transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                   style={{ marginBottom: '16px', display: 'inline-block', color: '#60a5fa' }}
+                   style={{ marginBottom: '16px', display: 'inline-block', color: 'var(--rj-ink)' }}
                  >
                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
                  </motion.div>
                  <br />
-                 Synthesizing your experience, education, and skills into perfect introductory summaries...
+                 Writing summaries from your experience, education and skills…
                </div>
             ) : suggestions.length > 0 ? (
                suggestions.map((text, idx) => (
@@ -272,7 +272,7 @@ export function SummaryForm() {
                  </SuggestionCard>
                ))
             ) : (
-               <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(239, 68, 68, 0.8)', fontSize: '14px', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '12px' }}>
+               <div style={{ padding: '40px', textAlign: 'center', color: 'color-mix(in srgb, var(--rj-pen) 80%, transparent)', fontSize: '14px', background: 'color-mix(in srgb, var(--rj-pen) 5%, transparent)', borderRadius: '12px' }}>
                  No professional background data was provided to analyze. Go back and fill your experience, or switch to the manual tab.
                </div>
             )}
@@ -285,7 +285,7 @@ export function SummaryForm() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            <div style={{ marginBottom: '12px', fontSize: '14px', color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>
+            <div style={{ marginBottom: '12px', fontSize: '14px', color: 'color-mix(in srgb, var(--rj-ink) 80%, transparent)', fontWeight: 500 }}>
               Your Professional Summary
             </div>
             <Textarea 

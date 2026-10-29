@@ -23,8 +23,8 @@ const PhotoBubble = styled.label`
   width: 84px;
   height: 84px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--rj-ink) 20%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,12 +32,12 @@ const PhotoBubble = styled.label`
   overflow: hidden;
   position: relative;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  color: rgba(255, 255, 255, 0.4);
+  color: color-mix(in srgb, var(--rj-ink) 40%, transparent);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.5);
-    color: #fff;
+    background: color-mix(in srgb, var(--rj-ink) 8%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 50%, transparent);
+    color: var(--rj-ink);
     transform: scale(1.05);
   }
 
@@ -56,12 +56,12 @@ const PhotoText = styled.div`
   span {
     font-size: 14px;
     font-weight: 500;
-    color: #fff;
+    color: var(--rj-ink);
   }
   
   small {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.4);
+    color: color-mix(in srgb, var(--rj-ink) 40%, transparent);
   }
 `;
 
@@ -74,28 +74,28 @@ const InputGroup = styled.div`
 const Label = styled.label`
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, var(--rj-ink) 80%, transparent);
 `;
 
 const Input = styled.input`
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   padding: 14px 16px;
-  color: #fff;
+  color: var(--rj-ink);
   font-size: 16px;
   transition: all 0.2s ease;
   outline: none;
 
   &:focus {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+    background: color-mix(in srgb, var(--rj-ink) 6%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 30%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--rj-ink) 5%, transparent);
   }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
+    color: color-mix(in srgb, var(--rj-ink) 20%, transparent);
   }
 `;
 
@@ -148,16 +148,16 @@ export function BasicsForm() {
           )}
         </PhotoBubble>
         <PhotoText>
-          <span>Profile Photo</span>
+          <span>Photo</span>
           {cv.photoUrl ? (
             <button 
               onClick={(e) => { e.preventDefault(); updatePhoto(""); }}
-              style={{ background: 'none', border: 'none', padding: 0, color: '#ef4444', fontSize: '12px', cursor: 'pointer', textAlign: 'left', marginTop: '2px', fontWeight: 500 }}
+              style={{ background: 'none', border: 'none', padding: 0, color: 'var(--rj-ink-2)', fontSize: '12px', cursor: 'pointer', textAlign: 'left', marginTop: '2px', fontWeight: 500 }}
             >
-              Remove Photo
+              Remove photo
             </button>
           ) : (
-            <small>Recommended for UK/EU regions.</small>
+            <small>Optional. Most US employers prefer no photo, and an ATS can&apos;t read images.</small>
           )}
         </PhotoText>
       </PhotoUploadWrapper>

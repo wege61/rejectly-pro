@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import type { GeneratedCV, CVEducation, CVExperience, CVCertification, CVLeadership } from '@/types/cv';
 
 // Initial placeholder CV state (Showcase for new users - Gordon Freeman Edition)
-const initialCVState: GeneratedCV = {
+export const initialCVState: GeneratedCV = {
   contact: {
     name: "Gordon Freeman, Ph.D.",
     email: "gfreeman@blackmesa.gov",
@@ -23,7 +23,7 @@ const initialCVState: GeneratedCV = {
       current: true,
       description: "",
       bullets: [
-        "Spearheaded the global uprising against the Universal Union (Combine) through targeted strikes on key infrastructure, including Nova Prospekt.",
+        "Led the global uprising against the Universal Union (Combine) through targeted strikes on key infrastructure, including Nova Prospekt.",
         "Operated the experimental Zero-Point Energy Field Manipulator (Gravity Gun) to solve complex physics-based puzzles and neutralize heavily armored threats.",
         "Led squad-based urban combat operations resulting in the successful destabilization of the Citadel's dark energy reactor."
       ]
@@ -77,12 +77,27 @@ const initialCVState: GeneratedCV = {
   photoUrl: "/gordon-freeman.png",
 };
 
+/** "Start empty": a blank resume (the example above is what new visitors see first). */
+export const emptyCVState: GeneratedCV = {
+  contact: { name: "", email: "", phone: "", location: "", linkedin: "", portfolio: "" },
+  summary: "",
+  experience: [],
+  education: [],
+  skills: { technical: [], soft: [] },
+  certifications: [],
+  languages: [],
+  leadership: [],
+  themeColor: "#1E2024",
+  photoUrl: "",
+};
+
 interface CVState {
   cv: GeneratedCV;
   activeCVId: string | null;
   currentStep: number;
   setActiveCVId: (id: string | null) => void;
   resetCV: () => void;
+  startEmpty: () => void;
   updateContact: (contact: Partial<GeneratedCV['contact']>) => void;
   updatePhoto: (photoBase64: string) => void;
   updateSummary: (summary: string) => void;
@@ -119,6 +134,7 @@ export const useCVStore = create<CVState>()(
       setActiveCVId: (id: string | null) => set({ activeCVId: id }),
       
       resetCV: () => set({ cv: initialCVState, activeCVId: null, currentStep: 1 }),
+      startEmpty: () => set({ cv: emptyCVState, activeCVId: null, currentStep: 1 }),
       
       updateContact: (contactPatch: Partial<GeneratedCV['contact']>) => set((state: CVState) => ({
         cv: { 

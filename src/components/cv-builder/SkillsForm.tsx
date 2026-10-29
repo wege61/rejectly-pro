@@ -21,7 +21,7 @@ const InputGroup = styled.div`
 const Label = styled.label`
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, var(--rj-ink) 80%, transparent);
 `;
 
 const InputWrapper = styled.div`
@@ -32,34 +32,34 @@ const InputWrapper = styled.div`
 
 const Input = styled.input`
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   border-radius: 12px;
   padding: 16px 20px;
-  color: #fff;
+  color: var(--rj-ink);
   font-size: 16px;
   transition: all 0.2s ease;
   outline: none;
 
   &:focus {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+    background: color-mix(in srgb, var(--rj-ink) 6%, transparent);
+    border-color: color-mix(in srgb, var(--rj-ink) 30%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--rj-ink) 5%, transparent);
   }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
+    color: color-mix(in srgb, var(--rj-ink) 20%, transparent);
   }
 `;
 
 const EnterHint = styled.div`
   position: absolute;
   right: 16px;
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 10%, transparent);
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--rj-ink) 50%, transparent);
   pointer-events: none;
 `;
 
@@ -71,12 +71,12 @@ const TagsContainer = styled.div`
 `;
 
 const Tag = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--rj-ink) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 10%, transparent);
   padding: 8px 16px;
   border-radius: 9999px;
   font-size: 14px;
-  color: #fff;
+  color: var(--rj-ink);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -86,7 +86,7 @@ const Tag = styled(motion.div)`
 const DeleteTagButton = styled.button`
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--rj-ink) 50%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,14 +96,14 @@ const DeleteTagButton = styled.button`
   transition: color 0.1s;
 
   &:hover {
-    color: #ef4444;
+    color: var(--rj-pen);
   }
 `;
 
 const SuggestionsCard = styled(motion.div)`
   margin-top: 16px;
-  background: linear-gradient(145deg, rgba(59, 130, 246, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.15);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--rj-ink) 3%, transparent) 0%, color-mix(in srgb, var(--rj-ink) 1%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--rj-ink) 15%, transparent);
   border-radius: 16px;
   padding: 24px;
   position: relative;
@@ -113,7 +113,7 @@ const SuggestionsCard = styled(motion.div)`
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--rj-ink) 50%, transparent), transparent);
     opacity: 0.5;
   }
 `;
@@ -123,7 +123,7 @@ const RecommendationsHeader = styled.div`
   align-items: center;
   gap: 16px;
   padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid color-mix(in srgb, var(--rj-ink) 6%, transparent);
   margin-bottom: 12px;
 `;
 
@@ -131,14 +131,14 @@ const RecommendationsTitle = styled.h3`
   font-size: 16px;
   font-weight: 600;
   margin: 0;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--rj-ink) 95%, transparent);
   letter-spacing: -0.01em;
 `;
 
 const SuggestionPill = styled.button<{ $added: boolean }>`
-  background: ${props => props.$added ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.03)'};
-  border: 1px solid ${props => props.$added ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)'};
-  color: ${props => props.$added ? '#34d399' : 'rgba(255, 255, 255, 0.8)'};
+  background: ${props => props.$added ? 'color-mix(in srgb, var(--rj-pass) 15%, transparent)' : 'color-mix(in srgb, var(--rj-ink) 3%, transparent)'};
+  border: 1px solid ${props => props.$added ? 'color-mix(in srgb, var(--rj-pass) 40%, transparent)' : 'color-mix(in srgb, var(--rj-ink) 10%, transparent)'};
+  color: ${props => props.$added ? 'var(--rj-pass)' : 'color-mix(in srgb, var(--rj-ink) 80%, transparent)'};
   padding: 8px 16px;
   border-radius: 9999px;
   font-size: 13px;
@@ -151,17 +151,17 @@ const SuggestionPill = styled.button<{ $added: boolean }>`
   backdrop-filter: blur(8px);
 
   &:hover {
-    background: ${props => props.$added ? 'rgba(16, 185, 129, 0.15)' : 'rgba(59, 130, 246, 0.1)'};
-    border-color: ${props => props.$added ? 'rgba(16, 185, 129, 0.4)' : 'rgba(59, 130, 246, 0.5)'};
-    color: ${props => props.$added ? '#34d399' : '#fff'};
+    background: ${props => props.$added ? 'color-mix(in srgb, var(--rj-pass) 15%, transparent)' : 'color-mix(in srgb, var(--rj-ink) 10%, transparent)'};
+    border-color: ${props => props.$added ? 'color-mix(in srgb, var(--rj-pass) 40%, transparent)' : 'color-mix(in srgb, var(--rj-ink) 50%, transparent)'};
+    color: ${props => props.$added ? 'var(--rj-pass)' : '#fff'};
     transform: ${props => props.$added ? 'none' : 'translateY(-2px) scale(1.02)'};
-    box-shadow: ${props => props.$added ? 'none' : '0 4px 12px rgba(59, 130, 246, 0.15)'};
+    box-shadow: ${props => props.$added ? 'none' : '0 4px 12px color-mix(in srgb, var(--rj-ink) 15%, transparent)'};
   }
 `;
 
 const SectionHeading = styled.div`
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
+  color: color-mix(in srgb, var(--rj-ink) 40%, transparent);
   margin: 16px 0 10px;
   display: flex;
   align-items: center;
@@ -332,7 +332,7 @@ export function SkillsForm() {
           <RecommendationsHeader>
             <div>
               <RecommendationsTitle>Highly Recommended</RecommendationsTitle>
-              <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.4)', marginTop: '4px' }}>Tailored to your professional background</div>
+              <div style={{ fontSize: '13px', color: 'color-mix(in srgb, var(--rj-ink) 40%, transparent)', marginTop: '4px' }}>Tailored to your professional background</div>
             </div>
           </RecommendationsHeader>
           

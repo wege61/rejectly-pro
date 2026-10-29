@@ -16,7 +16,8 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [x] `/faq`
 - [x] `/how-it-works`
 - [x] `/cv-builder`: paper redesign, live ATS score (same 19 checks, run on the PDF text), start empty, signup → auto-download
-- [ ] `/about`, `/contact`
+- [x] `/about`: origin letter, red-pen promises, code vs AI, anonymous team
+- [ ] `/contact`
 - [ ] `/resume/[role]` pages
 - [ ] `/privacy`, `/terms` (light restyle only, no wording changes without review)
 - [ ] `/login`, `/signup`, `/forgot-password`, `/reset-password` (still says "Beat the bots")

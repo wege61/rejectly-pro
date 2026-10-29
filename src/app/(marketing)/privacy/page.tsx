@@ -288,7 +288,7 @@ export default function PrivacyPage() {
           <HighlightBox>
             <Paragraph>
               <strong>Important:</strong> Your resume and job posting data is
-              processed using OpenAI's GPT-4 API to provide our analysis services.
+              processed by our AI provider, OpenAI, to provide our analysis services.
               When you use our platform, your data is sent to OpenAI's servers for
               processing.
             </Paragraph>

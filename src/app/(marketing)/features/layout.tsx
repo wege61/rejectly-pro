@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: { absolute: "Features - GPT-4 Powered Resume Analysis Tools | Rejectly.pro" },
+  title: { absolute: "Features - AI Resume Tools | Rejectly.pro" },
   description: "Explore Rejectly.pro's AI-powered tools: Job Match Analysis, ATS Optimizer, Cover Letter Generator, and CV Builder. Create job-specific resumes for every application.",
   keywords: [
     "AI resume features",
     "ATS optimization features",
     "resume analysis tools",
-    "GPT-4 resume checker",
     "resume keyword analyzer",
     "professional resume rewriting",
     "AI cover letter generator",
@@ -20,7 +19,7 @@ export const metadata: Metadata = {
     "ats optimizer no job description",
   ],
   openGraph: {
-    title: "Features - GPT-4 Powered Resume Analysis Tools | Rejectly.pro",
+    title: "Features - AI Resume Tools | Rejectly.pro",
     description: "Explore Rejectly.pro's AI-powered tools: Job Match Analysis, ATS Optimizer, Cover Letter Generator, and free CV Builder.",
     url: "https://rejectly.pro/features",
     type: "website",
@@ -36,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Features - AI Resume Tools | Rejectly.pro",
-    description: "Job Match Analysis, ATS Optimizer, Cover Letter Generator, and free CV Builder — all powered by GPT-4.",
+    description: "Job Match Analysis, ATS Optimizer, Cover Letter Generator, and free CV Builder.",
     images: ["/og-image.png"],
   },
   alternates: {

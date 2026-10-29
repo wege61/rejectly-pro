@@ -455,7 +455,7 @@ export default function TermsPage() {
             </ListItem>
             <ListItem>
               <strong>AI Processing:</strong> Your content will be processed using
-              OpenAI's GPT-4 API. See our Privacy Policy for details
+              our AI provider, OpenAI. See our Privacy Policy for details
             </ListItem>
             <ListItem>
               <strong>Responsibility:</strong> You are solely responsible for the

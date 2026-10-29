@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: { absolute: "How It Works - AI Resume Analysis Process | Rejectly.pro" },
-  description: "Learn how our AI creates a unique, ATS-optimized resume for every job you apply to — in 4 simple steps. Upload, analyze, optimize, apply.",
+  title: { absolute: "How Rejectly Works: Follow One Resume From Upload to Interview" },
+  description: "See what an ATS reads in a real student resume, how the 19-check score works, how a job match and rewrite stay honest, and which parts are AI and which are code.",
   keywords: [
-    "AI resume analysis process",
+    "how ATS reads a resume",
     "how ATS optimization works",
     "resume checker guide",
     "AI resume analyzer steps",
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
     "resume analysis explained",
   ],
   openGraph: {
-    title: "How It Works - AI Resume Analysis Process | Rejectly.pro",
-    description: "Learn how our AI analyzes your resume in 4 simple steps: Upload, get smart recommendations, generate cover letters, and download optimized resume.",
+    title: "How Rejectly Works: Follow One Resume From Upload to Interview",
+    description: "See what an ATS reads in a real student resume, how the 19-check score works, how a job match and rewrite stay honest, and which parts are AI and which are code.",
     url: "https://rejectly.pro/how-it-works",
     type: "website",
     images: [
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@rejectlypro",
     creator: "@rejectlypro",
-    title: "How It Works - AI Resume Analysis Process | Rejectly.pro",
-    description: "Learn how our AI analyzes your resume in 4 simple steps: Upload, get smart recommendations, generate cover letters, and download optimized resume.",
+    title: "How Rejectly Works: Follow One Resume From Upload to Interview",
+    description: "See what an ATS reads in a real student resume, how the 19-check score works, how a job match and rewrite stay honest, and which parts are AI and which are code.",
     images: ["/og-image.png"],
   },
   robots: {

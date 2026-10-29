@@ -430,7 +430,11 @@ export function GuidesIndex({ guides, filterLabel }: Props) {
           })}
         </Grid>
 
-        {total === 0 && <Empty>No guides match that. Try &quot;keywords&quot; or &quot;interview&quot;.</Empty>}
+        {guides.length === 0 ? (
+          <Empty>The guides didn&apos;t load. Refresh the page in a moment.</Empty>
+        ) : (
+          total === 0 && <Empty>No guides match that. Try &quot;keywords&quot; or &quot;interview&quot;.</Empty>
+        )}
         <More type="button" hidden={total <= limit} onClick={() => setLimit((l) => l + STEP)}>
           Show more guides
         </More>

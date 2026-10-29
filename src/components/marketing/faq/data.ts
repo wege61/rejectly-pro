@@ -51,9 +51,9 @@ export const FAQS: Faq[] = [
   {
     // Public scan path: api/ats/check handles cvText without auth.
     question: "What's free?",
-    short: "The scan",
+    short: "The scan, the demo",
     answer:
-      "Your ATS score, the breakdown by category and one quick fix. No account, no card, and no trial that turns into a charge.",
+      "The ATS scan: your score, all 19 checks with the fix for each, and the text the ATS pulled out. And the job match demo: your match score and missing keywords. No account, no card, and no trial that turns into a charge.",
   },
   {
     question: "Do credits expire?",

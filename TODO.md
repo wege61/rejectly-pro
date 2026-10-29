@@ -13,7 +13,7 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [x] `/pricing`
 - [x] `/blog` index
 - [x] `/blog/[slug]` article page (reading bar with the yellow scan line, liquid-glass contents)
-- [ ] `/faq`
+- [x] `/faq`
 - [ ] `/how-it-works`
 - [ ] `/cv-builder` landing
 - [ ] `/about`, `/contact`

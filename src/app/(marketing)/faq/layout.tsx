@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: { absolute: "FAQ - Resume Optimizer Questions Answered | Rejectly.pro" },
-  description: "Get answers to common questions about AI resume optimization, ATS checkers, pricing, privacy, and features. Find help with resume analysis and job matching.",
+  title: { absolute: "FAQ: Straight Answers About Rejectly.pro" },
+  description: "How the free ATS scan works, what a credit buys, refunds, what happens to your resume, and what the AI will and won't do.",
   keywords: [
     "resume optimizer FAQ",
     "ATS checker questions",
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
     "job matching help",
   ],
   openGraph: {
-    title: "FAQ - Resume Optimizer Questions Answered | Rejectly.pro",
-    description: "Get answers to common questions about AI resume optimization, ATS checkers, pricing, privacy, and features. Complete FAQ guide.",
+    title: "FAQ: Straight Answers About Rejectly.pro",
+    description: "How the free ATS scan works, what a credit buys, refunds, what happens to your resume, and what the AI will and won't do.",
     url: "https://rejectly.pro/faq",
     type: "website",
     images: [

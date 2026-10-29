@@ -71,7 +71,7 @@ const LINKS = [
 
 // Pages on the paper design, where the bar can blend into the page at the top.
 // Older pages keep a solid bar so its ink stays readable on their own backgrounds.
-const BLEND_AT_TOP = new Set<string>([ROUTES.PUBLIC.HOME, ROUTES.PUBLIC.ATS_CHECK, ROUTES.PUBLIC.PRICING, ROUTES.PUBLIC.BLOG]);
+const BLEND_AT_TOP = new Set<string>([ROUTES.PUBLIC.HOME, ROUTES.PUBLIC.ATS_CHECK, ROUTES.PUBLIC.PRICING, ROUTES.PUBLIC.BLOG, ROUTES.PUBLIC.FAQ]);
 const blendsAtTop = (path: string) => BLEND_AT_TOP.has(path) || path.startsWith(`${ROUTES.PUBLIC.BLOG}/`);
 
 const ease = "cubic-bezier(0.2, 0.8, 0.2, 1)";

@@ -56,3 +56,4 @@ never expire, untouched packs refunded within 14 days).
       `best-countries-work-remotely-salary-cost`): keep, move, or unpublish
 - [ ] Reading times stored in the database are inflated: recompute from word count
 - [ ] Re-check every post for numbers it can't source
+- [ ] "How ATS Parses Your Resume": source or drop "98% of Fortune 500 companies"

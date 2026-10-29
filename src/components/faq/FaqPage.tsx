@@ -46,7 +46,8 @@ const Head = styled.header`
   .eyebrow { margin: 0; font: 500 11.5px/1.3 var(--rj-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--rj-ink-2); }
   h1 { margin: 12px 0 0; font-size: clamp(40px, 10vw, 76px); font-weight: 700; line-height: 1; letter-spacing: -0.045em; color: var(--rj-ink); }
   @media (min-width: 640px) { h1 { font-size: clamp(56px, 7vw, 76px); } }
-  h1 mark { padding: 0 0.06em; margin: 0 -0.03em; border-radius: 0.1em; color: var(--rj-hl-ink); background: var(--rj-hl); }
+  h1 /* Highlight only the x-height band, so a wrapped line never covers the descenders above it. */
+    mark { padding: 0 0.06em; margin: 0 -0.03em; border-radius: 0.08em; color: var(--rj-hl-ink); background: linear-gradient(transparent 14%, var(--rj-hl) 14%, var(--rj-hl) 90%, transparent 90%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
   .sub { margin: 16px 0 0; max-width: 32em; font-size: 18px; line-height: 1.55; color: var(--rj-ink-2); }
 `;
 

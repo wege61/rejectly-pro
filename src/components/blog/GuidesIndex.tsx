@@ -62,7 +62,8 @@ const Head = styled.header`
     transition: opacity 0.25s, transform 0.3s cubic-bezier(0.3, 0, 0.2, 1);
 
     @media (min-width: 640px) { font-size: clamp(44px, 7.4vw, 72px); }
-    mark { padding: 0 0.06em; margin: 0 -0.03em; border-radius: 0.1em; color: var(--rj-hl-ink); background: var(--rj-hl); }
+    /* Highlight only the x-height band, so a wrapped line never covers the descenders above it. */
+    mark { padding: 0 0.06em; margin: 0 -0.03em; border-radius: 0.08em; color: var(--rj-hl-ink); background: linear-gradient(transparent 14%, var(--rj-hl) 14%, var(--rj-hl) 90%, transparent 90%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
     &.out { opacity: 0; transform: translateY(6px); }
   }
 

@@ -12,8 +12,7 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [x] Navbar
 - [x] `/pricing`
 - [x] `/blog` index
-- [ ] `/blog/[slug]` article page and its header (`ContextualBlogHeader`): move the
-      reading progress to the yellow scan line
+- [x] `/blog/[slug]` article page (reading bar with the yellow scan line, liquid-glass contents)
 - [ ] `/faq`
 - [ ] `/how-it-works`
 - [ ] `/cv-builder` landing
@@ -52,8 +51,11 @@ never expire, untouched packs refunded within 14 days).
       `ats-resume-keywords-guide`, `resume-keywords-ultimate-guide-ats-2025`): merge into
       one, redirect the others
 - [ ] Two cover letter guides: merge, redirect the other
+- [ ] Put `ultimate-guide-bypassing-ats-first-job` back into "Keep reading" after its rewrite
+      (`NOT_RECOMMENDED` in `app/(marketing)/blog/[slug]/page.tsx`)
 - [ ] Off-topic posts (`how-to-get-paid-in-usd-abroad`,
       `best-countries-work-remotely-salary-cost`): keep, move, or unpublish
-- [ ] Reading times stored in the database are inflated: recompute from word count
+- [ ] Reading times stored in the database are inflated (the article page now computes them
+      from word count; the stored column is unused and can be fixed or dropped)
 - [ ] Re-check every post for numbers it can't source
 - [ ] "How ATS Parses Your Resume": source or drop "98% of Fortune 500 companies"

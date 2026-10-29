@@ -10,7 +10,27 @@ import {
   BlogPostingSchema,
   BreadcrumbSchema,
 } from "@/components/seo/StructuredData";
-import { BlogPostContent } from "@/components/blog/BlogPostContent";
+import { GuideArticle } from "@/components/blog/GuideArticle";
+import type { GuideListItem } from "@/components/blog/topics";
+import { prepareArticle } from "@/lib/blogArticle";
+import { Footer } from "@/components/ui/Footer";
+import type { BlogPostWithRelations } from "@/types/blog";
+
+// Kept out of "Keep reading" until its content rewrite (see TODO.md, section 3).
+const NOT_RECOMMENDED = new Set(["ultimate-guide-bypassing-ats-first-job"]);
+
+const dateLabel = (iso: string | null) =>
+  iso ? new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }) : "";
+
+const toListItem = (p: BlogPostWithRelations): GuideListItem => ({
+  slug: p.slug,
+  title: p.title,
+  excerpt: p.excerpt || "",
+  image: p.featured_image,
+  imageAlt: p.featured_image_alt,
+  category: p.category?.name ?? null,
+  date: dateLabel(p.published_at),
+});
 
 // ISR: Revalidate every 60 seconds for fresh content while keeping pages static
 export const revalidate = 60;
@@ -128,7 +148,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   // Increment view count (fire and forget)
   incrementPostViews(slug);
 
-  const relatedPosts = await getRelatedPosts(post, 3);
+  const relatedPosts = (await getRelatedPosts(post, 4)).filter((p) => !NOT_RECOMMENDED.has(p.slug)).slice(0, 3);
 
   // Calculate word count from content
   const wordCount = post.content.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
@@ -146,7 +166,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         wordCount={wordCount}
         category={post.category?.name}
         tags={post.tags?.map(t => t.name)}
-        readingTime={post.reading_time_minutes}
+        readingTime={Math.max(1, Math.round(wordCount / 230))}
       />
       <BreadcrumbSchema
         items={[
@@ -155,7 +175,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           { name: post.title, url: `https://rejectly.pro/blog/${slug}` },
         ]}
       />
-      <BlogPostContent post={post} relatedPosts={relatedPosts} />
+      <GuideArticle
+        article={{
+          slug: post.slug,
+          title: post.title,
+          excerpt: post.excerpt || "",
+          category: post.category?.name ?? null,
+          date: dateLabel(post.published_at),
+          isoDate: post.published_at || post.created_at,
+          readingMinutes: Math.max(1, Math.round(wordCount / 230)),
+          image: post.featured_image,
+          imageAlt: post.featured_image_alt,
+          author: post.author_name,
+          ...prepareArticle(post.content, post.title),
+        }}
+        related={relatedPosts.map(toListItem)}
+      />
+      <Footer />
     </>
   );
 }

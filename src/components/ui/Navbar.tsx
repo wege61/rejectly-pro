@@ -71,7 +71,8 @@ const LINKS = [
 
 // Pages on the paper design, where the bar can blend into the page at the top.
 // Older pages keep a solid bar so its ink stays readable on their own backgrounds.
-const BLEND_AT_TOP = new Set<string>([ROUTES.PUBLIC.HOME, ROUTES.PUBLIC.ATS_CHECK, ROUTES.PUBLIC.PRICING]);
+const BLEND_AT_TOP = new Set<string>([ROUTES.PUBLIC.HOME, ROUTES.PUBLIC.ATS_CHECK, ROUTES.PUBLIC.PRICING, ROUTES.PUBLIC.BLOG]);
+const blendsAtTop = (path: string) => BLEND_AT_TOP.has(path) || path.startsWith(`${ROUTES.PUBLIC.BLOG}/`);
 
 const ease = "cubic-bezier(0.2, 0.8, 0.2, 1)";
 
@@ -112,6 +113,11 @@ const Bar = styled.div`
   gap: 8px;
 
   @media (min-width: 640px) { padding: 0 40px; }
+
+  /* A guide's reading bar takes over this row while you read (see GuideArticle). */
+  transition: opacity 0.25s, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  html[data-reading="1"] & { opacity: 0; transform: translateY(8px); pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { transition: none; }
 `;
 
 const Logo = styled(Link)`
@@ -623,9 +629,6 @@ export function Navbar() {
   const toolsButton = useRef<HTMLButtonElement>(null);
   const burger = useRef<HTMLButtonElement>(null);
 
-  // Blog detail pages render their own header (with the reading progress).
-  const isBlogDetail = pathname?.startsWith("/blog/") && pathname !== "/blog";
-
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
@@ -686,8 +689,6 @@ export function Navbar() {
     closeTimer.current = setTimeout(() => setOpen((o) => (o === "tools" ? null : o)), 160);
   }, []);
 
-  if (isBlogDetail) return null;
-
   const close = () => setOpen(null);
   const ready = mounted && !loading;
   const balanceLabel = balance ? (balance.pro ? "Pro" : `${balance.credits} ${balance.credits === 1 ? "credit" : "credits"}`) : null;
@@ -695,7 +696,7 @@ export function Navbar() {
 
   return (
     <>
-      <Header $solid={scrolled || open === "tools" || !BLEND_AT_TOP.has(pathname ?? "")} $sheet={open === "menu"}>
+      <Header $solid={scrolled || open === "tools" || !blendsAtTop(pathname ?? "")} $sheet={open === "menu"}>
         <Bar>
           <Logo href={ROUTES.PUBLIC.HOME} aria-label="Rejectly home" onClick={close}>
             <LogoMark />

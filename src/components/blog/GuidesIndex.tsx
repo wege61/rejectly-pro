@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { useReducedMotion } from "framer-motion";
 import { ROUTES } from "@/lib/constants";
 import { ALL_FEATURED, TOPICS, type GuideListItem } from "./topics";
+import { GuideCard } from "./GuideCard";
 
 /*
  * /blog index. One featured guide (image, category, title, excerpt, date, one
@@ -173,33 +174,6 @@ const Grid = styled.div`
   &.in > a:not([hidden]) { animation: rj-guide-rise 0.55s cubic-bezier(0.3, 0, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
   @keyframes rj-guide-rise { from { opacity: 0; transform: translateY(14px); } }
   @media (prefers-reduced-motion: reduce) { transition: none; &.in > a { animation: none; } }
-`;
-
-/* The blog card as it was: image, category, title, two lines, date. Nothing else. */
-const Card = styled(Link)`
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: 22px;
-  color: inherit;
-  text-decoration: none;
-  background: var(--rj-surface);
-  box-shadow: 0 0 0 1px var(--rj-line);
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-
-  /* display:flex would otherwise override the hidden attribute. */
-  &[hidden] { display: none; }
-  &:hover { color: inherit; transform: scale(1.02); box-shadow: 0 0 0 1px var(--rj-line), 0 12px 40px rgba(0, 0, 0, 0.14); }
-  &:focus-visible { outline: 2px solid var(--rj-ink); outline-offset: 3px; }
-
-  .im { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--rj-tile); }
-  .bd { flex: 1; display: flex; flex-direction: column; padding: 22px 24px 24px; }
-  .c { margin-bottom: 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rj-ink-3); }
-  h3 { margin: 0 0 10px; font-size: 20px; font-weight: 700; line-height: 1.3; letter-spacing: -0.015em; color: var(--rj-ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--rj-ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  time { margin-top: auto; padding-top: 16px; font-size: 14px; color: var(--rj-ink); }
-
-  @media (prefers-reduced-motion: reduce) { transition: none; &:hover { transform: none; } }
 `;
 
 const More = styled.button`
@@ -408,24 +382,12 @@ export function GuidesIndex({ guides, filterLabel }: Props) {
           {order.map((g) => {
             const on = hits.has(g.slug);
             return (
-              <Card
+              <GuideCard
                 key={g.slug}
-                href={ROUTES.PUBLIC.BLOG_POST(g.slug)}
+                guide={g}
                 hidden={!on}
                 style={{ "--i": on ? shown++ : 0 } as React.CSSProperties}
-              >
-                <span className="im">
-                  {g.image && (
-                    <Image src={g.image} alt={g.imageAlt || ""} fill sizes="(min-width: 1000px) 400px, (min-width: 640px) 50vw, 100vw" style={{ objectFit: "cover" }} />
-                  )}
-                </span>
-                <span className="bd">
-                  {g.category && <span className="c">{g.category}</span>}
-                  <h3>{g.title}</h3>
-                  <p>{g.excerpt}</p>
-                  {g.date && <time>{g.date}</time>}
-                </span>
-              </Card>
+              />
             );
           })}
         </Grid>

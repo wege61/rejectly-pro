@@ -228,34 +228,72 @@ const Fab = styled.button`
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 `;
 
+/* iOS sheet: the page steps back (blur, slight zoom-out) while the sheet rises. */
+const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
+
+const Stage = styled.div<{ $back: boolean }>`
+  transition: transform 0.5s ${EASE}, border-radius 0.5s ${EASE};
+  ${({ $back }) => $back && css`
+    transform: scale(0.94);
+    border-radius: 22px;
+    overflow: clip;
+  `}
+  @media (min-width: 1000px) { transform: none; border-radius: 0; }
+  @media (prefers-reduced-motion: reduce) { transition: none; transform: none; }
+`;
+
 const Sheet = styled.div<{ $open: boolean }>`
   position: fixed;
   inset: 0;
   z-index: 1002;
-  display: ${({ $open }) => ($open ? "block" : "none")};
 
   @media (min-width: 1000px) { display: none; }
 
-  .scrim { position: absolute; inset: 0; background: rgba(13, 14, 16, 0.4); }
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(13, 14, 16, 0.32);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+    opacity: ${({ $open }) => ($open ? 1 : 0)};
+    transition: opacity 0.45s ${EASE};
+  }
   .panel {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    max-height: 88vh;
-    overflow: auto;
+    max-height: calc(100dvh - 76px);
+    display: flex;
+    flex-direction: column;
+    border-radius: 26px 26px 0 0;
+    background: var(--rj-paper);
+    box-shadow: 0 -20px 50px -20px rgba(0, 0, 0, 0.45);
+    transform: translateY(${({ $open }) => ($open ? "0" : "100%")});
+    transition: transform 0.5s ${EASE};
+    will-change: transform;
+  }
+  .panel:focus { outline: none; }
+  .panel[data-dragging="true"] { transition: none; }
+  .top { flex: none; display: grid; gap: 8px; padding: 8px 16px 12px; touch-action: none; cursor: grab; }
+  .body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
     overscroll-behavior: contain;
     display: grid;
     gap: 12px;
-    padding: 10px 16px calc(20px + env(safe-area-inset-bottom, 0px));
-    border-radius: 24px 24px 0 0;
-    background: var(--rj-paper);
-    box-shadow: 0 -20px 50px -20px rgba(0, 0, 0, 0.4);
+    padding: 0 16px calc(20px + env(safe-area-inset-bottom, 0px));
+    scrollbar-width: none;
   }
+  .body::-webkit-scrollbar { display: none; }
   .grab { justify-self: center; width: 36px; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--rj-ink) 18%, transparent); }
   .bar { display: flex; justify-content: space-between; align-items: center; }
   .bar b { font-size: 16px; color: var(--rj-ink); }
   .bar button { height: 34px; padding: 0 14px; border: 0; border-radius: 999px; font: 600 13.5px var(--rj-font); color: var(--rj-ink); background: color-mix(in srgb, var(--rj-ink) 6%, transparent); cursor: pointer; }
+  .bar button:focus-visible { outline: 2px solid var(--rj-ink); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) { .scrim, .panel { transition: none; } }
 `;
 
 function useFit(width = 780) {
@@ -295,7 +333,12 @@ export default function CVBuilderPage() {
   const { user, loading } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [sheetMounted, setSheetMounted] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [origin, setOrigin] = useState("50% 0");
+  const stage = useRef<HTMLDivElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ y: number; dy: number } | null>(null);
   const [sweep, setSweep] = useState(false);
   const [score, setScore] = useState<number | null>(null);
   const [isExample, setIsExample] = useState(false);
@@ -358,14 +401,52 @@ export default function CVBuilderPage() {
     download();
   }, [mounted, loading, user, download, setStep]);
 
+  const openSheet = useCallback(() => {
+    // Zoom out around the middle of the screen, not the middle of the page.
+    const top = stage.current?.getBoundingClientRect().top ?? 0;
+    setOrigin(`50% ${window.innerHeight / 2 - top}px`);
+    setSheetMounted(true);
+    // Mount below the screen first, then rise on the next frame.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      setSheetOpen(true);
+      panel.current?.focus({ preventScroll: true });
+    }));
+  }, []);
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
+
   useEffect(() => {
-    if (!sheetOpen) return;
+    if (!sheetMounted) return;
+    if (!sheetOpen) {
+      const t = window.setTimeout(() => setSheetMounted(false), 500);
+      return () => window.clearTimeout(t);
+    }
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSheetOpen(false); };
     window.addEventListener("keydown", onKey);
     return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
-  }, [sheetOpen]);
+  }, [sheetMounted, sheetOpen]);
+
+  // Pull the sheet down by its top bar to close it.
+  const onDragStart = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest("button")) return;
+    drag.current = { y: e.clientY, dy: 0 };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    panel.current?.setAttribute("data-dragging", "true");
+  };
+  const onDragMove = (e: React.PointerEvent) => {
+    if (!drag.current || !panel.current) return;
+    drag.current.dy = Math.max(0, e.clientY - drag.current.y);
+    panel.current.style.transform = `translateY(${drag.current.dy}px)`;
+  };
+  const onDragEnd = () => {
+    if (!drag.current || !panel.current) return;
+    const { dy } = drag.current;
+    drag.current = null;
+    panel.current.removeAttribute("data-dragging");
+    panel.current.style.transform = "";
+    if (dy > 90) setSheetOpen(false);
+  };
 
   if (!mounted) return <Root />; // the store lives in localStorage
 
@@ -378,6 +459,7 @@ export default function CVBuilderPage() {
 
   return (
     <Root>
+      <Stage ref={stage} $back={sheetOpen} style={{ transformOrigin: origin }}>
       <In>
         <Head>
           <div>
@@ -447,19 +529,27 @@ export default function CVBuilderPage() {
         </App>
       </In>
 
-      <Fab type="button" onClick={() => setSheetOpen(true)} aria-haspopup="dialog">
+      <Footer />
+      </Stage>
+
+      <Fab type="button" onClick={openSheet} aria-haspopup="dialog" aria-expanded={sheetOpen}>
         <i aria-hidden="true">{score ?? "—"}</i>{score !== null && <span className="sr">ATS score {score}, </span>}Preview
       </Fab>
-      <Sheet $open={sheetOpen} role="dialog" aria-modal="true" aria-label="Preview">
-        <div className="scrim" onClick={() => setSheetOpen(false)} />
-        <div className="panel">
-          <span className="grab" aria-hidden="true" />
-          <div className="bar"><b>Preview</b><button type="button" onClick={() => setSheetOpen(false)}>Done</button></div>
-          {sheetOpen && meter}
-          {sheetOpen && <Paper sweep={false} />}
-        </div>
-      </Sheet>
-      <Footer />
+      {sheetMounted && (
+        <Sheet $open={sheetOpen} role="dialog" aria-modal="true" aria-label="Preview">
+          <div className="scrim" onClick={closeSheet} />
+          <div className="panel" ref={panel} tabIndex={-1}>
+            <div className="top" onPointerDown={onDragStart} onPointerMove={onDragMove} onPointerUp={onDragEnd} onPointerCancel={onDragEnd}>
+              <span className="grab" aria-hidden="true" />
+              <div className="bar"><b>Preview</b><button type="button" onClick={closeSheet}>Done</button></div>
+            </div>
+            <div className="body">
+              {meter}
+              <Paper sweep={false} />
+            </div>
+          </div>
+        </Sheet>
+      )}
     </Root>
   );
 }

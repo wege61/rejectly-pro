@@ -193,7 +193,7 @@ export const FAQ_TOPICS: FaqTopic[] = [
         question: "My file won't upload.",
         short: "Check three things",
         answer:
-          "Make sure it's under 5 MB, a PDF or DOCX, and not a scanned image. If it came from a design tool, export it again as a PDF or DOCX. Still stuck? Write to support@rejectly.pro.",
+          "Make sure it's under 5 MB, a PDF or DOCX, and not a scanned image. If it came from a design tool, export it again as a PDF or DOCX. Still stuck? Write to hello@rejectly.pro.",
       },
       {
         id: "slow",
@@ -214,7 +214,7 @@ export const FAQ_TOPICS: FaqTopic[] = [
         question: "Do you have an API?",
         short: "Not yet",
         answer:
-          "Not at the moment. If you need one, tell us at support@rejectly.pro.",
+          "Not at the moment. If you need one, tell us at hello@rejectly.pro.",
       },
     ],
   },

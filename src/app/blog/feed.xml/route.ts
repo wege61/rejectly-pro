@@ -59,7 +59,7 @@ export async function GET() {
       <guid isPermaLink="true">${BASE_URL}/blog/${post.slug}</guid>
       <description><![CDATA[${description}]]></description>
       <pubDate>${pubDate}</pubDate>
-      <author>support@rejectly.pro (${escapeXml(post.author_name)})</author>
+      <author>hello@rejectly.pro (${escapeXml(post.author_name)})</author>
       ${categoryName ? `<category>${escapeXml(categoryName)}</category>` : ""}
       ${post.featured_image ? `<enclosure url="${escapeXml(post.featured_image)}" type="image/jpeg" />` : ""}
     </item>`;
@@ -84,8 +84,8 @@ export async function GET() {
       <link>${BASE_URL}/blog</link>
     </image>
     <copyright>Copyright ${new Date().getFullYear()} Rejectly.pro. All rights reserved.</copyright>
-    <managingEditor>support@rejectly.pro (Rejectly Team)</managingEditor>
-    <webMaster>support@rejectly.pro (Rejectly Team)</webMaster>
+    <managingEditor>hello@rejectly.pro (Rejectly Team)</managingEditor>
+    <webMaster>hello@rejectly.pro (Rejectly Team)</webMaster>
     <ttl>60</ttl>
     ${rssItems}
   </channel>

@@ -8,6 +8,9 @@ export const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY) 
   : null;
 
+/** The one inbox people can reach us at. Replies to any email we send land here. */
+export const CONTACT_EMAIL = 'hello@rejectly.pro';
+
 // ─── Base Email Layout ─────────────────────────────────────────
 function emailLayout(content: string) {
   return `
@@ -154,6 +157,7 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
   try {
     await resend.emails.send({
       from: 'Rejectly Pro <onboarding@rejectly.pro>',
+      replyTo: CONTACT_EMAIL,
       to: email,
       subject: `You're in, ${firstName} — let's get past the robot filter 🤖`,
       html: emailLayout(content),
@@ -198,6 +202,7 @@ export const sendReportReadyEmail = async (email: string, name: string, reportId
   try {
     await resend.emails.send({
       from: 'Rejectly Pro <reports@rejectly.pro>',
+      replyTo: CONTACT_EMAIL,
       to: email,
       subject: `Your resume scored ${matchScore}% — see the full breakdown`,
       html: emailLayout(content),
@@ -241,6 +246,7 @@ export const sendCreditsPurchasedEmail = async (email: string, name: string, cre
   try {
     await resend.emails.send({
       from: 'Rejectly Pro <billing@rejectly.pro>',
+      replyTo: CONTACT_EMAIL,
       to: email,
       subject: `🎉 ${credits} credits added to your account — ${plan} plan`,
       html: emailLayout(content),
@@ -298,6 +304,7 @@ export const sendSubscriptionPurchasedEmail = async (email: string, name: string
   try {
     await resend.emails.send({
       from: 'Rejectly Pro <billing@rejectly.pro>',
+      replyTo: CONTACT_EMAIL,
       to: email,
       subject: `🚀 You're now Pro, ${firstName} — every tool is unlocked`,
       html: emailLayout(content),
@@ -405,6 +412,7 @@ export const sendFreeReportFOMOEmail = async (
   try {
     await resend.emails.send({
       from: 'Rejectly Pro <reports@rejectly.pro>',
+      replyTo: CONTACT_EMAIL,
       to: email,
       subject: headline,
       html: emailLayout(content),
@@ -412,4 +420,22 @@ export const sendFreeReportFOMOEmail = async (
   } catch (error) {
     console.error('Failed to send FOMO upsell email:', error);
   }
+};
+
+// ─── Contact form ──────────────────────────────────────────────
+const escapeHtml = (text: string) =>
+  text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
+
+/** Delivers a /contact message to our inbox; hitting Reply answers the sender. Throws if it can't be sent. */
+export const sendContactMessage = async (from: string, topic: string, message: string) => {
+  if (!resend) throw new Error('Email is not configured');
+  const { error } = await resend.emails.send({
+    from: 'Rejectly contact form <hello@rejectly.pro>',
+    to: CONTACT_EMAIL,
+    replyTo: from,
+    subject: `[${topic}] Message from ${from}`,
+    text: `From: ${from}\nAbout: ${topic}\n\n${message}`,
+    html: `<p style="font:14px/1.5 sans-serif;color:#555">From: ${escapeHtml(from)}<br>About: ${escapeHtml(topic)}</p><p style="font:16px/1.6 sans-serif;white-space:pre-wrap">${escapeHtml(message)}</p>`,
+  });
+  if (error) throw new Error(error.message);
 };

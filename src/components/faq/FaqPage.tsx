@@ -16,7 +16,7 @@ import { FAQ_TOPICS, ALL_FAQS } from "./content";
  * closed so they're crawlable.
  */
 
-const SUPPORT = "support@rejectly.pro";
+const SUPPORT = "hello@rejectly.pro";
 
 const Root = styled.div`
   background: var(--rj-paper);

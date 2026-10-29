@@ -16,7 +16,7 @@ export function OrganizationSchema() {
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      email: 'support@rejectly.pro',
+      email: 'hello@rejectly.pro',
       contactType: 'Customer Support',
       availableLanguage: ['English'],
     },

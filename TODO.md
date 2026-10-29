@@ -11,7 +11,7 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [x] `/ats-check`
 - [x] Navbar
 - [x] `/pricing`
-- [ ] `/blog` index (approved, being built)
+- [x] `/blog` index
 - [ ] `/blog/[slug]` article page and its header (`ContextualBlogHeader`): move the
       reading progress to the yellow scan line
 - [ ] `/faq`
@@ -55,5 +55,4 @@ never expire, untouched packs refunded within 14 days).
 - [ ] Off-topic posts (`how-to-get-paid-in-usd-abroad`,
       `best-countries-work-remotely-salary-cost`): keep, move, or unpublish
 - [ ] Reading times stored in the database are inflated: recompute from word count
-- [ ] Blog meta description and `/blog` layout copy ("bypass the ATS")
 - [ ] Re-check every post for numbers it can't source

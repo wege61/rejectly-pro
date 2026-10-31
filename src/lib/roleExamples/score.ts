@@ -39,6 +39,7 @@ export function beforeText(doc: BeforeDoc): string {
       right.push(e.title);
       if (e.sub) right.push(e.sub);
       for (const x of e.bullets ?? []) right.push(...wrap(x));
+      for (const row of e.table ?? []) right.push(row.join("     "));
     }
     right.push("");
   }

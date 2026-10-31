@@ -19,6 +19,8 @@ export interface BeforeSidebarBlock {
   icons?: string[];
   /** Skill bars: only the label survives as text. */
   bars?: { label: string; level: number }[];
+  /** A chart drawn as a picture: nothing of it survives as text. */
+  chart?: { label: string; value: number }[];
 }
 
 export interface BeforeEntry {
@@ -26,6 +28,8 @@ export interface BeforeEntry {
   sub?: string;
   /** Rendered with decorative arrows, as a template would. */
   bullets?: string[];
+  /** A table: a parser reads its cells across, with wide gaps between them. */
+  table?: string[][];
   pin?: Pin;
 }
 
@@ -39,6 +43,8 @@ export interface BeforeMainBlock {
 export interface BeforeDoc {
   name: string;
   tagline: string;
+  /** How the template looks: sidebar color, accent, the symbol before headings, a photo. */
+  look?: { side?: string; accent?: string; mark?: string; photo?: boolean };
   sidebar: BeforeSidebarBlock[];
   main: BeforeMainBlock[];
 }

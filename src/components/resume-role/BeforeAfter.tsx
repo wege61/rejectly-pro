@@ -17,6 +17,8 @@ import type { BeforeDoc, Pin, RoleExample } from "@/lib/roleExamples/types";
 
 const W = 780; // both papers are drawn at this width and scaled to fit
 const STANDARD = new Set(["SUMMARY", "EXPERIENCE", "EDUCATION", "SKILLS", "PROJECTS", "CONTACT", "LANGUAGES", "CERTIFICATIONS"]);
+/** What each sidebar icon stands for, for the note under the ATS view. */
+const ICON_NAMES: Record<string, string> = { in: "LinkedIn", GH: "GitHub", "Bē": "Behance", "✦": "portfolio" };
 const sweep = keyframes`0% { top: 0; opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; }`;
 const ease = "cubic-bezier(0.32, 0.72, 0, 1)";
 
@@ -85,22 +87,30 @@ const BeforeSheet = styled.div`
   font-family: var(--rj-font);
   color: #2b2f36;
 
-  .side { padding: 44px 26px; background: #23395d; color: #e9eef7; }
+  .side { padding: 44px 26px; background: var(--side); color: #e9eef7; }
   .ph { width: 96px; height: 96px; margin: 0 auto 18px; border-radius: 50%; display: grid; place-items: center; font: 700 32px var(--rj-font); color: #fff; background: linear-gradient(135deg, #8aa4cf, #4e6a99); }
+  .ph.photo { background: radial-gradient(circle at 50% 38%, #f1d3b3 0 22%, transparent 23%), radial-gradient(circle at 50% 100%, #9fb3c8 0 45%, transparent 46%), linear-gradient(160deg, #dfe7ef, #b8c6d6); box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5); }
+  .chart { display: grid; grid-template-columns: 84px 1fr; gap: 12px; align-items: center; margin-top: 4px; }
+  .chart svg { width: 84px; height: 84px; transform: rotate(-90deg); }
+  .chart ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; font-size: 11.5px; }
+  .chart li { display: flex; align-items: center; gap: 6px; }
+  .chart li i { width: 8px; height: 8px; border-radius: 2px; }
+  table { width: 100%; margin: 4px 0 10px; border-collapse: collapse; font-size: 13px; }
+  td { padding: 7px 9px; border: 1px solid #d9dee8; background: #f6f8fb; }
   h1 { margin: 0; text-align: center; font: 700 24px/1.15 var(--rj-font); letter-spacing: 0.02em; color: #fff; }
   .tag { margin: 6px 0 24px; text-align: center; font-size: 13px; font-style: italic; color: #b9c8e3; }
   h4 { margin: 24px 0 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.25); font: 700 12px var(--rj-font); letter-spacing: 0.14em; text-transform: uppercase; color: #fff; }
   .side p { margin: 0 0 6px; font-size: 12.5px; line-height: 1.5; color: #dfe7f5; overflow-wrap: anywhere; }
   .icons { display: flex; gap: 8px; margin-top: 8px; }
-  .icons i { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; font: 700 11px var(--rj-font); font-style: normal; color: #23395d; background: #e9eef7; }
+  .icons i { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; font: 700 11px var(--rj-font); font-style: normal; color: var(--side); background: #e9eef7; }
   .barrow { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin-bottom: 7px; font-size: 12.5px; }
-  .barrow i { font-style: normal; font-size: 11px; letter-spacing: 2px; color: #ffd166; }
+  .barrow i { font-style: normal; font-size: 11px; letter-spacing: 2px; color: var(--accent); }
   .main { padding: 44px 36px; }
   section { margin-bottom: 28px; }
-  h3 { margin: 0 0 10px; display: flex; align-items: center; gap: 8px; font: 700 16px var(--rj-font); letter-spacing: 0.06em; text-transform: uppercase; color: #23395d; }
-  h3::before { content: "★"; font-size: 14px; color: #ffb703; }
+  h3 { margin: 0 0 10px; display: flex; align-items: center; gap: 8px; font: 700 16px var(--rj-font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--side); }
+  h3::before { content: var(--mark); font-size: 14px; color: var(--accent); }
   .main p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.55; }
-  .t { font-weight: 700; font-size: 14px; color: #23395d; }
+  .t { font-weight: 700; font-size: 14px; color: var(--side); }
   .s { font-size: 13px; font-style: italic; color: #6b7280; }
   ul { margin: 6px 0 10px; padding-left: 18px; list-style: "➤  "; font-size: 13.5px; line-height: 1.6; }
 `;
@@ -213,10 +223,11 @@ const Note = styled.p`
 
 function BeforePaper({ doc }: { doc: BeforeDoc }) {
   const initials = doc.name.split(" ").map((w) => w[0]).join("").slice(0, 2);
+  const look = { side: "#23395d", accent: "#ffb703", mark: "★", ...doc.look };
   return (
-    <BeforeSheet>
+    <BeforeSheet style={{ "--side": look.side, "--accent": look.accent, "--mark": `"${look.mark}"` } as React.CSSProperties}>
       <div className="side">
-        <div className="ph" aria-hidden="true">{initials}</div>
+        <div className={look.photo ? "ph photo" : "ph"} aria-hidden="true">{look.photo ? "" : initials}</div>
         <h1 data-pin="columns">{doc.name}</h1>
         <p className="tag">{doc.tagline}</p>
         {doc.sidebar.map((b) => (
@@ -227,6 +238,16 @@ function BeforePaper({ doc }: { doc: BeforeDoc }) {
             {b.bars?.map((bar) => (
               <div className="barrow" key={bar.label}>{bar.label}<i aria-label={`${bar.level} of 5`}>{"●".repeat(bar.level)}{"○".repeat(5 - bar.level)}</i></div>
             ))}
+            {b.chart && (
+              <div className="chart" aria-hidden="true">
+                <svg viewBox="0 0 42 42">{b.chart.reduce<{ el: React.ReactNode[]; at: number }>((acc, c, i) => {
+                  acc.el.push(<circle key={c.label} cx="21" cy="21" r="15.9" fill="none" strokeWidth="6" stroke={["#ffd166", "#ef476f", "#06d6a0", "#8ecae6", "#fb8500"][i % 5]} strokeDasharray={`${c.value} ${100 - c.value}`} strokeDashoffset={25 - acc.at} />);
+                  acc.at += c.value;
+                  return acc;
+                }, { el: [], at: 0 }).el}</svg>
+                <ul>{b.chart.map((c, i) => <li key={c.label}><i style={{ background: ["#ffd166", "#ef476f", "#06d6a0", "#8ecae6", "#fb8500"][i % 5] }} />{c.label}</li>)}</ul>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -240,6 +261,7 @@ function BeforePaper({ doc }: { doc: BeforeDoc }) {
                 <p className="t">{e.title}</p>
                 {e.sub && <p className="s">{e.sub}</p>}
                 {e.bullets && <ul>{e.bullets.map((x) => <li key={x}>{x}</li>)}</ul>}
+                {e.table && <table><tbody>{e.table.map((row, r) => <tr key={r}>{row.map((cell) => <td key={cell}>{cell}</td>)}</tr>)}</tbody></table>}
               </div>
             ))}
           </section>
@@ -355,7 +377,7 @@ export function BeforeAfter({ example, scores }: { example: RoleExample; scores:
   const icons = example.before.sidebar.flatMap((b) => b.icons ?? []);
   const notes = [
     !/\(?\d{3}\)?[\s.-]?\d{3}[\s.-]\d{4}/.test(scores.beforeText) && "no phone number",
-    icons.length > 0 && `the ${icons.join(" and ")} icons left no text behind`,
+    icons.length > 0 && `the ${icons.map((i) => ICON_NAMES[i] ?? i).join(", ").replace(/, ([^,]*)$/, " and $1")} icon${icons.length > 1 ? "s" : ""} left no text behind`,
     !/\b(19|20)\d{2}\b/.test(scores.beforeText) && "no dates anywhere",
   ].filter(Boolean) as string[];
   const C = 2 * Math.PI * 42;

@@ -69,10 +69,11 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [ ] Scorer gap: "Quantified achievements" only counts %, $, "N+", "Nx" and "1,000"-style
       numbers; "120 students" or "9 seconds" don't count. Decide whether plain counts should.
 
-- [ ] Scorer gap: the hard-skill list behind "Extractable skills" (`HARD_SKILLS` in
-      `lib/ats/deterministicScoring`) is tech and marketing only. A nurse, teacher, HR or
-      project coordinator resume with real skills (patient assessment, lesson planning, HRIS,
-      Microsoft Project) can fail it. Add healthcare, education, HR, finance and PM terms.
+- [x] Scorer gap: "Extractable skills" only knew tech and marketing terms. Added data and
+      business analysis, PM, sales, design, healthcare, education, HR and finance terms.
+- [ ] Scorer: `HARD_SKILLS` matches substrings, so short terms over-count ("go" in "good",
+      "rest" in "restaurant", "sem" in "semester"). Switch to word-boundary matching, then
+      re-check every score the site states (hero demo, how-it-works, role pages).
 
 ## 3. Content rewrite (last)
 

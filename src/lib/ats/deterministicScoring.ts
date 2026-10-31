@@ -489,6 +489,46 @@ const HARD_SKILLS = [
   // Other Technical
   "linux", "unix", "windows server", "bash", "shell scripting", "powershell",
   "networking", "tcp/ip", "dns", "load balancing", "nginx", "apache",
+
+  // Beyond tech: the skills a first resume in other fields lists. The match is a
+  // plain substring, so terms must be distinctive on their own: no short
+  // acronyms that hide inside other words ("hris" is in "Chris", "uat" in
+  // "graduate").
+  // Data & business analysis
+  "data analysis", "data visualization", "statistics", "pivot tables", "vlookup",
+  "requirements gathering", "business requirements", "process mapping", "bpmn", "user stories",
+  "user acceptance testing", "gap analysis", "data modeling", "visio", "lucidchart",
+  // Project management
+  "project management", "microsoft project", "ms project", "smartsheet", "monday.com", "gantt",
+  "risk management", "stakeholder management", "project scheduling", "budget tracking",
+  "change management", "raid log", "prince2",
+  // Sales
+  "cold calling", "prospecting", "lead generation", "lead qualification", "pipeline management",
+  "sales navigator", "account management",
+  // Marketing & content
+  "social media marketing", "content creation", "copywriting", "canva", "meta business suite", "market research",
+  // Design
+  "wireframing", "prototyping", "usability testing", "user research", "design systems",
+  "information architecture", "accessibility",
+  // Healthcare
+  "patient care", "patient assessment", "vital signs", "medication administration",
+  "electronic health records", "basic life support", "advanced cardiac life support",
+  "infection control", "wound care", "iv therapy", "phlebotomy", "triage", "care planning",
+  "patient education", "telemetry", "hipaa", "cerner",
+  // Education
+  "lesson planning", "curriculum development", "classroom management", "differentiated instruction",
+  "formative assessment", "google classroom", "canvas lms", "individualized education",
+  "special education", "english as a second language", "tutoring",
+  // Human resources
+  "recruiting", "talent acquisition", "onboarding", "employee relations", "workday", "bamboohr",
+  "payroll", "benefits administration", "applicant tracking", "interview scheduling",
+  "employment law", "performance management", "compliance training",
+  // Accounting & finance
+  "gaap", "accounts payable", "accounts receivable", "general ledger", "reconciliation",
+  "financial statements", "financial modeling", "financial analysis", "budgeting", "forecasting",
+  "tax preparation", "netsuite", "bookkeeping", "variance analysis", "journal entries", "month-end close",
+  // Office tools
+  "microsoft office", "google workspace",
 ];
 
 const SOFT_SKILLS = [

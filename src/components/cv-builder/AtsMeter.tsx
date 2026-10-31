@@ -13,7 +13,12 @@ import { calculateDeterministicScore } from "@/lib/ats/deterministicScoring";
  */
 
 /** Plain-language fixes for the checks a builder user can act on. */
-const FIX: Record<string, string> = {
+export const FIX: Record<string, string> = {
+  "Single-column layout": "Use one column",
+  "No column indicators": "Drop tables and column layouts",
+  "Contact in main body": "Put contact details in the body, not a header",
+  "Simple section dividers": "Use plain section dividers",
+  "Clear section breaks": "Leave space between sections",
   "Phone present": "Add a phone number an ATS can read",
   "Email present": "Add your email",
   "LinkedIn URL": "Add your LinkedIn URL",

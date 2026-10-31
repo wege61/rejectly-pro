@@ -1,141 +1,61 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { useToast } from '@/contexts/ToastContext';
-import { ROUTES } from '@/lib/constants';
+import { useState, type FormEvent } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { ROUTES } from '@/lib/constants';
+import { AuthShell, Field, Form, Primary, Tick } from '@/components/auth/AuthShell';
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
-`;
-
-const Title = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-`;
-
-const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--text-secondary);
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
-
-const Footer = styled.div`
-  margin-top: ${({ theme }) => theme.spacing.lg};
-  text-align: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--text-secondary);
-
-  a {
-    color: var(--accent);
-    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
-
+/* Reached from the reset email (via /auth/callback), which signs the visitor in for this one step. */
 export default function ResetPasswordPage() {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
-  const router = useRouter();
+  const [password, setPassword] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<{ text: string; expired?: boolean } | null>(null);
 
-
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!newPassword || !confirmPassword) {
-    toast.error('Please fill in all fields');
-    return;
-  }
-
-  if (newPassword.length < 6) {
-    toast.error('Password must be at least 6 characters');
-    return;
-  }
-
-  if (newPassword !== confirmPassword) {
-    toast.error('Passwords do not match');
-    return;
-  }
-
-  setIsLoading(true);
-
-  try {
-    const supabase = createClient();
-    
-    // Session kontrolü ekle
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      toast.error('Session expired. Please request a new reset link.');
-      router.push(ROUTES.AUTH.FORGOT_PASSWORD);
-      return;
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (password.length < 8) return setError({ text: 'Use at least 8 characters.' });
+    setBusy(true);
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return setError({ text: 'This reset link has expired or was already used.', expired: true });
+      const { error: updateError } = await supabase.auth.updateUser({ password });
+      if (updateError) throw updateError;
+      setDone(true);
+    } catch (err) {
+      setError({ text: err instanceof Error ? err.message : 'We couldn’t save the password. Please try again.' });
+    } finally {
+      setBusy(false);
     }
-
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
-
-    if (error) throw error;
-
-    toast.success('Password reset successfully!');
-    router.push(ROUTES.AUTH.LOGIN);
-  } catch (error: any) {
-    toast.error(error.message || 'Failed to reset password. Please try again.');
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
-    <>
-      <Title>Reset Password</Title>
-      <Subtitle>Enter your new password</Subtitle>
-
-      <Form onSubmit={handleSubmit}>
-        <Input
-          label="New Password"
-          type="password"
-          placeholder="••••••••"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-          fullWidth
-          autoComplete="new-password"
-          helperText="Minimum 6 characters"
-        />
-
-        <Input
-          label="Confirm New Password"
-          type="password"
-          placeholder="••••••••"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          fullWidth
-          autoComplete="new-password"
-        />
-
-        <Button type="submit" isLoading={isLoading} fullWidth size="lg">
-          Reset Password
-        </Button>
-      </Form>
-
-      <Footer>
-        Remember your password?{' '}
-        <a href={ROUTES.AUTH.LOGIN}>Log in</a>
-      </Footer>
-    </>
+    <AuthShell context={false} info={{ kind: 'direct', redirect: ROUTES.APP.DASHBOARD, back: { href: ROUTES.AUTH.LOGIN, label: 'Back to log in' } }}>
+      {done ? (
+        <Form as="div">
+          <div className="done" role="status">
+            <Tick />
+            <h1>Password saved.</h1>
+            <p>You’re logged in with your new password.</p>
+            <Primary as={Link} href={ROUTES.APP.DASHBOARD} style={{ display: 'grid', placeItems: 'center', width: '100%', textDecoration: 'none' }}>Go to your dashboard</Primary>
+          </div>
+        </Form>
+      ) : (
+        <Form onSubmit={submit} noValidate>
+          <p className="k">Password</p>
+          <h1>Choose a new password.</h1>
+          <Field id="password" label="New password" type="password" value={password} onChange={setPassword} autoComplete="new-password" placeholder="At least 8 characters" hint="At least 8 characters. A short sentence is easy to remember and hard to guess." />
+          {error && (
+            <p className="err" role="alert">
+              {error.text}{error.expired && <> <Link href={ROUTES.AUTH.FORGOT_PASSWORD}>Send a new link →</Link></>}
+            </p>
+          )}
+          <Primary type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save the new password'}</Primary>
+        </Form>
+      )}
+    </AuthShell>
   );
 }

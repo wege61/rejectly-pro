@@ -8,6 +8,9 @@ import { useSeenOnce } from "../why/shared";
 import { cheapest, money, PRICES, type PlanId } from "./plans";
 import { Receipt } from "./Receipt";
 
+/* Sign up (or log in) first, then billing opens Stripe checkout for this plan. */
+const buyHref = (plan: PlanId) => `${ROUTES.AUTH.SIGNUP}?redirect=${encodeURIComponent(`${ROUTES.APP.BILLING}?plan=${plan}`)}`;
+
 /*
  * Homepage section 6: pricing as an honest calculation instead of a scare.
  * The free scan sits on a ticket above the plans. A planner asks how many jobs
@@ -589,21 +592,21 @@ export function Pricing({ page = false }: { page?: boolean }) {
                 <h3>Single {badge("single")}</h3>
                 <div className="amt"><b>{money(PRICES.single)}</b><span>1 credit</span></div>
                 <p className="what">For the one job you really want.</p>
-                <a href={ROUTES.AUTH.SIGNUP}>Buy 1 credit</a>
+                <a href={buyHref("single")}>Buy 1 credit</a>
               </Card>
               <Card $rec={d.plan === "starter"}>
                 <h3>Starter {badge("starter")}</h3>
                 <div className="amt"><b>{money(PRICES.pack)}</b><span>{PRICES.packCredits} credits</span></div>
                 <p className="what"><b>{money(PRICES.pack / PRICES.packCredits)} a job.</b> For a focused search.</p>
                 <span className="stamp">✓ Never expire</span>
-                <a href={ROUTES.AUTH.SIGNUP}>Get {PRICES.packCredits} credits</a>
+                <a href={buyHref("starter")}>Get {PRICES.packCredits} credits</a>
               </Card>
               <Card $rec={d.plan === "pro"}>
                 <h3>Pro {badge("pro")}</h3>
                 <div className="amt"><b>{money(PRICES.pro)}</b><span>per month</span></div>
                 <p className="what"><b>{PRICING.PRO.runsPerPeriod} runs a month</b>: Job Matches and ATS Optimizer runs.</p>
                 <span className="tag">Cancel anytime</span>
-                <a href={ROUTES.AUTH.SIGNUP}>Go Pro</a>
+                <a href={buyHref("pro")}>Go Pro</a>
               </Card>
             </Cards>
           </Plans>

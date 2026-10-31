@@ -6,7 +6,7 @@ import { verifyTurnstileToken } from "@/lib/validations";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),
-  turnstileToken: z.string().optional(),
+  turnstileToken: z.string().nullish(),
 });
 
 export async function POST(request: Request) {

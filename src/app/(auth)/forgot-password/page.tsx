@@ -1,165 +1,67 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import styled from 'styled-components';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Turnstile, type TurnstileRef } from '@/components/ui/Turnstile';
+import { useRef, useState, type FormEvent } from 'react';
+import Link from 'next/link';
 import { resetPassword } from '@/lib/auth';
-import { useToast } from '@/contexts/ToastContext';
 import { ROUTES } from '@/lib/constants';
+import { Turnstile, type TurnstileRef } from '@/components/ui/Turnstile';
+import { AuthShell, Field, Form, Primary, Tick } from '@/components/auth/AuthShell';
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.lg};
-`;
+const needsCaptcha = () => !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && process.env.NODE_ENV !== 'development';
 
-const Title = styled.h2`
-  font-size: ${({ theme }) => theme.typography.fontSize['2xl']};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-`;
-
-const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--text-secondary);
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
-
-const Footer = styled.div`
-  margin-top: ${({ theme }) => theme.spacing.lg};
-  text-align: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  color: var(--text-secondary);
-
-  a {
-    color: var(--accent);
-    font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
-
-const SuccessMessage = styled.div`
-  padding: ${({ theme }) => theme.spacing.md};
-  background-color: var(--success-bg);
-  border: 1px solid var(--success-border);
-  border-radius: ${({ theme }) => theme.radius.md};
-  color: var(--success);
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  text-align: center;
-`;
-
+/*
+ * The API answers the same way whether or not the email has an account, so this
+ * page does too: it never tells anyone which emails are registered.
+ */
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [captchaError, setCaptchaError] = useState<string>('');
-  const turnstileRef = useRef<TurnstileRef>(null);
-  const toast = useToast();
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
+  const [token, setToken] = useState<string | null>(null);
+  const turnstile = useRef<TurnstileRef>(null);
 
-  const handleTurnstileVerify = (token: string) => {
-    setTurnstileToken(token);
-    setCaptchaError('');
-  };
-
-  const handleTurnstileError = () => {
-    setCaptchaError('CAPTCHA verification failed. Please try again.');
-    setTurnstileToken(null);
-  };
-
-  const handleTurnstileExpire = () => {
-    setTurnstileToken(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
-
-    if (!email) {
-      toast.error('Please enter your email address');
-      return;
-    }
-
-    // Check CAPTCHA if configured
-    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && process.env.NODE_ENV !== 'development' && !turnstileToken) {
-      setCaptchaError('Please complete the CAPTCHA verification.');
-      return;
-    }
-
-    setIsLoading(true);
-
+    setError('');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setError('Enter the email on your account.');
+    if (needsCaptcha() && !token) return setError('One moment: we’re checking you’re not a bot. Try again in a second.');
+    setBusy(true);
     try {
-      await resetPassword(email, turnstileToken);
-      setEmailSent(true);
-      toast.success('Password reset email sent!');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to send reset email. Please try again.');
-      // Reset CAPTCHA on failed attempt
-      turnstileRef.current?.reset();
-      setTurnstileToken(null);
+      await resetPassword(email.trim(), token);
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'We couldn’t send the link. Please try again.');
+      turnstile.current?.reset();
+      setToken(null);
     } finally {
-      setIsLoading(false);
+      setBusy(false);
     }
   };
-
-  if (emailSent) {
-    return (
-      <>
-        <Title>Check Your Email</Title>
-        <Subtitle>We've sent you a password reset link</Subtitle>
-
-        <SuccessMessage>
-          We've sent a password reset link to <strong>{email}</strong>.
-          <br />
-          Please check your inbox and follow the instructions.
-        </SuccessMessage>
-
-        <Footer>
-          Remember your password?{' '}
-          <a href={ROUTES.AUTH.LOGIN}>Log in</a>
-        </Footer>
-      </>
-    );
-  }
 
   return (
-    <>
-      <Title>Forgot Password?</Title>
-      <Subtitle>Enter your email and we'll send you a reset link</Subtitle>
-
-      <Form onSubmit={handleSubmit}>
-        <Input
-          label="Email"
-          type="email"
-          placeholder="example@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          fullWidth
-          autoComplete="email"
-        />
-
-        <Turnstile
-          ref={turnstileRef}
-          onVerify={handleTurnstileVerify}
-          onError={handleTurnstileError}
-          onExpire={handleTurnstileExpire}
-          error={captchaError}
-        />
-
-        <Button type="submit" isLoading={isLoading} fullWidth size="lg">
-          Send Reset Link
-        </Button>
-      </Form>
-
-      <Footer>
-        Remember your password?{' '}
-        <a href={ROUTES.AUTH.LOGIN}>Log in</a>
-      </Footer>
-    </>
+    <AuthShell context={false} info={{ kind: 'direct', redirect: ROUTES.APP.DASHBOARD, back: { href: ROUTES.AUTH.LOGIN, label: 'Back to log in' } }}>
+      {sent ? (
+        <Form as="div">
+          <div className="done" role="status">
+            <Tick />
+            <h1>Check your email.</h1>
+            <p>If there’s an account for <b>{email.trim()}</b>, a link to reset the password is on its way. It can take a minute; check spam too.</p>
+            <p className="switch">Didn’t get it? <a href="#" onClick={(e) => { e.preventDefault(); setSent(false); }}>Send it again</a> · <Link href={ROUTES.AUTH.LOGIN}>Back to log in</Link></p>
+          </div>
+        </Form>
+      ) : (
+        <Form onSubmit={submit} noValidate>
+          <p className="k">Password</p>
+          <h1>Reset your password.</h1>
+          <p className="lead">Enter the email on your account and we’ll send you a link to choose a new one.</p>
+          <Field id="email" label="Email" type="email" inputMode="email" value={email} onChange={setEmail} autoComplete="email" placeholder="you@school.edu" />
+          <Turnstile ref={turnstile} onVerify={setToken} onError={() => setToken(null)} onExpire={() => setToken(null)} />
+          {error && <p className="err" role="alert">{error}</p>}
+          <Primary type="submit" disabled={busy}>{busy ? 'Sending…' : 'Send the link'}</Primary>
+          <p className="switch"><Link href={ROUTES.AUTH.LOGIN}>Back to log in</Link></p>
+        </Form>
+      )}
+    </AuthShell>
   );
 }

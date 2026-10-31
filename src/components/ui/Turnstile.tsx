@@ -89,8 +89,11 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
             onError={handleError}
             onExpire={handleExpire}
             options={{
-              theme: theme === "auto" ? "dark" : theme,
-              size: "normal",
+              // "auto" follows the site's theme toggle, not the OS.
+              theme: theme === "auto" ? (typeof document !== "undefined" && document.documentElement.dataset.theme === "dark" ? "dark" : "light") : theme,
+              size: "flexible",
+              // Only shows itself when Cloudflare needs the visitor to do something.
+              appearance: "interaction-only",
             }}
           />
           {error && <ErrorMessage>{error}</ErrorMessage>}

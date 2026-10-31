@@ -1,7 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -379,6 +379,20 @@ export default function BillingPage() {
       setIsLoading(null);
     }
   };
+
+  // Arriving from pricing (/billing?plan=starter, via signup): open that plan's
+  // Stripe checkout once. Payment still happens on Stripe's page.
+  const autoCheckout = useRef(false);
+  useEffect(() => {
+    if (autoCheckout.current) return;
+    const plan = new URLSearchParams(window.location.search).get('plan');
+    const target = plan === 'single' ? PRICING.SINGLE : plan === 'starter' ? PRICING.STARTER : plan === 'pro' ? PRICING.PRO : null;
+    if (!target) return;
+    autoCheckout.current = true;
+    window.history.replaceState({}, '', '/billing');
+    handleCheckout(target.priceId, target.type === 'subscription' ? 'subscription' : 'payment');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const openPortal = async () => {
     setIsOpeningPortal(true);

@@ -1,440 +1,86 @@
 'use client';
 
-import { safeRedirect } from '@/lib/safeRedirect';
-import { useState, useRef } from 'react';
-import styled from 'styled-components';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Turnstile, type TurnstileRef } from '@/components/ui/Turnstile';
 import { signUp, signInWithGoogle } from '@/lib/auth';
-import { useToast } from '@/contexts/ToastContext';
+import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/lib/constants';
-import { FcGoogle } from 'react-icons/fc';
+import { Turnstile, type TurnstileRef } from '@/components/ui/Turnstile';
+import { AuthShell, Field, Form, GoogleButton, Primary } from '@/components/auth/AuthShell';
+import { contextCopy, useAuthContext } from '@/components/auth/context';
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
-  
-  /* Liquid Glass Styling */
-  background: rgba(20, 20, 22, 0.4);
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 24px;
-  box-shadow: 
-    0 24px 48px -12px rgba(0, 0, 0, 0.4),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-
-  @media (max-width: 768px) {
-    padding: 20px;
-    border-radius: 20px;
-    background: rgba(20, 20, 22, 0.6);
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.15) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-  }
-`;
-
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  text-align: center;
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: #ffffff;
-  margin: 0;
-`;
-
-const Subtitle = styled.p`
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
-`;
-
-const FieldGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-const FieldsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-const Field = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-`;
-
-const LabelRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const Label = styled.label`
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  padding-left: 4px;
-`;
-
-const FieldDescription = styled.p`
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.4);
-  margin-top: 2px;
-  padding-left: 4px;
-`;
-
-const Footer = styled.p`
-  text-align: center;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: ${({ theme }) => theme.spacing.sm};
-
-  a {
-    color: #ffffff;
-    font-weight: 500;
-    text-decoration: none;
-    margin-left: 4px;
-    transition: color 0.2s ease;
-
-    &:hover {
-      color: var(--accent);
-    }
-  }
-`;
-
-const TermsText = styled.p`
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.4);
-  text-align: center;
-  line-height: 1.5;
-  margin-top: -4px;
-  margin-bottom: -8px;
-
-  a {
-    color: #ffffff;
-    font-weight: 500;
-    text-decoration: none;
-    transition: color 0.2s ease;
-
-    &:hover {
-      color: var(--accent);
-    }
-  }
-`;
-
-const Divider = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 8px 0;
-
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.1) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-  }
-`;
-
-const DividerText = styled.span`
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-`;
-
-/** Where to go after signing up: a same-site ?redirect= (e.g. back to a saved scan) or the dashboard. */
-function redirectAfterSignup() {
-  return safeRedirect(new URLSearchParams(window.location.search).get('redirect'), ROUTES.APP.DASHBOARD);
-}
+const needsCaptcha = () => !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && process.env.NODE_ENV !== 'development';
 
 export default function SignupPage() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const info = useAuthContext();
+  const copy = contextCopy(info);
+  const router = useRouter();
+  const { user, loading } = useAuth();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [captchaError, setCaptchaError] = useState<string>('');
-  const turnstileRef = useRef<TurnstileRef>(null);
-  const toast = useToast();
-  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
+  const [error, setError] = useState<{ text: string; taken?: boolean } | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const turnstile = useRef<TurnstileRef>(null);
 
-  const handleTurnstileVerify = (token: string) => {
-    setTurnstileToken(token);
-    setCaptchaError('');
-  };
+  // Already signed in: go where they were headed.
+  useEffect(() => {
+    if (!loading && user) router.replace(info.redirect);
+  }, [loading, user, info.redirect, router]);
 
-  const handleTurnstileError = () => {
-    setCaptchaError('CAPTCHA verification failed. Please try again.');
-    setTurnstileToken(null);
-  };
+  const loginHref = info.redirect === ROUTES.APP.DASHBOARD ? ROUTES.AUTH.LOGIN : `${ROUTES.AUTH.LOGIN}?redirect=${encodeURIComponent(info.redirect)}`;
 
-  const handleTurnstileExpire = () => {
-    setTurnstileToken(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
+    setError(null);
+    if (!name.trim()) return setError({ text: 'Add your name.' });
+    if (password.length < 8) return setError({ text: 'Use at least 8 characters for your password.' });
+    if (needsCaptcha() && !token) return setError({ text: 'One moment: we’re checking you’re not a bot. Try again in a second.' });
 
-    if (password.length < 8) {
-      toast.error('Password must be at least 8 characters long.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error('Passwords do not match.');
-      return;
-    }
-
-    // Check CAPTCHA if configured
-    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && process.env.NODE_ENV !== 'development' && !turnstileToken) {
-      setCaptchaError('Please complete the CAPTCHA verification.');
-      return;
-    }
-
-    setIsLoading(true);
-
+    setBusy(true);
     try {
-      const fullName = `${firstName} ${lastName}`.trim();
-      await signUp(email, password, fullName, turnstileToken);
-      toast.success('Account created successfully! Redirecting...');
-      router.push(redirectAfterSignup());
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Sign up failed. Please try again.';
-      toast.error(errorMessage);
-      // Reset CAPTCHA on failed attempt
-      turnstileRef.current?.reset();
-      setTurnstileToken(null);
+      await signUp(email.trim(), password, name.trim(), token);
+      router.push(info.redirect);
+    } catch (err) {
+      const text = err instanceof Error ? err.message : 'We couldn’t create your account. Please try again.';
+      setError({ text, taken: /already exists/i.test(text) });
+      turnstile.current?.reset();
+      setToken(null);
     } finally {
-      setIsLoading(false);
+      setBusy(false);
     }
   };
 
-  const handleGoogleSignIn = () => {
-    setIsGoogleLoading(true);
-    try {
-      // Will redirect to Google OAuth flow
-      signInWithGoogle(redirectAfterSignup());
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Google sign in failed. Please try again.';
-      toast.error(errorMessage);
-      setIsGoogleLoading(false);
-    }
+  const google = () => {
+    setGoogleBusy(true);
+    signInWithGoogle(info.redirect);
   };
 
+  const [a, mark, b] = copy.signup.title;
   return (
-    <Form onSubmit={handleSubmit}>
-      <Header>
-        <Title>Create your account</Title>
-        <Subtitle>Get started with your free account</Subtitle>
-      </Header>
-
-      <FieldGroup>
-        <Button
-          type="button"
-          variant="glass-secondary"
-          size="lg"
-          fullWidth
-          onClick={handleGoogleSignIn}
-          disabled={isGoogleLoading || isLoading}
-          style={{ gap: '12px', fontWeight: 600 }}
-        >
-          <FcGoogle size={22} />
-          {isGoogleLoading ? 'Connecting...' : 'Continue with Google'}
-        </Button>
-
-        <Divider>
-          <DividerText>or</DividerText>
-        </Divider>
-
-        <FieldsContainer>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <Field style={{ flex: 1 }}>
-              <Label htmlFor="firstName">First Name</Label>
-              <Input
-                id="firstName"
-                type="text"
-                placeholder="Alex"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-                fullWidth
-                autoComplete="given-name"
-                style={{
-                  background: "rgba(0, 0, 0, 0.2)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  color: "#fff",
-                  borderRadius: "16px",
-                  padding: "8px 12px",
-                }}
-              />
-            </Field>
-            <Field style={{ flex: 1 }}>
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                id="lastName"
-                type="text"
-                placeholder="Chen"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-                fullWidth
-                autoComplete="family-name"
-                style={{
-                  background: "rgba(0, 0, 0, 0.2)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  color: "#fff",
-                  borderRadius: "16px",
-                  padding: "8px 12px",
-                }}
-              />
-            </Field>
-          </div>
-
-          <Field>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="elon@spacex.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              fullWidth
-              autoComplete="email"
-              style={{
-                background: "rgba(0, 0, 0, 0.2)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                color: "#fff",
-                borderRadius: "16px",
-                padding: "8px 12px",
-              }}
-            />
-          </Field>
-
-          <Field>
-            <LabelRow>
-              <Label htmlFor="password">Password</Label>
-            </LabelRow>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Min. 8 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              fullWidth
-              autoComplete="new-password"
-              style={{
-                background: "rgba(0, 0, 0, 0.2)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                color: "#fff",
-                borderRadius: "16px",
-                padding: "8px 12px",
-              }}
-            />
-          </Field>
-
-          <Field>
-            <LabelRow>
-              <Label htmlFor="confirm-password">Confirm Password</Label>
-            </LabelRow>
-            <Input
-              id="confirm-password"
-              type="password"
-              placeholder="Confirm password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              fullWidth
-              autoComplete="new-password"
-              style={{
-                background: "rgba(0, 0, 0, 0.2)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                color: "#fff",
-                borderRadius: "16px",
-                padding: "8px 12px",
-              }}
-            />
-          </Field>
-        </FieldsContainer>
-
-        <Turnstile
-          ref={turnstileRef}
-          onVerify={handleTurnstileVerify}
-          onError={handleTurnstileError}
-          onExpire={handleTurnstileExpire}
-          error={captchaError}
-        />
-
-        <Button 
-          type="submit" 
-          variant="glass-primary"
-          isLoading={isLoading} 
-          fullWidth 
-          size="lg"
-          style={{ 
-            borderRadius: '16px', 
-            fontWeight: 600,
-            fontSize: '16px',
-            marginTop: '8px'
-          }}
-        >
-          Create Account
-        </Button>
-
-        <TermsText>
-          By signing up, you agree to our{' '}
-          <Link href={ROUTES.PUBLIC.TERMS} target="_blank">Terms of Service</Link>
-          {' '}and{' '}
-          <Link href={ROUTES.PUBLIC.PRIVACY} target="_blank">Privacy Policy</Link>.
-        </TermsText>
-      </FieldGroup>
-
-      <Footer>
-        Already have an account?{' '}
-        <Link href={ROUTES.AUTH.LOGIN} onClick={(e) => { const r = new URLSearchParams(window.location.search).get('redirect'); if (r) { e.preventDefault(); router.push(`${ROUTES.AUTH.LOGIN}?redirect=${encodeURIComponent(safeRedirect(r, ROUTES.APP.DASHBOARD))}`); } }}>Sign in</Link>
-      </Footer>
-    </Form>
+    <AuthShell info={info}>
+      <Form onSubmit={submit} noValidate>
+        <p className="k">{copy.eyebrow}</p>
+        <h1>{a}<mark>{mark}</mark>{b}</h1>
+        <p className="lead">{copy.signup.lead}</p>
+        <GoogleButton onClick={google} busy={googleBusy} />
+        <div className="or">or</div>
+        <Field id="name" label="Name" value={name} onChange={setName} autoComplete="name" placeholder="Your name" />
+        <Field id="email" label="Email" type="email" inputMode="email" value={email} onChange={(v) => { setEmail(v); setError(null); }} autoComplete="email" placeholder="you@school.edu" invalid={error?.taken} />
+        <Field id="password" label="Password" type="password" value={password} onChange={setPassword} autoComplete="new-password" placeholder="At least 8 characters" />
+        <Turnstile ref={turnstile} onVerify={setToken} onError={() => setToken(null)} onExpire={() => setToken(null)} />
+        {error && (
+          <p className="err" role="alert">
+            {error.text}{error.taken && <> <Link href={loginHref}>Log in instead →</Link></>}
+          </p>
+        )}
+        <Primary type="submit" disabled={busy || googleBusy}>{busy ? 'Creating your account…' : copy.signup.button}</Primary>
+        <p className="legal">By creating an account you agree to the <Link href={ROUTES.PUBLIC.TERMS}>Terms</Link> and <Link href={ROUTES.PUBLIC.PRIVACY}>Privacy Policy</Link>.</p>
+        <p className="switch">Already have an account? <Link href={loginHref}>Log in</Link></p>
+      </Form>
+    </AuthShell>
   );
 }

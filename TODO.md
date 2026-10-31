@@ -30,7 +30,9 @@ Every page is shown as an HTML simulation first, approved, then built.
   - [x] Old `RoleClient.tsx` and `lib/resumeRoles` removed
 - [x] `/terms`, `/privacy`: rewritten with the owner (Bulbul Labs LLC, Wyoming law, no arbitration,
       liability cap, Pro fair use), "In short" summaries, shared `components/legal/LegalPage`
-- [ ] `/login`, `/signup`, `/forgot-password`, `/reset-password` (still says "Beat the bots")
+- [x] `/login`, `/signup`, `/forgot-password`, `/reset-password`: one Name field, context from ?redirect
+      (builder draft, saved scan, pricing plan → billing checkout). Untested end to end: the
+      pricing → signup → Stripe checkout path needs a real login and test keys.
 - [ ] Merge `redesign/hero` into `main` after the preview is reviewed (ask first)
 
 ## 2. Decisions waiting

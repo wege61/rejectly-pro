@@ -18,15 +18,16 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [x] `/cv-builder`: paper redesign, live ATS score (same 19 checks, run on the PDF text), start empty, signup → auto-download
 - [x] `/about`: origin letter, red-pen promises, code vs AI, anonymous team
 - [x] `/contact`: letter form that really sends (/api/contact → hello@, Reply goes to the sender), topic hints, quick answers
-- [ ] `/resume/[role]` pages, rebuilt as first-job guides (`lib/roleExamples`, `components/resume-role`)
+- [x] `/resume/[role]` pages, rebuilt as first-job guides (`lib/roleExamples`, `components/resume-role`)
   - [x] Software Engineer (Daniel Park: 54 → 100)
   - [x] Data Analyst (Maya Chen: 63 → 100), Product Manager (Jordan Lee: 59 → 100),
         UX Designer (Amara Okafor: 41 → 100)
   - [x] Marketing (Priya Nair: 45 → 100), Project Manager (Marcus Johnson: 60 → 100),
         Sales Representative (Lucía Gómez: 45 → 100)
-  - [ ] Nurse, Accountant, Teacher, Human Resources, Business Analyst.
-        Each gets its own mix of mistakes; slugs not in `ROLE_EXAMPLES` still render the old page.
-  - [ ] When all 12 are done, delete `RoleClient.tsx` and the old `lib/resumeRoles` fields
+  - [x] Nurse (David Mensah: 42 → 100), Accountant (Omar Haddad: 54 → 100), Teacher
+        (Jamal Wright: 41 → 100), Human Resources (Ryan Patel: 60 → 100), Business Analyst
+        (Elena Petrova: 45 → 100)
+  - [x] Old `RoleClient.tsx` and `lib/resumeRoles` removed
 - [x] `/terms`, `/privacy`: rewritten with the owner (Bulbul Labs LLC, Wyoming law, no arbitration,
       liability cap, Pro fair use), "In short" summaries, shared `components/legal/LegalPage`
 - [ ] `/login`, `/signup`, `/forgot-password`, `/reset-password` (still says "Beat the bots")

@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "@/lib/config";
-import { ROLE_SLUGS } from "@/lib/resumeRoles";
+import { ROLE_SLUGS } from "@/lib/roleExamples";
 
 const BASE_URL = "https://rejectly.pro";
 

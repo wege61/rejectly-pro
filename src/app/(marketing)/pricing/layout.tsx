@@ -4,7 +4,7 @@ import { PRICING_FAQS } from "@/components/marketing/pricing/faq";
 import { PRICING } from "@/lib/constants";
 
 const TITLE = "Pricing: Free ATS Scan, Credits from $2 | Rejectly.pro";
-const DESCRIPTION = `The ATS scan and job match demo are free. A Job Match or ATS Optimizer run is 1 credit ($${PRICING.SINGLE.price}), ${PRICING.STARTER.credits} credits are $${PRICING.STARTER.price}, or Pro is $${PRICING.PRO.price}/month for unlimited. Credits never expire.`;
+const DESCRIPTION = `The ATS scan and job match demo are free. A Job Match or ATS Optimizer run is 1 credit ($${PRICING.SINGLE.price}), ${PRICING.STARTER.credits} credits are $${PRICING.STARTER.price}, or Pro is $${PRICING.PRO.price}/month for ${PRICING.PRO.runsPerPeriod} runs. Credits never expire.`;
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },

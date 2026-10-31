@@ -219,7 +219,7 @@ export function CreditsCard() {
           {isPro ? 'Pro' : userCredits.credits}
         </ValueText>
         <TitleText>
-          {isPro ? 'Unlimited' : 'Credits'}
+          {isPro ? 'Pro' : 'Credits'}
         </TitleText>
       </CardContent>
       <ActionButton onClick={() => router.push(ROUTES.APP.BILLING)}>

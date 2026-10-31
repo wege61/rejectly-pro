@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { PRICING } from "@/lib/constants";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export interface UserAccessStatus {
@@ -6,6 +7,8 @@ export interface UserAccessStatus {
   credits: number;
   hasSubscription: boolean;
   subscriptionStatus?: string;
+  /** End of the current Pro billing period, when subscribed. */
+  periodEnd?: string;
 }
 
 /**
@@ -81,6 +84,7 @@ export async function getUserAccessStatus(userId: string): Promise<UserAccessSta
   // Get subscription
   let hasSubscription = false;
   let subscriptionStatus: string | undefined;
+  let periodEnd: string | undefined;
 
   try {
     const { data: subData, error } = await supabase
@@ -92,6 +96,7 @@ export async function getUserAccessStatus(userId: string): Promise<UserAccessSta
 
     if (!error && subData) {
       subscriptionStatus = subData.status;
+      periodEnd = subData.current_period_end ?? undefined;
       if (subData.current_period_end) {
         const endDate = new Date(subData.current_period_end);
         hasSubscription = endDate >= new Date();
@@ -111,6 +116,41 @@ export async function getUserAccessStatus(userId: string): Promise<UserAccessSta
     credits,
     hasSubscription,
     subscriptionStatus,
+    periodEnd,
+  };
+}
+
+/*
+ * Pro fair use: up to PRICING.PRO.runsPerPeriod Job Match / ATS Optimizer runs
+ * per billing period (Terms, "Acceptable use and fair use"). Counted from the
+ * runs themselves: reports upgraded to Pro plus ATS Optimizer results created
+ * since the period began (one month before its end). The rate-limit table
+ * can't hold this: it drops counters older than two days.
+ */
+export async function hasProRunsLeft(userId: string, periodEnd?: string): Promise<boolean> {
+  const supabase = await createClient();
+  const start = periodEnd ? new Date(periodEnd) : new Date();
+  start.setMonth(start.getMonth() - 1);
+  const since = start.toISOString();
+
+  const [matches, optimized] = await Promise.all([
+    supabase.from("reports").select("id", { count: "exact", head: true }).eq("user_id", userId).eq("pro", true).gte("created_at", since),
+    supabase.from("optimized_cvs").select("id", { count: "exact", head: true }).eq("user_id", userId).eq("source", "ats-optimizer").gte("created_at", since),
+  ]);
+  // If counting fails, let the run go ahead rather than block a paying member.
+  if (matches.error || optimized.error) {
+    console.error("Pro run count failed:", matches.error ?? optimized.error);
+    return true;
+  }
+  return (matches.count ?? 0) + (optimized.count ?? 0) < PRICING.PRO.runsPerPeriod;
+}
+
+/** The 429 body shown when a Pro member has used this period's runs. */
+export function proRunsUsedUp(periodEnd?: string) {
+  const back = periodEnd ? new Date(periodEnd).toLocaleDateString("en-US", { month: "long", day: "numeric" }) : "the start of your next billing period";
+  return {
+    error: `You've used this period's ${PRICING.PRO.runsPerPeriod} Pro runs. They come back on ${back}.`,
+    code: "PRO_RUNS_USED",
   };
 }
 

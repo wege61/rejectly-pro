@@ -77,7 +77,7 @@ export const FAQ_TOPICS: FaqTopic[] = [
         question: "How do credits work?",
         short: "1 credit, 1 run",
         answer:
-          "One credit buys one Job Match or one ATS Optimizer run. A single credit is $2, ten are $7, or Pro is $12 a month for unlimited.",
+          "One credit buys one Job Match or one ATS Optimizer run. A single credit is $2, ten are $7, or Pro is $12 a month for 150 runs.",
       },
       {
         id: "job-match",

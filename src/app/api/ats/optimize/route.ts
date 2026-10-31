@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateATSOptimizationPrompt } from "@/lib/ai/prompts";
-import { getUserAccessStatus, consumeCredit, refundCredit } from "@/lib/credits";
+import { getUserAccessStatus, consumeCredit, refundCredit, hasProRunsLeft, proRunsUsedUp } from "@/lib/credits";
 import { generateCVPDF } from "@/lib/pdf/cvGenerator";
 import { GeneratedCV } from "@/types/cv";
 import { ATSOptimizationResult } from "@/types/atsCheck";
@@ -71,6 +71,11 @@ export async function POST(request: NextRequest) {
         { error: "Insufficient credits", creditsRequired: 1, credits: accessStatus.credits },
         { status: 402 }
       );
+    }
+
+    // Pro: fair-use limit per billing period (Terms, "Acceptable use and fair use").
+    if (accessStatus.hasSubscription && !(await hasProRunsLeft(user.id, accessStatus.periodEnd))) {
+      return NextResponse.json(proRunsUsedUp(accessStatus.periodEnd), { status: 429 });
     }
 
     // Consume credit if not subscribed

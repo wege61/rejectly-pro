@@ -459,7 +459,7 @@ export default function BillingPage() {
       <Header>
         <TitleElements>
           <Title>Billing</Title>
-          <Subtitle>Buy credits or subscribe for unlimited access</Subtitle>
+          <Subtitle>Buy credits, or go Pro for 150 runs a month</Subtitle>
         </TitleElements>
         <CreditsCardWrapper>
           <CreditsCard />

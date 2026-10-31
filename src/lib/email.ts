@@ -286,7 +286,7 @@ export const sendSubscriptionPurchasedEmail = async (email: string, name: string
       <tr>
         <td style="background: rgba(53,162,159,0.06); border: 1px solid rgba(53,162,159,0.15); border-radius: 12px; padding: 20px;">
           <p style="margin: 0 0 12px 0; font-size: 13px; font-weight: 600; color: #35A29F; text-transform: uppercase; letter-spacing: 1px;">Everything Unlocked</p>
-          ${featureRow('🎯', 'Unlimited Job Match Scores', 'Analyze as many job postings as you want — no credit limits.')}
+          ${featureRow('🎯', '150 runs a month', 'Job Matches and ATS Optimizer runs, without using credits.')}
           ${featureRow('⚡', 'ATS-Optimized Rewrites', 'Get a fully rewritten resume tailored to every role you apply for.')}
           ${featureRow('✉️', 'Cover Letters & Outreach', 'Auto-generated cover letter and LinkedIn DM for each application.')}
           ${featureRow('📊', 'Deep Section Analysis', 'Bullet-by-bullet breakdown with exact keyword and impact improvements.')}

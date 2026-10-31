@@ -46,12 +46,14 @@ export const PRICING = {
     name: "Pro",
     price: 12, // USD
     priceInCents: 1200,
-    credits: -1, // unlimited
+    credits: -1, // no credits used; capped by runsPerPeriod instead
+    /** Fair use: Job Match + ATS Optimizer runs per billing period (Terms). */
+    runsPerPeriod: 150,
     type: "subscription" as const,
-    description: "Unlimited access",
+    description: "150 runs a month",
     priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO || "price_1Q...",
     features: [
-      "Unlimited Pro analyses",
+      "150 runs a month",
       "Detailed match insights",
       "All missing keywords",
       "3 bullet points rewritten",

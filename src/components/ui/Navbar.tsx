@@ -71,7 +71,7 @@ const LINKS = [
 
 // Pages on the paper design, where the bar can blend into the page at the top.
 // Older pages keep a solid bar so its ink stays readable on their own backgrounds.
-const BLEND_AT_TOP = new Set<string>([ROUTES.PUBLIC.HOME, ROUTES.PUBLIC.ATS_CHECK, ROUTES.PUBLIC.PRICING, ROUTES.PUBLIC.BLOG, ROUTES.PUBLIC.FAQ, ROUTES.PUBLIC.HOW_IT_WORKS, ROUTES.PUBLIC.ABOUT, ROUTES.PUBLIC.CONTACT]);
+const BLEND_AT_TOP = new Set<string>([ROUTES.PUBLIC.HOME, ROUTES.PUBLIC.ATS_CHECK, ROUTES.PUBLIC.PRICING, ROUTES.PUBLIC.BLOG, ROUTES.PUBLIC.FAQ, ROUTES.PUBLIC.HOW_IT_WORKS, ROUTES.PUBLIC.ABOUT, ROUTES.PUBLIC.CONTACT, ROUTES.PUBLIC.TERMS, ROUTES.PUBLIC.PRIVACY]);
 const blendsAtTop = (path: string) => BLEND_AT_TOP.has(path) || path.startsWith(`${ROUTES.PUBLIC.BLOG}/`);
 
 const ease = "cubic-bezier(0.2, 0.8, 0.2, 1)";
@@ -744,7 +744,7 @@ export function Navbar() {
             <Previews on={preview} />
             <PanelFoot>
               <span>
-                Applying a lot? <Link href={ROUTES.PUBLIC.PRICING} onClick={close} tabIndex={open === "tools" ? 0 : -1}>Pro: unlimited job matches</Link>
+                Applying a lot? <Link href={ROUTES.PUBLIC.PRICING} onClick={close} tabIndex={open === "tools" ? 0 : -1}>Pro: 150 runs a month</Link>
               </span>
               <Link href={ROUTES.PUBLIC.PRICING} onClick={close} tabIndex={open === "tools" ? 0 : -1}>See pricing</Link>
             </PanelFoot>
@@ -759,7 +759,7 @@ export function Navbar() {
             ) : user ? (
               <>
                 {balanceLabel && (
-                  <Credits className="credits" href={ROUTES.PUBLIC.PRICING} title={balance?.pro ? "Unlimited job matches" : "Credits never expire"}>
+                  <Credits className="credits" href={ROUTES.PUBLIC.PRICING} title={balance?.pro ? "150 runs a month" : "Credits never expire"}>
                     <i aria-hidden="true" />
                     {balanceLabel}
                   </Credits>
@@ -826,7 +826,7 @@ export function Navbar() {
               <>
                 {balanceLabel && (
                   <div className="row">
-                    <span>{balance?.pro ? "Pro · unlimited job matches" : `${balanceLabel} · never expire`}</span>
+                    <span>{balance?.pro ? "Pro · 150 runs a month" : `${balanceLabel} · never expire`}</span>
                     {!balance?.pro && <Link href={ROUTES.PUBLIC.PRICING} onClick={close}>Buy more</Link>}
                   </div>
                 )}

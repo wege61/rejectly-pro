@@ -375,7 +375,7 @@ export function SharedPricingCards({ onCheckout, isLoading, isModal }: SharedPri
         <PricingPlanName $compressed={isModal}>{PRICING.PRO.name}</PricingPlanName>
         <PricingPrice $compressed={isModal}>${PRICING.PRO.price}</PricingPrice>
         <PricingPriceSubtext $compressed={isModal}>per month</PricingPriceSubtext>
-        <PricingPlanDescription $compressed={isModal}>Unlimited for power users</PricingPlanDescription>
+        <PricingPlanDescription $compressed={isModal}>For applying a lot</PricingPlanDescription>
         <PricingPlanTagline $compressed={isModal}>Apply without limits</PricingPlanTagline>
         
         <GlassButton
@@ -387,9 +387,9 @@ export function SharedPricingCards({ onCheckout, isLoading, isModal }: SharedPri
         </GlassButton>
 
         <PricingFeatureList $compressed={isModal}>
-          <PricingFeatureRow $compressed={isModal}><PricingInfinityIcon />Unlimited — No limits, no counting</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingAnalysisIcon />Unlimited job match analyses</PricingFeatureRow>
-          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />Unlimited full ATS reports</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingInfinityIcon />150 runs a month, no credits used</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingAnalysisIcon />Job Matches with cover letters and interview prep</PricingFeatureRow>
+          <PricingFeatureRow $compressed={isModal}><PricingATSIcon />ATS Optimizer runs</PricingFeatureRow>
           <PricingFeatureRow $compressed={isModal}><PricingLetterIcon />Cover letter with every Job Match</PricingFeatureRow>
           <PricingFeatureRow $compressed={isModal}><PricingRocketIcon />Perfect for career transitions</PricingFeatureRow>
           <PricingFeatureRowHighlight $compressed={isModal}><PricingStarIcon />Cheapest from 13 applications a month</PricingFeatureRowHighlight>

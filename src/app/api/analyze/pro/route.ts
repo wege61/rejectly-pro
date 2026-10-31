@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { openai, AI_MODEL } from "@/lib/ai/client";
 import { generateProReportPrompt } from "@/lib/ai/prompts";
-import { getUserAccessStatus, consumeCredit, refundCredit } from "@/lib/credits";
+import { getUserAccessStatus, consumeCredit, refundCredit, hasProRunsLeft, proRunsUsedUp } from "@/lib/credits";
 import { proAnalyzeRequestSchema, validateRequest } from "@/lib/validations";
 
 export async function POST(request: NextRequest) {
@@ -71,6 +71,11 @@ export async function POST(request: NextRequest) {
         },
         { status: 402 } // Payment Required
       );
+    }
+
+    // Pro: fair-use limit per billing period (Terms, "Acceptable use and fair use").
+    if (accessStatus.hasSubscription && !(await hasProRunsLeft(user.id, accessStatus.periodEnd))) {
+      return NextResponse.json(proRunsUsedUp(accessStatus.periodEnd), { status: 429 });
     }
 
     // If user doesn't have subscription, consume a credit

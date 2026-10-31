@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useReducedMotion } from "framer-motion";
-import { ROUTES } from "@/lib/constants";
+import { PRICING, ROUTES } from "@/lib/constants";
 import { useSeenOnce } from "../why/shared";
 import { cheapest, money, PRICES, type PlanId } from "./plans";
 import { Receipt } from "./Receipt";
@@ -447,7 +447,7 @@ function describe(n: number) {
   const r = cheapest(n);
 
   if (r.plan === "pro") {
-    const each = n < MAX ? `, ${money(Math.round((PRICES.pro * 100) / n) / 100)} a job.` : ". Apply as much as you like.";
+    const each = n < MAX ? `, ${money(Math.round((PRICES.pro * 100) / n) / 100)} a job.` : `. Up to ${PRICING.PRO.runsPerPeriod} runs a month.`;
     return { label, plan: r.plan, head, before: "Pro is cheapest at ", price: money(PRICES.pro), after: ` for the month${each}` };
   }
   if (r.plan === "single") {
@@ -601,7 +601,7 @@ export function Pricing({ page = false }: { page?: boolean }) {
               <Card $rec={d.plan === "pro"}>
                 <h3>Pro {badge("pro")}</h3>
                 <div className="amt"><b>{money(PRICES.pro)}</b><span>per month</span></div>
-                <p className="what"><b>Unlimited</b> Job Matches and ATS Optimizer runs.</p>
+                <p className="what"><b>{PRICING.PRO.runsPerPeriod} runs a month</b>: Job Matches and ATS Optimizer runs.</p>
                 <span className="tag">Cancel anytime</span>
                 <a href={ROUTES.AUTH.SIGNUP}>Go Pro</a>
               </Card>

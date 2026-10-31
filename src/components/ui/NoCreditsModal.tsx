@@ -380,7 +380,7 @@ export function NoCreditsModal({ isOpen, onClose }: NoCreditsModalProps) {
 
           <PackageCard>
             <PackageName>{PRICING.PRO.name}</PackageName>
-            <PackageCredits>Unlimited analyses</PackageCredits>
+            <PackageCredits>150 runs a month</PackageCredits>
             <PackagePrice>
               ${PRICING.PRO.price}
               <span>/mo</span>

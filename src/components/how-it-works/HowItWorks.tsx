@@ -568,7 +568,7 @@ export function HowItWorks({ scores, beforeText, afterText }: { scores: StorySco
             ))}
           </Costs>
           <p className="lede">
-            One credit is ${PRICING.SINGLE.price}, {PRICING.STARTER.credits} are ${PRICING.STARTER.price}, or Pro is ${PRICING.PRO.price} a month for unlimited. Credits never expire.
+            One credit is ${PRICING.SINGLE.price}, {PRICING.STARTER.credits} are ${PRICING.STARTER.price}, or Pro is ${PRICING.PRO.price} a month for {PRICING.PRO.runsPerPeriod} runs. Credits never expire.
           </p>
         </Section>
 

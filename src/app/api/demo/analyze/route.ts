@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       await limiter.check(5, ip);
     } catch {
       return Response.json(
-        { error: "Rate limit exceeded. Please try again later or sign up for unlimited analysis." },
+        { error: "Rate limit exceeded. Please try again later, or sign up to run a full Job Match." },
         { status: 429 }
       );
     }

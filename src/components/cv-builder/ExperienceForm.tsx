@@ -301,9 +301,9 @@ export function ExperienceForm() {
 
             <Row>
               <InputGroup style={{ flex: 1 }}>
-                <Label>Role / Project Name</Label>
+                <Label>Role</Label>
                 <AutocompleteInput 
-                  placeholder="e.g. Frontend Engineer OR Capstone Project" 
+                  placeholder="e.g. Software Engineering Intern" 
                   value={exp.title}
                   onChange={(val) => updateExperience(index, { title: val })}
                   onFocus={(e) => {
@@ -316,9 +316,9 @@ export function ExperienceForm() {
 
             <Row>
               <InputGroup style={{ flex: 1 }}>
-                <Label>Company / Context</Label>
+                <Label>Company or organization</Label>
                 <AutocompleteInput 
-                  placeholder="e.g. Apple OR University Name" 
+                  placeholder="e.g. Halden Analytics" 
                   value={exp.company}
                   onChange={(val) => updateExperience(index, { company: val })}
                   onFocus={(e) => {
@@ -436,7 +436,7 @@ export function ExperienceForm() {
               marginBottom: '16px'
             }}
           >
-            <strong>Pro Tip:</strong> No formal work experience? No problem. Add your university capstone projects, hackathon wins, or freelance work here. Our AI will help you translate them into professional achievements.
+            <strong>No work experience yet?</strong> Part-time jobs, TA and research roles, volunteering and club leadership count. Projects have their own step next.
           </motion.div>
         )}
       </AnimatePresence>
@@ -447,7 +447,7 @@ export function ExperienceForm() {
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 5v14M5 12h14" />
         </svg>
-        Add Experience or Project
+        Add experience
       </AddButton>
 
       {activeModalIndex !== null && (

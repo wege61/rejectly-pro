@@ -9,6 +9,7 @@ import { EducationForm } from "@/components/cv-builder/EducationForm";
 import { SkillsForm } from "@/components/cv-builder/SkillsForm";
 import { ExperienceForm } from "@/components/cv-builder/ExperienceForm";
 import { CertificationForm } from "@/components/cv-builder/CertificationForm";
+import { ProjectsForm } from "@/components/cv-builder/ProjectsForm";
 import { SummaryForm } from "@/components/cv-builder/SummaryForm";
 import { ThemeForm } from "@/components/cv-builder/ThemeForm";
 import { CVPreview } from "@/components/cv-builder/CVPreview";
@@ -26,14 +27,15 @@ import { Footer } from "@/components/ui/Footer";
  * free account: signup brings the visitor back here and the download starts.
  */
 
-/* The store keeps seven steps; certifications now live in the education step. */
+/* Seven steps; certifications live in the education step. */
 const STEPS: { store: number; label: string; title: string; text: string }[] = [
   { store: 1, label: "Basics", title: "Start with the basics", text: "Contact details go in the body of your resume, where an ATS can read them." },
   { store: 2, label: "Education", title: "Where did you study?", text: "Degree, school, dates. Add courses or certifications if they fit the job." },
-  { store: 3, label: "Experience", title: "Experience and projects", text: "Internships, part-time jobs, class projects and clubs all count. Start each line with what you did." },
+  { store: 3, label: "Experience", title: "Experience", text: "Internships, part-time jobs, TA and research roles, volunteering. Start each line with what you did." },
+  { store: 4, label: "Projects", title: "Projects", text: "Class projects, personal projects, hackathons. For a first job they count as much as experience." },
   { store: 5, label: "Skills", title: "What are your skills?", text: "List them one by one, the way job posts word them." },
   { store: 6, label: "Summary", title: "A short summary", text: "Two or three sentences: who you are and what you're looking for." },
-  { store: 7, label: "Finish", title: "Finish", text: "Pick an accent color. The layout stays one column, whatever you choose." },
+  { store: 7, label: "Finish", title: "Finish", text: "Choose what leads your resume and an accent color. It stays one column either way." },
 ];
 const DOWNLOAD_FLAG = "download";
 const scanSweep = keyframes`0% { top: 0; opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; }`;
@@ -111,7 +113,7 @@ const Steps = styled.ol`
   margin: 0 0 18px;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   gap: 4px;
 
   button {
@@ -147,6 +149,21 @@ const Nav = styled.div`
   .back { color: var(--rj-ink-2); background: none; }
   .skip { color: var(--rj-ink-3); background: none; text-decoration: underline; text-underline-offset: 3px; }
   .go { margin-left: auto; color: var(--rj-btn-ink); background: var(--rj-btn); }
+`;
+
+const Layout = styled.div`
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+
+  button { padding: 14px 16px; border: 0; border-radius: 16px; display: grid; gap: 4px; text-align: left; font: inherit; color: var(--rj-ink); background: var(--rj-paper); box-shadow: inset 0 0 0 1px var(--rj-line); cursor: pointer; }
+  button[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--rj-ink); }
+  button:focus-visible { outline: 2px solid var(--rj-ink); outline-offset: 2px; }
+  b { font-size: 15px; }
+  span { font-size: 13px; line-height: 1.45; color: var(--rj-ink-2); }
 `;
 
 const Finish = styled.div`
@@ -329,7 +346,7 @@ function Paper({ sweep }: { sweep: boolean }) {
 }
 
 export default function CVBuilderPage() {
-  const { cv, currentStep, setStep, startEmpty } = useCVStore();
+  const { cv, currentStep, setStep, startEmpty, setEntryLevel } = useCVStore();
   const { user, loading } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -351,8 +368,6 @@ export default function CVBuilderPage() {
     setMounted(true);
     // The example is Gordon until the visitor changes his name.
     setIsExample(useCVStore.getState().cv.contact.name === "Gordon Freeman, Ph.D.");
-    // Old seven-step positions: certifications moved into education.
-    if (useCVStore.getState().currentStep === 4) setStep(2);
   }, [setStep]);
 
   useEffect(() => {
@@ -497,10 +512,19 @@ export default function CVBuilderPage() {
             {step.store === 1 && <BasicsForm />}
             {step.store === 2 && (<><EducationForm /><CertificationForm /></>)}
             {step.store === 3 && <ExperienceForm />}
+            {step.store === 4 && <ProjectsForm />}
             {step.store === 5 && <SkillsForm />}
             {step.store === 6 && <SummaryForm />}
             {step.store === 7 && (
               <>
+                <Layout role="radiogroup" aria-label="What leads your resume">
+                  <button type="button" role="radio" aria-checked={!!cv.isEntryLevel} onClick={() => setEntryLevel(true)}>
+                    <b>Education first</b><span>For students and new grads. Projects get their own section.</span>
+                  </button>
+                  <button type="button" role="radio" aria-checked={!cv.isEntryLevel} onClick={() => setEntryLevel(false)}>
+                    <b>Experience first</b><span>Once your work history is the strongest part.</span>
+                  </button>
+                </Layout>
                 <ThemeForm />
                 <Finish>
                   <div className="dl">
@@ -517,7 +541,7 @@ export default function CVBuilderPage() {
 
             <Nav>
               {idx > 0 && <button className="back" type="button" onClick={() => go(idx - 1)}>Back</button>}
-              {step.store === 2 && <button className="skip" type="button" onClick={() => go(idx + 1)}>Skip this step</button>}
+              {(step.store === 2 || step.store === 4) && <button className="skip" type="button" onClick={() => go(idx + 1)}>Skip this step</button>}
               {idx < STEPS.length - 1 && <button className="go" type="button" onClick={() => go(idx + 1)}>Continue</button>}
             </Nav>
           </Form>

@@ -76,17 +76,6 @@ export const softwareEngineer: RoleExample = {
     ],
     experience: [
       {
-        title: "CourseMap, course planning web app",
-        company: "Personal project (React, Node.js, PostgreSQL)",
-        location: "",
-        startDate: "Sep 2025",
-        endDate: "Dec 2025",
-        bullets: [
-          "Built a course planner that checks prerequisites, used by ⟦120⟧ students in its first semester",
-          "Deployed on AWS (EC2, RDS) with a GitHub Actions pipeline that runs tests on every push",
-        ],
-      },
-      {
         title: "Software Engineering Intern",
         company: "Halden Analytics",
         location: "Lakeside, CA",
@@ -106,10 +95,22 @@ export const softwareEngineer: RoleExample = {
         endDate: "May 2025",
         bullets: ["Held weekly office hours for ⟦60⟧ students and graded Java programming assignments"],
       },
+    ],
+    projects: [
       {
-        title: "Club Discord bot",
-        company: "Personal project (Python)",
-        location: "",
+        name: "CourseMap, course planning web app",
+        role: "React, Node.js, PostgreSQL",
+        url: "github.com/danielpark/coursemap",
+        startDate: "Sep 2025",
+        endDate: "Dec 2025",
+        bullets: [
+          "Built a course planner that checks prerequisites, used by ⟦120⟧ students in its first semester",
+          "Deployed on AWS (EC2, RDS) with a GitHub Actions pipeline that runs tests on every push",
+        ],
+      },
+      {
+        name: "Club Discord bot",
+        role: "Python",
         startDate: "Jan 2024",
         endDate: "May 2024",
         bullets: ["Wrote a Discord bot that posts event reminders for a ⟦300+⟧ member student club"],
@@ -134,7 +135,7 @@ export const softwareEngineer: RoleExample = {
     },
     headings: {
       why: "“My Journey” and “Things I’ve Built” aren’t section names an ATS looks for, so his internship wasn’t found as experience.",
-      whyAfter: "Experience, Education, Skills: names every ATS recognizes. His projects sit under Experience.",
+      whyAfter: "Education, Experience, Projects, Skills: names every ATS recognizes.",
     },
     numbers: {
       after: "Numbers he can back up",
@@ -179,8 +180,8 @@ export const softwareEngineer: RoleExample = {
   },
   order: [
     { title: "Education", text: "On top while you’re in school or just graduated: degree, school, graduation month. Coursework only if it fits the job." },
-    { title: "Experience", text: "Internships, part-time jobs, TA and research roles, newest first. Projects can go here too, or in their own section." },
-    { title: "Projects", text: "As important as experience for a first job. Name the stack and link the code." },
+    { title: "Projects", text: "Right after education when they’re your strongest work, as they often are for a first job. Name the stack and link the code." },
+    { title: "Experience", text: "Internships, part-time jobs, TA and research roles. Newest first." },
     { title: "Skills", text: "Languages, frameworks and tools. Only what you’d be happy to be asked about." },
   ],
   rewrites: [

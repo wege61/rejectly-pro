@@ -11,5 +11,6 @@ export function plainCV(cv: GeneratedCV): GeneratedCV {
     ...cv,
     summary: unmark(cv.summary),
     experience: cv.experience.map((e) => ({ ...e, bullets: e.bullets.map(unmark) })),
+    projects: cv.projects?.map((p) => ({ ...p, bullets: p.bullets?.map(unmark) })),
   };
 }

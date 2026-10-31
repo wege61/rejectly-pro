@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { GeneratedCV, CVEducation, CVExperience, CVCertification, CVLeadership } from '@/types/cv';
+import type { GeneratedCV, CVEducation, CVExperience, CVCertification, CVLeadership, CVProject } from '@/types/cv';
 
 // Initial placeholder CV state (Showcase for new users - Gordon Freeman Edition)
 export const initialCVState: GeneratedCV = {
@@ -87,6 +87,9 @@ export const emptyCVState: GeneratedCV = {
   certifications: [],
   languages: [],
   leadership: [],
+  projects: [],
+  // Most people starting from scratch here are students: lead with education.
+  isEntryLevel: true,
   themeColor: "#1E2024",
   photoUrl: "",
 };
@@ -104,6 +107,8 @@ interface CVState {
   updatePhoto: (photoBase64: string) => void;
   updateSummary: (summary: string) => void;
   updateThemeColor: (color: string) => void;
+  /** Student layout: education first, projects in their own section. */
+  setEntryLevel: (entryLevel: boolean) => void;
   addEducation: (edu: CVEducation) => void;
   updateEducation: (index: number, edu: Partial<CVEducation>) => void;
   removeEducation: (index: number) => void;
@@ -113,6 +118,12 @@ interface CVState {
   addExperienceBullet: (index: number, bullet: string) => void;
   updateExperienceBullet: (expIndex: number, bulletIndex: number, newBullet: string) => void;
   removeExperienceBullet: (index: number, bulletIndex: number) => void;
+  addProject: (project: CVProject) => void;
+  updateProject: (index: number, project: Partial<CVProject>) => void;
+  removeProject: (index: number) => void;
+  addProjectBullet: (index: number, bullet: string) => void;
+  updateProjectBullet: (projectIndex: number, bulletIndex: number, bullet: string) => void;
+  removeProjectBullet: (projectIndex: number, bulletIndex: number) => void;
   addSkill: (skill: string) => void;
   removeSkill: (skill: string) => void;
   addCertification: (cert: CVCertification) => void;
@@ -131,7 +142,7 @@ export const useCVStore = create<CVState>()(
     (set) => ({
       cv: initialCVState,
       activeCVId: null,
-      currentStep: 1, // 1: Basics, 2: Education, 3: Experience, 4: Certifications, 5: Skills, 6: Summary
+      currentStep: 1, // 1 Basics, 2 Education (+ certifications), 3 Experience, 4 Projects, 5 Skills, 6 Summary, 7 Finish
       
       setActiveCVId: (id: string | null) => set({ activeCVId: id }),
       
@@ -154,6 +165,8 @@ export const useCVStore = create<CVState>()(
         cv: { ...state.cv, summary }
       })),
       
+      setEntryLevel: (entryLevel: boolean) => set((state: CVState) => ({ cv: { ...state.cv, isEntryLevel: entryLevel } })),
+
       updateThemeColor: (color: string) => set((state: CVState) => ({
         cv: { ...state.cv, themeColor: color }
       })),
@@ -209,6 +222,40 @@ export const useCVStore = create<CVState>()(
         return { cv: { ...state.cv, experience: newExp } };
       }),
       
+      addProject: (project: CVProject) => set((state: CVState) => ({
+        cv: { ...state.cv, projects: [...(state.cv.projects || []), project] }
+      })),
+
+      updateProject: (index: number, patch: Partial<CVProject>) => set((state: CVState) => {
+        const projects = [...(state.cv.projects || [])];
+        projects[index] = { ...projects[index], ...patch };
+        return { cv: { ...state.cv, projects } };
+      }),
+
+      removeProject: (index: number) => set((state: CVState) => ({
+        cv: { ...state.cv, projects: (state.cv.projects || []).filter((_, i) => i !== index) }
+      })),
+
+      addProjectBullet: (index: number, bullet: string) => set((state: CVState) => {
+        const projects = [...(state.cv.projects || [])];
+        projects[index] = { ...projects[index], bullets: [...(projects[index].bullets || []), bullet] };
+        return { cv: { ...state.cv, projects } };
+      }),
+
+      updateProjectBullet: (projectIndex: number, bulletIndex: number, bullet: string) => set((state: CVState) => {
+        const projects = [...(state.cv.projects || [])];
+        const bullets = [...(projects[projectIndex].bullets || [])];
+        bullets[bulletIndex] = bullet;
+        projects[projectIndex] = { ...projects[projectIndex], bullets };
+        return { cv: { ...state.cv, projects } };
+      }),
+
+      removeProjectBullet: (projectIndex: number, bulletIndex: number) => set((state: CVState) => {
+        const projects = [...(state.cv.projects || [])];
+        projects[projectIndex] = { ...projects[projectIndex], bullets: (projects[projectIndex].bullets || []).filter((_, i) => i !== bulletIndex) };
+        return { cv: { ...state.cv, projects } };
+      }),
+
       addSkill: (skill: string) => set((state: CVState) => {
         if (state.cv.skills.technical.includes(skill)) return state;
         return {
@@ -264,16 +311,19 @@ export const useCVStore = create<CVState>()(
       nextStep: () => set((state: CVState) => {
         let newEducation = [...state.cv.education];
         let newCerts = [...(state.cv.certifications || [])];
-        // Clean up empty education card when leaving step 2
+        let newProjects = [...(state.cv.projects || [])];
+        // Leaving step 2 (education and certifications): drop empty cards.
         if (state.currentStep === 2) {
           newEducation = newEducation.filter(edu => edu.institution.trim() !== "");
-        }
-        if (state.currentStep === 4) {
           newCerts = newCerts.filter(cert => cert.name.trim() !== "");
         }
-        
-        return { 
-          cv: { ...state.cv, education: newEducation, certifications: newCerts },
+        // Leaving step 4 (projects): drop empty cards.
+        if (state.currentStep === 4) {
+          newProjects = newProjects.filter(p => p.name.trim() !== "");
+        }
+
+        return {
+          cv: { ...state.cv, education: newEducation, certifications: newCerts, projects: newProjects },
           currentStep: Math.min(state.currentStep + 1, 7) 
         };
       }),

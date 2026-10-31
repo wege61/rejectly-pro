@@ -56,6 +56,12 @@ Every page is shown as an HTML simulation first, approved, then built.
       deployed preview check the env var and that Resend accepts `hello@rejectly.pro` as
       the sender. Send one test message after the fix.
 
+- [ ] Scorer bug: "Consistent date format" (`lib/ats/deterministicScoring` checkDateFormat)
+      only accepts full month names, so a resume that uses "Jun 2025 – Aug 2025" throughout
+      is marked "mixed" and loses 6 points. Count consistent abbreviations as consistent.
+- [ ] Scorer gap: "Quantified achievements" only counts %, $, "N+", "Nx" and "1,000"-style
+      numbers; "120 students" or "9 seconds" don't count. Decide whether plain counts should.
+
 ## 3. Content rewrite (last)
 
 Do this after every page above is designed. Rules: no invented statistics, no

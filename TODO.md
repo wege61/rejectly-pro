@@ -33,6 +33,15 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [ ] Upsell numbers on `reports/[id]` can't be verified: replace or remove.
 - [ ] Main `.env.local` uses live Stripe keys: switch local development to test keys.
 - [ ] Roll the Stripe test key that was shared in chat.
+- [ ] Roll the OpenAI API key that was shared in chat, then update `OPENAI_API_KEY` on Vercel.
+- [ ] Pro fair use: cap Pro at 150 runs per billing period (worst case ~$2/month on
+      gpt-4o-mini + gpt-6-luna, ~$9 if `OPENAI_MODEL` is ever set to gpt-5.4-mini). Show
+      "150 runs a month" on pricing; add it to the Terms. (Decided; ships with `/terms`.)
+- [ ] Try gpt-6-luna prompt by prompt (cover letter, interview prep first). A blanket
+      switch broke `/api/analyze/free` before (2d5919c: long JSON hit the token limit,
+      ~30 s per call). Measure accuracy, time and tokens on sample CVs before moving any.
+- [ ] `AI_CONFIG.model` in `lib/constants.ts` (default gpt-5.4-mini) is unused; the real
+      defaults live in `lib/ai/client.ts`. Remove it so nobody reads the wrong one.
 - [ ] Contact form says "We couldn't send that": `/api/contact` answers 502 when the
       email can't go out. Locally `RESEND_API_KEY` is missing from `.env.local`; on a
       deployed preview check the env var and that Resend accepts `hello@rejectly.pro` as

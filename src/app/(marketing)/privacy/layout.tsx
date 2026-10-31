@@ -1,34 +1,19 @@
 import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
+const TITLE = "Privacy Policy | Rejectly.pro";
+const DESCRIPTION =
+  "What Rejectly.pro collects, why, who else handles it, how long we keep it and how to see, export or delete it. No selling, no ads, no training AI on your resume.";
+
 export const metadata: Metadata = {
-  title: { absolute: "Privacy Policy - Data Protection & Security | Rejectly.pro" },
-  description: "Learn how Rejectly.pro protects your personal data. Our privacy policy covers data collection, AI processing, GDPR compliance, and your privacy rights.",
-  keywords: [
-    "privacy policy",
-    "data protection",
-    "GDPR compliance",
-    "resume data security",
-    "AI data processing",
-    "personal data protection",
-    "privacy rights",
-    "data encryption",
-    "secure resume storage",
-    "cookie policy",
-  ],
+  title: { absolute: TITLE },
+  description: DESCRIPTION,
   openGraph: {
-    title: "Privacy Policy - Data Protection & Security | Rejectly.pro",
-    description: "Learn how Rejectly.pro protects your personal data and resume information. GDPR compliant with encrypted storage.",
+    title: TITLE,
+    description: DESCRIPTION,
     url: "https://rejectly.pro/privacy",
     type: "website",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Rejectly.pro Privacy Policy",
-      },
-    ],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Rejectly.pro Privacy Policy" }],
   },
   alternates: {
     canonical: "https://rejectly.pro/privacy",

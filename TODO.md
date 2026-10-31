@@ -19,7 +19,8 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [x] `/about`: origin letter, red-pen promises, code vs AI, anonymous team
 - [x] `/contact`: letter form that really sends (/api/contact → hello@, Reply goes to the sender), topic hints, quick answers
 - [ ] `/resume/[role]` pages
-- [ ] `/privacy`, `/terms` (light restyle only, no wording changes without review)
+- [x] `/terms`, `/privacy`: rewritten with the owner (Bulbul Labs LLC, Wyoming law, no arbitration,
+      liability cap, Pro fair use), "In short" summaries, shared `components/legal/LegalPage`
 - [ ] `/login`, `/signup`, `/forgot-password`, `/reset-password` (still says "Beat the bots")
 - [ ] Merge `redesign/hero` into `main` after the preview is reviewed (ask first)
 
@@ -30,13 +31,21 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [ ] `/api/ats/parse` runs an AI "is this a resume?" check on every upload: 5–8 s and a
       small cost, no auth, no rate limit. Rate-limit it or drop it.
 - [ ] Make the `cv-files` storage bucket private and serve files through signed URLs.
+      **Do this before launch marketing**: files sit at `userId/timestamp-name` in a public bucket,
+      and the Privacy Policy deliberately doesn't claim access control until this is fixed.
+- [ ] The free-report follow-up email (`api/cron/fomo-email`) has no unsubscribe link. Add one
+      (CAN-SPAM, GDPR). The Privacy Policy tells people to reply to stop it meanwhile.
+- [ ] The follow-up cron runs once a day (`vercel.json`, 00:00) but only looks at reports made
+      2–3 hours earlier, so it emails almost no one. Decide: fix the window or remove the email.
+- [ ] Google Analytics loads for everyone with no consent banner. EU/UK visitors need consent
+      for analytics cookies: add a banner, or switch to cookieless analytics.
 - [ ] Upsell numbers on `reports/[id]` can't be verified: replace or remove.
 - [ ] Main `.env.local` uses live Stripe keys: switch local development to test keys.
 - [ ] Roll the Stripe test key that was shared in chat.
 - [ ] Roll the OpenAI API key that was shared in chat, then update `OPENAI_API_KEY` on Vercel.
-- [ ] Pro fair use: cap Pro at 150 runs per billing period (worst case ~$2/month on
-      gpt-4o-mini + gpt-6-luna, ~$9 if `OPENAI_MODEL` is ever set to gpt-5.4-mini). Show
-      "150 runs a month" on pricing; add it to the Terms. (Decided; ships with `/terms`.)
+- [x] Pro fair use: 150 runs per billing period (`lib/credits` hasProRunsLeft, counted from
+      Pro reports + ATS Optimizer results). No active subscribers when it shipped, so no notice
+      was needed. Known gap: deleting reports frees runs.
 - [ ] Try gpt-6-luna prompt by prompt (cover letter, interview prep first). A blanket
       switch broke `/api/analyze/free` before (2d5919c: long JSON hit the token limit,
       ~30 s per call). Measure accuracy, time and tokens on sample CVs before moving any.

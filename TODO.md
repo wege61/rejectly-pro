@@ -18,7 +18,12 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [x] `/cv-builder`: paper redesign, live ATS score (same 19 checks, run on the PDF text), start empty, signup → auto-download
 - [x] `/about`: origin letter, red-pen promises, code vs AI, anonymous team
 - [x] `/contact`: letter form that really sends (/api/contact → hello@, Reply goes to the sender), topic hints, quick answers
-- [ ] `/resume/[role]` pages
+- [ ] `/resume/[role]` pages, rebuilt as first-job guides (`lib/roleExamples`, `components/resume-role`)
+  - [x] Software Engineer (Daniel Park: 54 → 100)
+  - [ ] Product Manager, Data Analyst (Maya), Marketing Manager, Project Manager, UX Designer,
+        Sales Representative, Nurse, Accountant, Teacher, Human Resources, Business Analyst.
+        Each gets its own mix of mistakes; slugs not in `ROLE_EXAMPLES` still render the old page.
+  - [ ] When all 12 are done, delete `RoleClient.tsx` and the old `lib/resumeRoles` fields
 - [x] `/terms`, `/privacy`: rewritten with the owner (Bulbul Labs LLC, Wyoming law, no arbitration,
       liability cap, Pro fair use), "In short" summaries, shared `components/legal/LegalPage`
 - [ ] `/login`, `/signup`, `/forgot-password`, `/reset-password` (still says "Beat the bots")
@@ -56,9 +61,8 @@ Every page is shown as an HTML simulation first, approved, then built.
       deployed preview check the env var and that Resend accepts `hello@rejectly.pro` as
       the sender. Send one test message after the fix.
 
-- [ ] Scorer bug: "Consistent date format" (`lib/ats/deterministicScoring` checkDateFormat)
-      only accepts full month names, so a resume that uses "Jun 2025 – Aug 2025" throughout
-      is marked "mixed" and loses 6 points. Count consistent abbreviations as consistent.
+- [x] Scorer bug: "Consistent date format" only accepted full month names, so every resume from
+      our own builder ("Aug 2021") lost 6 points. Fixed in cfd5375; homepage demo after score 87 → 93.
 - [ ] Scorer gap: "Quantified achievements" only counts %, $, "N+", "Nx" and "1,000"-style
       numbers; "120 students" or "9 seconds" don't count. Decide whether plain counts should.
 

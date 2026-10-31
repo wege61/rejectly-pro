@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ROLES, ROLE_SLUGS, getRole, type RoleSlug } from "@/lib/resumeRoles";
 import { RoleClient } from "./RoleClient";
+import { RolePage } from "@/components/resume-role/RolePage";
+import { Footer } from "@/components/ui/Footer";
+import { getRoleExample } from "@/lib/roleExamples";
+import { scoreExample } from "@/lib/roleExamples/score";
 
 const BASE_URL = "https://rejectly.pro";
 
@@ -22,6 +26,17 @@ export async function generateMetadata({
   if (!role) return {};
 
   const url = `${BASE_URL}/resume/${slug}`;
+  // Rebuilt roles describe themselves; the rest keep their old copy until rebuilt.
+  const example = getRoleExample(slug);
+  if (example) {
+    return {
+      title: { absolute: `${example.metaTitle} | Rejectly.pro` },
+      description: example.metaDescription,
+      alternates: { canonical: url },
+      openGraph: { type: "article", url, title: example.metaTitle, description: example.metaDescription, siteName: "Rejectly.pro" },
+      twitter: { card: "summary_large_image", title: example.metaTitle, description: example.metaDescription },
+    };
+  }
   return {
     title: role.metaTitle,
     description: role.metaDescription,
@@ -57,6 +72,8 @@ export default async function RoleResumePage({
     title: ROLES[s].title,
   }));
 
+  const example = getRoleExample(slug);
+
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -65,7 +82,7 @@ export default async function RoleResumePage({
       {
         "@type": "ListItem",
         position: 2,
-        name: `${role.title} Resume Guide`,
+        name: `${example ? "Entry-Level " : ""}${role.title} Resume Guide`,
         item: `${BASE_URL}/resume/${slug}`,
       },
     ],
@@ -77,7 +94,14 @@ export default async function RoleResumePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <RoleClient role={role} related={related} />
+      {example ? (
+        <>
+          <RolePage example={example} scores={scoreExample(example)} others={related} />
+          <Footer />
+        </>
+      ) : (
+        <RoleClient role={role} related={related} />
+      )}
     </>
   );
 }

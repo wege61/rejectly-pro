@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useCVStore } from "./store";
 import { motion } from "framer-motion";
-import type { CVExperience, CVEducation, CVCertification, CVLeadership, CVLanguage, CVProject } from '@/types/cv';
+import type { CVExperience, CVEducation, CVCertification, CVLeadership, CVLanguage, CVProject, GeneratedCV } from '@/types/cv';
 import { detectLocale, CV_HEADINGS } from "@/lib/languageUtils";
 
 const Paper = styled.div`
@@ -114,8 +114,21 @@ const parseDateForSort = (dateStr?: string | null) => {
 };
 
 
-export function CVPreview() {
-  const { cv } = useCVStore();
+/* Example resumes (/resume/[role]) wrap numbers the person supplied in ⟦ ⟧; show them highlighted. */
+const Supplied = styled.mark`
+  padding: 0 2px;
+  border-radius: 3px;
+  color: inherit;
+  background: #fff3b0;
+  box-shadow: inset 0 -1.5px 0 #e6c200;
+`;
+const withSupplied = (text: string) =>
+  text.includes("⟦") ? text.split(/⟦|⟧/).map((part, i) => (i % 2 ? <Supplied key={i}>{part}</Supplied> : part)) : text;
+
+/** Shows the builder's resume, or `cv` when given (the role pages' examples). */
+export function CVPreview({ cv: example }: { cv?: GeneratedCV } = {}) {
+  const store = useCVStore();
+  const cv = example ?? store.cv;
   
   const allText = [
     cv.summary,
@@ -158,6 +171,37 @@ export function CVPreview() {
   const validLanguages = (cv.languages || []).filter(l => l.language?.trim() !== '');
 
   const theme = cv.themeColor || '#000000';
+
+  // Same rule as the PDF (cvGenerator): "Experience & Projects" only when an
+  // experienced candidate's projects are listed under it.
+  const experienceHeading = !cv.isEntryLevel && validExperience.length > 0 && validProjects.length > 0
+    ? headings.experience
+    : (headings.experience_only || 'Experience');
+
+  const education = (sortedEducation.length > 0) && (
+        <div style={{ marginBottom: '24px' }}>
+          <SectionTitle $theme={theme}>{headings.education}</SectionTitle>
+          {sortedEducation.map((edu: CVEducation, idx: number) => (
+            <div key={idx} style={{ marginBottom: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+                <span style={{ fontWeight: 600, fontSize: '14px' }}>
+                  {edu.degree}
+                  {edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''}
+                </span>
+                <span style={{ color: '#666', fontSize: '13px' }}>{edu.graduationDate}</span>
+              </div>
+              <div style={{ fontSize: '14px', color: '#444', marginTop: '2px' }}>
+                {[edu.institution, edu.location].filter(Boolean).join(', ')}
+              </div>
+              {edu.details && (
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '4px', lineHeight: 1.5 }}>
+                  {edu.details}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      );
 
   return (
     <Paper id="cv-preview-paper">
@@ -202,6 +246,8 @@ export function CVPreview() {
         </div>
       )}
 
+      {cv.isEntryLevel && education}
+
       {/* Experience & Projects Sections */}
       {cv.isEntryLevel ? (
         <>
@@ -224,7 +270,7 @@ export function CVPreview() {
                   {proj.bullets && proj.bullets.length > 0 && (
                     <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
                       {proj.bullets.map((bullet: string, i: number) => (
-                        <li key={i} style={{ marginBottom: '4px' }}>{bullet}</li>
+                        <li key={i} style={{ marginBottom: '4px' }}>{withSupplied(bullet)}</li>
                       ))}
                     </ul>
                   )}
@@ -234,7 +280,7 @@ export function CVPreview() {
           )}
           {sortedExperience.length > 0 && (
             <div style={{ marginBottom: '24px' }}>
-              <SectionTitle $theme={theme}>{validProjects.length > 0 ? (headings.experience_only || 'Experience') : (headings.experience || 'Experience & Projects')}</SectionTitle>
+              <SectionTitle $theme={theme}>{experienceHeading}</SectionTitle>
               {sortedExperience.map((exp: CVExperience, idx: number) => (
                 <div key={idx} style={{ marginBottom: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -250,7 +296,7 @@ export function CVPreview() {
                   </div>
                   <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
                     {exp.bullets.map((bullet: string, i: number) => (
-                      <li key={i} style={{ marginBottom: '4px' }}>{bullet}</li>
+                      <li key={i} style={{ marginBottom: '4px' }}>{withSupplied(bullet)}</li>
                     ))}
                   </ul>
                 </div>
@@ -262,7 +308,7 @@ export function CVPreview() {
         <>
           {sortedExperience.length > 0 && (
             <div style={{ marginBottom: '24px' }}>
-              <SectionTitle $theme={theme}>{headings.experience}</SectionTitle>
+              <SectionTitle $theme={theme}>{experienceHeading}</SectionTitle>
               {sortedExperience.map((exp: CVExperience, idx: number) => (
                 <div key={idx} style={{ marginBottom: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -278,7 +324,7 @@ export function CVPreview() {
                   </div>
                   <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
                     {exp.bullets.map((bullet: string, i: number) => (
-                      <li key={i} style={{ marginBottom: '4px' }}>{bullet}</li>
+                      <li key={i} style={{ marginBottom: '4px' }}>{withSupplied(bullet)}</li>
                     ))}
                   </ul>
                 </div>
@@ -306,7 +352,7 @@ export function CVPreview() {
                   {proj.bullets && proj.bullets.length > 0 && (
                     <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
                       {proj.bullets.map((bullet: string, i: number) => (
-                        <li key={i} style={{ marginBottom: '4px' }}>{bullet}</li>
+                        <li key={i} style={{ marginBottom: '4px' }}>{withSupplied(bullet)}</li>
                       ))}
                     </ul>
                   )}
@@ -317,31 +363,8 @@ export function CVPreview() {
         </>
       )}
 
-      {/* Education Section */}
-      {(sortedEducation.length > 0) && (
-        <div style={{ marginBottom: '24px' }}>
-          <SectionTitle $theme={theme}>{headings.education}</SectionTitle>
-          {sortedEducation.map((edu: CVEducation, idx: number) => (
-            <div key={idx} style={{ marginBottom: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                <span style={{ fontWeight: 600, fontSize: '14px' }}>
-                  {edu.degree}
-                  {edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''}
-                </span>
-                <span style={{ color: '#666', fontSize: '13px' }}>{edu.graduationDate}</span>
-              </div>
-              <div style={{ fontSize: '14px', color: '#444', marginTop: '2px' }}>
-                {[edu.institution, edu.location].filter(Boolean).join(', ')}
-              </div>
-              {edu.details && (
-                <div style={{ fontSize: '12px', color: '#666', marginTop: '4px', lineHeight: 1.5 }}>
-                  {edu.details}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Education Section: entry-level resumes lead with it, as the PDF does */}
+      {!cv.isEntryLevel && education}
 
       {/* Certifications Section */}
       {(validCerts.length > 0) && (
@@ -383,7 +406,7 @@ export function CVPreview() {
               {role.bullets && role.bullets.length > 0 && (
                 <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', color: '#333', lineHeight: 1.5 }}>
                   {role.bullets.map((bullet: string, i: number) => (
-                    <li key={i} style={{ marginBottom: '3px' }}>{bullet}</li>
+                    <li key={i} style={{ marginBottom: '3px' }}>{withSupplied(bullet)}</li>
                   ))}
                 </ul>
               )}

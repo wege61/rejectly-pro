@@ -98,6 +98,8 @@ interface CVState {
   setActiveCVId: (id: string | null) => void;
   resetCV: () => void;
   startEmpty: () => void;
+  /** Opens an example resume (from /resume/[role]) in the builder. */
+  loadCV: (cv: GeneratedCV) => void;
   updateContact: (contact: Partial<GeneratedCV['contact']>) => void;
   updatePhoto: (photoBase64: string) => void;
   updateSummary: (summary: string) => void;
@@ -135,6 +137,7 @@ export const useCVStore = create<CVState>()(
       
       resetCV: () => set({ cv: initialCVState, activeCVId: null, currentStep: 1 }),
       startEmpty: () => set({ cv: emptyCVState, activeCVId: null, currentStep: 1 }),
+      loadCV: (cv: GeneratedCV) => set({ cv, activeCVId: null, currentStep: 1 }),
       
       updateContact: (contactPatch: Partial<GeneratedCV['contact']>) => set((state: CVState) => ({
         cv: { 

@@ -20,8 +20,10 @@ Every page is shown as an HTML simulation first, approved, then built.
 - [x] `/contact`: letter form that really sends (/api/contact → hello@, Reply goes to the sender), topic hints, quick answers
 - [ ] `/resume/[role]` pages, rebuilt as first-job guides (`lib/roleExamples`, `components/resume-role`)
   - [x] Software Engineer (Daniel Park: 54 → 100)
-  - [ ] Product Manager, Data Analyst (Maya), Marketing Manager, Project Manager, UX Designer,
-        Sales Representative, Nurse, Accountant, Teacher, Human Resources, Business Analyst.
+  - [x] Data Analyst (Maya Chen: 63 → 100), Product Manager (Jordan Lee: 59 → 100),
+        UX Designer (Amara Okafor: 41 → 100)
+  - [ ] Marketing Manager, Project Manager, Sales Representative, Nurse, Accountant, Teacher,
+        Human Resources, Business Analyst.
         Each gets its own mix of mistakes; slugs not in `ROLE_EXAMPLES` still render the old page.
   - [ ] When all 12 are done, delete `RoleClient.tsx` and the old `lib/resumeRoles` fields
 - [x] `/terms`, `/privacy`: rewritten with the owner (Bulbul Labs LLC, Wyoming law, no arbitration,

@@ -142,8 +142,8 @@ B.S. Economics, Lakeside University, 2026
 SKILLS
 SQL, Python, Tableau, Excel`;
 
-/* calculateDeterministicScore(BEFORE_TEXT) → 63 with 7 issues; (AFTER_TEXT) → 87. */
-export const SCORE: Record<LensState, number> = { before: 63, after: 87 };
+/* calculateDeterministicScore(BEFORE_TEXT) → 63 with 7 issues; (AFTER_TEXT) → 93 (LinkedIn, summary and length still fail). */
+export const SCORE: Record<LensState, number> = { before: 63, after: 93 };
 export const ISSUE_COUNT = 7;
 export const COMPACT_ISSUE_COUNT = COMPACT_ROWS.before.filter((r) => r.fail).length;
 export const KEYWORDS_AFTER = "5/6";

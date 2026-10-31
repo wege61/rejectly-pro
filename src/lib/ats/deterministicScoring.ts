@@ -697,22 +697,20 @@ function checkIfExpanded(text: string, abbr: string, expansion: string): boolean
 }
 
 function checkDateFormat(text: string): boolean {
-  // Look for date patterns
-  const monthYearPattern = /(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}/gi;
-  const mmyyyyPattern = /\d{1,2}\/\d{4}/g;
-  const yyyymmPattern = /\d{4}[-\/]\d{1,2}/g;
-  const abbrevMonthPattern = /(Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\.?\s+\d{4}/gi;
+  // Consistent means one format throughout: "June 2025", "Jun 2025", "06/2025" or
+  // "2025-06". Any of them is fine as long as at least 70% of dates share it.
+  // "May 2025" is both the full and the short name, so it counts toward either.
+  const count = (re: RegExp) => (text.match(re) || []).length;
+  const full = count(/\b(January|February|March|April|June|July|August|September|October|November|December)\s+\d{4}/gi);
+  const short = count(/\b(Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+\d{4}/gi);
+  const may = count(/\bMay\s+\d{4}/gi);
+  const mmyyyy = count(/\b\d{1,2}\/\d{4}\b/g);
+  const yyyymm = count(/\b\d{4}[-\/]\d{1,2}\b/g);
 
-  const monthYearMatches = text.match(monthYearPattern) || [];
-  const mmyyyyMatches = text.match(mmyyyyPattern) || [];
-  const yyyymmMatches = text.match(yyyymmPattern) || [];
-  const abbrevMatches = text.match(abbrevMonthPattern) || [];
-
-  const totalDates = monthYearMatches.length + mmyyyyMatches.length + yyyymmMatches.length + abbrevMatches.length;
-
-  // If mostly Month YYYY format, it's consistent
-  if (totalDates === 0) return true;
-  return monthYearMatches.length >= totalDates * 0.7;
+  const total = full + short + may + mmyyyy + yyyymm;
+  if (total === 0) return true;
+  const dominant = Math.max(full + may, short + may, mmyyyy, yyyymm);
+  return dominant >= total * 0.7;
 }
 
 function countLongBullets(lines: string[]): number {

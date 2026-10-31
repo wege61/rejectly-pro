@@ -112,6 +112,7 @@ const BeforeSheet = styled.div`
   .main p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.55; }
   .t { font-weight: 700; font-size: 14px; color: var(--side); }
   .s { font-size: 13px; font-style: italic; color: #6b7280; }
+  .main .hidden { margin: 0; font-size: 7px; line-height: 1.2; color: #fff; user-select: none; }
   ul { margin: 6px 0 10px; padding-left: 18px; list-style: "➤  "; font-size: 13.5px; line-height: 1.6; }
 `;
 
@@ -256,6 +257,7 @@ function BeforePaper({ doc }: { doc: BeforeDoc }) {
           <section key={b.heading}>
             <h3 data-pin={b.pin}>{b.heading}</h3>
             {b.text && <p>{b.text}</p>}
+            {b.hidden && <p className="hidden" aria-hidden="true">{b.hidden}</p>}
             {b.entries?.map((e) => (
               <div key={e.title} data-pin={e.pin}>
                 <p className="t">{e.title}</p>

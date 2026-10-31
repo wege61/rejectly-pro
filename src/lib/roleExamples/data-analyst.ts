@@ -180,4 +180,9 @@ export const dataAnalyst: RoleExample = {
     { before: "Worked on a group project predicting churn", after: "Built a model in Python with a team of {n} to flag customers likely to cancel", answers: ["4"] },
   ],
   skills: ["SQL", "Excel", "Python", "pandas", "Tableau", "Power BI", "R", "Statistics", "Data cleaning", "Data visualization", "A/B testing", "Google Analytics"],
+  myths: [
+    { belief: "A skills chart looks data-savvy.", truth: "It’s a picture: the ATS reads nothing, and no recruiter can tell what “35% Excel” means. List the tools and show them in your bullets." },
+    { belief: "Certificates count more than projects.", truth: "A project with real data and a finding shows more than a course badge. List both if you have them, projects first." },
+    { belief: "One resume is enough for every application.", truth: "Each post asks for different tools. Keep one base resume and adjust the skills and first bullets for each job." },
+  ],
 };

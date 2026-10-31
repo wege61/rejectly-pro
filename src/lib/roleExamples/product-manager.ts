@@ -195,4 +195,9 @@ export const productManager: RoleExample = {
     { before: "Made an app for campus parking", after: "Led a team of {n} to build a campus parking finder in 36 hours", answers: ["4"] },
   ],
   skills: ["Product requirements (PRDs)", "User research", "Prioritization", "Roadmapping", "A/B testing", "SQL", "Jira", "Figma", "Google Analytics", "Agile (Scrum)", "Stakeholder communication", "Data analysis"],
+  myths: [
+    { belief: "A table of competencies looks organized.", truth: "A parser reads tables across, so the cells run together into one line. A plain list reads cleanly." },
+    { belief: "Rating your leadership five out of five shows confidence.", truth: "It proves nothing, and the ATS can’t read the dots. One bullet about something you led does more." },
+    { belief: "“Drove $2M in revenue” sounds senior.", truth: "If you can’t explain how the number was measured and what you did, it hurts you in the interview. Say what you did and what changed." },
+  ],
 };

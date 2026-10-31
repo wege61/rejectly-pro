@@ -35,6 +35,7 @@ export function beforeText(doc: BeforeDoc): string {
   for (const b of doc.main) {
     right.push(b.heading.toUpperCase());
     if (b.text) right.push(...wrap(b.text));
+    if (b.hidden) right.push(...wrap(b.hidden));
     for (const e of b.entries ?? []) {
       right.push(e.title);
       if (e.sub) right.push(e.sub);
@@ -71,7 +72,7 @@ const CHECK_PIN: Record<string, Pin> = {
   bullet_structure: "structure",
   word_count: "length",
   white_space: "breaks",
-  no_creative_dividers: "dividers",
+  no_creative_dividers: "bullets",
   has_skills_listed: "skills",
   consistent_dates: "structure",
 };

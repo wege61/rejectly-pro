@@ -193,4 +193,9 @@ export const uxDesigner: RoleExample = {
     { before: "Made the design system", after: "Built {n} reusable components for the studio’s Figma design system", answers: ["40+"] },
   ],
   skills: ["Figma", "User research", "Usability testing", "Wireframing", "Prototyping", "Information architecture", "Interaction design", "Design systems", "Accessibility (WCAG)", "Visual design", "Journey mapping", "HTML and CSS"],
+  myths: [
+    { belief: "A designed resume proves you can design.", truth: "Your portfolio proves it. A designed resume often comes out as jumbled text, and recruiters give it seconds." },
+    { belief: "“Click here” looks cleaner than a URL.", truth: "Printed or parsed, “Click here” goes nowhere. Write a short address: amaraokafor.design." },
+    { belief: "Listing every tool shows range.", truth: "Posts ask for methods: research, testing, prototyping. Name what you did, then the tools you did it with." },
+  ],
 };

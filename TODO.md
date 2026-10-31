@@ -22,8 +22,9 @@ Every page is shown as an HTML simulation first, approved, then built.
   - [x] Software Engineer (Daniel Park: 54 → 100)
   - [x] Data Analyst (Maya Chen: 63 → 100), Product Manager (Jordan Lee: 59 → 100),
         UX Designer (Amara Okafor: 41 → 100)
-  - [ ] Marketing Manager, Project Manager, Sales Representative, Nurse, Accountant, Teacher,
-        Human Resources, Business Analyst.
+  - [x] Marketing (Priya Nair: 45 → 100), Project Manager (Marcus Johnson: 60 → 100),
+        Sales Representative (Lucía Gómez: 45 → 100)
+  - [ ] Nurse, Accountant, Teacher, Human Resources, Business Analyst.
         Each gets its own mix of mistakes; slugs not in `ROLE_EXAMPLES` still render the old page.
   - [ ] When all 12 are done, delete `RoleClient.tsx` and the old `lib/resumeRoles` fields
 - [x] `/terms`, `/privacy`: rewritten with the owner (Bulbul Labs LLC, Wyoming law, no arbitration,
@@ -67,6 +68,11 @@ Every page is shown as an HTML simulation first, approved, then built.
       our own builder ("Aug 2021") lost 6 points. Fixed in cfd5375; homepage demo after score 87 → 93.
 - [ ] Scorer gap: "Quantified achievements" only counts %, $, "N+", "Nx" and "1,000"-style
       numbers; "120 students" or "9 seconds" don't count. Decide whether plain counts should.
+
+- [ ] Scorer gap: the hard-skill list behind "Extractable skills" (`HARD_SKILLS` in
+      `lib/ats/deterministicScoring`) is tech and marketing only. A nurse, teacher, HR or
+      project coordinator resume with real skills (patient assessment, lesson planning, HRIS,
+      Microsoft Project) can fail it. Add healthcare, education, HR, finance and PM terms.
 
 ## 3. Content rewrite (last)
 

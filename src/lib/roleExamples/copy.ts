@@ -27,9 +27,9 @@ export const CHANGE_COPY: Record<Pin, { before: string; after: string; why: stri
     whyAfter: "Counts and results the person gave when asked. Not estimates.",
   },
   bullets: {
-    before: "Decorative bullets",
+    before: "Decorative bullets and symbols",
     after: "Plain bullets",
-    why: "Arrows and symbols instead of bullets, so the lines don’t read as a list.",
+    why: "Arrows, stars or emoji instead of bullets: they can come out as stray characters, and the lines don’t read as a list.",
     whyAfter: "The standard • that every parser reads as a list item.",
   },
   structure: {

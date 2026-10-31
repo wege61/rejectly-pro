@@ -37,6 +37,8 @@ export interface BeforeMainBlock {
   heading: string;
   pin?: Pin;
   text?: string;
+  /** Keywords in white text: invisible on the page, plain as day in the ATS's text. */
+  hidden?: string;
   entries?: BeforeEntry[];
 }
 
@@ -82,4 +84,6 @@ export interface RoleExample {
   order: { title: string; text: string }[];
   rewrites: Rewrite[];
   skills: string[];
+  /** Things that feel like they help and don't: what people believe, and what's true. */
+  myths: { belief: string; truth: string }[];
 }

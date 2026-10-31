@@ -118,6 +118,20 @@ const Cols = styled.div`
   em.see { color: var(--rj-ink); background: color-mix(in srgb, var(--rj-ink) 7%, transparent); box-shadow: none; }
 `;
 
+const Myths = styled.div`
+  margin-top: 32px;
+  display: grid;
+  gap: 14px;
+
+  @media (min-width: 900px) { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+  article { padding: 22px; border-radius: 22px; display: grid; gap: 12px; align-content: start; background: var(--rj-surface); box-shadow: 0 0 0 1px var(--rj-line); }
+  .belief { margin: 0; font-size: 18px; font-weight: 650; line-height: 1.35; letter-spacing: -0.02em; color: var(--rj-ink); }
+  .belief::before { content: "“"; } .belief::after { content: "”"; }
+  .truth { margin: 0; padding-top: 12px; border-top: 1px solid var(--rj-line); font-size: 15px; line-height: 1.55; color: var(--rj-ink-2); }
+  .truth b { display: block; margin-bottom: 4px; font: 600 10px/1.4 var(--rj-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--rj-ink-3); }
+`;
+
 const Order = styled.ol`
   margin: 32px 0 0;
   padding: 0;
@@ -292,6 +306,20 @@ export function RolePage({ example, scores, others }: { example: RoleExample; sc
             <MistakeCol title="Can’t be matched" text="The text is there, but searches and filters miss it." items={example.mistakes.match} />
             <MistakeCol title="Loses the reader" text="A person reads it next, usually in seconds." items={example.mistakes.reader} />
           </Cols>
+        </Sec>
+
+        <Sec aria-labelledby="myths-title">
+          <p className="eyebrow">Feels right, isn’t</p>
+          <h2 className="title" id="myths-title">Things that seem to help, and don’t.</h2>
+          <p className="lede">Common advice, often repeated, that works against a first resume.</p>
+          <Myths>
+            {example.myths.map((m) => (
+              <article key={m.belief}>
+                <p className="belief">{m.belief}</p>
+                <p className="truth"><b>What’s true</b>{m.truth}</p>
+              </article>
+            ))}
+          </Myths>
         </Sec>
 
         <Sec aria-labelledby="order-title">

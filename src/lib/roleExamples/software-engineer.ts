@@ -190,4 +190,9 @@ export const softwareEngineer: RoleExample = {
     { before: "Made a website for planning courses", after: "Built a course planner in React and Node.js that checks prerequisites, used by {n} students", answers: ["120"] },
   ],
   skills: ["Python", "Java", "JavaScript", "TypeScript", "SQL", "React", "Node.js", "REST APIs", "Git", "Docker", "AWS", "Linux", "Unit testing", "Data structures and algorithms"],
+  myths: [
+    { belief: "Two columns fit more on one page.", truth: "They also scramble the order for a parser. One column with tight, specific bullets fits plenty for a first job." },
+    { belief: "Skill bars show how good you are.", truth: "No one agrees what four out of five in Python means, and the ATS reads only the word. Show your level through what you built." },
+    { belief: "Copy the job post’s wording to match it.", truth: "Use its words where they’re true of you. A resume that mirrors the post reads as copied, and interviews ask about every line." },
+  ],
 };
